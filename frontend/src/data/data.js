@@ -1,0 +1,20 @@
+export const data = [
+    { id: 1, wordEng: 'ankle', wordPl: { word: 'kostka', description: '(np. kostka stopy)' } },
+    { id: 2, wordEng: 'anniversary', wordPl: { word: 'rocznica', description: '(np. rocznica ślubu)' } },
+    { id: 3, wordEng: 'announce', wordPl: { word: 'ogłosić', description: '(np. ogłosić wyniki konkursu)' } },
+    { id: 4, wordEng: 'announcement', wordPl: { word: 'ogłoszenie', description: '(np. ogłoszenie w radiu)' } },
+    { id: 5, wordEng: 'annoy', wordPl: { word: 'denerwować', description: '(np. ktoś mnie denerwuje)' } },
+    { id: 6, wordEng: 'annoyed', wordPl: { word: 'zirytowany', description: '(np. jestem zirytowany)' } },
+    { id: 7, wordEng: 'annoying', wordPl: { word: 'irytujący', description: '(np. to jest irytujące)' } },
+    { id: 8, wordEng: 'annual', wordPl: { word: 'coroczny', description: '(np. coroczne wydarzenie)' } },
+    { id: 9, wordEng: 'another', wordPl: { word: 'inny, kolejny', description: '(np. inny sposób)' } },
+    { id: 10, wordEng: 'answer', wordPl: { word: 'odpowiedź', description: '(np. udzielić odpowiedzi)' } },
+    { id: 11, wordEng: 'anxious', wordPl: { word: 'zaniepokojony', description: '(np. jestem zaniepokojony)' } },
+    { id: 12, wordEng: 'any', wordPl: { word: 'jakikolwiek', description: '(np. dowolny wybór)' } },
+    { id: 13, wordEng: 'any more', wordPl: { word: 'już nie', description: '(np. nie chcę już więcej)' } },
+    { id: 14, wordEng: 'anybody', wordPl: { word: 'ktokolwiek', description: '(np. czy ktoś widział?)' } },
+    { id: 15, wordEng: 'anyone', wordPl: { word: 'ktokolwiek', description: '(to samo co "anybody")' } },
+    { id: 16, wordEng: 'anything', wordPl: { word: 'cokolwiek', description: '(np. możesz wybrać cokolwiek)' } },
+    { id: 17, wordEng: 'anyway', wordPl: { word: 'tak czy inaczej', description: '(np. niezależnie od tego)' } },
+  ];
+  
