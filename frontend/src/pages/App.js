@@ -1,24 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Home from "./home/home";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 function App() {
-  const [data, setData] = useState('');
+  const [data, setData] = useState("");
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/data')
-      .then(response => {
+    axios
+      .get("http://localhost:8080/api/data")
+      .then((response) => {
         setData(response.data.message);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   }, []);
 
   return (
-    <div className="App">
-      <h1>React and Node.js Integration</h1>
-      <p>Message from the server: {data}</p>
-    </div>
+    <Routes>
+      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="/home" element={<Home />} />
+    </Routes>
   );
 }
 
