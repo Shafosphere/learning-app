@@ -1,24 +1,36 @@
 import { useEffect, useState } from "react";
 import "./flashcard.css";
-export default function Flashcard({ data, check, className }) {
+export default function Flashcard({ data, check, className, showWrongAnswer }) {
   const [plWord, setWord] = useState(data.wordPl.word);
   const [userWord, setUserWord] = useState("");
+  const [hint, setHint] = useState(false);
+
   const wordLength = plWord.length;
+
   function handleInputChange(event) {
     setUserWord(event.target.value);
   }
   function handleSubmit(event) {
-    event.preventDefault(); // Zapobiega domyślnemu zachowaniu formularza
+    event.preventDefault();
     check(userWord, plWord);
   }
+  function showLetter() {
+    setHint(true);
+  }
+
   useEffect(() => {
     setWord(data.wordPl.word);
     setUserWord("");
+    setHint(false);
   }, [data.wordPl.word]);
 
   return (
     <>
       <div className="container-flashcard">
+        <div className={`wrong-answer ${showWrongAnswer}`}>
+          <span>Answear is:_</span>
+          <span style={{ "color": 'red' }}> {data.wordPl.word}</span>
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="top-flashcard">
             <div className={`window-flashcard ${className}`}>
@@ -41,15 +53,22 @@ export default function Flashcard({ data, check, className }) {
                 submit
               </button>
               <button
+                onClick={() => showLetter()}
                 className="button"
+                type="button" // Dodaj tę linię
                 style={{ "--buttonColor": "var(--secondary)" }}
               >
-                hint
+                first letter
               </button>
             </div>
           </div>
         </form>
         <div className="flashcard-description">{data.wordPl.description}</div>
+        {hint && (
+          <div className="flashcard-description">
+            First letter: {data.wordPl.word[0]}
+          </div>
+        )}
       </div>
     </>
   );

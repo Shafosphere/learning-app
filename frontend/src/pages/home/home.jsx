@@ -7,6 +7,7 @@ export default function Home() {
   const [wordsData, setWord] = useState(data.slice(0, wordNumber));
   const [randomWord, setRandom] = useState("");
   const [className, setClass] = useState("");
+  const [showWrongAnswer, setShowWrongAnswer] = useState('not-visible');
 
   function selectRandomWord() {
     const randomIndex = Math.floor(Math.random() * wordsData.length);
@@ -22,9 +23,11 @@ export default function Home() {
       }, 3000);
     } else {
       setClass("notcorrect");
+      setShowWrongAnswer('visible');
       setTimeout(() => {
         setClass("");
         selectRandomWord();
+        setShowWrongAnswer('not-visible');
       }, 3000);
     }
   }
@@ -37,7 +40,12 @@ export default function Home() {
     <div className="container-home">
       <div className="window-home">
         {randomWord && (
-          <Flashcard data={randomWord} check={check} className={className} />
+          <Flashcard
+            data={randomWord}
+            check={check}
+            className={className}
+            showWrongAnswer={showWrongAnswer}
+          />
         )}
       </div>
     </div>

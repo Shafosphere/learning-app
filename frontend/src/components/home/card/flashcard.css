@@ -1,3 +1,7 @@
+.container-flashcard{
+  width: 50rem;
+  height: 25rem;
+}
 .window-flashcard {
   height: 14rem;
   width: 35rem;
@@ -53,7 +57,7 @@ input {
 }
 input:focus {
   outline: none;
-  color: var(--highlight);
+  color: var(--paragraph);
 }
 .button {
   background-color: var(--buttonColor);
@@ -96,8 +100,21 @@ input:focus {
   -o-transform: scale(1.03);
 }
 .correct {
-  background-color: red;
+  background-color: var(--highlight)
 }
 .notcorrect {
-  background-color: blue;
+  background-color: var(--secondary)
+}
+.wrong-answer{
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  font-size: 20px;
+  text-transform: uppercase;
+  font-weight: 600;
+  max-width: 35rem;
+  margin-bottom: 1rem;
+}
+.not-visible{
+  visibility: hidden;
 }
