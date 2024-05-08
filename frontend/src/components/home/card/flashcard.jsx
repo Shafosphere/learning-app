@@ -55,7 +55,7 @@ export default function Flashcard({ data, check, className, showWrongAnswer }) {
               <button
                 onClick={() => showLetter()}
                 className="button"
-                type="button" // Dodaj tę linię
+                type="button"
                 style={{ "--buttonColor": "var(--secondary)" }}
               >
                 first letter
