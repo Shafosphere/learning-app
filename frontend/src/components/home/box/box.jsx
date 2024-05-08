@@ -1,6 +1,6 @@
 import boxImage from "../../../data/box.png";
 import "./box.css";
-export default function Boxes({ boxes, activeBox, setActiveBox }) {
+export default function Boxes({ boxes, activeBox, setActiveBox, addWords }) {
   return (
     <>
       <div className="container-boxes">
@@ -11,7 +11,7 @@ export default function Boxes({ boxes, activeBox, setActiveBox }) {
               className={`${activeBox === "boxOne" ? "active" : "notactive"}`}
               src={boxImage}
             />
-            <div className="word-count">{boxes.boxOne}</div>
+            <div className="word-count">{(boxes.boxOne).length}</div>
           </div>
 
           <div onClick={() => setActiveBox("boxTwo")} className="box">
@@ -20,7 +20,7 @@ export default function Boxes({ boxes, activeBox, setActiveBox }) {
               className={`${activeBox === "boxTwo" ? "active" : "notactive"}`}
               src={boxImage}
             />
-            <div className="word-count">{boxes.boxTwo}</div>
+            <div className="word-count">{(boxes.boxTwo).length}</div>
           </div>
 
           <div onClick={() => setActiveBox("boxThree")} className="box">
@@ -29,7 +29,7 @@ export default function Boxes({ boxes, activeBox, setActiveBox }) {
               className={`${activeBox === "boxThree" ? "active" : "notactive"}`}
               src={boxImage}
             />
-            <div className="word-count">{boxes.boxThree}</div>
+            <div className="word-count">{(boxes.boxThree).length}</div>
           </div>
 
           <div onClick={() => setActiveBox("boxFour")} className="box">
@@ -38,7 +38,7 @@ export default function Boxes({ boxes, activeBox, setActiveBox }) {
               className={`${activeBox === "boxFour" ? "active" : "notactive"}`}
               src={boxImage}
             />
-            <div className="word-count">{boxes.boxFour}</div>
+            <div className="word-count">{(boxes.boxFour).length}</div>
           </div>
 
           <div onClick={() => setActiveBox("boxFive")} className="box">
@@ -47,13 +47,13 @@ export default function Boxes({ boxes, activeBox, setActiveBox }) {
               className={`${activeBox === "boxFive" ? "active" : "notactive"}`}
               src={boxImage}
             />
-            <div className="word-count">{boxes.boxFive}</div>
+            <div className="word-count">{(boxes.boxFive).length}</div>
           </div>
         </div>
 
         <div className="boxes-bot">
           <button
-            // onClick={() => showLetter()}
+            onClick={() => addWords()}
             className="button"
             type="button"
             style={{ "--buttonColor": "var(--tertiary)" }}
