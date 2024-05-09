@@ -51,12 +51,16 @@ export default function Home() {
       const shuffled = [...arr].sort(() => 0.5 - Math.random());
       return shuffled.slice(0, num);
     }
-
+    
     const newWords = getRandomElements(data, 20);
     setBoxes((prevBoxes) => ({
       ...prevBoxes,
       boxOne: [...prevBoxes.boxOne, ...newWords],
     }));
+  }
+
+  function brunWords(){
+    console.log(randomWord);
   }
 
   function selectRandomWord() {
@@ -105,6 +109,7 @@ export default function Home() {
           check={check}
           className={className}
           showWrongAnswer={showWrongAnswer}
+          activeBox={activeBox}
         />
       ) : (
         <EmptyFlashcard />
@@ -114,6 +119,7 @@ export default function Home() {
         activeBox={activeBox}
         setActiveBox={setActiveBox}
         addWords={addWords}
+        brunWords={brunWords}
       />
     </div>
   );

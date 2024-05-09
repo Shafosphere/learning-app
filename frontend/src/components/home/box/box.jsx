@@ -1,6 +1,7 @@
 import boxImage from "../../../data/box.png";
 import "./box.css";
-export default function Boxes({ boxes, activeBox, setActiveBox, addWords }) {
+export default function Boxes({ boxes, activeBox, setActiveBox, addWords, brunWords }) {
+
   return (
     <>
       <div className="container-boxes">
@@ -61,7 +62,7 @@ export default function Boxes({ boxes, activeBox, setActiveBox, addWords }) {
             add words
           </button>
           <button
-            // onClick={() => showLetter()}
+            onClick={() => brunWords()}
             className="button"
             type="button"
             style={{ "--buttonColor": "var(--tertiary)" }}

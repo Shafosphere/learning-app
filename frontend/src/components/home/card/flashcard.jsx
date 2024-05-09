@@ -1,39 +1,45 @@
 import { useEffect, useState } from "react";
 import "./flashcard.css";
-export default function Flashcard({ data, check, className, showWrongAnswer }) {
-  const [plWord, setWord] = useState(data.wordPl.word);
+export default function Flashcard({ data, check, className, showWrongAnswer, activeBox }) {
+  const [word, setWord] = useState('');
+  const [secondWord, setSecondWord] = useState('');
   const [userWord, setUserWord] = useState("");
   const [hint, setHint] = useState(false);
-
-  const wordLength = plWord.length;
+  const wordLength = word.length;
 
   function handleInputChange(event) {
     setUserWord(event.target.value);
   }
   function handleSubmit(event) {
     event.preventDefault();
-    check(userWord, plWord);
+    check(userWord, word);
   }
   function showLetter() {
     setHint(true);
   }
 
   useEffect(() => {
-    setWord(data.wordPl.word);
+    if (activeBox === 'boxTwo' || activeBox === 'boxFour') {
+      setWord(data.wordEng.word);
+      setSecondWord(data.wordPl.word);
+    } else {
+      setWord(data.wordPl.word);
+      setSecondWord(data.wordEng.word)
+    }
     setUserWord("");
     setHint(false);
-  }, [data.wordPl.word]);
+  }, [activeBox, data.wordEng.word, data.wordPl.word]);
   
   return (
     <>
       <div className="container-flashcard">
         <div className={`wrong-answer ${showWrongAnswer}`}>
-          <span style={{ color: "red" }}> {data.wordPl.word}</span>
+          <span style={{ color: "red" }}> {word}</span>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="top-flashcard">
             <div className={`window-flashcard ${className}`}>
-              <span>{data.wordEng.word}</span>
+              <span>{secondWord}</span>
               <input
                 type="text"
                 style={{ "--wordLength": wordLength }}
@@ -45,7 +51,7 @@ export default function Flashcard({ data, check, className, showWrongAnswer }) {
 
             <div className="button-container">
               <button
-                onClick={() => check(userWord, plWord)}
+                onClick={() => check(userWord, word)}
                 className="button"
                 type="submit"
                 style={{ "--buttonColor": "var(--highlight)" }}
