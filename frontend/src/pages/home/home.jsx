@@ -19,6 +19,33 @@ export default function Home() {
     boxFive: [],
   });
 
+  function moveToNextBox(chosen_word) {
+    const boxOrder = ['boxOne', 'boxTwo', 'boxThree', 'boxFour', 'boxFive'];
+    const currentBoxIndex = boxOrder.indexOf(activeBox);
+  
+    if (currentBoxIndex < boxOrder.length - 1) {
+      const nextBox = boxOrder[currentBoxIndex + 1];
+      const find_word = boxes[activeBox].filter(obiekt =>
+        obiekt.wordPl.word === chosen_word || obiekt.wordEng.word === chosen_word
+      );
+  
+      setBoxes((prevBoxes) => {
+        const updatedCurrentBox = prevBoxes[activeBox].filter(obiekt =>
+          obiekt.wordPl.word !== chosen_word && obiekt.wordEng.word !== chosen_word
+        );
+  
+        const updatedNextBox = [...prevBoxes[nextBox], ...find_word];
+  
+        return {
+          ...prevBoxes,
+          [activeBox]: updatedCurrentBox,
+          [nextBox]: updatedNextBox,
+        };
+      });
+    }
+  }
+  
+
   function addWords() {
     function getRandomElements(arr, num) {
       const shuffled = [...arr].sort(() => 0.5 - Math.random());
@@ -46,6 +73,7 @@ export default function Home() {
       timeoutRef.current = setTimeout(() => {
         setClass("");
         selectRandomWord();
+        moveToNextBox(word);
       }, 3000);
     } else {
       setClass("notcorrect");
@@ -67,6 +95,7 @@ export default function Home() {
     selectRandomWord();
     console.log(randomWord);
   }, [activeBox, boxes]);
+
 
   return (
     <div className="container-home">
