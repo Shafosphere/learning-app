@@ -23,18 +23,15 @@ export default function Flashcard({ data, check, className, showWrongAnswer }) {
     setUserWord("");
     setHint(false);
   }, [data.wordPl.word]);
-
+  
   return (
     <>
       <div className="container-flashcard">
         <div className={`wrong-answer ${showWrongAnswer}`}>
-          <span>Answear is:_</span>
-          <span style={{ "color": 'red' }}> {data.wordPl.word}</span>
+          <span style={{ color: "red" }}> {data.wordPl.word}</span>
         </div>
         <form onSubmit={handleSubmit}>
-
           <div className="top-flashcard">
-
             <div className={`window-flashcard ${className}`}>
               <span>{data.wordEng.word}</span>
               <input
@@ -64,9 +61,7 @@ export default function Flashcard({ data, check, className, showWrongAnswer }) {
                 first letter
               </button>
             </div>
-
           </div>
-          
         </form>
         <div className="flashcard-description">{data.wordPl.description}</div>
         {hint && (

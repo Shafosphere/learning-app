@@ -27,7 +27,8 @@
   font-size: 20px;
   text-transform: uppercase;
   font-weight: 600;
-  max-width: 45rem;
+  max-width: 100%;
+  text-align: justify;
 }
 .top-flashcard {
   display: flex;
