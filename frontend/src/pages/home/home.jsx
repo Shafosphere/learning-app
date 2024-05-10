@@ -19,12 +19,16 @@ export default function Home() {
     boxFive: [],
   });
 
-  function moveToNextBox(chosen_word) {
+  function moveWord(chosen_word, moveToFirst = false) {
     const boxOrder = ['boxOne', 'boxTwo', 'boxThree', 'boxFour', 'boxFive'];
     const currentBoxIndex = boxOrder.indexOf(activeBox);
+    let nextBox = boxOrder[currentBoxIndex + 1];
   
-    if (currentBoxIndex < boxOrder.length - 1) {
-      const nextBox = boxOrder[currentBoxIndex + 1];
+    if (moveToFirst) {
+      nextBox = 'boxOne';
+    }
+  
+    if (moveToFirst || currentBoxIndex < boxOrder.length - 1) {
       const find_word = boxes[activeBox].filter(obiekt =>
         obiekt.wordPl.word === chosen_word || obiekt.wordEng.word === chosen_word
       );
@@ -45,7 +49,6 @@ export default function Home() {
     }
   }
   
-
   function addWords() {
     function getRandomElements(arr, num) {
       const shuffled = [...arr].sort(() => 0.5 - Math.random());
@@ -58,7 +61,6 @@ export default function Home() {
       boxOne: [...prevBoxes.boxOne, ...newWords],
     }));
   }
-
   function brunWords(){
     console.log(randomWord);
   }
@@ -77,7 +79,7 @@ export default function Home() {
       timeoutRef.current = setTimeout(() => {
         setClass("");
         selectRandomWord();
-        moveToNextBox(word);
+        moveWord(word);
       }, 3000);
     } else {
       setClass("notcorrect");
@@ -86,18 +88,19 @@ export default function Home() {
       timeoutRef.current = setTimeout(() => {
         setClass("");
         selectRandomWord();
+        moveWord(word, true);
         setShowWrongAnswer("not-visible");
       }, 3000);
     }
   }
 
   useEffect(() => {
-    return () => clearTimeout(timeoutRef.current);
-  }, []);
-
-  useEffect(() => {
     selectRandomWord();
     console.log(randomWord);
+  
+    return () => {
+      clearTimeout(timeoutRef.current);
+    };
   }, [activeBox, boxes]);
 
 

@@ -72,7 +72,7 @@ export default function Flashcard({ data, check, className, showWrongAnswer, act
         <div className="flashcard-description">{data.wordPl.description}</div>
         {hint && (
           <div className="flashcard-description">
-            {data.wordPl.word[0]}
+            {word[0]}
           </div>
         )}
       </div>
