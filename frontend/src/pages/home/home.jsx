@@ -27,7 +27,9 @@ export default function Home() {
     if (moveToFirst) {
       nextBox = 'boxOne';
     }
-  
+    if (activeBox === 'boxOne' && moveToFirst) {
+      return;
+    }
     if (moveToFirst || currentBoxIndex < boxOrder.length - 1) {
       const find_word = boxes[activeBox].filter(obiekt =>
         obiekt.wordPl.word === chosen_word || obiekt.wordEng.word === chosen_word
