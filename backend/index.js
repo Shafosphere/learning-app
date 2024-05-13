@@ -8,6 +8,9 @@ dotenv.config({ path: "./.env.local" });
 const app = express();
 const port = 8080;
 
+const maxWordId = 614;
+const minWordId = 14;
+
 const DATABASE = process.env.REACT_APP_DATABASE;
 
 app.use(express.json());
@@ -28,51 +31,95 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.post("/import", async (req, res) => {
-console.log('startuje')
-  try {
-    // Rozpocznij transakcję
-    await db.query("BEGIN");
+app.post("/data", async (req, res) => {
+  const wordIds = req.body.wordIds;
+  let wordList = [];
 
-    // Wstaw dane do tabeli Word i Translation
-    for (const item of data) {
-      const wordRes = await db.query(
-        "INSERT INTO Word (word) VALUES ($1) RETURNING id",
-        [item.wordEng.word]
-      );
-      const wordId = wordRes.rows[0].id;
-
-      await db.query(
-        "INSERT INTO Translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)",
-        [wordId, "en", item.wordEng.word, item.wordEng.description]
-      );
-      await db.query(
-        "INSERT INTO Translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)",
-        [wordId, "pl", item.wordPl.word, item.wordPl.description]
-      );
+  while (wordList.length < 20) {
+    const randomWordId =
+      Math.floor(Math.random() * (maxWordId - minWordId + 1)) + minWordId;
+    if (!wordIds.find((number) => number === randomWordId)) {
+      wordList.push(randomWordId);
     }
+  }
 
-    // Zatwierdź transakcję
-    await db.query("COMMIT");
-    res.status(200).json({ message: "Dane zostały pomyślnie zaimportowane." });
+  try {
+    const results = await Promise.all(
+      wordList.map(async (item) => {
+        const checkResult = await db.query(
+          "SELECT * FROM translation WHERE word_id = $1",
+          [item]
+        );
+        return checkResult.rows;
+      })
+    );
+
+    const formattedResults = results.map((wordPair) => {
+      const wordEng = wordPair.find((w) => w.language === "en");
+      const wordPl = wordPair.find((w) => w.language === "pl");
+      return {
+        id: wordEng.word_id,
+        wordEng: {
+          word: wordEng.translation,
+          description: wordEng.description,
+        },
+        wordPl: {
+          word: wordPl.translation,
+          description: wordPl.description,
+        },
+      };
+    });
+
+    console.log(formattedResults);
+
+    res.json({ message: "working", data: formattedResults });
   } catch (error) {
-    // Wycofaj transakcję w przypadku błędu
-    await db.query("ROLLBACK");
+    console.error("Error fetching data:", error);
     res
       .status(500)
-      .json({
-        message: "Wystąpił błąd podczas importowania danych.",
-        error: error.message,
-      });
+      .json({ message: "Error fetching data", error: error.message });
   }
-});
-
-app.get("/api/data", (req, res) => {
-  // Handle your API logic here
-  const data = { message: "working" };
-  res.json(data);
 });
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+// app.post("/import", async (req, res) => {
+// console.log('startuje')
+//   try {
+//
+//     await db.query("BEGIN");
+
+//
+//     for (const item of data) {
+//       const wordRes = await db.query(
+//         "INSERT INTO Word (word) VALUES ($1) RETURNING id",
+//         [item.wordEng.word]
+//       );
+//       const wordId = wordRes.rows[0].id;
+
+//       await db.query(
+//         "INSERT INTO Translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)",
+//         [wordId, "en", item.wordEng.word, item.wordEng.description]
+//       );
+//       await db.query(
+//         "INSERT INTO Translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)",
+//         [wordId, "pl", item.wordPl.word, item.wordPl.description]
+//       );
+//     }
+
+//
+//     await db.query("COMMIT");
+//     res.status(200).json({ message: "Dane zostały pomyślnie zaimportowane." });
+//   } catch (error) {
+//
+//     await db.query("ROLLBACK");
+//     res
+//       .status(500)
+//       .json({
+//         message: "Wystąpił błąd podczas importowania danych.",
+//         error: error.message,
+//       });
+//   }
+// });
