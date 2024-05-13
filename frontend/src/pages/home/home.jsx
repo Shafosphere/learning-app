@@ -19,7 +19,7 @@ export default function Home() {
     boxFive: [],
   });
 
-  function moveWord(chosen_word, moveToFirst = false) {
+  function moveWord(id ,chosen_word, moveToFirst = false) {
     const boxOrder = ['boxOne', 'boxTwo', 'boxThree', 'boxFour', 'boxFive'];
     const currentBoxIndex = boxOrder.indexOf(activeBox);
     let nextBox = boxOrder[currentBoxIndex + 1];
@@ -30,6 +30,28 @@ export default function Home() {
     if (activeBox === 'boxOne' && moveToFirst) {
       return;
     }
+    if (activeBox === 'boxFive' && !moveToFirst) {
+      const newid = randomWord.id
+      let wordIds = JSON.parse(localStorage.getItem('wordIds')) || [];
+      if (!wordIds.includes(newid)) {
+        wordIds.push(newid);
+        console.log(wordIds);
+        console.log(newid);
+        localStorage.setItem('wordIds', JSON.stringify(wordIds));
+      }
+      
+      setBoxes((prevBoxes) => {
+        const updatedBoxFive = prevBoxes[activeBox].filter(obiekt =>
+          obiekt.wordPl.word !== chosen_word && obiekt.wordEng.word !== chosen_word
+        );
+        return {
+          ...prevBoxes,
+          [activeBox]: updatedBoxFive,
+        };
+      });
+      return;
+    }
+
     if (moveToFirst || currentBoxIndex < boxOrder.length - 1) {
       const find_word = boxes[activeBox].filter(obiekt =>
         obiekt.wordPl.word === chosen_word || obiekt.wordEng.word === chosen_word
@@ -41,7 +63,7 @@ export default function Home() {
         );
   
         const updatedNextBox = [...prevBoxes[nextBox], ...find_word];
-  
+
         return {
           ...prevBoxes,
           [activeBox]: updatedCurrentBox,
@@ -74,14 +96,14 @@ export default function Home() {
 
   const timeoutRef = useRef(null);
 
-  function check(userWord, word) {
+  function check(userWord, word, id) {
     if (userWord === word) {
       setClass("correct");
       clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
         setClass("");
         selectRandomWord();
-        moveWord(word);
+        moveWord(id ,word, false);
       }, 3000);
     } else {
       setClass("notcorrect");
@@ -90,7 +112,7 @@ export default function Home() {
       timeoutRef.current = setTimeout(() => {
         setClass("");
         selectRandomWord();
-        moveWord(word, true);
+        moveWord(id ,word, true);
         setShowWrongAnswer("not-visible");
       }, 3000);
     }

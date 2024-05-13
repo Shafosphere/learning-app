@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./flashcard.css";
 export default function Flashcard({ data, check, className, showWrongAnswer, activeBox }) {
   const [word, setWord] = useState('');
+  const [wordID, setId] = useState('');
   const [secondWord, setSecondWord] = useState('');
   const [userWord, setUserWord] = useState("");
   const [hint, setHint] = useState(false);
@@ -22,13 +23,15 @@ export default function Flashcard({ data, check, className, showWrongAnswer, act
     if (activeBox === 'boxTwo' || activeBox === 'boxFour') {
       setWord(data.wordEng.word);
       setSecondWord(data.wordPl.word);
+      setId(data.id);
     } else {
+      setId(data.id);
       setWord(data.wordPl.word);
       setSecondWord(data.wordEng.word)
     }
     setUserWord("");
     setHint(false);
-  }, [activeBox, data.wordEng.word, data.wordPl.word]);
+  }, [activeBox, data.wordEng.word, data.wordPl.word, data.id]);
   
   return (
     <>
@@ -51,7 +54,7 @@ export default function Flashcard({ data, check, className, showWrongAnswer, act
 
             <div className="button-container">
               <button
-                onClick={() => check(userWord, word)}
+                onClick={() => check(userWord, word, wordID)}
                 className="button"
                 type="submit"
                 style={{ "--buttonColor": "var(--highlight)" }}
