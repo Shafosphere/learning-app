@@ -32,16 +32,20 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.post("/data", async (req, res) => {
-  const wordIds = req.body.wordIds;
-  let wordList = [];
+  const wordIds = new Set(req.body.wordIds);
+  const words_used = new Set(req.body.words_used);
+  let wordList = new Set();
 
-  while (wordList.length < 20) {
+  while (wordList.size < 20) {
     const randomWordId =
       Math.floor(Math.random() * (maxWordId - minWordId + 1)) + minWordId;
-    if (!wordIds.find((number) => number === randomWordId)) {
-      wordList.push(randomWordId);
+
+    if (!wordIds.has(randomWordId) && !words_used.has(randomWordId)) {
+      wordList.add(randomWordId);
     }
   }
+
+  wordList = Array.from(wordList);
 
   try {
     const results = await Promise.all(
@@ -69,8 +73,6 @@ app.post("/data", async (req, res) => {
         },
       };
     });
-
-    console.log(formattedResults);
 
     res.json({ message: "working", data: formattedResults });
   } catch (error) {

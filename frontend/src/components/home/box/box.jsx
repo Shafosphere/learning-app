@@ -67,7 +67,7 @@ export default function Boxes({ boxes, activeBox, setActiveBox, addWords, brunWo
             type="button"
             style={{ "--buttonColor": "var(--tertiary)" }}
           >
-            burn words
+            Save
           </button>
         </div>
       </div>

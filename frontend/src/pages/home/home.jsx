@@ -115,12 +115,20 @@ export default function Home() {
   }
 
   async function getData() {
+    const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
+    let words_used = [];
+    boxOrder.map((item) => {
+      boxes[item].forEach((second_item) => {
+        words_used.push(second_item.id);
+      });
+    });
+  
     const storedWordIds = localStorage.getItem("wordIds");
     try {
       const wordIds = storedWordIds ? JSON.parse(storedWordIds) : [];
       const response = await axios.post(
         "http://localhost:8080/data",
-        { wordIds },
+        { wordIds, words_used },
         { withCredentials: true }
       );
       console.log(response.data.data);
@@ -139,7 +147,7 @@ export default function Home() {
     const randomIndex = Math.floor(Math.random() * boxes[activeBox].length);
     setRandom(boxes[activeBox][randomIndex]);
   }
-  
+
   useEffect(() => {
     selectRandomWord();
     // console.log(randomWord);
