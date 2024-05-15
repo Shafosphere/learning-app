@@ -1,0 +1,10 @@
+.container-sidebar{
+    position: fixed;
+    height: 100%;
+    width: 5rem;
+    background-color: var(--secondary);
+    transition: 400ms;
+}
+.container-sidebar:hover{
+    width: 15rem;
+}

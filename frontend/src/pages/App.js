@@ -1,4 +1,5 @@
 import Home from "./home/home";
+import Sidebar from "../components/sidebar/sidebar";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,10 +11,13 @@ function App() {
 
 
   return (
+    <>
+    <Sidebar/>
     <Routes>
       <Route path="/" element={<Navigate to="/home" replace />} />
       <Route path="/home" element={<Home />} />
     </Routes>
+    </>
   );
 }
 
