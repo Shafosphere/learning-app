@@ -3,6 +3,8 @@
   height: 25rem;
 }
 .window-flashcard {
+  position: relative;
+
   height: 14rem;
   width: 35rem;
 
@@ -79,4 +81,29 @@ input:focus {
 }
 .not-visible{
   visibility: hidden;
+}
+.learning{
+  position: absolute;
+  height: 90%;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary)
+}
+.label-container {
+  position: relative;
+}
+
+.label-container label {
+  position: absolute;
+  font-size: 4ch;
+  color: rgba(0, 0, 0, 0.1);
+  pointer-events: none; /* Dodaj tę linię */
+  padding-left: 0.3rem;
+}
+.label-container input{
+  text-align: left;
+  padding-left: 0.3rem;
 }

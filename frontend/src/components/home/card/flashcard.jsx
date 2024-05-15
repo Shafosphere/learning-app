@@ -1,12 +1,31 @@
 import { useEffect, useState } from "react";
 import "./flashcard.css";
-export default function Flashcard({ data, check, className, showWrongAnswer, activeBox }) {
-  const [word, setWord] = useState('');
-  const [wordID, setId] = useState('');
-  const [secondWord, setSecondWord] = useState('');
+export default function Flashcard({
+  data,
+  check,
+  className,
+  showWrongAnswer,
+  activeBox,
+  handleSetWordFlash,
+  handleSetwordId,
+  changeCorrectStatus,
+}) {
+  const [word, setWord] = useState("");
+  const [wordID, setId] = useState("");
+  const [secondWord, setSecondWord] = useState("");
   const [userWord, setUserWord] = useState("");
   const [hint, setHint] = useState(false);
   const wordLength = word.length;
+
+  const[correctWord, setCorWord] = useState("");
+  const[correctSecondWord, setCorSecWord] = useState("");
+
+  function correctWordChange(event){
+    setCorWord(event.target.value);
+  }
+  function correctSecondWordChange(event){
+    setCorSecWord(event.target.value);
+  }
 
   function handleInputChange(event) {
     setUserWord(event.target.value);
@@ -20,28 +39,60 @@ export default function Flashcard({ data, check, className, showWrongAnswer, act
   }
 
   useEffect(() => {
-    if (activeBox === 'boxTwo' || activeBox === 'boxFour') {
+    if (activeBox === "boxTwo" || activeBox === "boxFour") {
       setWord(data.wordEng.word);
+      handleSetWordFlash(data.wordEng.word);
       setSecondWord(data.wordPl.word);
       setId(data.id);
+      handleSetwordId(data.id)
     } else {
       setId(data.id);
       setWord(data.wordPl.word);
-      setSecondWord(data.wordEng.word)
+      setSecondWord(data.wordEng.word);
     }
     setUserWord("");
     setHint(false);
   }, [activeBox, data.wordEng.word, data.wordPl.word, data.id]);
-  
+
+  useEffect(() => {
+    if (correctWord === word && correctSecondWord === secondWord) {
+      changeCorrectStatus();
+      setCorWord("");
+      setCorSecWord("");
+    }
+  }, [correctWord, correctSecondWord]);
+
   return (
     <>
       <div className="container-flashcard">
         <div className={`wrong-answer ${showWrongAnswer}`}>
-          <span style={{ color: "red" }}> {word}</span>
+          <span style={{ color: "red" }}>{word}</span>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="top-flashcard">
             <div className={`window-flashcard ${className}`}>
+              <div className={`learning ${showWrongAnswer}`}>
+                <div className="label-container">
+                  <label>{word}</label>
+                  <input
+                    type="text"
+                    style={{ "--wordLength": word.length }}
+                    maxLength={wordLength}
+                    value={correctWord}
+                    onChange={correctWordChange}
+                  />
+                </div>
+                <div className="label-container">
+                  <label>{secondWord}</label>
+                  <input
+                    type="text"
+                    style={{ "--wordLength": secondWord.length }}
+                    maxLength={secondWord.length}
+                    value={correctSecondWord}
+                    onChange={correctSecondWordChange}
+                  />
+                </div>
+              </div>
               <span>{secondWord}</span>
               <input
                 type="text"
@@ -73,11 +124,7 @@ export default function Flashcard({ data, check, className, showWrongAnswer, act
           </div>
         </form>
         <div className="flashcard-description">{data.wordPl.description}</div>
-        {hint && (
-          <div className="flashcard-description">
-            {word[0]}
-          </div>
-        )}
+        {hint && <div className="flashcard-description">{word[0]}</div>}
       </div>
     </>
   );

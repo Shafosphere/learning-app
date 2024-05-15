@@ -18,6 +18,9 @@ export default function Home() {
     boxFour: [],
     boxFive: [],
   });
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [word_flashcard, setwordFlash] = useState();
+  const [id_flashcard, setwordId] = useState();
 
   function check(userWord, word, id) {
     if (userWord === word) {
@@ -31,14 +34,19 @@ export default function Home() {
     } else {
       setClass("notcorrect");
       setShowWrongAnswer("visible");
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => {
-        setClass("");
-        selectRandomWord();
-        moveWord(id, word, true);
-        setShowWrongAnswer("not-visible");
-      }, 3000);
     }
+  }
+
+  function handleSetWordFlash(item){
+    setwordFlash(item);
+  };
+
+  function handleSetwordId(item){
+    setwordId(item);
+  };
+
+  function changeCorrectStatus(){
+    setIsCorrect(true);
   }
 
   function moveWord(id, chosen_word, moveToFirst = false) {
@@ -167,6 +175,16 @@ export default function Home() {
       clearTimeout(timeoutRef.current);
     };
   }, [activeBox, boxes]);
+  
+  useEffect(() => {
+    if (isCorrect) {
+      setClass("");
+      selectRandomWord();
+      moveWord(id_flashcard, word_flashcard, false);
+      setShowWrongAnswer("not-visible");
+      setIsCorrect(false);
+    }
+  }, [isCorrect]);
 
   return (
     <div className="container-home">
@@ -177,6 +195,9 @@ export default function Home() {
           className={className}
           showWrongAnswer={showWrongAnswer}
           activeBox={activeBox}
+          handleSetWordFlash={handleSetWordFlash}
+          handleSetwordId={handleSetwordId}
+          changeCorrectStatus={changeCorrectStatus}
         />
       ) : (
         <EmptyFlashcard />
