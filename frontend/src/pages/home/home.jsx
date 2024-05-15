@@ -4,14 +4,14 @@ import Flashcard from "../../components/home/card/flashcard";
 import EmptyFlashcard from "../../components/home/card/empty-flashcard";
 import Boxes from "../../components/home/box/box";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 export default function Home() {
-  const [randomWord, setRandom] = useState("");
-  const [className, setClass] = useState("");
+  const [randomWord, setRandom] = useState(""); //selected word
+  const [className, setClass] = useState(""); //class display
   const [showWrongAnswer, setShowWrongAnswer] = useState("not-visible");
-  const [activeBox, setActiveBox] = useState("boxOne");
+  const [activeBox, setActiveBox] = useState("boxOne"); //clicked box
   const timeoutRef = useRef(null);
-  const [boxes, setBoxes] = useState({
+  const [boxes, setBoxes] = useState({ //boxes
     boxOne: [],
     boxTwo: [],
     boxThree: [],
@@ -117,11 +117,12 @@ export default function Home() {
   async function getData() {
     const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
     let words_used = [];
-    boxOrder.map((item) => {
+    boxOrder.forEach((item) => {
       boxes[item].forEach((second_item) => {
         words_used.push(second_item.id);
       });
     });
+    
   
     const storedWordIds = localStorage.getItem("wordIds");
     try {
@@ -140,13 +141,23 @@ export default function Home() {
   }
 
   function brunWords() {
-    console.log(randomWord);
+    console.log(boxes[activeBox][1].id);
   }
 
-  function selectRandomWord() {
+  const selectRandomWord = useCallback(() => {
+  let randomIndex;
+  if (boxes[activeBox].length > 1) {
+    do {
+      randomIndex = Math.floor(Math.random() * boxes[activeBox].length);
+    } while (randomWord && (boxes[activeBox][randomIndex].id === randomWord.id));
+    setRandom(boxes[activeBox][randomIndex]);
+  } else if (boxes[activeBox].length === 1) {
+    setRandom(boxes[activeBox][0]);
+  } else {
     const randomIndex = Math.floor(Math.random() * boxes[activeBox].length);
     setRandom(boxes[activeBox][randomIndex]);
   }
+}, [boxes, activeBox, randomWord]);
 
   useEffect(() => {
     selectRandomWord();
