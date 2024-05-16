@@ -47,15 +47,17 @@ export default function Flashcard({
       handleSetwordId(data.id)
     } else {
       setId(data.id);
+      handleSetwordId(data.id)
       setWord(data.wordPl.word);
+      handleSetWordFlash(data.wordPl.word);
       setSecondWord(data.wordEng.word);
     }
     setUserWord("");
     setHint(false);
-  }, [activeBox, data.wordEng.word, data.wordPl.word, data.id]);
+  }, [activeBox, data.wordEng.word, data.wordPl.word, data.id,]);
 
   useEffect(() => {
-    if (correctWord === word && correctSecondWord === secondWord) {
+    if (correctWord === word && correctSecondWord === secondWord && word.length >= 1) {
       changeCorrectStatus();
       setCorWord("");
       setCorSecWord("");

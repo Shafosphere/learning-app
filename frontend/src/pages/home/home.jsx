@@ -6,7 +6,7 @@ import Boxes from "../../components/home/box/box";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 export default function Home() {
-  const [randomWord, setRandom] = useState(""); //selected word
+  const [randomWord, setRandom] = useState(null); //selected word
   const [className, setClass] = useState(""); //class display
   const [showWrongAnswer, setShowWrongAnswer] = useState("not-visible");
   const [activeBox, setActiveBox] = useState("boxOne"); //clicked box
@@ -19,8 +19,8 @@ export default function Home() {
     boxFive: [],
   });
   const [isCorrect, setIsCorrect] = useState(false);
-  const [word_flashcard, setwordFlash] = useState();
-  const [id_flashcard, setwordId] = useState();
+  const [word_flashcard, setwordFlash] = useState(null);
+  const [id_flashcard, setwordId] = useState(null);
 
   function check(userWord, word, id) {
     if (userWord === word) {
@@ -37,13 +37,13 @@ export default function Home() {
     }
   }
 
-  function handleSetWordFlash(item){
+  const handleSetWordFlash = useCallback((item) => {
     setwordFlash(item);
-  };
-
-  function handleSetwordId(item){
+  }, []);
+  
+  const handleSetwordId = useCallback((item) => {
     setwordId(item);
-  };
+  }, []);
 
   function changeCorrectStatus(){
     setIsCorrect(true);
@@ -65,8 +65,6 @@ export default function Home() {
       let wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
       if (!wordIds.includes(newid)) {
         wordIds.push(newid);
-        // console.log(wordIds);
-        // console.log(newid);
         localStorage.setItem("wordIds", JSON.stringify(wordIds));
       }
 
@@ -152,35 +150,32 @@ export default function Home() {
     console.log(boxes[activeBox][1].id);
   }
 
-  const selectRandomWord = useCallback(() => {
-  let randomIndex;
-  if (boxes[activeBox].length > 1) {
-    do {
-      randomIndex = Math.floor(Math.random() * boxes[activeBox].length);
-    } while (randomWord && (boxes[activeBox][randomIndex].id === randomWord.id));
+  function selectRandomWord(){
+    const boxLength = boxes[activeBox].length;
+    let randomIndex = 0;
+    if (boxLength > 1) {
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * boxLength);
+      } while (randomWord && boxes[activeBox][newIndex].id === randomWord.id);
+      randomIndex = newIndex;
+    }
     setRandom(boxes[activeBox][randomIndex]);
-  } else if (boxes[activeBox].length === 1) {
-    setRandom(boxes[activeBox][0]);
-  } else {
-    const randomIndex = Math.floor(Math.random() * boxes[activeBox].length);
-    setRandom(boxes[activeBox][randomIndex]);
-  }
-}, [boxes, activeBox, randomWord]);
+}
 
   useEffect(() => {
     selectRandomWord();
-    // console.log(randomWord);
 
     return () => {
       clearTimeout(timeoutRef.current);
     };
-  }, [activeBox, boxes]);
+  }, [activeBox, boxes,]);
   
   useEffect(() => {
     if (isCorrect) {
       setClass("");
       selectRandomWord();
-      moveWord(id_flashcard, word_flashcard, false);
+      moveWord(id_flashcard, word_flashcard, true);
       setShowWrongAnswer("not-visible");
       setIsCorrect(false);
     }
