@@ -4,22 +4,23 @@ import Flashcard from "../../components/home/card/flashcard";
 import EmptyFlashcard from "../../components/home/card/empty-flashcard";
 import Boxes from "../../components/home/box/box";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 export default function Home() {
   const [randomWord, setRandom] = useState(null); //selected word
   const [className, setClass] = useState(""); //class display
   const [showWrongAnswer, setShowWrongAnswer] = useState("not-visible");
   const [activeBox, setActiveBox] = useState("boxOne"); //clicked box
   const timeoutRef = useRef(null);
-  const [boxes, setBoxes] = useState({ //boxes
+  const [boxes, setBoxes] = useState({
+    //boxes
     boxOne: [],
     boxTwo: [],
     boxThree: [],
     boxFour: [],
     boxFive: [],
   });
-  const [word_flashcard, setwordFlash] = useState(null);
-  const [id_flashcard, setwordId] = useState(null);
+  const wordFlashcardRef = useRef(null);
+  const idFlashcardRef = useRef(null);
 
   function check(userWord, word, id) {
     if (userWord === word) {
@@ -28,7 +29,7 @@ export default function Home() {
       timeoutRef.current = setTimeout(() => {
         setClass("");
         moveWord(id, word, false);
-        console.log(boxes[activeBox])
+        console.log(boxes[activeBox]);
         selectRandomWord(activeBox);
       }, 2000);
     } else {
@@ -37,28 +38,28 @@ export default function Home() {
     }
   }
 
-  function handleSetWordFlash(item){
-    setwordFlash(item);
-  };
-  
-  function handleSetwordId(item){
-    setwordId(item);
-  };
+  const handleSetWordFlash = useCallback((item) => {
+    wordFlashcardRef.current = item;
+  }, []);
 
-  function changeCorrectStatus(){
-      console.log(activeBox)
-      setClass("");
-      moveWord(id_flashcard, word_flashcard, true);
-      console.log(boxes[activeBox])
-      selectRandomWord(activeBox);
-      setShowWrongAnswer("not-visible");
+  const handleSetwordId = useCallback((item) => {
+    idFlashcardRef.current = item;
+  }, []);
+
+  function changeCorrectStatus() {
+    console.log(activeBox);
+    setClass("");
+    moveWord(idFlashcardRef.current, wordFlashcardRef.current, true);
+    console.log(boxes[activeBox]);
+    selectRandomWord(activeBox);
+    setShowWrongAnswer("not-visible");
   }
 
-  function handleSetBox(item){
-    console.log(item)
+  function handleSetBox(item) {
+    console.log(item);
     setActiveBox(item);
     selectRandomWord(item);
-  };
+  }
 
   function moveWord(id, chosen_word, moveToFirst = false) {
     const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
@@ -138,8 +139,7 @@ export default function Home() {
         words_used.push(second_item.id);
       });
     });
-    
-  
+
     const storedWordIds = localStorage.getItem("wordIds");
     try {
       const wordIds = storedWordIds ? JSON.parse(storedWordIds) : [];
@@ -176,14 +176,13 @@ export default function Home() {
       return prevBoxes;
     });
   }
-  
 
   useEffect(() => {
     return () => {
       clearTimeout(timeoutRef.current);
     };
   }, []);
-  
+
   return (
     <div className="container-home">
       {randomWord ? (

@@ -17,14 +17,31 @@ export default function Flashcard({
   const [hint, setHint] = useState(false);
   const wordLength = word.length;
 
-  const[correctWord, setCorWord] = useState("");
-  const[correctSecondWord, setCorSecWord] = useState("");
+  const [correctWord, setCorWord] = useState("");
+  const [correctSecondWord, setCorSecWord] = useState("");
 
-  function correctWordChange(event){
-    setCorWord(event.target.value);
+  function correctWordChange(event) {
+    const newCorrectWord = event.target.value;
+    setCorWord(newCorrectWord);
+    miniCheck(newCorrectWord, correctSecondWord);
   }
-  function correctSecondWordChange(event){
-    setCorSecWord(event.target.value);
+
+  function correctSecondWordChange(event) {
+    const newCorrectSecondWord = event.target.value;
+    setCorSecWord(newCorrectSecondWord);
+    miniCheck(correctWord, newCorrectSecondWord);
+  }
+
+  function miniCheck(currentCorrectWord, currentCorrectSecondWord) {
+    if (
+      currentCorrectWord === word &&
+      currentCorrectSecondWord === secondWord &&
+      word.length >= 1
+    ) {
+      changeCorrectStatus();
+      setCorWord("");
+      setCorSecWord("");
+    }
   }
 
   function handleInputChange(event) {
@@ -38,31 +55,48 @@ export default function Flashcard({
     setHint(true);
   }
 
+  // useEffect(() => {
+  //   if (activeBox === "boxTwo" || activeBox === "boxFour") {
+  //     setWord(data.wordEng.word);
+  //     handleSetWordFlash(data.wordEng.word);
+  //     setSecondWord(data.wordPl.word);
+  //     setId(data.id);
+  //     handleSetwordId(data.id)
+  //   } else {
+  //     setId(data.id);
+  //     handleSetwordId(data.id)
+  //     setWord(data.wordPl.word);
+  //     handleSetWordFlash(data.wordPl.word);
+  //     setSecondWord(data.wordEng.word);
+  //   }
+  //   setUserWord("");
+  //   setHint(false);
+  // }, [activeBox, data.wordEng.word, data.wordPl.word, data.id,]);
+
   useEffect(() => {
     if (activeBox === "boxTwo" || activeBox === "boxFour") {
       setWord(data.wordEng.word);
       handleSetWordFlash(data.wordEng.word);
       setSecondWord(data.wordPl.word);
       setId(data.id);
-      handleSetwordId(data.id)
+      handleSetwordId(data.id);
     } else {
       setId(data.id);
-      handleSetwordId(data.id)
+      handleSetwordId(data.id);
       setWord(data.wordPl.word);
       handleSetWordFlash(data.wordPl.word);
       setSecondWord(data.wordEng.word);
     }
     setUserWord("");
     setHint(false);
-  }, [activeBox, data.wordEng.word, data.wordPl.word, data.id,]);
-
-  useEffect(() => {
-    if (correctWord === word && correctSecondWord === secondWord && word.length >= 1) {
-      changeCorrectStatus();
-      setCorWord("");
-      setCorSecWord("");
-    }
-  }, [correctWord, correctSecondWord]);
+  }, [
+    activeBox,
+    data.wordEng.word,
+    data.wordPl.word,
+    data.id,
+    handleSetWordFlash,
+    handleSetwordId,
+  ]);
 
   return (
     <>
