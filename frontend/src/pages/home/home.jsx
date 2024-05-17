@@ -4,7 +4,7 @@ import Flashcard from "../../components/home/card/flashcard";
 import EmptyFlashcard from "../../components/home/card/empty-flashcard";
 import Boxes from "../../components/home/box/box";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 export default function Home() {
   const [randomWord, setRandom] = useState(null); //selected word
   const [className, setClass] = useState(""); //class display
@@ -18,7 +18,6 @@ export default function Home() {
     boxFour: [],
     boxFive: [],
   });
-  const [isCorrect, setIsCorrect] = useState(false);
   const [word_flashcard, setwordFlash] = useState(null);
   const [id_flashcard, setwordId] = useState(null);
 
@@ -28,26 +27,38 @@ export default function Home() {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
         setClass("");
-        selectRandomWord();
         moveWord(id, word, false);
-      }, 3000);
+        console.log(boxes[activeBox])
+        selectRandomWord(activeBox);
+      }, 2000);
     } else {
       setClass("notcorrect");
       setShowWrongAnswer("visible");
     }
   }
 
-  const handleSetWordFlash = useCallback((item) => {
+  function handleSetWordFlash(item){
     setwordFlash(item);
-  }, []);
+  };
   
-  const handleSetwordId = useCallback((item) => {
+  function handleSetwordId(item){
     setwordId(item);
-  }, []);
+  };
 
   function changeCorrectStatus(){
-    setIsCorrect(true);
+      console.log(activeBox)
+      setClass("");
+      moveWord(id_flashcard, word_flashcard, true);
+      console.log(boxes[activeBox])
+      selectRandomWord(activeBox);
+      setShowWrongAnswer("not-visible");
   }
+
+  function handleSetBox(item){
+    console.log(item)
+    setActiveBox(item);
+    selectRandomWord(item);
+  };
 
   function moveWord(id, chosen_word, moveToFirst = false) {
     const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
@@ -79,7 +90,6 @@ export default function Home() {
           [activeBox]: updatedBoxFive,
         };
       });
-      return;
     }
 
     if (moveToFirst || currentBoxIndex < boxOrder.length - 1) {
@@ -150,37 +160,30 @@ export default function Home() {
     console.log(boxes[activeBox][1].id);
   }
 
-  function selectRandomWord(){
-    const boxLength = boxes[activeBox].length;
-    let randomIndex = 0;
-    if (boxLength > 1) {
-      let newIndex;
-      do {
-        newIndex = Math.floor(Math.random() * boxLength);
-      } while (randomWord && boxes[activeBox][newIndex].id === randomWord.id);
-      randomIndex = newIndex;
-    }
-    setRandom(boxes[activeBox][randomIndex]);
-}
+  function selectRandomWord(item) {
+    setBoxes((prevBoxes) => {
+      const boxLength = prevBoxes[item].length;
+      let randomIndex = 0;
+      if (boxLength > 1) {
+        let newIndex;
+        do {
+          newIndex = Math.floor(Math.random() * boxLength);
+        } while (randomWord && prevBoxes[item][newIndex].id === randomWord.id);
+        randomIndex = newIndex;
+      }
+      const newRandomWord = prevBoxes[item][randomIndex];
+      setRandom(newRandomWord);
+      return prevBoxes;
+    });
+  }
+  
 
   useEffect(() => {
-    selectRandomWord();
-
     return () => {
       clearTimeout(timeoutRef.current);
     };
-  }, [activeBox, boxes,]);
+  }, []);
   
-  useEffect(() => {
-    if (isCorrect) {
-      setClass("");
-      selectRandomWord();
-      moveWord(id_flashcard, word_flashcard, true);
-      setShowWrongAnswer("not-visible");
-      setIsCorrect(false);
-    }
-  }, [isCorrect]);
-
   return (
     <div className="container-home">
       {randomWord ? (
@@ -200,7 +203,7 @@ export default function Home() {
       <Boxes
         boxes={boxes}
         activeBox={activeBox}
-        setActiveBox={setActiveBox}
+        handleSetBox={handleSetBox}
         addWords={addWords}
         brunWords={brunWords}
       />
