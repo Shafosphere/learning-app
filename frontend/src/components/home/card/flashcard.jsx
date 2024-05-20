@@ -49,10 +49,12 @@ export default function Flashcard({
   function handleInputChange(event) {
     setUserWord(event.target.value);
   }
+  
   function handleSubmit(event) {
     event.preventDefault();
     check(userWord, word);
   }
+
   function showLetter() {
     setHint(true);
   }
@@ -132,7 +134,7 @@ export default function Flashcard({
     <>
       <div className="container-flashcard">
         <div className={`wrong-answer ${showWrongAnswer}`}>
-          <span style={{ color: "red" }}>{word}</span>
+          <span style={{ color: "red" }}>{word}&#8203;</span>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="top-flashcard">

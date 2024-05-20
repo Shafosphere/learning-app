@@ -34,9 +34,8 @@ export default function Home() {
       timeoutRef.current = setTimeout(() => {
         setClass("");
         moveWord(id, word, false);
-        console.log(boxes[activeBox]);
         selectRandomWord(activeBox);
-      }, 2000);
+      }, 1500);
     } else {
       setClass("notcorrect");
       setShowWrongAnswer("visible");
@@ -61,9 +60,8 @@ export default function Home() {
   }
 
   function handleSetBox(item) {
-    console.log(item);
-    setActiveBox(item);
     selectRandomWord(item);
+    setActiveBox(item);
   }
 
   function moveWord(id, chosen_word, moveToFirst = false) {
@@ -131,6 +129,9 @@ export default function Home() {
         ...prevBoxes,
         boxOne: [...prevBoxes.boxOne, ...newData], // Spread the newData into the array
       }));
+      if (activeBox === "boxOne") {
+        selectRandomWord(activeBox);
+      }
     } catch (error) {
       console.error("Error adding words:", error);
     }
@@ -153,7 +154,6 @@ export default function Home() {
         { wordIds, words_used },
         { withCredentials: true }
       );
-      console.log(response.data.data);
       return response; // Return the response object
     } catch (error) {
       console.error("Data error:", error);
