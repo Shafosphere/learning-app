@@ -9,6 +9,9 @@ export default function Flashcard({
   handleSetWordFlash,
   handleSetwordId,
   changeCorrectStatus,
+  correctWordRef,
+  correctSecondWordRef,
+  userWordRef
 }) {
   const [word, setWord] = useState("");
   const [wordID, setId] = useState("");
@@ -55,24 +58,6 @@ export default function Flashcard({
     setHint(true);
   }
 
-  // useEffect(() => {
-  //   if (activeBox === "boxTwo" || activeBox === "boxFour") {
-  //     setWord(data.wordEng.word);
-  //     handleSetWordFlash(data.wordEng.word);
-  //     setSecondWord(data.wordPl.word);
-  //     setId(data.id);
-  //     handleSetwordId(data.id)
-  //   } else {
-  //     setId(data.id);
-  //     handleSetwordId(data.id)
-  //     setWord(data.wordPl.word);
-  //     handleSetWordFlash(data.wordPl.word);
-  //     setSecondWord(data.wordEng.word);
-  //   }
-  //   setUserWord("");
-  //   setHint(false);
-  // }, [activeBox, data.wordEng.word, data.wordPl.word, data.id,]);
-
   useEffect(() => {
     if (activeBox === "boxTwo" || activeBox === "boxFour") {
       setWord(data.wordEng.word);
@@ -98,6 +83,37 @@ export default function Flashcard({
     handleSetwordId,
   ]);
 
+  useEffect(() => {
+    if (userWordRef.current) {
+      userWordRef.current.focus();
+    }
+  }, [userWordRef]);
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === 'ArrowDown') {
+        if (document.activeElement === correctWordRef.current) {
+          correctSecondWordRef.current.focus();
+        } else if (document.activeElement === correctSecondWordRef.current) {
+          userWordRef.current.focus();
+        }
+      } else if (event.key === 'ArrowUp') {
+
+        if (document.activeElement === correctSecondWordRef.current) {
+          correctWordRef.current.focus();
+        } else if (document.activeElement === userWordRef.current) {
+          correctSecondWordRef.current.focus();
+        }
+      }
+    }
+  
+    window.addEventListener('keydown', handleKeyDown);
+  
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [correctSecondWordRef, correctWordRef, userWordRef]);
+  
   return (
     <>
       <div className="container-flashcard">
@@ -116,6 +132,7 @@ export default function Flashcard({
                     maxLength={wordLength}
                     value={correctWord}
                     onChange={correctWordChange}
+                    ref={correctWordRef}
                   />
                 </div>
                 <div className="label-container">
@@ -126,6 +143,7 @@ export default function Flashcard({
                     maxLength={secondWord.length}
                     value={correctSecondWord}
                     onChange={correctSecondWordChange}
+                    ref={correctSecondWordRef}
                   />
                 </div>
               </div>
@@ -136,6 +154,7 @@ export default function Flashcard({
                 maxLength={wordLength}
                 value={userWord}
                 onChange={handleInputChange}
+                ref={userWordRef}
               />
             </div>
 

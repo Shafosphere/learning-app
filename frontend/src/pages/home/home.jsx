@@ -22,6 +22,11 @@ export default function Home() {
   const wordFlashcardRef = useRef(null);
   const idFlashcardRef = useRef(null);
 
+  //focus managment
+  const userWordRef = useRef(null);
+  const correctWordRef = useRef(null);
+  const correctSecondWordRef = useRef(null);
+
   function check(userWord, word, id) {
     if (userWord === word) {
       setClass("correct");
@@ -35,6 +40,7 @@ export default function Home() {
     } else {
       setClass("notcorrect");
       setShowWrongAnswer("visible");
+      correctWordRef.current.focus();
     }
   }
 
@@ -47,12 +53,11 @@ export default function Home() {
   }, []);
 
   function changeCorrectStatus() {
-    console.log(activeBox);
     setClass("");
     moveWord(idFlashcardRef.current, wordFlashcardRef.current, true);
-    console.log(boxes[activeBox]);
     selectRandomWord(activeBox);
     setShowWrongAnswer("not-visible");
+    userWordRef.current.focus();
   }
 
   function handleSetBox(item) {
@@ -195,6 +200,9 @@ export default function Home() {
           handleSetWordFlash={handleSetWordFlash}
           handleSetwordId={handleSetwordId}
           changeCorrectStatus={changeCorrectStatus}
+          correctWordRef={correctWordRef}
+          correctSecondWordRef={correctSecondWordRef}
+          userWordRef={userWordRef}
         />
       ) : (
         <EmptyFlashcard />
