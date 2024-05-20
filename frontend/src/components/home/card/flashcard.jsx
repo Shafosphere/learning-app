@@ -11,14 +11,13 @@ export default function Flashcard({
   changeCorrectStatus,
   correctWordRef,
   correctSecondWordRef,
-  userWordRef
+  userWordRef,
 }) {
   const [word, setWord] = useState("");
   const [wordID, setId] = useState("");
   const [secondWord, setSecondWord] = useState("");
   const [userWord, setUserWord] = useState("");
   const [hint, setHint] = useState(false);
-  const wordLength = word.length;
 
   const [correctWord, setCorWord] = useState("");
   const [correctSecondWord, setCorSecWord] = useState("");
@@ -58,6 +57,22 @@ export default function Flashcard({
     setHint(true);
   }
 
+  function calculateAdjustedLength(word) {
+    const adjustments = {
+      i: 0.5,
+      l: 0.5,
+      m: 1.5,
+      w: 1.5,
+      r: 0.5,
+      t: 0.5,
+      f: 0.5,
+      j: 0.5,
+    };
+    return word.split("").reduce((acc, char) => {
+      return acc + (adjustments[char] || 1);
+    }, 0);
+  }
+
   useEffect(() => {
     if (activeBox === "boxTwo" || activeBox === "boxFour") {
       setWord(data.wordEng.word);
@@ -91,14 +106,13 @@ export default function Flashcard({
 
   useEffect(() => {
     function handleKeyDown(event) {
-      if (event.key === 'ArrowDown') {
+      if (event.key === "ArrowDown") {
         if (document.activeElement === correctWordRef.current) {
           correctSecondWordRef.current.focus();
         } else if (document.activeElement === correctSecondWordRef.current) {
           userWordRef.current.focus();
         }
-      } else if (event.key === 'ArrowUp') {
-
+      } else if (event.key === "ArrowUp") {
         if (document.activeElement === correctSecondWordRef.current) {
           correctWordRef.current.focus();
         } else if (document.activeElement === userWordRef.current) {
@@ -106,14 +120,14 @@ export default function Flashcard({
         }
       }
     }
-  
-    window.addEventListener('keydown', handleKeyDown);
-  
+
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [correctSecondWordRef, correctWordRef, userWordRef]);
-  
+
   return (
     <>
       <div className="container-flashcard">
@@ -128,8 +142,8 @@ export default function Flashcard({
                   <label>{word}</label>
                   <input
                     type="text"
-                    style={{ "--wordLength": word.length }}
-                    maxLength={wordLength}
+                    style={{ "--wordLength": calculateAdjustedLength(word) }}
+                    maxLength={word.length}
                     value={correctWord}
                     onChange={correctWordChange}
                     ref={correctWordRef}
@@ -139,7 +153,9 @@ export default function Flashcard({
                   <label>{secondWord}</label>
                   <input
                     type="text"
-                    style={{ "--wordLength": secondWord.length }}
+                    style={{
+                      "--wordLength": calculateAdjustedLength(secondWord),
+                    }}
                     maxLength={secondWord.length}
                     value={correctSecondWord}
                     onChange={correctSecondWordChange}
@@ -150,8 +166,8 @@ export default function Flashcard({
               <span>{secondWord}</span>
               <input
                 type="text"
-                style={{ "--wordLength": wordLength }}
-                maxLength={wordLength}
+                style={{ "--wordLength": calculateAdjustedLength(word) }}
+                maxLength={word.length}
                 value={userWord}
                 onChange={handleInputChange}
                 ref={userWordRef}
