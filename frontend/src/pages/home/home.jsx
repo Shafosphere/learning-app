@@ -3,6 +3,8 @@ import axios from "axios";
 import Flashcard from "../../components/home/card/flashcard";
 import EmptyFlashcard from "../../components/home/card/empty-flashcard";
 import Boxes from "../../components/home/box/box";
+import dingSound from "../../data/ding.wav"
+import dongSound from "../../data/dong.wav"
 
 import { useEffect, useState, useRef, useCallback } from "react";
 export default function Home() {
@@ -27,10 +29,15 @@ export default function Home() {
   const correctWordRef = useRef(null);
   const correctSecondWordRef = useRef(null);
 
+  //sound
+  const dingSoundRef = useRef(new Audio(dingSound));
+  const dongSoundRef = useRef(new Audio(dongSound));
+
   function check(userWord, word, id) {
     if (userWord === word) {
       setClass("correct");
       clearTimeout(timeoutRef.current);
+      dingSoundRef.current.play();
       timeoutRef.current = setTimeout(() => {
         setClass("");
         moveWord(id, word, false);
@@ -40,6 +47,7 @@ export default function Home() {
       setClass("notcorrect");
       setShowWrongAnswer("visible");
       correctWordRef.current.focus();
+      dongSoundRef.current.play();
     }
   }
 
