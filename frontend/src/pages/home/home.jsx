@@ -3,8 +3,8 @@ import axios from "axios";
 import Flashcard from "../../components/home/card/flashcard";
 import EmptyFlashcard from "../../components/home/card/empty-flashcard";
 import Boxes from "../../components/home/box/box";
-import dingSound from "../../data/ding.wav"
-import dongSound from "../../data/dong.wav"
+import dingSound from "../../data/ding.wav";
+import dongSound from "../../data/dong.wav";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 export default function Home() {
@@ -170,9 +170,52 @@ export default function Home() {
   }
 
   function brunWords() {
-    console.log(boxes[activeBox][1].id);
+    let db;
+    const request = indexedDB.open("MyTestDatabase", 1);
+  
+    request.onupgradeneeded = (event) => {
+      db = event.target.result;
+      if (!db.objectStoreNames.contains('boxes')) {
+        db.createObjectStore('boxes', { keyPath: 'id' });
+      }
+    };
+  
+    request.onsuccess = (event) => {
+      db = event.target.result;
+      if (db.objectStoreNames.contains('boxes')) {
+        const transaction = db.transaction(['boxes'], 'readwrite');
+        const store = transaction.objectStore('boxes');
+  
+        const clearRequest = store.clear();
+        clearRequest.onsuccess = () => {
+          console.log(`Magazyn obiektów 'boxes' został wyczyszczony.`);
+  
+          for (const boxName in boxes) {
+            boxes[boxName].forEach((item) => {
+              const itemWithBox = { ...item, boxName };
+              const addRequest = store.add(itemWithBox);
+              addRequest.onsuccess = () => {
+                console.log(`Rekord z boxa '${boxName}' został dodany do obiektu magazynu.`);
+              };
+              addRequest.onerror = () => {
+                console.error(`Błąd podczas dodawania rekordu z boxa '${boxName}' do obiektu magazynu.`);
+              };
+            });
+          }
+        };
+        clearRequest.onerror = () => {
+          console.error(`Błąd podczas czyszczenia magazynu obiektów 'boxes'.`);
+        };
+      } else {
+        console.error("Magazyn obiektów 'boxes' nie istnieje.");
+      }
+    };
+  
+    request.onerror = (event) => {
+      console.error("IndexedDB error:", event.target.error);
+    };
   }
-
+  
   function selectRandomWord(item) {
     setBoxes((prevBoxes) => {
       const boxLength = prevBoxes[item].length;
@@ -195,6 +238,54 @@ export default function Home() {
       clearTimeout(timeoutRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    function readAndDisplayAllData() {
+      const request = indexedDB.open("MyTestDatabase", 1);
+  
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        if (db.objectStoreNames.contains('boxes')) {
+          const transaction = db.transaction(['boxes'], 'readonly');
+          const store = transaction.objectStore('boxes');
+          const getAllRequest = store.getAll();
+  
+          getAllRequest.onsuccess = () => {
+            const allData = getAllRequest.result;
+            const newBoxesState = {
+              boxOne: [],
+              boxTwo: [],
+              boxThree: [],
+              boxFour: [],
+              boxFive: [],
+            };
+  
+            allData.forEach((item) => {
+              const { boxName, ...rest } = item;
+              if (newBoxesState[boxName]) {
+                newBoxesState[boxName].push(rest);
+              }
+            });
+  
+            setBoxes(newBoxesState);
+          };
+          getAllRequest.onerror = () => {
+            console.error('Błąd podczas odczytywania danych z magazynu obiektów `boxes`.');
+          };
+        } else {
+          console.error("Magazyn obiektów 'boxes' nie istnieje.");
+        }
+      };
+  
+      request.onerror = (event) => {
+        console.error("IndexedDB error:", event.target.error);
+      };
+    }
+  
+    readAndDisplayAllData();
+  }, []);
+  
+  
 
   return (
     <div className="container-home">
