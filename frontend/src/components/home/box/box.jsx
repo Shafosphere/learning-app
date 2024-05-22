@@ -67,7 +67,7 @@ export default function Boxes({ boxes, activeBox, handleSetBox, addWords, brunWo
             type="button"
             style={{ "--buttonColor": "var(--tertiary)" }}
           >
-            Save
+            Save progress
           </button>
         </div>
       </div>

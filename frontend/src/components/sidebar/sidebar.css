@@ -1,10 +1,81 @@
-.container-sidebar{
-    position: fixed;
-    height: 100%;
-    width: 5rem;
-    background-color: var(--secondary);
-    transition: 400ms;
+.container-sidebar {
+  position: fixed;
+  height: 100%;
+  width: 5rem;
+  background-color: var(--secondBackground);
+  transition: 400ms;
 }
-.container-sidebar:hover{
-    width: 15rem;
+.container-sidebar:hover {
+  width: 20rem;
+  background-color: var(--secondary);
+}
+.small-sidebar {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+  height: 100%;
+  width: 100%;
+  color: var(--secondary);
+  transition: opacity 400ms, visibility 400ms;
+}
+.big-sidebar {
+  color: var(--secondBackground);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  min-width: 15rem;
+
+  transition: 400ms;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 400ms, visibility 400ms;
+}
+.container-sidebar:hover .small-sidebar {
+  opacity: 0;
+  visibility: hidden;
+}
+.container-sidebar:hover .big-sidebar {
+  opacity: 1;
+  visibility: visible;
+}
+.title-sidebar{
+    margin: 1rem;
+    font-size: 50px;
+    font-weight: 800;
+    display: flex;
+    justify-content: center;
+}
+.links-sidebar{
+    height: 80%;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-size: 25px;
+    font-weight: 600;
+    padding: 0rem 0rem 0rem 2rem;
+}
+.github-sidebar{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    gap: 5px;
+    font-size: 20px;
+}
+.bar{
+    height: auto;
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.border{
+    border: solid rgb(255, 255, 255) 2px;
+    width: 100%;
 }
