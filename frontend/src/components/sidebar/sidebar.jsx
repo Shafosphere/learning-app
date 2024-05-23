@@ -1,7 +1,7 @@
 import "./sidebar.css";
 import { LuMenuSquare } from "react-icons/lu";
 import { FaGithub } from "react-icons/fa";
-
+import { Link } from "react-router-dom";
 export default function Sidebar() {
   return (
     <>
@@ -12,8 +12,8 @@ export default function Sidebar() {
         <div className="big-sidebar">
           <div className="title-sidebar"><span>My App</span></div>
           <div className="links-sidebar">
-            <span>Home</span>
-            <span>Settings</span>
+          <Link to="/home">Home</Link>
+          <Link to="/settings">Settings</Link>
           </div>
           <div className="github-sidebar">
             <div className="bar">
