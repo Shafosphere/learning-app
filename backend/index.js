@@ -8,8 +8,10 @@ dotenv.config({ path: "./.env.local" });
 const app = express();
 const port = 8080;
 
-const maxWordId = 614;
-const minWordId = 14;
+
+// B2 > 2974 < C1 
+const maxWordId = 2974;
+const minWordId = 1;
 
 const DATABASE = process.env.REACT_APP_DATABASE;
 
@@ -90,10 +92,10 @@ app.listen(port, () => {
 // app.post("/import", async (req, res) => {
 // console.log('startuje')
 //   try {
-//
+
 //     await db.query("BEGIN");
 
-//
+
 //     for (const item of data) {
 //       const wordRes = await db.query(
 //         "INSERT INTO Word (word) VALUES ($1) RETURNING id",
@@ -111,11 +113,11 @@ app.listen(port, () => {
 //       );
 //     }
 
-//
+
 //     await db.query("COMMIT");
 //     res.status(200).json({ message: "Dane zostały pomyślnie zaimportowane." });
 //   } catch (error) {
-//
+
 //     await db.query("ROLLBACK");
 //     res
 //       .status(500)
