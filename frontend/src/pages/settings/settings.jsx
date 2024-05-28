@@ -3,27 +3,32 @@ export default function Settings() {
   return (
     <>
       <div className="container-settings">
-        <div className="belt-settings">
-          <div className="small-belt-left">
-            <span className="reset-title">reset progress</span>
-            <div className="buttons-settings">
-              <button
-                className="button reset-button"
-                type="button"
-                style={{ "--buttonColor": "var(--tertiary)" }}
-              >
-                Boxes
-              </button>
-              <button
-                className="button reset-button"
-                type="button"
-                style={{ "--buttonColor": "var(--tertiary)" }}
-              >
-                All
-              </button>
+        <div className="window-settings">
+          <div className="switches">
+
+            <div className="switch-container">
+              <span className="switch-text">Sounds</span>
+              <label class="switch">
+                <input type="checkbox" />
+                <span class="slider round"></span>
+              </label>
             </div>
+
+
+            <div className="switch-container">
+              <span className="switch-text">B2</span>
+              <label class="switch">
+                <input type="checkbox" />
+                <span class="slider round"></span>
+              </label>
+              <span className="switch-text">C1</span>
+              <label class="switch">
+                <input type="checkbox" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+
           </div>
-          <dic className="small-belt-right"></dic>
         </div>
       </div>
     </>
