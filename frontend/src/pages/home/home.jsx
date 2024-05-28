@@ -7,6 +7,7 @@ import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+
 export default function Home() {
   const [randomWord, setRandom] = useState(null); //selected word
   const [className, setClass] = useState(""); //class display
@@ -24,7 +25,7 @@ export default function Home() {
   const wordFlashcardRef = useRef(null);
   const idFlashcardRef = useRef(null);
 
-  //focus managment
+  //focus management
   const userWordRef = useRef(null);
   const correctWordRef = useRef(null);
   const correctSecondWordRef = useRef(null);
@@ -170,44 +171,53 @@ export default function Home() {
   }
 
   function brunWords() {
+    console.log(boxes[activeBox][1].id);
     let db;
-    const request = indexedDB.open("MyTestDatabase", 1);
+    // Increment the version number to force onupgradeneeded to fire
+    const request = indexedDB.open("MyTestDatabase", 2);
   
     request.onupgradeneeded = (event) => {
+      console.log('onupgradeneeded event fired');
       db = event.target.result;
+      console.log('Upgrading database to version', db.version);
       if (!db.objectStoreNames.contains('boxes')) {
         db.createObjectStore('boxes', { keyPath: 'id' });
+        console.log('Object store "boxes" created.');
+      } else {
+        console.log('Object store "boxes" already exists.');
       }
     };
   
     request.onsuccess = (event) => {
+      console.log('onsuccess event fired');
       db = event.target.result;
+      console.log('Database opened successfully');
       if (db.objectStoreNames.contains('boxes')) {
         const transaction = db.transaction(['boxes'], 'readwrite');
         const store = transaction.objectStore('boxes');
   
         const clearRequest = store.clear();
         clearRequest.onsuccess = () => {
-          console.log(`Magazyn obiektów 'boxes' został wyczyszczony.`);
+          console.log(`Object store 'boxes' has been cleared.`);
   
           for (const boxName in boxes) {
             boxes[boxName].forEach((item) => {
               const itemWithBox = { ...item, boxName };
               const addRequest = store.add(itemWithBox);
               addRequest.onsuccess = () => {
-                console.log(`Rekord z boxa '${boxName}' został dodany do obiektu magazynu.`);
+                console.log(`Record from box '${boxName}' has been added to the object store.`);
               };
               addRequest.onerror = () => {
-                console.error(`Błąd podczas dodawania rekordu z boxa '${boxName}' do obiektu magazynu.`);
+                console.error(`Error adding record from box '${boxName}' to the object store.`);
               };
             });
           }
         };
         clearRequest.onerror = () => {
-          console.error(`Błąd podczas czyszczenia magazynu obiektów 'boxes'.`);
+          console.error(`Error clearing the object store 'boxes'.`);
         };
       } else {
-        console.error("Magazyn obiektów 'boxes' nie istnieje.");
+        console.error("Object store 'boxes' does not exist.");
       }
     };
   
@@ -216,6 +226,7 @@ export default function Home() {
     };
   }
   
+
   function selectRandomWord(item) {
     setBoxes((prevBoxes) => {
       const boxLength = prevBoxes[item].length;
@@ -241,15 +252,28 @@ export default function Home() {
 
   useEffect(() => {
     function readAndDisplayAllData() {
-      const request = indexedDB.open("MyTestDatabase", 1);
-  
+      let db;
+      const request = indexedDB.open("MyTestDatabase", 2);
+
+      request.onupgradeneeded = (event) => {
+        console.log('onupgradeneeded event fired');
+        db = event.target.result;
+        console.log('Upgrading database to version', db.version);
+        if (!db.objectStoreNames.contains('boxes')) {
+          db.createObjectStore('boxes', { keyPath: 'id' });
+          console.log('Object store "boxes" created.');
+        } else {
+          console.log('Object store "boxes" already exists.');
+        }
+      };
+
       request.onsuccess = (event) => {
         const db = event.target.result;
         if (db.objectStoreNames.contains('boxes')) {
           const transaction = db.transaction(['boxes'], 'readonly');
           const store = transaction.objectStore('boxes');
           const getAllRequest = store.getAll();
-  
+
           getAllRequest.onsuccess = () => {
             const allData = getAllRequest.result;
             const newBoxesState = {
@@ -259,33 +283,30 @@ export default function Home() {
               boxFour: [],
               boxFive: [],
             };
-  
+
             allData.forEach((item) => {
               const { boxName, ...rest } = item;
               if (newBoxesState[boxName]) {
                 newBoxesState[boxName].push(rest);
               }
             });
-  
+
             setBoxes(newBoxesState);
           };
           getAllRequest.onerror = () => {
-            console.error('Błąd podczas odczytywania danych z magazynu obiektów `boxes`.');
+            console.error('Error reading data from the object store `boxes`.');
           };
         } else {
-          console.error("Magazyn obiektów 'boxes' nie istnieje.");
+          console.error("Object store 'boxes' does not exist.");
         }
       };
-  
+
       request.onerror = (event) => {
         console.error("IndexedDB error:", event.target.error);
       };
     }
-  
-    readAndDisplayAllData();
+      readAndDisplayAllData();
   }, []);
-  
-  
 
   return (
     <div className="container-home">
