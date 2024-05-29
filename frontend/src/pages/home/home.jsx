@@ -5,6 +5,7 @@ import EmptyFlashcard from "../../components/home/card/empty-flashcard";
 import Boxes from "../../components/home/box/box";
 import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
+import Popup from "../../components/popup/popup";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 
@@ -33,6 +34,10 @@ export default function Home() {
   //sound
   const dingSoundRef = useRef(new Audio(dingSound));
   const dongSoundRef = useRef(new Audio(dongSound));
+
+  //popup
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupEmotion, setPopupEmotion] = useState("");
 
   function check(userWord, word, id) {
     if (userWord === word) {
@@ -175,44 +180,64 @@ export default function Home() {
     let db;
     // Increment the version number to force onupgradeneeded to fire
     const request = indexedDB.open("MyTestDatabase", 2);
-  
+
     request.onupgradeneeded = (event) => {
-      console.log('onupgradeneeded event fired');
+      console.log("onupgradeneeded event fired");
       db = event.target.result;
-      console.log('Upgrading database to version', db.version);
-      if (!db.objectStoreNames.contains('boxes')) {
-        db.createObjectStore('boxes', { keyPath: 'id' });
+      console.log("Upgrading database to version", db.version);
+      if (!db.objectStoreNames.contains("boxes")) {
+        db.createObjectStore("boxes", { keyPath: "id" });
         console.log('Object store "boxes" created.');
       } else {
         console.log('Object store "boxes" already exists.');
       }
     };
-  
+
     request.onsuccess = (event) => {
-      console.log('onsuccess event fired');
+      console.log("onsuccess event fired");
       db = event.target.result;
-      console.log('Database opened successfully');
-      if (db.objectStoreNames.contains('boxes')) {
-        const transaction = db.transaction(['boxes'], 'readwrite');
-        const store = transaction.objectStore('boxes');
-  
+      console.log("Database opened successfully");
+      if (db.objectStoreNames.contains("boxes")) {
+        const transaction = db.transaction(["boxes"], "readwrite");
+        const store = transaction.objectStore("boxes");
+
         const clearRequest = store.clear();
+
         clearRequest.onsuccess = () => {
           console.log(`Object store 'boxes' has been cleared.`);
-  
+
+          // Array to hold all the add requests
+          const addRequests = [];
+
           for (const boxName in boxes) {
             boxes[boxName].forEach((item) => {
               const itemWithBox = { ...item, boxName };
-              const addRequest = store.add(itemWithBox);
-              addRequest.onsuccess = () => {
-                console.log(`Record from box '${boxName}' has been added to the object store.`);
-              };
-              addRequest.onerror = () => {
-                console.error(`Error adding record from box '${boxName}' to the object store.`);
-              };
+              const addRequest = new Promise((resolve, reject) => {
+                const request = store.add(itemWithBox);
+                request.onsuccess = () => {
+                  resolve();
+                };
+                request.onerror = () => {
+                  reject(
+                    `Error adding record from box '${boxName}' to the object store.`
+                  );
+                };
+              });
+              addRequests.push(addRequest);
             });
           }
+
+          // Wait for all add requests to complete
+          Promise.all(addRequests)
+            .then(() => {
+              setPopupEmotion('positive');
+              setPopupMessage('Words successfully saved');
+            })
+            .catch((error) => {
+              console.error("An error occurred:", error);
+            });
         };
+
         clearRequest.onerror = () => {
           console.error(`Error clearing the object store 'boxes'.`);
         };
@@ -220,12 +245,11 @@ export default function Home() {
         console.error("Object store 'boxes' does not exist.");
       }
     };
-  
+
     request.onerror = (event) => {
       console.error("IndexedDB error:", event.target.error);
     };
   }
-  
 
   function selectRandomWord(item) {
     setBoxes((prevBoxes) => {
@@ -256,11 +280,11 @@ export default function Home() {
       const request = indexedDB.open("MyTestDatabase", 2);
 
       request.onupgradeneeded = (event) => {
-        console.log('onupgradeneeded event fired');
+        console.log("onupgradeneeded event fired");
         db = event.target.result;
-        console.log('Upgrading database to version', db.version);
-        if (!db.objectStoreNames.contains('boxes')) {
-          db.createObjectStore('boxes', { keyPath: 'id' });
+        console.log("Upgrading database to version", db.version);
+        if (!db.objectStoreNames.contains("boxes")) {
+          db.createObjectStore("boxes", { keyPath: "id" });
           console.log('Object store "boxes" created.');
         } else {
           console.log('Object store "boxes" already exists.');
@@ -269,9 +293,9 @@ export default function Home() {
 
       request.onsuccess = (event) => {
         const db = event.target.result;
-        if (db.objectStoreNames.contains('boxes')) {
-          const transaction = db.transaction(['boxes'], 'readonly');
-          const store = transaction.objectStore('boxes');
+        if (db.objectStoreNames.contains("boxes")) {
+          const transaction = db.transaction(["boxes"], "readonly");
+          const store = transaction.objectStore("boxes");
           const getAllRequest = store.getAll();
 
           getAllRequest.onsuccess = () => {
@@ -294,7 +318,7 @@ export default function Home() {
             setBoxes(newBoxesState);
           };
           getAllRequest.onerror = () => {
-            console.error('Error reading data from the object store `boxes`.');
+            console.error("Error reading data from the object store `boxes`.");
           };
         } else {
           console.error("Object store 'boxes' does not exist.");
@@ -305,7 +329,7 @@ export default function Home() {
         console.error("IndexedDB error:", event.target.error);
       };
     }
-      readAndDisplayAllData();
+    readAndDisplayAllData();
   }, []);
 
   return (
@@ -334,6 +358,13 @@ export default function Home() {
         addWords={addWords}
         brunWords={brunWords}
       />
+      {popupMessage && (
+        <Popup
+          message={popupMessage}
+          emotion={popupEmotion}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
     </div>
   );
 }
