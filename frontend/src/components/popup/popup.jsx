@@ -6,15 +6,18 @@ export default function Popup({ message, emotion, onClose }){
     useEffect(() => {
         const dialogElement = dialogRef.current;
         if (dialogElement) {
-          dialogElement.show(); // Użycie show zamiast showModal
+          dialogElement.show();
         }
   
-      const timer = setTimeout(() => {
-        if (dialogRef.current) {
-          dialogRef.current.close();
-          onClose();
-        }
-      }, 3000);
+        const timer = setTimeout(() => {
+          if (dialogElement) {
+            dialogElement.classList.add('closing');
+            setTimeout(() => {
+              dialogElement.close();
+              onClose();
+            }, 250);
+          }
+        }, 3000);
   
       return () => clearTimeout(timer);
     }, [onClose]);

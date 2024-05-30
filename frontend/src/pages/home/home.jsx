@@ -176,7 +176,7 @@ export default function Home() {
   }
 
   function brunWords() {
-    console.log(boxes[activeBox][1].id);
+    // console.log(boxes[activeBox][1].id);
     let db;
     // Increment the version number to force onupgradeneeded to fire
     const request = indexedDB.open("MyTestDatabase", 2);
