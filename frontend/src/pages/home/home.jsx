@@ -6,6 +6,7 @@ import Boxes from "../../components/home/box/box";
 import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
 import Popup from "../../components/popup/popup";
+import Progressbar from "../../components/home/bar/bar";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 
@@ -230,8 +231,8 @@ export default function Home() {
           // Wait for all add requests to complete
           Promise.all(addRequests)
             .then(() => {
-              setPopupEmotion('positive');
-              setPopupMessage('Words successfully saved');
+              setPopupEmotion("positive");
+              setPopupMessage("Words successfully saved");
             })
             .catch((error) => {
               console.error("An error occurred:", error);
@@ -334,37 +335,43 @@ export default function Home() {
 
   return (
     <div className="container-home">
-      {randomWord ? (
-        <Flashcard
-          data={randomWord}
-          check={check}
-          className={className}
-          showWrongAnswer={showWrongAnswer}
+      <div className="home-left">
+        {randomWord ? (
+          <Flashcard
+            data={randomWord}
+            check={check}
+            className={className}
+            showWrongAnswer={showWrongAnswer}
+            activeBox={activeBox}
+            handleSetWordFlash={handleSetWordFlash}
+            handleSetwordId={handleSetwordId}
+            changeCorrectStatus={changeCorrectStatus}
+            correctWordRef={correctWordRef}
+            correctSecondWordRef={correctSecondWordRef}
+            userWordRef={userWordRef}
+          />
+        ) : (
+          <EmptyFlashcard />
+        )}
+        <Boxes
+          boxes={boxes}
           activeBox={activeBox}
-          handleSetWordFlash={handleSetWordFlash}
-          handleSetwordId={handleSetwordId}
-          changeCorrectStatus={changeCorrectStatus}
-          correctWordRef={correctWordRef}
-          correctSecondWordRef={correctSecondWordRef}
-          userWordRef={userWordRef}
+          handleSetBox={handleSetBox}
+          addWords={addWords}
+          brunWords={brunWords}
         />
-      ) : (
-        <EmptyFlashcard />
-      )}
-      <Boxes
-        boxes={boxes}
-        activeBox={activeBox}
-        handleSetBox={handleSetBox}
-        addWords={addWords}
-        brunWords={brunWords}
-      />
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
-        />
-      )}
+        {popupMessage && (
+          <Popup
+            message={popupMessage}
+            emotion={popupEmotion}
+            onClose={() => setPopupMessage("")}
+          />
+        )}
+      </div>
+      <div className="home-right">
+        <Progressbar />
+        <Progressbar />
+      </div>
     </div>
   );
 }
