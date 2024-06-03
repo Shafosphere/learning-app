@@ -7,14 +7,26 @@
     }
   }
   
-  body, html, .wrapper {
-    width: 100%;
-    height: 100%;
+  .container-bar{
+    display: flex;
+    flex-direction: row;
   }
-  
+  .bar-text{
+    margin-left: 2.5rem;
+    padding-bottom: 1.5rem;
+    height: 500px;
+
+    display: flex;
+    justify-content: end;
+    writing-mode: vertical-rl;
+
+    text-transform: uppercase;
+    font-weight: 900;
+    color: var(--headline);
+    font-size: 25px;
+  }
   .wrapper {
     position: relative;
-    background: #e7f0f7;
   }
   
   .progressbar {
@@ -26,9 +38,12 @@
     left: 0;
     margin: auto;
     width: 30px;
-    height: 400px;
+    height: 500px;
   }
-  
+  .progresstext{
+    position: absolute;
+  }
+
   .progressbar::before,
   .progressbar::after {
     content: '';
@@ -40,10 +55,10 @@
     width: 100%;
     height: 100%;
     border-radius: 15px;
-    background-image: linear-gradient(180deg, #e91e63 0%, #e91e63 20%, #03a9f4 20%, #03a9f4 40%, #8bc34a 40%, #8bc34a 60%, #ffeb3b 60%, #ffeb3b 80%, #ff5722 80%, #ff5722 100%);
+    background-image: linear-gradient(var(--barGradient));
     background-position: 0 0;
     background-repeat: repeat-y;
-    animation: movebar 5s linear infinite;
+    /* animation: movebar 5s linear infinite; */
   }
   
   .progressbar::before {

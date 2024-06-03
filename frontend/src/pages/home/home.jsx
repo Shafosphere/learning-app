@@ -40,6 +40,12 @@ export default function Home() {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupEmotion, setPopupEmotion] = useState("");
 
+  //progressBar
+  const [daily, setDaily] = useState("30");
+  const [dailytext, setDailyText] = useState("DAILY PROGRESS");
+  const [totalProgress, setTotal] = useState("10");
+  const [totalTextProgress, setTotalProgress] = useState("Total Progress");
+
   function check(userWord, word, id) {
     if (userWord === word) {
       setClass("correct");
@@ -369,8 +375,8 @@ export default function Home() {
         )}
       </div>
       <div className="home-right">
-        <Progressbar />
-        <Progressbar />
+        <Progressbar procent={daily} text={dailytext} />
+        <Progressbar procent={totalProgress} text={totalTextProgress} />
       </div>
     </div>
   );
