@@ -8,7 +8,11 @@
   width: 80rem;
   display: flex;
   background-color: var(--secondBackground);
-  flex-direction: row;
+  flex-direction: column;
+}
+.switches{
+  margin: 2rem;
+  width: 20rem;
 }
 .switch {
   position: relative;
@@ -16,7 +20,6 @@
   width: 60px;
   height: 34px;
 }
-
 .switch-container {
   display: flex;
   justify-content: space-between;
