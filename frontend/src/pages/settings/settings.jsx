@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { SettingsContext } from "./properties";
 
 export default function Settings() {
-  const { procent, setProcent, dailyGoal, setDailyGoal } = useContext(SettingsContext);
+  const { procent, setProcent, dailyGoal, setDailyGoal, lastID, setLastID} = useContext(SettingsContext);
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
   const [lastResetDate, setLastResetDate] = useState(() => {
     const savedDate = localStorage.getItem("lastResetDate");
@@ -16,18 +16,15 @@ export default function Settings() {
 
   function saveSettings(){
     setDailyGoal(newDailyGoal);
-    setProcent(20);
-  }
-
-  function calculatePercent(){
-    //tu trzeba jakos zliczać % zrobionych słówk w ciągu dnia
   }
 
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
     if (today !== lastResetDate) {
-      setProcent(0); // Resetujemy procent nauczenia
-      setLastResetDate(today); // Ustawiamy nową datę resetu
+      setProcent(0);
+      setLastResetDate(today);
+      const wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
+      setLastID(wordIds[wordIds.length - 1] || 0);
     }
   }, [lastResetDate]);
 

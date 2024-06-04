@@ -143,6 +143,7 @@ export default function Flashcard({
                 <div className="label-container">
                   <label>{word}</label>
                   <input
+                    className="flashcard-input"
                     type="text"
                     style={{ "--wordLength": calculateAdjustedLength(word) }}
                     maxLength={word.length}
@@ -154,6 +155,7 @@ export default function Flashcard({
                 <div className="label-container">
                   <label>{secondWord}</label>
                   <input
+                    className="flashcard-input"
                     type="text"
                     style={{
                       "--wordLength": calculateAdjustedLength(secondWord),
@@ -167,6 +169,7 @@ export default function Flashcard({
               </div>
               <span>{secondWord}</span>
               <input
+                className="flashcard-input"
                 type="text"
                 style={{ "--wordLength": calculateAdjustedLength(word) }}
                 maxLength={word.length}

@@ -8,7 +8,8 @@ import dongSound from "../../data/dong.wav";
 import Popup from "../../components/popup/popup";
 import Progressbar from "../../components/home/bar/bar";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useContext } from "react";
+import { SettingsContext } from "../settings/properties";
 
 export default function Home() {
   const [randomWord, setRandom] = useState(null); //selected word
@@ -45,6 +46,7 @@ export default function Home() {
   const [dailytext, setDailyText] = useState("DAILY PROGRESS");
   const [totalProgress, setTotal] = useState("10");
   const [totalTextProgress, setTotalProgress] = useState("Total Progress");
+  const { calculatePercent } = useContext(SettingsContext); // Dodaj kontekst
 
   function check(userWord, word, id) {
     if (userWord === word) {
@@ -102,6 +104,7 @@ export default function Home() {
       if (!wordIds.includes(newid)) {
         wordIds.push(newid);
         localStorage.setItem("wordIds", JSON.stringify(wordIds));
+        calculatePercent();
       }
 
       setBoxes((prevBoxes) => {

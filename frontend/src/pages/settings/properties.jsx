@@ -13,6 +13,15 @@ export const SettingsProvider = ({ children }) => {
     return savedDailyGoal !== null ? JSON.parse(savedDailyGoal) : 20;
   });
 
+  const [lastID, setLastID] = useState(() => {
+    const savedLastID = localStorage.getItem("lastID");
+    return savedLastID !== null ? JSON.parse(savedLastID) : null;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('lastID', JSON.stringify(lastID));
+  }, [lastID]);
+
   useEffect(() => {
     localStorage.setItem('procent', JSON.stringify(procent));
   }, [procent]);
@@ -21,6 +30,21 @@ export const SettingsProvider = ({ children }) => {
     localStorage.setItem('dailyGoal', JSON.stringify(dailyGoal));
   }, [dailyGoal]);
 
+  const calculatePercent = () => {
+    const wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
+    const startIndex = wordIds.indexOf(lastID);
+
+    if (startIndex !== -1) {
+      const newArray = wordIds.filter((_, index) => index > startIndex);
+      console.log(newArray.length);
+      const percentComplete = (((newArray.length)*100)/dailyGoal)
+      const roundedPercentComplete = percentComplete.toFixed(2);
+      setProcent(roundedPercentComplete);
+    } else {
+      console.log("Element not found");
+    }
+  };
+
   return (
     <SettingsContext.Provider
       value={{
@@ -28,6 +52,9 @@ export const SettingsProvider = ({ children }) => {
         setProcent,
         dailyGoal,
         setDailyGoal,
+        lastID,
+        setLastID,
+        calculatePercent,
       }}
     >
       {children}

@@ -45,7 +45,7 @@
   align-items: center;
   justify-content: center;
 }
-input {
+.flashcard-input {
   border: none;
   width: calc(1ch * var(--wordLength));
   background: repeating-linear-gradient(
@@ -58,7 +58,7 @@ input {
   color: var(--paragraph);
   text-align: center;
 }
-input:focus {
+.flashcard-input:focus {
   outline: none;
   color: var(--paragraph);
 }
