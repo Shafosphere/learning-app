@@ -42,10 +42,8 @@ export default function Home() {
   const [popupEmotion, setPopupEmotion] = useState("");
 
   //progressBar
-  const { calculatePercent } = useContext(SettingsContext);
-  const { calculateTotalPercent } = useContext(SettingsContext);
-  const { procent } = useContext(SettingsContext);
-  const { totalPercent } = useContext(SettingsContext);
+  const { calculatePercent, calculateTotalPercent, procent, totalPercent } =
+    useContext(SettingsContext);
 
   function check(userWord, word, id) {
     if (userWord === word) {

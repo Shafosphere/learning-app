@@ -1,21 +1,31 @@
 import "./settings.css";
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from "react";
 import { SettingsContext } from "./properties";
+import Popup from "../../components/popup/popup";
 
 export default function Settings() {
-  const { procent, setProcent, dailyGoal, setDailyGoal, lastID, setLastID} = useContext(SettingsContext);
+  const { setProcent, dailyGoal, setDailyGoal, setLastID } =
+    useContext(SettingsContext);
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
   const [lastResetDate, setLastResetDate] = useState(() => {
     const savedDate = localStorage.getItem("lastResetDate");
-    return savedDate !== null ? JSON.parse(savedDate) : new Date().toISOString().slice(0, 10);
+    return savedDate !== null
+      ? JSON.parse(savedDate)
+      : new Date().toISOString().slice(0, 10);
   });
 
-  function handleDailyGoalChange(e){
-    setNewDailyGoal(e.target.value);
-  };
+  //popup
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupEmotion, setPopupEmotion] = useState("");
 
-  function saveSettings(){
+  function handleDailyGoalChange(e) {
+    setNewDailyGoal(e.target.value);
+  }
+
+  function saveSettings() {
     setDailyGoal(newDailyGoal);
+    setPopupEmotion("positive");
+    setPopupMessage("settings saved");
   }
 
   useEffect(() => {
@@ -26,47 +36,54 @@ export default function Settings() {
       const wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
       setLastID(wordIds[wordIds.length - 1] || 0);
     }
-  }, [lastResetDate]);
+  }, [lastResetDate, setProcent, setLastID]);
 
   useEffect(() => {
-    localStorage.setItem('lastResetDate', JSON.stringify(lastResetDate));
+    localStorage.setItem("lastResetDate", JSON.stringify(lastResetDate));
   }, [lastResetDate]);
 
   return (
-    <>
-      <div className="container-settings">
-        <div className="window-settings">
-          <div className="switches">
-
-            <div className="switch-container">
-              <span className="switch-text">Sounds</span>
-              <label class="switch">
-                <input type="checkbox" />
-                <span class="slider round"></span>
-              </label>
-            </div>
-
-
-            <div className="switch-container">
-              <span className="switch-text">B2</span>
-              <label class="switch">
-                <input type="checkbox" />
-                <span class="slider round"></span>
-              </label>
-              <span className="switch-text">C1</span>
-              <label class="switch">
-                <input type="checkbox" />
-                <span class="slider round"></span>
-              </label>
-            </div>
-
+    <div className="container-settings">
+      <div className="window-settings">
+        <div className="switches">
+          <div className="switch-container">
+            <span className="switch-text">Sounds</span>
+            <label className="switch">
+              <input type="checkbox" />
+              <span className="slider round"></span>
+            </label>
           </div>
-          <div className="inputs">
-          <input type="number" value={newDailyGoal} onChange={handleDailyGoalChange} />
+          <div className="switch-container">
+            <span className="switch-text">B2</span>
+            <label className="switch">
+              <input type="checkbox" />
+              <span className="slider round"></span>
+            </label>
+            <span className="switch-text">C1</span>
+            <label className="switch">
+              <input type="checkbox" />
+              <span className="slider round"></span>
+            </label>
           </div>
-          <button className="button" onClick={saveSettings}>Save</button>
         </div>
+        <div className="inputs">
+          <input
+            type="number"
+            value={newDailyGoal}
+            onChange={handleDailyGoalChange}
+          />
+        </div>
+        <button className="button" onClick={saveSettings}>
+          Save
+        </button>
       </div>
-    </>
+      {popupMessage && (
+          <Popup
+            message={popupMessage}
+            emotion={popupEmotion}
+            onClose={() => setPopupMessage("")}
+          />
+        )}
+    </div>
   );
 }
