@@ -42,11 +42,10 @@ export default function Home() {
   const [popupEmotion, setPopupEmotion] = useState("");
 
   //progressBar
-  const [daily, setDaily] = useState("30");
-  const [dailytext, setDailyText] = useState("DAILY PROGRESS");
-  const [totalProgress, setTotal] = useState("10");
-  const [totalTextProgress, setTotalProgress] = useState("Total Progress");
-  const { calculatePercent } = useContext(SettingsContext); // Dodaj kontekst
+  const { calculatePercent } = useContext(SettingsContext);
+  const { calculateTotalPercent } = useContext(SettingsContext);
+  const { procent } = useContext(SettingsContext);
+  const { totalPercent } = useContext(SettingsContext);
 
   function check(userWord, word, id) {
     if (userWord === word) {
@@ -105,6 +104,7 @@ export default function Home() {
         wordIds.push(newid);
         localStorage.setItem("wordIds", JSON.stringify(wordIds));
         calculatePercent();
+        calculateTotalPercent();
       }
 
       setBoxes((prevBoxes) => {
@@ -378,8 +378,8 @@ export default function Home() {
         )}
       </div>
       <div className="home-right">
-        <Progressbar procent={daily} text={dailytext} />
-        <Progressbar procent={totalProgress} text={totalTextProgress} />
+        <Progressbar procent={procent} text={"DAILY PROGRESS"} />
+        <Progressbar procent={totalPercent} text={"Total Progress"} />
       </div>
     </div>
   );

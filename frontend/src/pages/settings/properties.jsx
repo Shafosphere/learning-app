@@ -8,6 +8,11 @@ export const SettingsProvider = ({ children }) => {
     return savedProcent !== null ? JSON.parse(savedProcent) : 0;
   });
 
+  const [totalPercent, setTotalPercent] = useState(() => {
+    const savedTotalPercent = localStorage.getItem("totalPercent");
+    return savedTotalPercent !== null ? JSON.parse(savedTotalPercent) : 0;
+  });
+
   const [dailyGoal, setDailyGoal] = useState(() => {
     const savedDailyGoal = localStorage.getItem("dailyGoal");
     return savedDailyGoal !== null ? JSON.parse(savedDailyGoal) : 20;
@@ -27,6 +32,10 @@ export const SettingsProvider = ({ children }) => {
   }, [procent]);
 
   useEffect(() => {
+    localStorage.setItem('totalPercent', JSON.stringify(totalPercent));
+  }, [totalPercent]);
+
+  useEffect(() => {
     localStorage.setItem('dailyGoal', JSON.stringify(dailyGoal));
   }, [dailyGoal]);
 
@@ -37,12 +46,19 @@ export const SettingsProvider = ({ children }) => {
     if (startIndex !== -1) {
       const newArray = wordIds.filter((_, index) => index > startIndex);
       console.log(newArray.length);
-      const percentComplete = (((newArray.length)*100)/dailyGoal)
-      const roundedPercentComplete = percentComplete.toFixed(2);
+      const percentComplete = (newArray.length * 100) / dailyGoal;
+      const roundedPercentComplete = parseFloat(percentComplete.toFixed(2));
       setProcent(roundedPercentComplete);
     } else {
       console.log("Element not found");
     }
+  };
+
+  const calculateTotalPercent = () => {
+    const wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
+    const percentComplete = (wordIds.length * 100) / 2974;
+    const roundedPercentComplete = parseFloat(percentComplete.toFixed(2));
+    setTotalPercent(roundedPercentComplete);
   };
 
   return (
@@ -55,6 +71,9 @@ export const SettingsProvider = ({ children }) => {
         lastID,
         setLastID,
         calculatePercent,
+        calculateTotalPercent,
+        totalPercent,
+        setTotalPercent,
       }}
     >
       {children}
