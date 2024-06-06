@@ -78,12 +78,12 @@ export default function Settings() {
         </button>
       </div>
       {popupMessage && (
-          <Popup
-            message={popupMessage}
-            emotion={popupEmotion}
-            onClose={() => setPopupMessage("")}
-          />
-        )}
+        <Popup
+          message={popupMessage}
+          emotion={popupEmotion}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
     </div>
   );
 }

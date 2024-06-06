@@ -10,7 +10,7 @@
   background-color: var(--secondBackground);
   flex-direction: column;
 }
-.switches{
+.switches {
   margin: 2rem;
   width: 20rem;
 }

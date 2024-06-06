@@ -24,19 +24,19 @@ export const SettingsProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('lastID', JSON.stringify(lastID));
+    localStorage.setItem("lastID", JSON.stringify(lastID));
   }, [lastID]);
 
   useEffect(() => {
-    localStorage.setItem('procent', JSON.stringify(procent));
+    localStorage.setItem("procent", JSON.stringify(procent));
   }, [procent]);
 
   useEffect(() => {
-    localStorage.setItem('totalPercent', JSON.stringify(totalPercent));
+    localStorage.setItem("totalPercent", JSON.stringify(totalPercent));
   }, [totalPercent]);
 
   useEffect(() => {
-    localStorage.setItem('dailyGoal', JSON.stringify(dailyGoal));
+    localStorage.setItem("dailyGoal", JSON.stringify(dailyGoal));
   }, [dailyGoal]);
 
   const calculatePercent = () => {
