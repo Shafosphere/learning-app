@@ -4,15 +4,9 @@ import { SettingsContext } from "./properties";
 import Popup from "../../components/popup/popup";
 
 export default function Settings() {
-  const { setProcent, dailyGoal, setDailyGoal, setLastID } =
-    useContext(SettingsContext);
+  const { dailyGoal, setDailyGoal, resetDateIfNeeded } = useContext(SettingsContext);
+
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
-  const [lastResetDate, setLastResetDate] = useState(() => {
-    const savedDate = localStorage.getItem("lastResetDate");
-    return savedDate !== null
-      ? JSON.parse(savedDate)
-      : new Date().toISOString().slice(0, 10);
-  });
 
   //popup
   const [popupMessage, setPopupMessage] = useState("");
@@ -29,18 +23,9 @@ export default function Settings() {
   }
 
   useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    if (today !== lastResetDate) {
-      setProcent(0);
-      setLastResetDate(today);
-      const wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
-      setLastID(wordIds[wordIds.length - 1] || 0);
-    }
-  }, [lastResetDate, setProcent, setLastID]);
+    resetDateIfNeeded();
+  }, [resetDateIfNeeded]);
 
-  useEffect(() => {
-    localStorage.setItem("lastResetDate", JSON.stringify(lastResetDate));
-  }, [lastResetDate]);
 
   return (
     <div className="container-settings">

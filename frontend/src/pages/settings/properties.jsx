@@ -23,6 +23,31 @@ export const SettingsProvider = ({ children }) => {
     return savedLastID !== null ? JSON.parse(savedLastID) : null;
   });
 
+  const [lastResetDate, setLastResetDate] = useState(() => {
+    const savedDate = localStorage.getItem("lastResetDate");
+    return savedDate !== null
+      ? JSON.parse(savedDate)
+      : new Date().toISOString().slice(0, 10);
+  });
+
+  const resetDateIfNeeded = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    if (today !== lastResetDate) {
+      setProcent(0);
+      setLastResetDate(today);
+      const wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
+      setLastID(wordIds[wordIds.length - 1] || 0);
+    }
+  };
+  
+  useEffect(() => {
+    resetDateIfNeeded();
+  }, [lastResetDate]);
+
+  useEffect(() => {
+    localStorage.setItem("lastResetDate", JSON.stringify(lastResetDate));
+  }, [lastResetDate]);
+
   useEffect(() => {
     localStorage.setItem("lastID", JSON.stringify(lastID));
   }, [lastID]);
@@ -74,6 +99,9 @@ export const SettingsProvider = ({ children }) => {
         calculateTotalPercent,
         totalPercent,
         setTotalPercent,
+        lastResetDate,
+        setLastResetDate,
+        resetDateIfNeeded,
       }}
     >
       {children}
