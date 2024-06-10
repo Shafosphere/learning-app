@@ -1,18 +1,43 @@
 .container-settings {
   width: 100%;
   min-height: 100vh;
-  padding: 3rem 10rem 0rem 20rem;
+  padding: 3rem 0rem 0rem 21rem;
 }
 .window-settings {
   min-height: 10rem;
   width: 80rem;
   display: flex;
   background-color: var(--secondBackground);
+  flex-direction: row;
+  gap: 2rem;
+  padding: 2rem;
+}
+.settings-left{
+  display: flex;
   flex-direction: column;
+  width: 50%;
+  height: auto;
+
+}
+.settings-right{
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  height: auto;
+}
+.explanation{
+  height: 100%;
+  width: 100%;
+  border: solid 2px rgb(233, 233, 233);
+  padding: 1rem;
+
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--paragraph, #00214d);
 }
 .switches {
-  margin: 2rem;
-  width: 20rem;
+  width: 100%;
+  /* margin-bottom: 1rem; */
 }
 .switch {
   position: relative;
@@ -25,10 +50,9 @@
   justify-content: space-between;
   flex-direction: row;
   min-width: 10rem;
-  gap: 1rem;
   border-bottom: solid 1px rgb(233, 233, 233);
-  padding-bottom: 0.5rem;
-  margin-top: 0.5rem;
+  padding: 0.5rem;
+
 }
 .switch-text {
   display: flex;
@@ -85,4 +109,29 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+.button-container-sett{
+  display: flex;
+  justify-content: right;
+}
+.hide-span-sett{
+  display: none;
+}
+
+.onMouse:hover{
+  cursor: pointer;
+  background-color: var(--background);
+}
+.dailyGoal{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 1rem 0.5rem 1rem 0.5rem;
+  text-transform: capitalize;
+}
+.dailyGoal input{
+  border: none;
+  font-size: 15px;
+  padding: 0.3rem;
+  background-color: var(--background);
 }

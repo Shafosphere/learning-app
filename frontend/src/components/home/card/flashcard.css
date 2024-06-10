@@ -100,7 +100,7 @@
   position: absolute;
   font-size: 4ch;
   color: rgba(0, 0, 0, 0.1);
-  pointer-events: none; /* Dodaj tę linię */
+  pointer-events: none;
   padding-left: 0.3rem;
 }
 .label-container input{
