@@ -2,7 +2,8 @@ import "./settings.css";
 import React, { useContext, useState, useEffect } from "react";
 import { SettingsContext } from "./properties";
 import Popup from "../../components/popup/popup";
-
+import polandFlag from "../../data/poland.png";
+import usaFlag from "../../data/united-states.png";
 export default function Settings() {
   const { dailyGoal, setDailyGoal, resetDateIfNeeded } =
     useContext(SettingsContext);
@@ -34,12 +35,24 @@ export default function Settings() {
     <div className="container-settings">
       <div className="window-settings">
         <div className="settings-left">
+          {/* switches */}
           <div className="switches">
             <div
               className="switch-container onMouse"
               onMouseEnter={() => setSpan("Sounds")}
             >
               <span className="switch-text">Sounds</span>
+              <label className="switch">
+                <input type="checkbox" />
+                <span className="slider round"></span>
+              </label>
+            </div>
+
+            <div
+              className="switch-container onMouse"
+              onMouseEnter={() => setSpan("darkmode")}
+            >
+              <span className="switch-text">Dark Mode</span>
               <label className="switch">
                 <input type="checkbox" />
                 <span className="slider round"></span>
@@ -57,6 +70,50 @@ export default function Settings() {
               </label>
             </div>
           </div>
+
+          {/* language */}
+          <div className="container-language onMouse"
+            onMouseEnter={() => setSpan("language")}
+          >
+            <span className="switch-text">language</span>
+            <div className="flags">
+              <img alt="box" src={polandFlag} />
+              <img alt="box" src={usaFlag} />
+            </div>
+          </div>
+
+          {/* reset */}
+          <div
+            className="container-resets onMouse"
+            onMouseEnter={() => setSpan("resetsbuttons")}
+          >
+            <span className="switch-text">reset buttons</span>
+            <div className="resets-buttons">
+              <button
+                style={{ "--buttonColor": "var(--tertiary)" }}
+                className="button"
+                onClick={saveSettings}
+              >
+                boxes
+              </button>
+              <button
+                style={{ "--buttonColor": "var(--tertiary)" }}
+                className="button"
+                onClick={saveSettings}
+              >
+                progress
+              </button>
+              <button
+                style={{ "--buttonColor": "var(--tertiary)" }}
+                className="button"
+                onClick={saveSettings}
+              >
+                everything
+              </button>
+            </div>
+          </div>
+
+          {/* dailygoal */}
           <div
             className="dailyGoal onMouse"
             onMouseEnter={() => setSpan("DailyGoal")}
@@ -68,9 +125,11 @@ export default function Settings() {
               onChange={handleDailyGoalChange}
             />
           </div>
-          <div className="button-container-sett">
+
+          {/* save button */}
+          <div className="button-container-save">
             <button
-              style={{ "--buttonColor": "var(--tertiary)" }}
+              style={{ "--buttonColor": "var(--secondary)" }}
               className="button"
               onClick={saveSettings}
             >
@@ -86,16 +145,45 @@ export default function Settings() {
             >
               Turn off sound effects.
             </span>
+
             <span className={`${activeSpan === "C1" ? "" : "hide-span-sett"}`}>
               Adds a C1 word pool (another 2,000 words) and increases the total
               progression.
             </span>
+
             <span
               className={`${
                 activeSpan === "DailyGoal" ? "" : "hide-span-sett"
               }`}
             >
               Change daily progress.
+            </span>
+
+            <span
+              className={`${activeSpan === "darkmode" ? "" : "hide-span-sett"}`}
+            >
+              Turn on dark mode.
+            </span>
+
+            <span
+              className={`${
+                activeSpan === "resetsbuttons" ? "" : "hide-span-sett"
+              }`}
+            >
+              <p>Reset buttons:</p>
+              <ul class="reset-list">
+                <li> - boxes - deletes words from boxes</li>
+                <li> - progress - resets progress to zero</li>
+                <li>- all - resets everything to the initial state</li>
+              </ul>
+            </span>
+
+            <span
+              className={`${
+                activeSpan === "language" ? "" : "hide-span-sett"
+              }`}
+            >
+              change the language of the website
             </span>
           </div>
         </div>
