@@ -30,6 +30,11 @@ export const SettingsProvider = ({ children }) => {
       : new Date().toISOString().slice(0, 10);
   });
 
+  const[themeMode, setTheme] = useState(() =>{
+    const savedTheme = localStorage.getItem("themeMode");
+    return savedTheme !== null ? JSON.parse(savedTheme) : null;
+  });
+
   const resetDateIfNeeded = () => {
     const today = new Date().toISOString().slice(0, 10);
     if (today !== lastResetDate) {
@@ -40,6 +45,16 @@ export const SettingsProvider = ({ children }) => {
     }
   };
   
+  const toggleTheme = () => {
+    const newTheme = themeMode === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  useEffect(() => {
+    document.body.className = themeMode === 'light' ? '' : 'dark';
+  }, [themeMode]);
+
   useEffect(() => {
     resetDateIfNeeded();
   }, [lastResetDate]);
@@ -102,6 +117,8 @@ export const SettingsProvider = ({ children }) => {
         lastResetDate,
         setLastResetDate,
         resetDateIfNeeded,
+        themeMode,
+        toggleTheme,
       }}
     >
       {children}

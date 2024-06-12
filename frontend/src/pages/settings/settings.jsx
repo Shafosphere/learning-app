@@ -5,7 +5,7 @@ import Popup from "../../components/popup/popup";
 import polandFlag from "../../data/poland.png";
 import usaFlag from "../../data/united-states.png";
 export default function Settings() {
-  const { dailyGoal, setDailyGoal, resetDateIfNeeded } =
+  const { dailyGoal, setDailyGoal, resetDateIfNeeded, themeMode, toggleTheme} =
     useContext(SettingsContext);
 
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
@@ -54,7 +54,7 @@ export default function Settings() {
             >
               <span className="switch-text">Dark Mode</span>
               <label className="switch">
-                <input type="checkbox" />
+                <input onClick={toggleTheme} type="checkbox" />
                 <span className="slider round"></span>
               </label>
             </div>
