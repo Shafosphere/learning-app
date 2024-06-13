@@ -7,10 +7,12 @@
   min-height: 10rem;
   width: 80rem;
   display: flex;
-  background-color: var(--secondBackground);
+  background-color: var(--background);
+  color: var(--headline);
   flex-direction: row;
   gap: 2rem;
   padding: 2rem;
+  border: 2px solid var(--border);
 }
 .settings-left{
   display: flex;
@@ -28,12 +30,12 @@
 .explanation{
   height: 100%;
   width: 100%;
-  border: solid 2px rgb(233, 233, 233);
+  border: solid 2px var(--border);
   padding: 1rem;
 
   text-transform: uppercase;
   font-weight: 700;
-  color: var(--paragraph, #00214d);
+  color: var(--headline);
 }
 .switches {
   width: 100%;
@@ -50,7 +52,7 @@
   justify-content: space-between;
   flex-direction: row;
   min-width: 10rem;
-  border-bottom: solid 1px rgb(233, 233, 233);
+  border-bottom: solid 1px var(--border);
   padding: 0.5rem;
 
 }
@@ -135,6 +137,8 @@ input:checked + .slider:before {
   font-size: 15px;
   padding: 0.3rem;
   background-color: var(--background);
+  color: var(--paragraph, #00214d);
+  border: solid 1px var(--border);
 }
 .container-resets{
   display: flex;
@@ -142,7 +146,7 @@ input:checked + .slider:before {
   padding: 1rem 0.5rem 1rem 0.5rem;
   gap: 0.4rem;
   text-transform: capitalize;
-  border-bottom: solid 1px rgb(233, 233, 233);
+  border-bottom: solid 1px var(--border);
 }
 .container-resets button{
   height: 3.5rem;
@@ -160,7 +164,7 @@ ul.reset-list {
 }
 .container-language{
   padding: 1rem 0.5rem 1rem 0.5rem;
-  border-bottom: solid 1px rgb(233, 233, 233);
+  border-bottom: solid 1px var(--border);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -173,7 +177,8 @@ ul.reset-list {
 }
 .flags img{
   height: 2.5rem;
-  border: solid 1px rgb(233, 233, 233);
+  border: solid 1px var(--border);
+  border-radius: 7px;
 }
 .flags img:hover{
   scale: 0.95;

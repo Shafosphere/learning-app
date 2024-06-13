@@ -29,7 +29,7 @@
   height: 100%;
   width: 100%;
   min-width: 15rem;
-  border-right: solid 2px rgb(233, 233, 233);
+  border-right: solid 2px var(--border);
 
   transition: 400ms;
   opacity: 0;
@@ -80,6 +80,6 @@
   justify-content: center;
 }
 .border {
-  border: solid rgb(0, 0, 0) 2px;
+  border: solid var(--headline) 2px;
   width: 100%;
 }

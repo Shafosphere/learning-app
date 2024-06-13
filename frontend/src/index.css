@@ -6,15 +6,17 @@
   --highlight: #00ebc7;
   --secondary: #ff5470;
   --tertiary: #fde24f;
+  --border: #E9E9E9;
 }
 .dark {
   --background: #001534;
   --secondBackground: #1b2d45;
   --headline: #fffffe;
-  --paragraph: ##b7c9e4;
-  --highlight: #00ebc7;
-  --secondary: #ff5470;
-  --tertiary: #fde24f;
+  --paragraph: #b7c9e4;
+  --highlight: #00af95;
+  --secondary: #b9344a;
+  --tertiary: #c4af3a;
+  --border: #00214d;
 }
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 * {

@@ -6,7 +6,7 @@ export default function Progressbar({procent, text}) {
       <div className="container-bar">
         <div className="wrapper">
           <div className="progressbar"
-            style={{ "--barGradient": `#fffffe 0%, #fffffe ${newpercent}%, #00ebc7 ${newpercent}%, #00ebc7 100%` }}
+            style={{ "--barGradient": `var(--secondary) 0%, var(--secondary) ${newpercent}%, var(--highlight) ${newpercent}%, var(--highlight) 100%` }}
             >
             <div className="stylization"></div>
           </div>

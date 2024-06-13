@@ -19,7 +19,7 @@
   gap: 2rem;
 
   font-size: 25px;
-  color: var(--paragraph);
+  color: var(--headline);
   font-weight: 600;
 }
 .flashcard-description {
@@ -31,6 +31,7 @@
   font-weight: 600;
   max-width: 100%;
   text-align: justify;
+  color: var(--headline);
 }
 .top-flashcard {
   display: flex;
