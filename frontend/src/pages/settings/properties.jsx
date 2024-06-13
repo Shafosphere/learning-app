@@ -31,8 +31,8 @@ export const SettingsProvider = ({ children }) => {
   });
 
   const[themeMode, setTheme] = useState(() =>{
-    const savedTheme = localStorage.getItem("themeMode");
-    return savedTheme !== null ? JSON.parse(savedTheme) : null;
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme !== null ? savedTheme : 'light';
   });
 
   const resetDateIfNeeded = () => {
@@ -52,8 +52,9 @@ export const SettingsProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    document.body.className = themeMode === 'light' ? '' : 'dark';
+    document.body.className = themeMode === 'dark' ? 'dark' : '';
   }, [themeMode]);
+
 
   useEffect(() => {
     resetDateIfNeeded();

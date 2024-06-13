@@ -54,7 +54,7 @@ export default function Settings() {
             >
               <span className="switch-text">Dark Mode</span>
               <label className="switch">
-                <input onClick={toggleTheme} type="checkbox" />
+                <input onClick={toggleTheme} defaultChecked={themeMode === 'dark'} type="checkbox" />
                 <span className="slider round"></span>
               </label>
             </div>
@@ -171,7 +171,7 @@ export default function Settings() {
               }`}
             >
               <p>Reset buttons:</p>
-              <ul class="reset-list">
+              <ul className="reset-list">
                 <li> - boxes - deletes words from boxes</li>
                 <li> - progress - resets progress to zero</li>
                 <li>- all - resets everything to the initial state</li>

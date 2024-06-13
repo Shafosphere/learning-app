@@ -123,7 +123,7 @@ input:checked + .slider:before {
 
 .onMouse:hover{
   cursor: pointer;
-  background-color: var(--background);
+  background-color: var(--border);
 }
 .dailyGoal{
   display: flex;
