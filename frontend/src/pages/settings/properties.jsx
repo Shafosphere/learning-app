@@ -23,6 +23,11 @@ export const SettingsProvider = ({ children }) => {
     return savedLastID !== null ? JSON.parse(savedLastID) : null;
   });
 
+  const [isSoundEnabled, setIsSoundEnabled] = useState(()=>{
+    const savedSound = localStorage.getItem("sound");
+    return savedSound !== null ? JSON.parse(savedSound) : true;
+  });
+
   const [lastResetDate, setLastResetDate] = useState(() => {
     const savedDate = localStorage.getItem("lastResetDate");
     return savedDate !== null
@@ -51,6 +56,12 @@ export const SettingsProvider = ({ children }) => {
     localStorage.setItem('theme', newTheme);
   };
 
+  const toggleSound = () => {
+    const soundState = isSoundEnabled === 'true' ? 'false' : 'true';
+    setIsSoundEnabled(soundState);
+    localStorage.setItem('sound', soundState);
+  }
+
   useEffect(() => {
     document.body.className = themeMode === 'dark' ? 'dark' : '';
   }, [themeMode]);
@@ -59,6 +70,10 @@ export const SettingsProvider = ({ children }) => {
   useEffect(() => {
     resetDateIfNeeded();
   }, [lastResetDate]);
+
+  useEffect(() => {
+    localStorage.setItem("sound", JSON.stringify(isSoundEnabled));
+  }, [isSoundEnabled]);
 
   useEffect(() => {
     localStorage.setItem("lastResetDate", JSON.stringify(lastResetDate));
@@ -120,6 +135,8 @@ export const SettingsProvider = ({ children }) => {
         resetDateIfNeeded,
         themeMode,
         toggleTheme,
+        isSoundEnabled,
+        toggleSound,
       }}
     >
       {children}

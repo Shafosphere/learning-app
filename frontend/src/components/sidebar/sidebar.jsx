@@ -17,25 +17,25 @@ export default function Sidebar() {
             <span>Memolingo</span>
           </div>
           <div className="links-sidebar">
-            <div class="links-container">
-              <div class="one">
+            <div className="links-container">
+              <div className="one">
                 <Link to="/home">
                   <IoMdHome />
                 </Link>
               </div>
-              <div class="two">
+              <div className="two">
                 <Link to="/settings">
                   <IoMdSettings />
                 </Link>
               </div>
-              <div class="three">
+              <div className="three">
               </div>
-              <div class="four"></div>
-              <div class="five"></div>
-              <div class="six"></div>
-              <div class="seven"></div>
-              <div class="eight"></div>
-              <div class="nine"></div>
+              <div className="four"></div>
+              <div className="five"></div>
+              <div className="six"></div>
+              <div className="seven"></div>
+              <div className="eight"></div>
+              <div className="nine"></div>
             </div>
           </div>
           <div className="github-sidebar">

@@ -42,14 +42,21 @@ export default function Home() {
   const [popupEmotion, setPopupEmotion] = useState("");
 
   //progressBar
-  const { calculatePercent, calculateTotalPercent, procent, totalPercent } =
-    useContext(SettingsContext);
+  const {
+    calculatePercent,
+    calculateTotalPercent,
+    procent,
+    totalPercent,
+    isSoundEnabled,
+  } = useContext(SettingsContext);
 
   function check(userWord, word, id) {
     if (userWord === word) {
       setClass("correct");
       clearTimeout(timeoutRef.current);
-      dingSoundRef.current.play();
+      if (isSoundEnabled === 'true') {
+        dingSoundRef.current.play();
+      }
       timeoutRef.current = setTimeout(() => {
         setClass("");
         moveWord(id, word, false);
@@ -59,7 +66,9 @@ export default function Home() {
       setClass("notcorrect");
       setShowWrongAnswer("visible");
       correctWordRef.current.focus();
-      dongSoundRef.current.play();
+      if (isSoundEnabled === 'true') {
+        dongSoundRef.current.play();
+      }
     }
   }
 

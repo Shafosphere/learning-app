@@ -5,8 +5,15 @@ import Popup from "../../components/popup/popup";
 import polandFlag from "../../data/poland.png";
 import usaFlag from "../../data/united-states.png";
 export default function Settings() {
-  const { dailyGoal, setDailyGoal, resetDateIfNeeded, themeMode, toggleTheme} =
-    useContext(SettingsContext);
+  const {
+    dailyGoal,
+    setDailyGoal,
+    resetDateIfNeeded,
+    themeMode,
+    toggleTheme,
+    isSoundEnabled,
+    toggleSound,
+  } = useContext(SettingsContext);
 
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
 
@@ -43,7 +50,11 @@ export default function Settings() {
             >
               <span className="switch-text">Sounds</span>
               <label className="switch">
-                <input type="checkbox" />
+              <input
+                  onClick={toggleSound}
+                  defaultChecked={isSoundEnabled === "true"}
+                  type="checkbox"
+                />
                 <span className="slider round"></span>
               </label>
             </div>
@@ -54,7 +65,11 @@ export default function Settings() {
             >
               <span className="switch-text">Dark Mode</span>
               <label className="switch">
-                <input onClick={toggleTheme} defaultChecked={themeMode === 'dark'} type="checkbox" />
+                <input
+                  onClick={toggleTheme}
+                  defaultChecked={themeMode === "dark"}
+                  type="checkbox"
+                />
                 <span className="slider round"></span>
               </label>
             </div>
@@ -72,7 +87,8 @@ export default function Settings() {
           </div>
 
           {/* language */}
-          <div className="container-language onMouse"
+          <div
+            className="container-language onMouse"
             onMouseEnter={() => setSpan("language")}
           >
             <span className="switch-text">language</span>
@@ -179,9 +195,7 @@ export default function Settings() {
             </span>
 
             <span
-              className={`${
-                activeSpan === "language" ? "" : "hide-span-sett"
-              }`}
+              className={`${activeSpan === "language" ? "" : "hide-span-sett"}`}
             >
               change the language of the website
             </span>

@@ -1,12 +1,24 @@
 import "./popup.css"
-import React, { useRef , useEffect } from 'react';
+import React, { useRef , useEffect, useContext  } from 'react';
+import correctSound from "../../data/pop.wav";
+import { SettingsContext } from "../../pages/settings/properties";
+
 export default function Popup({ message, emotion, onClose }){
     const dialogRef = useRef(null);
+
+    //sounds
+    const dingSoundRef = useRef(new Audio(correctSound));
+    const { isSoundEnabled } = useContext(SettingsContext);
+
 
     useEffect(() => {
         const dialogElement = dialogRef.current;
         if (dialogElement) {
           dialogElement.show();
+            if (isSoundEnabled === 'true') {
+                dingSoundRef.current.volume = 0.1;
+                dingSoundRef.current.play();
+            }
         }
   
         const timer = setTimeout(() => {
