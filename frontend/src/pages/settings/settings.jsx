@@ -2,6 +2,7 @@ import "./settings.css";
 import React, { useContext, useState, useEffect } from "react";
 import { SettingsContext } from "./properties";
 import Popup from "../../components/popup/popup";
+import ConfirmWindow from "../../components/confirm/confirm";
 import polandFlag from "../../data/poland.png";
 import usaFlag from "../../data/united-states.png";
 export default function Settings() {
@@ -21,6 +22,9 @@ export default function Settings() {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupEmotion, setPopupEmotion] = useState("");
 
+  // confirm
+  const [confirmMessage, setConfirmMessage] = useState("");
+
   // span management
   const [activeSpan, setSpan] = useState("");
 
@@ -33,6 +37,11 @@ export default function Settings() {
     setPopupEmotion("positive");
     setPopupMessage("Settings saved");
   }
+
+  function showConfirm(text) {
+    setConfirmMessage(text);
+  }
+
 
   useEffect(() => {
     resetDateIfNeeded();
@@ -108,7 +117,7 @@ export default function Settings() {
               <button
                 style={{ "--buttonColor": "var(--tertiary)" }}
                 className="button"
-                onClick={saveSettings}
+                onClick={() => showConfirm('one two three')}
               >
                 boxes
               </button>
@@ -207,6 +216,12 @@ export default function Settings() {
           message={popupMessage}
           emotion={popupEmotion}
           onClose={() => setPopupMessage("")}
+        />
+      )}
+      {confirmMessage && (
+        <ConfirmWindow
+          message={confirmMessage}
+          onClose={() => setConfirmMessage("")} // Zmiana tutaj
         />
       )}
     </div>

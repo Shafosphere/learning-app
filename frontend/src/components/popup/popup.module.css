@@ -1,34 +1,32 @@
-dialog.popup {
+/* popup.module.css */
+.popup {
   position: fixed;
   top: 8%;
   left: 33%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   z-index: 1000;
-
   display: flex;
   justify-content: center;
   align-items: center;
   height: 4rem;
   width: 40rem;
-
   font-size: 20px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--headline);
-
   border: none;
   border-radius: 5px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  backdrop-filter: none;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 1s ease;
+  background-color: var(--background);
 }
 
-dialog[open] {
-  animation: show 0.25s ease forwards;
+.popup.show {
+  animation: showPopup 0.25s ease forwards;
 }
 
-@keyframes show {
+@keyframes showPopup {
   from {
     opacity: 0;
     transform: translateY(-110%);
@@ -39,11 +37,11 @@ dialog[open] {
   }
 }
 
-dialog.closing {
-  animation: hide 0.25s ease forwards;
+.popup.hide {
+  animation: hidePopup 0.25s ease forwards;
 }
 
-@keyframes hide {
+@keyframes hidePopup {
   from {
     opacity: 1;
     transform: translateY(0);

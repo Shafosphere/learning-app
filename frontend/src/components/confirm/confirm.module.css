@@ -1,0 +1,30 @@
+.confirm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+
+    height: 20rem;
+    width: 40rem;
+    padding: 4rem 5rem 3rem 5rem;
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--headline);
+    background-color: var(--secondBackground);
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px var(--border);
+    backdrop-filter: none;
+  }
+.buttons{
+    display: flex;
+    flex-direction: row;
+    gap: 3rem;
+}
