@@ -5,6 +5,7 @@ import Popup from "../../components/popup/popup";
 import ConfirmWindow from "../../components/confirm/confirm";
 import polandFlag from "../../data/poland.png";
 import usaFlag from "../../data/united-states.png";
+
 export default function Settings() {
   const {
     dailyGoal,
@@ -24,6 +25,7 @@ export default function Settings() {
 
   // confirm
   const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmCallback, setConfirmCallback] = useState(null);
 
   // span management
   const [activeSpan, setSpan] = useState("");
@@ -38,14 +40,22 @@ export default function Settings() {
     setPopupMessage("Settings saved");
   }
 
-  function showConfirm(text) {
+  function showConfirm(text, callback) {
     setConfirmMessage(text);
+    setConfirmCallback(() => callback);
   }
-
 
   useEffect(() => {
     resetDateIfNeeded();
   }, [resetDateIfNeeded]);
+
+  const handleConfirmClose = (result) => {
+    if (result && confirmCallback) {
+      confirmCallback();
+    }
+    setConfirmMessage("");
+    setConfirmCallback(null);
+  };
 
   return (
     <div className="container-settings">
@@ -117,21 +127,21 @@ export default function Settings() {
               <button
                 style={{ "--buttonColor": "var(--tertiary)" }}
                 className="button"
-                onClick={() => showConfirm('one two three')}
+                onClick={() => showConfirm('Are you sure you want to reset the boxes?', () => console.log('Yes'))}
               >
                 boxes
               </button>
               <button
                 style={{ "--buttonColor": "var(--tertiary)" }}
                 className="button"
-                onClick={saveSettings}
+                onClick={() => showConfirm('Are you sure you want to reset the progress?', () => console.log('Yes'))}
               >
                 progress
               </button>
               <button
                 style={{ "--buttonColor": "var(--tertiary)" }}
                 className="button"
-                onClick={saveSettings}
+                onClick={() => showConfirm('Are you sure you want to reset everything?', () => console.log('Yes'))}
               >
                 everything
               </button>
@@ -221,7 +231,7 @@ export default function Settings() {
       {confirmMessage && (
         <ConfirmWindow
           message={confirmMessage}
-          onClose={() => setConfirmMessage("")} // Zmiana tutaj
+          onClose={handleConfirmClose} // Zmiana tutaj
         />
       )}
     </div>

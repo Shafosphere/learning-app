@@ -11,13 +11,13 @@ export default function ConfirmWindow({ message, onClose }) {
     }
   }, []);
 
-  const handleClose = (result) => {
-    const dialogElement = confirmRef.current;
-    if (dialogElement) {
-      dialogElement.close();
-    }
-    onClose(result);
-  };
+const handleClose = (result) => {
+  const dialogElement = confirmRef.current;
+  if (dialogElement) {
+    dialogElement.close();
+  }
+  onClose(result); // Przekazywanie wyniku
+};
 
   return (
     <dialog ref={confirmRef} className={styles.confirm}>
