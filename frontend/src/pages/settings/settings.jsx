@@ -57,6 +57,76 @@ export default function Settings() {
     setConfirmCallback(null);
   };
 
+  function clearBoxes() {
+    return new Promise((resolve, reject) => {
+      let db;
+      const request = indexedDB.open("MyTestDatabase", 2);
+  
+      request.onupgradeneeded = (event) => {
+        console.log("onupgradeneeded event fired");
+        db = event.target.result;
+        console.log("Upgrading database to version", db.version);
+        if (!db.objectStoreNames.contains("boxes")) {
+          db.createObjectStore("boxes", { keyPath: "id" });
+          console.log('Object store "boxes" created.');
+        } else {
+          console.log('Object store "boxes" already exists.');
+        }
+      };
+  
+      request.onsuccess = (event) => {
+        console.log("onsuccess event fired");
+        db = event.target.result;
+        console.log("Database opened successfully");
+        if (db.objectStoreNames.contains("boxes")) {
+          const transaction = db.transaction(["boxes"], "readwrite");
+          const store = transaction.objectStore("boxes");
+  
+          const clearRequest = store.clear();
+  
+          clearRequest.onsuccess = () => {
+            console.log('Object store "boxes" has been cleared.');
+            resolve(); // Zakończ Promise po pomyślnym wyczyszczeniu
+          };
+  
+          clearRequest.onerror = () => {
+            console.error('Error clearing the object store "boxes".');
+            reject('Error clearing the object store "boxes".'); // Zakończ Promise z błędem
+          };
+        } else {
+          console.error("Object store 'boxes' does not exist.");
+          reject("Object store 'boxes' does not exist."); // Zakończ Promise z błędem
+        }
+      };
+  
+      request.onerror = (event) => {
+        console.error("IndexedDB error:", event.target.error);
+        reject("IndexedDB error: " + event.target.error); // Zakończ Promise z błędem
+      };
+    });
+  }
+  
+
+  function clearProgress(){
+    let wordIds = [];
+    localStorage.setItem("wordIds", JSON.stringify(wordIds));
+    localStorage.setItem("totalPercent", JSON.stringify(0));
+    localStorage.setItem("lastID", JSON.stringify(null));
+    localStorage.setItem("dailyGoal", JSON.stringify("20"));
+  }
+
+  async function clearEverything() {
+    try {
+      clearProgress();
+      await clearBoxes(); // Poczekaj na zakończenie clearBoxes
+      localStorage.setItem("theme", "light");
+      localStorage.setItem("sound", "true"); // Zapisz jako string
+      window.location.reload(); // Odśwież stronę po zakończeniu wszystkich operacji
+    } catch (error) {
+      console.error("An error occurred while clearing everything: ", error);
+    }
+  }
+
   return (
     <div className="container-settings">
       <div className="window-settings">
@@ -127,21 +197,21 @@ export default function Settings() {
               <button
                 style={{ "--buttonColor": "var(--tertiary)" }}
                 className="button"
-                onClick={() => showConfirm('Are you sure you want to reset the boxes?', () => console.log('Yes'))}
+                onClick={() => showConfirm('Are you sure you want to reset the boxes?', () => clearBoxes())}
               >
                 boxes
               </button>
               <button
                 style={{ "--buttonColor": "var(--tertiary)" }}
                 className="button"
-                onClick={() => showConfirm('Are you sure you want to reset the progress?', () => console.log('Yes'))}
+                onClick={() => showConfirm('Are you sure you want to reset the progress?', () => clearProgress())}
               >
                 progress
               </button>
               <button
                 style={{ "--buttonColor": "var(--tertiary)" }}
                 className="button"
-                onClick={() => showConfirm('Are you sure you want to reset everything?', () => console.log('Yes'))}
+                onClick={() => showConfirm('Are you sure you want to reset everything?', () => clearEverything())}
               >
                 everything
               </button>
