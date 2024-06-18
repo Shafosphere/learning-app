@@ -183,3 +183,6 @@ ul.reset-list {
 .flags img:hover{
   scale: 0.95;
 }
+.activated_lang{
+  outline: 2px double var(--highlight);
+}

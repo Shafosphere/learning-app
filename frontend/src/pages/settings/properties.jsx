@@ -28,6 +28,11 @@ export const SettingsProvider = ({ children }) => {
     return savedSound !== null ? JSON.parse(savedSound) : true;
   });
 
+  const [language, setLanguage] = useState(()=>{
+    const savedLanguage = localStorage.getItem("language");
+    return savedLanguage !== null ? JSON.parse(savedLanguage) : 'en';
+  });
+
   const [lastResetDate, setLastResetDate] = useState(() => {
     const savedDate = localStorage.getItem("lastResetDate");
     return savedDate !== null
@@ -70,6 +75,10 @@ export const SettingsProvider = ({ children }) => {
   useEffect(() => {
     resetDateIfNeeded();
   }, [lastResetDate]);
+
+  useEffect(() => {
+    localStorage.setItem("language", JSON.stringify(language));
+  }, [language]);
 
   useEffect(() => {
     localStorage.setItem("sound", JSON.stringify(isSoundEnabled));
@@ -137,6 +146,8 @@ export const SettingsProvider = ({ children }) => {
         toggleTheme,
         isSoundEnabled,
         toggleSound,
+        language,
+        setLanguage
       }}
     >
       {children}
