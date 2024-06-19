@@ -5,58 +5,7 @@ import Popup from "../../components/popup/popup";
 import ConfirmWindow from "../../components/confirm/confirm";
 import polandFlag from "../../data/poland.png";
 import usaFlag from "../../data/united-states.png";
-import { IntlProvider, FormattedMessage } from 'react-intl';
-
-const messages = {
-  en: {
-    mode: "Turn on dark mode.",
-    description: "This is a description",
-    sounds: "Sounds",
-    darkMode: "Dark Mode",
-    c1: "C1",
-    language: "Language",
-    resetButtons: "Reset buttons",
-    resetBoxes: "boxes",
-    resetProgress: "progress",
-    resetEverything: "everything",
-    dailyProgress: "daily progress",
-    saveSettings: "Save",
-    turnOffSoundEffects: "Turn off sound effects.",
-    addsC1WordPool: "Adds a C1 word pool (another 2,000 words) and increases the total progression.",
-    changeDailyProgress: "Change daily progress.",
-    changeLanguage: "Change the language of the website",
-    resetBoxesDescription: "Deletes words from boxes",
-    resetProgressDescription: "Resets progress to zero",
-    resetEverythingDescription: "Resets everything to the initial state",
-    areYouSureResetBoxes: "Are you sure you want to reset the boxes?",
-    areYouSureResetProgress: "Are you sure you want to reset the progress?",
-    areYouSureResetEverything: "Are you sure you want to reset everything?",
-  },
-  pl: {
-    mode: "Włącz ciemny motyw",
-    description: "To jest opis",
-    sounds: "Dźwięki",
-    darkMode: "Ciemny Motyw",
-    c1: "C1",
-    language: "Język",
-    resetButtons: "Przyciski resetowania",
-    resetBoxes: "pudełka",
-    resetProgress: "postęp",
-    resetEverything: "wszystko",
-    dailyProgress: "dzienny postęp",
-    saveSettings: "Zapisz",
-    turnOffSoundEffects: "Wyłącz efekty dźwiękowe.",
-    addsC1WordPool: "Dodaje pulę słów C1 (kolejne 2000 słów) i zwiększa całkowity postęp.",
-    changeDailyProgress: "Zmień dzienny postęp.",
-    changeLanguage: "Zmień język strony",
-    resetBoxesDescription: "Usuwa słowa z pudełek",
-    resetProgressDescription: "Resetuje postęp do zera",
-    resetEverythingDescription: "Resetuje wszystko do stanu początkowego",
-    areYouSureResetBoxes: "Czy na pewno chcesz zresetować pudełka?",
-    areYouSureResetProgress: "Czy na pewno chcesz zresetować postęp?",
-    areYouSureResetEverything: "Czy na pewno chcesz zresetować wszystko?",
-  },
-};
+import { FormattedMessage } from 'react-intl';
 
 export default function Settings() {
   const {
@@ -181,232 +130,230 @@ export default function Settings() {
   }
 
   return (
-    <IntlProvider locale={language} messages={messages[language]}>
-      <div className="container-settings">
-        <div className="window-settings">
-          <div className="settings-left">
+    <div className="container-settings">
+      <div className="window-settings">
+        <div className="settings-left">
 
-            {/* switches */}
-            <div className="switches">
-              <div
-                className="switch-container onMouse"
-                onMouseEnter={() => setSpan("Sounds")}
-              >
-                <span className="switch-text">
-                  <FormattedMessage id="sounds" />
-                </span>
-                <label className="switch">
-                  <input
-                    onClick={toggleSound}
-                    defaultChecked={isSoundEnabled === "true"}
-                    type="checkbox"
-                  />
-                  <span className="slider round"></span>
-                </label>
-              </div>
-
-              <div
-                className="switch-container onMouse"
-                onMouseEnter={() => setSpan("darkmode")}
-              >
-                <span className="switch-text">
-                  <FormattedMessage id="darkMode" />
-                </span>
-                <label className="switch">
-                  <input
-                    onClick={toggleTheme}
-                    defaultChecked={themeMode === "dark"}
-                    type="checkbox"
-                  />
-                  <span className="slider round"></span>
-                </label>
-              </div>
-
-              <div
-                className="switch-container onMouse"
-                onMouseEnter={() => setSpan("C1")}
-              >
-                <span className="switch-text">
-                  <FormattedMessage id="c1" />
-                </span>
-                <label className="switch">
-                  <input type="checkbox" />
-                  <span className="slider round"></span>
-                </label>
-              </div>
-            </div>
-
-            {/* language */}
+          {/* switches */}
+          <div className="switches">
             <div
-              className="container-language onMouse"
-              onMouseEnter={() => setSpan("language")}
+              className="switch-container onMouse"
+              onMouseEnter={() => setSpan("Sounds")}
             >
               <span className="switch-text">
-                <FormattedMessage id="language" />
+                <FormattedMessage id="sounds" />
               </span>
-              <div className="flags">
-                <img
-                  alt="polish"
-                  src={polandFlag}
-                  className={language === "pl" ? "activated_lang" : ""}
-                  onClick={() => setLanguage("pl")}
+              <label className="switch">
+                <input
+                  onClick={toggleSound}
+                  defaultChecked={isSoundEnabled === "true"}
+                  type="checkbox"
                 />
-                <img
-                  alt="english"
-                  src={usaFlag}
-                  className={language === "en" ? "activated_lang" : ""}
-                  onClick={() => setLanguage("en")}
+                <span className="slider round"></span>
+              </label>
+            </div>
+
+            <div
+              className="switch-container onMouse"
+              onMouseEnter={() => setSpan("darkmode")}
+            >
+              <span className="switch-text">
+                <FormattedMessage id="darkMode" />
+              </span>
+              <label className="switch">
+                <input
+                  onClick={toggleTheme}
+                  defaultChecked={themeMode === "dark"}
+                  type="checkbox"
                 />
-              </div>
+                <span className="slider round"></span>
+              </label>
             </div>
 
-            {/* reset */}
             <div
-              className="container-resets onMouse"
-              onMouseEnter={() => setSpan("resetsbuttons")}
+              className="switch-container onMouse"
+              onMouseEnter={() => setSpan("C1")}
             >
               <span className="switch-text">
-                <FormattedMessage id="resetButtons" />
+                <FormattedMessage id="c1" />
               </span>
-              <div className="resets-buttons">
-                <button
-                  style={{ "--buttonColor": "var(--tertiary)" }}
-                  className="button"
-                  onClick={() =>
-                    showConfirm(
-                      <FormattedMessage id="areYouSureResetBoxes" />,
-                      () => clearBoxes()
-                    )
-                  }
-                >
-                  <FormattedMessage id="resetBoxes" />
-                </button>
-                <button
-                  style={{ "--buttonColor": "var(--tertiary)" }}
-                  className="button"
-                  onClick={() =>
-                    showConfirm(
-                      <FormattedMessage id="areYouSureResetProgress" />,
-                      () => clearProgress()
-                    )
-                  }
-                >
-                  <FormattedMessage id="resetProgress" />
-                </button>
-                <button
-                  style={{ "--buttonColor": "var(--tertiary)" }}
-                  className="button"
-                  onClick={() =>
-                    showConfirm(
-                      <FormattedMessage id="areYouSureResetEverything" />,
-                      () => clearEverything()
-                    )
-                  }
-                >
-                  <FormattedMessage id="resetEverything" />
-                </button>
-              </div>
+              <label className="switch">
+                <input type="checkbox" />
+                <span className="slider round"></span>
+              </label>
             </div>
+          </div>
 
-            {/* dailygoal */}
-            <div
-              className="dailyGoal onMouse"
-              onMouseEnter={() => setSpan("DailyGoal")}
-            >
-              <span className="switch-text">
-                <FormattedMessage id="dailyProgress" />
-              </span>
-              <input
-                type="number"
-                value={newDailyGoal}
-                onChange={handleDailyGoalChange}
+          {/* language */}
+          <div
+            className="container-language onMouse"
+            onMouseEnter={() => setSpan("language")}
+          >
+            <span className="switch-text">
+              <FormattedMessage id="language" />
+            </span>
+            <div className="flags">
+              <img
+                alt="polish"
+                src={polandFlag}
+                className={language === "pl" ? "activated_lang" : ""}
+                onClick={() => setLanguage("pl")}
+              />
+              <img
+                alt="english"
+                src={usaFlag}
+                className={language === "en" ? "activated_lang" : ""}
+                onClick={() => setLanguage("en")}
               />
             </div>
+          </div>
 
-            {/* save button */}
-            <div className="button-container-save">
+          {/* reset */}
+          <div
+            className="container-resets onMouse"
+            onMouseEnter={() => setSpan("resetsbuttons")}
+          >
+            <span className="switch-text">
+              <FormattedMessage id="resetButtons" />
+            </span>
+            <div className="resets-buttons">
               <button
-                style={{ "--buttonColor": "var(--secondary)" }}
+                style={{ "--buttonColor": "var(--tertiary)" }}
                 className="button"
-                onClick={saveSettings}
+                onClick={() =>
+                  showConfirm(
+                    <FormattedMessage id="areYouSureResetBoxes" />,
+                    () => clearBoxes()
+                  )
+                }
               >
-                <FormattedMessage id="saveSettings" />
+                <FormattedMessage id="resetBoxes" />
+              </button>
+              <button
+                style={{ "--buttonColor": "var(--tertiary)" }}
+                className="button"
+                onClick={() =>
+                  showConfirm(
+                    <FormattedMessage id="areYouSureResetProgress" />,
+                    () => clearProgress()
+                  )
+                }
+              >
+                <FormattedMessage id="resetProgress" />
+              </button>
+              <button
+                style={{ "--buttonColor": "var(--tertiary)" }}
+                className="button"
+                onClick={() =>
+                  showConfirm(
+                    <FormattedMessage id="areYouSureResetEverything" />,
+                    () => clearEverything()
+                  )
+                }
+              >
+                <FormattedMessage id="resetEverything" />
               </button>
             </div>
           </div>
 
-          {/* descriptions */}
-          <div className="settings-right">
-            <div className="explanation">
-              <span
-                className={`${activeSpan === "Sounds" ? "" : "hide-span-sett"}`}
-              >
-                <FormattedMessage id="turnOffSoundEffects" />
-              </span>
+          {/* dailygoal */}
+          <div
+            className="dailyGoal onMouse"
+            onMouseEnter={() => setSpan("DailyGoal")}
+          >
+            <span className="switch-text">
+              <FormattedMessage id="dailyProgress" />
+            </span>
+            <input
+              type="number"
+              value={newDailyGoal}
+              onChange={handleDailyGoalChange}
+            />
+          </div>
 
-              <span className={`${activeSpan === "C1" ? "" : "hide-span-sett"}`}>
-                <FormattedMessage id="addsC1WordPool" />
-              </span>
-
-              <span
-                className={`${
-                  activeSpan === "DailyGoal" ? "" : "hide-span-sett"
-                }`}
-              >
-                <FormattedMessage id="changeDailyProgress" />
-              </span>
-
-              <span
-                className={`${
-                  activeSpan === "darkmode" ? "" : "hide-span-sett"
-                }`}
-              >
-                <FormattedMessage id="mode" />
-              </span>
-
-              <span
-                className={`${
-                  activeSpan === "resetsbuttons" ? "" : "hide-span-sett"
-                }`}
-              >
-                <p><FormattedMessage id="resetButtons" /></p>
-                <ul className="reset-list">
-                  <li>
-                    - <FormattedMessage id="resetBoxesDescription" />
-                  </li>
-                  <li>
-                    - <FormattedMessage id="resetProgressDescription" />
-                  </li>
-                  <li>
-                    - <FormattedMessage id="resetEverythingDescription" />
-                  </li>
-                </ul>
-              </span>
-
-              <span
-                className={`${
-                  activeSpan === "language" ? "" : "hide-span-sett"
-                }`}
-              >
-                <FormattedMessage id="changeLanguage" />
-              </span>
-            </div>
+          {/* save button */}
+          <div className="button-container-save">
+            <button
+              style={{ "--buttonColor": "var(--secondary)" }}
+              className="button"
+              onClick={saveSettings}
+            >
+              <FormattedMessage id="saveSettings" />
+            </button>
           </div>
         </div>
-        {popupMessage && (
-          <Popup
-            message={popupMessage}
-            emotion={popupEmotion}
-            onClose={() => setPopupMessage("")}
-          />
-        )}
-        {confirmMessage && (
-          <ConfirmWindow
-            message={confirmMessage}
-            onClose={handleConfirmClose} // Zmiana tutaj
-          />
-        )}
+
+        {/* descriptions */}
+        <div className="settings-right">
+          <div className="explanation">
+            <span
+              className={`${activeSpan === "Sounds" ? "" : "hide-span-sett"}`}
+            >
+              <FormattedMessage id="turnOffSoundEffects" />
+            </span>
+
+            <span className={`${activeSpan === "C1" ? "" : "hide-span-sett"}`}>
+              <FormattedMessage id="addsC1WordPool" />
+            </span>
+
+            <span
+              className={`${
+                activeSpan === "DailyGoal" ? "" : "hide-span-sett"
+              }`}
+            >
+              <FormattedMessage id="changeDailyProgress" />
+            </span>
+
+            <span
+              className={`${
+                activeSpan === "darkmode" ? "" : "hide-span-sett"
+              }`}
+            >
+              <FormattedMessage id="mode" />
+            </span>
+
+            <span
+              className={`${
+                activeSpan === "resetsbuttons" ? "" : "hide-span-sett"
+              }`}
+            >
+              <p><FormattedMessage id="resetButtons" /></p>
+              <ul className="reset-list">
+                <li>
+                  - <FormattedMessage id="resetBoxesDescription" />
+                </li>
+                <li>
+                  - <FormattedMessage id="resetProgressDescription" />
+                </li>
+                <li>
+                  - <FormattedMessage id="resetEverythingDescription" />
+                </li>
+              </ul>
+            </span>
+
+            <span
+              className={`${
+                activeSpan === "language" ? "" : "hide-span-sett"
+              }`}
+            >
+              <FormattedMessage id="changeLanguage" />
+            </span>
+          </div>
+        </div>
       </div>
-    </IntlProvider>
+      {popupMessage && (
+        <Popup
+          message={popupMessage}
+          emotion={popupEmotion}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
+      {confirmMessage && (
+        <ConfirmWindow
+          message={confirmMessage}
+          onClose={handleConfirmClose} // Zmiana tutaj
+        />
+      )}
+    </div>
   );
 }

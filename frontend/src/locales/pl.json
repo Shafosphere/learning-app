@@ -1,0 +1,25 @@
+{
+    "mode": "Włącz ciemny motyw",
+    "description": "To jest opis",
+    "sounds": "Dźwięki",
+    "darkMode": "Ciemny Motyw",
+    "c1": "C1",
+    "language": "Język",
+    "resetButtons": "Przyciski resetowania",
+    "resetBoxes": "pudełka",
+    "resetProgress": "postęp",
+    "resetEverything": "wszystko",
+    "dailyProgress": "dzienny postęp",
+    "saveSettings": "Zapisz",
+    "turnOffSoundEffects": "Wyłącz efekty dźwiękowe.",
+    "addsC1WordPool": "Dodaje pulę słów C1 (kolejne 2000 słów) i zwiększa całkowity postęp.",
+    "changeDailyProgress": "Zmień dzienny postęp.",
+    "changeLanguage": "Zmień język strony",
+    "resetBoxesDescription": "Usuwa słowa z pudełek",
+    "resetProgressDescription": "Resetuje postęp do zera",
+    "resetEverythingDescription": "Resetuje wszystko do stanu początkowego",
+    "areYouSureResetBoxes": "Czy na pewno chcesz zresetować pudełka?",
+    "areYouSureResetProgress": "Czy na pewno chcesz zresetować postęp?",
+    "areYouSureResetEverything": "Czy na pewno chcesz zresetować wszystko?"
+  }
+  

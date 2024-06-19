@@ -1,0 +1,25 @@
+{
+    "mode": "Turn on dark mode.",
+    "description": "This is a description",
+    "sounds": "Sounds",
+    "darkMode": "Dark Mode",
+    "c1": "C1",
+    "language": "Language",
+    "resetButtons": "Reset buttons",
+    "resetBoxes": "boxes",
+    "resetProgress": "progress",
+    "resetEverything": "everything",
+    "dailyProgress": "daily progress",
+    "saveSettings": "Save",
+    "turnOffSoundEffects": "Turn off sound effects.",
+    "addsC1WordPool": "Adds a C1 word pool (another 2,000 words) and increases the total progression.",
+    "changeDailyProgress": "Change daily progress.",
+    "changeLanguage": "Change the language of the website",
+    "resetBoxesDescription": "Deletes words from boxes",
+    "resetProgressDescription": "Resets progress to zero",
+    "resetEverythingDescription": "Resets everything to the initial state",
+    "areYouSureResetBoxes": "Are you sure you want to reset the boxes?",
+    "areYouSureResetProgress": "Are you sure you want to reset the progress?",
+    "areYouSureResetEverything": "Are you sure you want to reset everything?"
+  }
+  
