@@ -20,6 +20,10 @@
     "resetEverythingDescription": "Resetuje wszystko do stanu początkowego",
     "areYouSureResetBoxes": "Czy na pewno chcesz zresetować pudełka?",
     "areYouSureResetProgress": "Czy na pewno chcesz zresetować postęp?",
-    "areYouSureResetEverything": "Czy na pewno chcesz zresetować wszystko?"
+    "areYouSureResetEverything": "Czy na pewno chcesz zresetować wszystko?",
+    "wordsSaved": "Słowa zostały pomyślnie zapisane",
+    "errorAddingWords": "Błąd podczas dodawania słów",
+    "dailyProgress": "DZIENNY POSTĘP",
+    "totalProgress": "Całkowity Postęp"
   }
   

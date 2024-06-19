@@ -20,6 +20,10 @@
     "resetEverythingDescription": "Resets everything to the initial state",
     "areYouSureResetBoxes": "Are you sure you want to reset the boxes?",
     "areYouSureResetProgress": "Are you sure you want to reset the progress?",
-    "areYouSureResetEverything": "Are you sure you want to reset everything?"
+    "areYouSureResetEverything": "Are you sure you want to reset everything?",
+    "wordsSaved": "Words successfully saved",
+    "errorAddingWords": "Error adding words",
+    "dailyProgress": "DAILY PROGRESS",
+    "totalProgress": "Total Progress"
   }
   

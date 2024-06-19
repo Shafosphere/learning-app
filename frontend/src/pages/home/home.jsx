@@ -10,8 +10,10 @@ import Progressbar from "../../components/home/bar/bar";
 
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
 import { SettingsContext } from "../settings/properties";
+import { FormattedMessage, useIntl } from 'react-intl';
 
 export default function Home() {
+  const intl = useIntl();
   const [randomWord, setRandom] = useState(null); //selected word
   const [className, setClass] = useState(""); //class display
   const [showWrongAnswer, setShowWrongAnswer] = useState("not-visible");
@@ -164,7 +166,7 @@ export default function Home() {
         selectRandomWord(activeBox);
       }
     } catch (error) {
-      console.error("Error adding words:", error);
+      console.error(intl.formatMessage({ id: "errorAddingWords" }), error);
     }
   }
 
@@ -248,7 +250,7 @@ export default function Home() {
           Promise.all(addRequests)
             .then(() => {
               setPopupEmotion("positive");
-              setPopupMessage("Words successfully saved");
+              setPopupMessage(intl.formatMessage({ id: "wordsSaved" }));
             })
             .catch((error) => {
               console.error("An error occurred:", error);
@@ -385,8 +387,8 @@ export default function Home() {
         )}
       </div>
       <div className="home-right">
-        <Progressbar procent={procent} text={"DAILY PROGRESS"} />
-        <Progressbar procent={totalPercent} text={"Total Progress"} />
+        <Progressbar procent={procent} text={intl.formatMessage({ id: "dailyProgress" })} />
+        <Progressbar procent={totalPercent} text={intl.formatMessage({ id: "totalProgress" })} />
       </div>
     </div>
   );
