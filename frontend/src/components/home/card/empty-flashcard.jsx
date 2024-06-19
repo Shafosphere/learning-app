@@ -1,17 +1,19 @@
 import "./flashcard.css";
+import { FormattedMessage } from 'react-intl';
+
 export default function EmptyFlashcard() {
   return (
     <>
       <div className="container-flashcard">
         <div className={`wrong-answer`} style={{ visibility: "hidden" }}>
-          <span>Answear is:_</span>
+          <span><FormattedMessage id="answerIs" />_</span>
           <span style={{ color: "red" }}></span>
         </div>
         <form>
           <div className="top-flashcard">
             <div className={`window-flashcard`}>
               <div className="hidden-message">
-                Please select a box with words
+                <FormattedMessage id="pleaseSelectBox" />
               </div>
             </div>
 
@@ -21,14 +23,14 @@ export default function EmptyFlashcard() {
                 type="button"
                 style={{ "--buttonColor": "var(--highlight)" }}
               >
-                submit
+                <FormattedMessage id="submit" />
               </button>
               <button
                 className="button"
                 type="button"
                 style={{ "--buttonColor": "var(--secondary)" }}
               >
-                first letter
+                <FormattedMessage id="firstLetter" />
               </button>
             </div>
           </div>

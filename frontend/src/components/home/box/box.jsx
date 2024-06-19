@@ -1,7 +1,8 @@
 import boxImage from "../../../data/box.png";
 import "./box.css";
-export default function Boxes({ boxes, activeBox, handleSetBox, addWords, brunWords }) {
+import { FormattedMessage } from 'react-intl';
 
+export default function Boxes({ boxes, activeBox, handleSetBox, addWords, brunWords }) {
   return (
     <>
       <div className="container-boxes">
@@ -59,7 +60,7 @@ export default function Boxes({ boxes, activeBox, handleSetBox, addWords, brunWo
             type="button"
             style={{ "--buttonColor": "var(--tertiary)" }}
           >
-            add words
+            <FormattedMessage id="addWords" />
           </button>
           <button
             onClick={() => brunWords()}
@@ -67,7 +68,7 @@ export default function Boxes({ boxes, activeBox, handleSetBox, addWords, brunWo
             type="button"
             style={{ "--buttonColor": "var(--tertiary)" }}
           >
-            Save progress
+            <FormattedMessage id="saveProgress" />
           </button>
         </div>
       </div>

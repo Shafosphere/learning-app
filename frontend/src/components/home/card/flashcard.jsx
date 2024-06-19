@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import "./flashcard.css";
+import { FormattedMessage } from 'react-intl';
+
 export default function Flashcard({
   data,
   check,
@@ -186,7 +188,7 @@ export default function Flashcard({
                 type="submit"
                 style={{ "--buttonColor": "var(--highlight)" }}
               >
-                submit
+                <FormattedMessage id="submit" />
               </button>
               <button
                 onClick={() => showLetter()}
@@ -194,7 +196,7 @@ export default function Flashcard({
                 type="button"
                 style={{ "--buttonColor": "var(--secondary)" }}
               >
-                first letter
+                <FormattedMessage id="firstLetter" />
               </button>
             </div>
           </div>
