@@ -4,6 +4,7 @@ import { FaGithub } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { IoMdHome } from "react-icons/io";
 import { IoMdSettings } from "react-icons/io";
+import { MdAccountBox } from "react-icons/md";
 
 export default function Sidebar() {
   return (
@@ -29,6 +30,9 @@ export default function Sidebar() {
                 </Link>
               </div>
               <div className="three">
+                <Link to="/login">
+                  <MdAccountBox />
+                </Link>
               </div>
               <div className="four"></div>
               <div className="five"></div>

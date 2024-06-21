@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./home/home";
 import Settings from "./settings/settings";
+import Login from "./login/login";
 import Sidebar from "../components/sidebar/sidebar";
 import { SettingsProvider, SettingsContext } from "./settings/properties";
 import { IntlProvider } from 'react-intl';
@@ -25,6 +26,7 @@ const AppWrapper = () => {
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<Home />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </IntlProvider>
   );
