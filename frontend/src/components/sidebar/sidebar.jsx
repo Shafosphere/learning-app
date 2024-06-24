@@ -7,6 +7,13 @@ import { IoMdSettings } from "react-icons/io";
 import { MdAccountBox } from "react-icons/md";
 
 export default function Sidebar() {
+  const handleDivClick = (event) => {
+    const link = event.currentTarget.querySelector('a');
+    if (link) {
+      link.click();
+    }
+  };
+
   return (
     <>
       <div className="container-sidebar">
@@ -19,27 +26,27 @@ export default function Sidebar() {
           </div>
           <div className="links-sidebar">
             <div className="links-container">
-              <div className="one">
+              <div className="one" onClick={handleDivClick}>
                 <Link to="/home">
                   <IoMdHome />
                 </Link>
               </div>
-              <div className="two">
+              <div className="two" onClick={handleDivClick}>
                 <Link to="/settings">
                   <IoMdSettings />
                 </Link>
               </div>
-              <div className="three">
+              <div className="three" onClick={handleDivClick}>
                 <Link to="/login">
                   <MdAccountBox />
                 </Link>
               </div>
-              <div className="four"></div>
-              <div className="five"></div>
-              <div className="six"></div>
-              <div className="seven"></div>
-              <div className="eight"></div>
-              <div className="nine"></div>
+              <div className="four" onClick={handleDivClick}></div>
+              <div className="five" onClick={handleDivClick}></div>
+              <div className="six" onClick={handleDivClick}></div>
+              <div className="seven" onClick={handleDivClick}></div>
+              <div className="eight" onClick={handleDivClick}></div>
+              <div className="nine" onClick={handleDivClick}></div>
             </div>
           </div>
           <div className="github-sidebar">
