@@ -29,5 +29,19 @@
   "submit": "Zatwierdź",
   "firstLetter": "Pierwsza litera",
   "addWords": "Dodaj słowa",
-  "saveProgress": "Zapisz postęp"
+  "saveProgress": "Zapisz postęp",
+  "register": "Zarejestruj się",
+  "reset": "Resetuj",
+  "login": "Zaloguj się",
+  "loggingIn": "Logowanie",
+  "username": "Nazwa użytkownika",
+  "password": "Hasło",
+  "loginButton": "Zaloguj się",
+  "unexpectedError": "Wystąpił nieoczekiwany błąd",
+  "createAccount": "Utwórz konto",
+  "email": "Email",
+  "confirmPassword": "Potwierdź hasło",
+  "signUp": "Zarejestruj się",
+  "passwordMismatch": "Hasła nie pasują do siebie",
+  "registrationError": "Wystąpił błąd podczas rejestracji"
 }

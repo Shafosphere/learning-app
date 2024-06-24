@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export default function RegiForm({ setDisplay }) {
   const [username, setUsername] = useState("");
@@ -7,10 +8,17 @@ export default function RegiForm({ setDisplay }) {
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirm] = useState("");
 
+  const intl = useIntl();
+
   async function handleSubmit(event) {
     event.preventDefault();
     if (!passwordsMatch()) {
-      alert("Password does not match");
+      alert(
+        intl.formatMessage({
+          id: "passwordMismatch",
+          defaultMessage: "Password does not match",
+        })
+      );
       return;
     }
     try {
@@ -27,7 +35,12 @@ export default function RegiForm({ setDisplay }) {
       }
     } catch (error) {
       console.error("Registration error", error);
-      alert("An error occurred during registration");
+      alert(
+        intl.formatMessage({
+          id: "registrationError",
+          defaultMessage: "An error occurred during registration",
+        })
+      );
     }
   }
 
@@ -38,7 +51,12 @@ export default function RegiForm({ setDisplay }) {
   return (
     <div className="container-LoginForm">
       <form onSubmit={handleSubmit}>
-        <div className="title-logg">Create an account</div>
+        <div className="title-logg">
+          <FormattedMessage
+            id="createAccount"
+            defaultMessage="Create an account"
+          />
+        </div>
         <div className="container-input">
           <div className="custom_input">
             <input
@@ -47,7 +65,10 @@ export default function RegiForm({ setDisplay }) {
               value={username}
               autoComplete="username"
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="username"
+              placeholder={intl.formatMessage({
+                id: "username",
+                defaultMessage: "Username",
+              })}
               required
             />
           </div>
@@ -58,7 +79,10 @@ export default function RegiForm({ setDisplay }) {
               value={email}
               autoComplete="username"
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="email"
+              placeholder={intl.formatMessage({
+                id: "email",
+                defaultMessage: "Email",
+              })}
               required
             />
           </div>
@@ -69,7 +93,10 @@ export default function RegiForm({ setDisplay }) {
               value={password}
               autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="password"
+              placeholder={intl.formatMessage({
+                id: "password",
+                defaultMessage: "Password",
+              })}
               required
             />
           </div>
@@ -80,7 +107,10 @@ export default function RegiForm({ setDisplay }) {
               value={confirmPass}
               autoComplete="new-password"
               onChange={(e) => setConfirm(e.target.value)}
-              placeholder="confirm the password"
+              placeholder={intl.formatMessage({
+                id: "confirmPassword",
+                defaultMessage: "Confirm the password",
+              })}
               required
             />
           </div>
@@ -90,7 +120,7 @@ export default function RegiForm({ setDisplay }) {
           className="button"
           type="submit"
         >
-          Sign up
+          <FormattedMessage id="signUp" defaultMessage="Sign up" />
         </button>
       </form>
     </div>

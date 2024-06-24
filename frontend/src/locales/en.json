@@ -29,5 +29,19 @@
   "submit": "Submit",
   "firstLetter": "First letter",
   "addWords": "Add words",
-  "saveProgress": "Save progress"
+  "saveProgress": "Save progress",
+  "register": "Register",
+  "reset": "Reset",
+  "login": "Log In",
+  "loggingIn": "Logging in",
+  "username": "Username",
+  "password": "Password",
+  "loginButton": "Log in",
+  "unexpectedError": "An unexpected error occurred",
+  "createAccount": "Create an account",
+  "email": "Email",
+  "confirmPassword": "Confirm the password",
+  "signUp": "Sign up",
+  "passwordMismatch": "Password does not match",
+  "registrationError": "An error occurred during registration"
 }
