@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-export default function RegiForm({setDisplay}) {
+export default function RegiForm({ setDisplay }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirm] = useState("");
-
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -22,7 +21,7 @@ export default function RegiForm({setDisplay}) {
         confirmPass,
       });
       if (response.data.success) {
-        setDisplay('login')
+        setDisplay("login");
       } else {
         alert(response.data.message);
       }
@@ -39,7 +38,7 @@ export default function RegiForm({setDisplay}) {
   return (
     <div className="container-LoginForm">
       <form onSubmit={handleSubmit}>
-      <div className="title-logg">Create an account</div>
+        <div className="title-logg">Create an account</div>
         <div className="container-input">
           <div className="custom_input">
             <input
@@ -86,8 +85,12 @@ export default function RegiForm({setDisplay}) {
             />
           </div>
         </div>
-        <button className="button-login" type="submit">
-          sign up
+        <button
+          style={{ "--buttonColor": "var(--highlight)", width: "100%" }}
+          className="button"
+          type="submit"
+        >
+          Sign up
         </button>
       </form>
     </div>

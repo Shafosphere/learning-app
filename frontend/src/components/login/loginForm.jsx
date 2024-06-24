@@ -54,7 +54,7 @@ export default function LoginForm() {
           </div>
           {error && <p className="login-error">{error}</p>}
         </div>
-        <button className="button-login" type="submit">
+        <button style={{ "--buttonColor": "var(--highlight)", width: "100%"  }} className="button" type="submit">
           Log in
         </button>
       </form>

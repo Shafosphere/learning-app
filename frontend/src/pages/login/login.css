@@ -1,124 +1,96 @@
 .container-logging {
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-  }
-  .window-logg {
-    padding: 5rem 5rem 0rem 5rem;
-    height: 40rem;
-    width: 40rem;
-    background-color: var(--secondBackground);
-  }
-  .top-logg {
-    height: 80%;
-    width: 100%;
-    padding-bottom: 1rem;
-  }
-  .bot-logg {
-    height: 20%;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    gap: 1rem;
-  }
-  .container-LoginForm {
-    width: 100%;
-    height: 100%;
-  }
-  .container-LoginForm form {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .title-logg{
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-transform: uppercase;
-      font-size: 20px;
-      font-weight: 600;
-      margin: 0rem 0rem 1rem 0rem;
-  }
-  .button-login {
-    background-color: #123c49;
-    color: rgb(255, 255, 255);
-    display: block;
-    padding: 13px;
-    border-radius: 5px;
-    outline: none;
-    font-size: 18px;
-    letter-spacing: 1.5px;
-    font-weight: bold;
-    text-transform: uppercase;
-    width: 100%;
-    cursor: pointer;
-    transition: all 0.1s ease-in-out;
-    border: none;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    -ms-border-radius: 5px;
-    -o-border-radius: 5px;
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -ms-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-  }
-  .button:hover {
-    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.15);
-    transform: scale(1.02);
-    -webkit-transform: scale(1.02);
-    -moz-transform: scale(1.02);
-    -ms-transform: scale(1.02);
-    -o-transform: scale(1.02);
-  }
-  .login-error{
-    width: 100%;
-    text-align: center;
-    text-transform: uppercase;
-    font-weight: 600;
-    font-size: 13px;
-    color: rgba(255, 0, 0, 0.692);
-  }
-  .container-input {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    height: 100%;
-    width: 100%;
-  }
-  .custom_input {
-    display: flex;
-    align-items: center;
-    position: relative;
-    max-width: 100%;
-  }
-  
-  .input {
-    font-size: 20px;
-    padding: 5px 10px;
-    width: 100%;
-    height: 3.5rem;
-    outline: none;
-    background: #ffffff;
-    color: #000000;
-    border: 1px solid #ebebeb;
-    border-radius: 5px;
-    box-shadow: 3px 3px 2px 0px #e2e2e2;
-    transition: 0.3s ease;
-  }
-  
-  .input:focus {
-    background: #f2f2f2;
-    border: 1px solid #0f5343;
-    border-radius: 10px;
-  }
-  
-  .input::placeholder {
-    color: #dddddd;
-  }
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  color: var(--headline);
+  background-color: var(--f2f4f6);
+  background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
+  background-size: 40px 40px;
+}
+.window-logg {
+  padding: 5rem 5rem 0rem 5rem;
+  height: 40rem;
+  width: 40rem;
+  background-color: var(--secondBackground);
+}
+.top-logg {
+  height: 80%;
+  width: 100%;
+  padding-bottom: 1rem;
+}
+.bot-logg {
+  height: 20%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.container-LoginForm {
+  width: 100%;
+  height: 100%;
+}
+.container-LoginForm form {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.title-logg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0rem 0rem 1rem 0rem;
+}
+.login-error {
+  width: 100%;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 13px;
+  color: rgba(255, 0, 0, 0.692);
+}
+.container-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+  width: 100%;
+}
+.custom_input {
+  display: flex;
+  align-items: center;
+  position: relative;
+  max-width: 100%;
+}
+
+.input {
+  font-size: 20px;
+  padding: 5px 10px;
+  width: 100%;
+  height: 3.5rem;
+  outline: none;
+  background: var(--background);
+  color: #000000;
+  border: 1px solid var(--secondBackground);
+  border-radius: 5px;
+  box-shadow: 3px 3px 2px 0px var(--border);
+  transition: 0.3s ease;
+}
+
+.input:focus {
+  background: #f2f2f2;
+  border: 1px solid var(--headline);
+  border-radius: 10px;
+}
+
+.input::placeholder {
+  color: #dddddd;
+}

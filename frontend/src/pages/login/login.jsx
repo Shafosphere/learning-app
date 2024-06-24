@@ -10,18 +10,22 @@ export default function Login() {
         {display === "login" && (
           <>
             <div className="top-logg">
-              <LoginForm
-              />
+              <LoginForm />
             </div>
             <div className="bot-logg">
               <button
+                style={{ "--buttonColor": "var(--tertiary)" , width: "50%" }}
                 onClick={() => setDisplay("register")}
-                className="button-login"
+                className="button"
                 type="submit"
               >
                 register
               </button>
-              <button className="button-login" type="submit">
+              <button
+                style={{ "--buttonColor": "var(--tertiary)", width: "50%"  }}
+                className="button"
+                type="submit"
+              >
                 reset
               </button>
             </div>
@@ -35,12 +39,17 @@ export default function Login() {
             <div className="bot-logg">
               <button
                 onClick={() => setDisplay("login")}
-                className="button-login"
+                className="button"
+                style={{ "--buttonColor": "var(--tertiary)", width: "50%" }}
                 type="submit"
               >
                 log in
               </button>
-              <button className="button-login" type="submit">
+              <button
+                style={{ "--buttonColor": "var(--tertiary)", width: "50%"   }}
+                className="button"
+                type="submit"
+              >
                 reset
               </button>
             </div>
