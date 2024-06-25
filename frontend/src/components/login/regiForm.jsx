@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { FormattedMessage, useIntl } from "react-intl";
+import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 
 export default function RegiForm({ setDisplay }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const intl = useIntl();
 
@@ -26,20 +29,15 @@ export default function RegiForm({ setDisplay }) {
         username,
         email,
         password,
-        confirmPass,
       });
-      if (response.data.success) {
-        setDisplay("login");
-      } else {
-        alert(response.data.message);
-      }
     } catch (error) {
       console.error("Registration error", error);
       alert(
-        intl.formatMessage({
-          id: "registrationError",
-          defaultMessage: "An error occurred during registration",
-        })
+        error.response?.data?.message ||
+          intl.formatMessage({
+            id: "registrationError",
+            defaultMessage: "An error occurred during registration",
+          })
       );
     }
   }
@@ -86,10 +84,10 @@ export default function RegiForm({ setDisplay }) {
               required
             />
           </div>
-          <div className="custom_input">
+          <div className="custom_input" style={{ position: "relative" }}>
             <input
               className="input"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
@@ -99,11 +97,18 @@ export default function RegiForm({ setDisplay }) {
               })}
               required
             />
+            <button
+              type="button"
+              className="btn-pass"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <MdOutlineLockOpen size={35} /> : <MdOutlineLock size={35} />}
+            </button>
           </div>
-          <div className="custom_input">
+          <div className="custom_input" style={{ position: "relative" }}>
             <input
               className="input"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               value={confirmPass}
               autoComplete="new-password"
               onChange={(e) => setConfirm(e.target.value)}
@@ -113,6 +118,13 @@ export default function RegiForm({ setDisplay }) {
               })}
               required
             />
+            <button
+              type="button"
+              className="btn-pass"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <MdOutlineLockOpen size={35} /> : <MdOutlineLock size={35} />}
+            </button>
           </div>
         </div>
         <button

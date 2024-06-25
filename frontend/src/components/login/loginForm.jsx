@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FormattedMessage, useIntl } from "react-intl";
+import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
@@ -60,11 +62,11 @@ export default function LoginForm() {
               required
             />
           </div>
-          <div className="custom_input">
+          <div className="custom_input" style={{ display: "flex", alignItems: "center" }}>
             <input
               className="input"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               autoComplete="current-password"
               onChange={(e) => setPassword(e.target.value)}
@@ -74,6 +76,13 @@ export default function LoginForm() {
               })}
               required
             />
+            <button
+              type="button"
+              className="btn-pass"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <MdOutlineLockOpen size={35} /> : <MdOutlineLock size={35} />}
+            </button>
           </div>
           {error && <p className="login-error">{error}</p>}
         </div>

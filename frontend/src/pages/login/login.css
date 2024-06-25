@@ -98,3 +98,23 @@
 .input::placeholder {
   color: var(--paragraph);
 }
+
+.btn-pass{
+  height: 3.5rem;
+  width: 3rem;
+  background: var(--background);
+  color: var(--headline);
+  border: 1px solid var(--secondBackground);
+  border-radius: 0px 5px 5px 0px;
+  box-shadow: 3px 3px 2px 0px var(--border);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn-pass:hover{
+  scale: 105%;
+}
+.btn-pass:active{
+  background: var(--border);
+}
