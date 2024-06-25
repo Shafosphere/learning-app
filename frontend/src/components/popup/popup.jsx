@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useContext } from 'react';
 import styles from './popup.module.css'; // Import CSS module
 import correctSound from "../../data/pop.wav";
+import wrongSound from "../../data/pop_even_sadder.wav";
+import errorSound from "../../data/error.wav";
 import { SettingsContext } from "../../pages/settings/properties";
 
 export default function Popup({ message, emotion, onClose }) {
@@ -8,6 +10,8 @@ export default function Popup({ message, emotion, onClose }) {
 
     // sounds
     const dingSoundRef = useRef(new Audio(correctSound));
+    const dingSadSoundRef = useRef(new Audio(wrongSound));
+    const errorSoundRef = useRef(new Audio(errorSound));
     const { isSoundEnabled } = useContext(SettingsContext);
 
     useEffect(() => {
@@ -15,8 +19,23 @@ export default function Popup({ message, emotion, onClose }) {
         if (popupElement) {
             popupElement.classList.add(styles.show);
             if (isSoundEnabled === 'true') {
-                dingSoundRef.current.volume = 0.1;
-                dingSoundRef.current.play();
+                switch (emotion) {
+                    case 'positive':
+                        dingSoundRef.current.volume = 0.4;
+                        dingSoundRef.current.play();
+                        break;
+                    case 'negative':
+                        dingSadSoundRef.current.volume = 0.4;
+                        dingSadSoundRef.current.play();
+                        break;
+                    case 'warning':
+                        errorSoundRef.current.volume = 0.2;
+                        dingSoundRef.current.play();
+                        break;
+                    default:
+                        dingSoundRef.current.volume = 0.2;
+                        dingSoundRef.current.play();
+                }
             }
         }
 

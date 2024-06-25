@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
+import Popup from "../popup/popup";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
@@ -13,6 +14,10 @@ export default function LoginForm() {
   const navigate = useNavigate();
   const intl = useIntl();
 
+  // popup
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupEmotion, setPopupEmotion] = useState("");
+
   async function handleSubmit(event) {
     event.preventDefault();
     try {
@@ -21,22 +26,38 @@ export default function LoginForm() {
         {
           username,
           password,
-        },
-        {
-          withCredentials: true,
         }
       );
       if (response.data.success) {
-        navigate("/home");
+        setPopupEmotion("positive");
+        setPopupMessage(intl.formatMessage({
+          id: "loginSuccessful",
+          defaultMessage: "Login successful",
+        }));
       }
     } catch (error) {
-      setError(
-        error.response.data.message ||
+      if (error.response.status === 401) {
+        setPopupEmotion("negative");
+        setPopupMessage(intl.formatMessage({
+          id: "invalidCredentials",
+          defaultMessage: "Invalid username or password",
+        }));
+      } else if (error.response.status === 500) {
+        setPopupEmotion("warning");
+        setPopupMessage(intl.formatMessage({
+          id: "serverError",
+          defaultMessage: "Server error. Please try again later.",
+        }));
+      } else {
+        setPopupEmotion("negative");
+        setPopupMessage(
           intl.formatMessage({
             id: "unexpectedError",
             defaultMessage: "An unexpected error occurred",
           })
-      );
+        );
+      }
+      setError(error.response.data.message);
     }
   }
 
@@ -62,7 +83,10 @@ export default function LoginForm() {
               required
             />
           </div>
-          <div className="custom_input" style={{ display: "flex", alignItems: "center" }}>
+          <div
+            className="custom_input"
+            style={{ display: "flex", alignItems: "center" }}
+          >
             <input
               className="input"
               name="password"
@@ -81,7 +105,11 @@ export default function LoginForm() {
               className="btn-pass"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <MdOutlineLockOpen size={35} /> : <MdOutlineLock size={35} />}
+              {showPassword ? (
+                <MdOutlineLockOpen size={35} />
+              ) : (
+                <MdOutlineLock size={35} />
+              )}
             </button>
           </div>
           {error && <p className="login-error">{error}</p>}
@@ -94,6 +122,13 @@ export default function LoginForm() {
           <FormattedMessage id="loginButton" defaultMessage="Log in" />
         </button>
       </form>
+      {popupMessage && (
+        <Popup
+          message={popupMessage}
+          emotion={popupEmotion}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
     </div>
   );
 }

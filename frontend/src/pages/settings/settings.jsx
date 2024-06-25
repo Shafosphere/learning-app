@@ -351,7 +351,7 @@ export default function Settings() {
       {confirmMessage && (
         <ConfirmWindow
           message={confirmMessage}
-          onClose={handleConfirmClose} // Zmiana tutaj
+          onClose={handleConfirmClose}
         />
       )}
     </div>

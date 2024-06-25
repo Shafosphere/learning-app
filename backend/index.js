@@ -77,12 +77,45 @@ app.post(
   }
 );
 
-// app.post("/register", async (req, res) => {
-//   console.log('Received registration request');
-//   const { username, email, password } = req.body;
-//   console.log(username + email + password);
-//   res.sendStatus(200);
-// });
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // Sprawdź, czy użytkownik istnieje
+    const userResult = await db.query("SELECT * FROM users WHERE username = $1", [username]);
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid username or password.",
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    // Porównaj hasło
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid username or password.",
+      });
+    }
+
+    // W przypadku sukcesu
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      userId: user.id,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred during login.",
+    });
+  }
+});
+
 
 app.post("/data", async (req, res) => {
   const wordIds = new Set(req.body.wordIds);

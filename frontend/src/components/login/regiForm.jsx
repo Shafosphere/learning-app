@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
+import Popup from "../popup/popup";
 
 export default function RegiForm({ setDisplay }) {
   const [username, setUsername] = useState("");
@@ -10,13 +11,16 @@ export default function RegiForm({ setDisplay }) {
   const [confirmPass, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupEmotion, setPopupEmotion] = useState("");
 
   const intl = useIntl();
 
   async function handleSubmit(event) {
     event.preventDefault();
     if (!passwordsMatch()) {
-      alert(
+      setPopupEmotion("negative");
+      setPopupMessage(
         intl.formatMessage({
           id: "passwordMismatch",
           defaultMessage: "Password does not match",
@@ -30,14 +34,25 @@ export default function RegiForm({ setDisplay }) {
         email,
         password,
       });
+
+      if (response.data.success) {
+        setPopupEmotion("positive");
+        setPopupMessage(
+          intl.formatMessage({
+            id: "registrationSuccessful",
+            defaultMessage: "Registration successful",
+          })
+        );
+      }
     } catch (error) {
       console.error("Registration error", error);
-      alert(
+      setPopupEmotion("negative");
+      setPopupMessage(
         error.response?.data?.message ||
-          intl.formatMessage({
-            id: "registrationError",
-            defaultMessage: "An error occurred during registration",
-          })
+        intl.formatMessage({
+          id: "registrationError",
+          defaultMessage: "An error occurred during registration",
+        })
       );
     }
   }
@@ -135,6 +150,13 @@ export default function RegiForm({ setDisplay }) {
           <FormattedMessage id="signUp" defaultMessage="Sign up" />
         </button>
       </form>
+      {popupMessage && (
+        <Popup
+          message={popupMessage}
+          emotion={popupEmotion}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
     </div>
   );
 }

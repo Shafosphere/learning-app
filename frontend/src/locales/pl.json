@@ -43,5 +43,9 @@
   "confirmPassword": "Potwierdź hasło",
   "signUp": "Zarejestruj się",
   "passwordMismatch": "Hasła nie pasują do siebie",
-  "registrationError": "Wystąpił błąd podczas rejestracji"
+  "registrationError": "Wystąpił błąd podczas rejestracji",
+  "loginSuccessful": "Logowanie zakończone sukcesem",
+  "invalidCredentials": "Nieprawidłowa nazwa użytkownika lub hasło",
+  "serverError": "Błąd serwera. Proszę spróbować ponownie później.",
+  "registrationSuccessful": "Rejestracja zakończona sukcesem"
 }

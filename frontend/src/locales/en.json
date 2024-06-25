@@ -43,5 +43,9 @@
   "confirmPassword": "Confirm the password",
   "signUp": "Sign up",
   "passwordMismatch": "Password does not match",
-  "registrationError": "An error occurred during registration"
+  "registrationError": "An error occurred during registration",
+  "loginSuccessful": "Login successful",
+  "invalidCredentials": "Invalid username or password",
+  "serverError": "Server error. Please try again later.",
+  "registrationSuccessful": "Registration successful"
 }
