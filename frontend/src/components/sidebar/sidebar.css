@@ -53,7 +53,7 @@
   justify-content: center;
 }
 .links-sidebar {
-  height: 80%;
+  height: 70%;
   margin-top: 2rem;
   display: flex;
   flex-direction: column;
@@ -111,14 +111,14 @@
   width: 100%;
   height: 100%;
 }
-.links-container > div:hover{
+.links-container > div:hover {
   background-color: var(--secondBackground);
   scale: 105%;
 }
-.links-container > div:active{
+.links-container > div:active {
   scale: 95%;
 }
-.links-container > div:hover{
+.links-container > div:hover {
   background-color: var(--border);
 }
 .one {
@@ -155,4 +155,30 @@
 
 .nine {
   grid-area: nine;
+}
+.logout-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.logout-icon {
+  font-size: 40px; /* Rozmiar ikony */
+  margin-right: 10px; /* Odstęp między ikoną a tekstem */
+}
+.logout-text-container {
+  display: flex;
+  flex-direction: column; /* Ustawia elementy wewnątrz w kolumnie */
+}
+.logout-text {
+  font-size: 20px; /* Rozmiar czcionki dla tekstu */
+}
+.logout-button:hover {
+  background-color: var(--secondBackground);
+  cursor: pointer;
+}
+.logout-button:active {
+  scale: 97%;
 }

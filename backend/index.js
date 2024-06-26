@@ -146,7 +146,7 @@ app.post("/login", async (req, res) => {
     // Ustaw ciasteczko z tokenem
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Używaj secure tylko w produkcji
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'Strict', // lub 'Lax'
       maxAge: 3600000, // 1 godzina
     });
@@ -164,6 +164,14 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.post('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+  });
+  res.status(200).json({ success: true, message: 'Logged out successfully' });
+});
 
 
 app.post("/data", async (req, res) => {

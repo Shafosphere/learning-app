@@ -1,16 +1,28 @@
 import "./sidebar.css";
+import api from "../../utils/api";
 import { LuMenuSquare } from "react-icons/lu";
 import { FaGithub } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { IoMdHome } from "react-icons/io";
 import { IoMdSettings } from "react-icons/io";
 import { MdAccountBox } from "react-icons/md";
+import { MdLogin } from "react-icons/md";
 
 export default function Sidebar() {
   const handleDivClick = (event) => {
-    const link = event.currentTarget.querySelector('a');
+    const link = event.currentTarget.querySelector("a");
     if (link) {
       link.click();
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await api.post("/logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      console.log("logget out");
     }
   };
 
@@ -47,6 +59,14 @@ export default function Sidebar() {
               <div className="seven" onClick={handleDivClick}></div>
               <div className="eight" onClick={handleDivClick}></div>
               <div className="nine" onClick={handleDivClick}></div>
+            </div>
+          </div>
+          <div onClick={logout} className="logout-button">
+            <span>Hello!</span>
+            <MdLogin className="logout-icon" />
+            <div className="logout-text-container">
+              <span className="logout-text">Log</span>
+              <span className="logout-text">out</span>
             </div>
           </div>
           <div className="github-sidebar">
