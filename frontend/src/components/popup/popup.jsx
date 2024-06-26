@@ -30,7 +30,7 @@ export default function Popup({ message, emotion, onClose }) {
                         break;
                     case 'warning':
                         errorSoundRef.current.volume = 0.2;
-                        dingSoundRef.current.play();
+                        errorSoundRef.current.play();
                         break;
                     default:
                         dingSoundRef.current.volume = 0.2;

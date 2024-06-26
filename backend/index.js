@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import { body, validationResult } from "express-validator";
 dotenv.config({ path: "./.env.local" });
+import jwt from 'jsonwebtoken';
 
 // import { data } from "./data.js";
 const app = express();
@@ -35,6 +36,40 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    },
+    process.env.REACT_APP_TOKEN_KEY,
+    {expiresIn: '1h'}
+  );
+}
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+const authorizeAdmin = (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: "Access denied.",
+    });
+  }
+  next();
+};
+
 app.post(
   "/register",
   [
@@ -54,7 +89,7 @@ app.post(
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const result = await db.query(
-        "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id",
+        "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, 'user') RETURNING id",
         [username, email, hashedPassword]
       );
 
@@ -76,6 +111,14 @@ app.post(
     }
   }
 );
+
+app.get("/admin", authenticateToken, authorizeAdmin, (req, res) => {
+  res.json({
+    success: true,
+    message: "Welcome admin!",
+  });
+});
+
 
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -101,11 +144,13 @@ app.post("/login", async (req, res) => {
       });
     }
 
-    // W przypadku sukcesu
+    // W przypadku sukcesu generuj token
+    const token = generateToken(user);
+
     res.status(200).json({
       success: true,
       message: "Login successful",
-      userId: user.id,
+      token: token,
     });
   } catch (error) {
     console.error("Login error:", error);

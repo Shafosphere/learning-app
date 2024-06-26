@@ -29,6 +29,8 @@ export default function LoginForm() {
         }
       );
       if (response.data.success) {
+        const token = response.data.token;
+        localStorage.setItem('token', token); 
         setPopupEmotion("positive");
         setPopupMessage(intl.formatMessage({
           id: "loginSuccessful",
