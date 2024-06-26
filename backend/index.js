@@ -49,16 +49,16 @@ const generateToken = (user) => {
 }
 
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = req.cookies.token;
   if (!token) return res.sendStatus(401);
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
     req.user = user;
     next();
   });
 };
+
 
 const authorizeAdmin = (req, res, next) => {
   if (req.user.role !== 'admin') {
@@ -124,7 +124,6 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Sprawdź, czy użytkownik istnieje
     const userResult = await db.query("SELECT * FROM users WHERE username = $1", [username]);
     if (userResult.rows.length === 0) {
       return res.status(401).json({
@@ -134,8 +133,6 @@ app.post("/login", async (req, res) => {
     }
 
     const user = userResult.rows[0];
-
-    // Porównaj hasło
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -144,13 +141,19 @@ app.post("/login", async (req, res) => {
       });
     }
 
-    // W przypadku sukcesu generuj token
     const token = generateToken(user);
+
+    // Ustaw ciasteczko z tokenem
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Używaj secure tylko w produkcji
+      sameSite: 'Strict', // lub 'Lax'
+      maxAge: 3600000, // 1 godzina
+    });
 
     res.status(200).json({
       success: true,
       message: "Login successful",
-      token: token,
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -160,6 +163,7 @@ app.post("/login", async (req, res) => {
     });
   }
 });
+
 
 
 app.post("/data", async (req, res) => {

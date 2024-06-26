@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
+import api from "../../utils/api";
 import Popup from "../popup/popup";
 
 export default function LoginForm() {
@@ -21,16 +21,11 @@ export default function LoginForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:8080/login",
-        {
-          username,
-          password,
-        }
-      );
+      const response = await api.post("/login", {
+        username,
+        password,
+      });
       if (response.data.success) {
-        const token = response.data.token;
-        localStorage.setItem('token', token); 
         setPopupEmotion("positive");
         setPopupMessage(intl.formatMessage({
           id: "loginSuccessful",
