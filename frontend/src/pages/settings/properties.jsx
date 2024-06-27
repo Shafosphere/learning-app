@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
+import api from "../../utils/api"; // Importuj api do wykonywania zapytań do serwera
 
 export const SettingsContext = createContext();
 
@@ -23,12 +24,12 @@ export const SettingsProvider = ({ children }) => {
     return savedLastID !== null ? JSON.parse(savedLastID) : null;
   });
 
-  const [isSoundEnabled, setIsSoundEnabled] = useState(()=>{
+  const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
     const savedSound = localStorage.getItem("sound");
     return savedSound !== null ? JSON.parse(savedSound) : true;
   });
 
-  const [language, setLanguage] = useState(()=>{
+  const [language, setLanguage] = useState(() => {
     const savedLanguage = localStorage.getItem("language");
     return savedLanguage !== null ? JSON.parse(savedLanguage) : 'en';
   });
@@ -40,9 +41,19 @@ export const SettingsProvider = ({ children }) => {
       : new Date().toISOString().slice(0, 10);
   });
 
-  const[themeMode, setTheme] = useState(() =>{
+  const [themeMode, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
     return savedTheme !== null ? savedTheme : 'light';
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const savedLoginStatus = localStorage.getItem("isLoggedIn");
+    return savedLoginStatus !== null ? JSON.parse(savedLoginStatus) : false;
+  });
+
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser !== null ? JSON.parse(savedUser) : null;
   });
 
   const resetDateIfNeeded = () => {
@@ -54,7 +65,7 @@ export const SettingsProvider = ({ children }) => {
       setLastID(wordIds[wordIds.length - 1] || 0);
     }
   };
-  
+
   const toggleTheme = () => {
     const newTheme = themeMode === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
@@ -67,10 +78,29 @@ export const SettingsProvider = ({ children }) => {
     localStorage.setItem('sound', soundState);
   }
 
+  const checkAuthStatus = async () => {
+    try {
+      const response = await api.get('/check-auth');
+      if (response.status === 200 && response.data.loggedIn) {
+        setIsLoggedIn(true);
+        setUser(response.data.user);
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    } catch (error) {
+      setIsLoggedIn(false);
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
   useEffect(() => {
     document.body.className = themeMode === 'dark' ? 'dark' : '';
   }, [themeMode]);
-
 
   useEffect(() => {
     resetDateIfNeeded();
@@ -103,6 +133,14 @@ export const SettingsProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("dailyGoal", JSON.stringify(dailyGoal));
   }, [dailyGoal]);
+
+  useEffect(() => {
+    localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    localStorage.setItem("user", JSON.stringify(user));
+  }, [user]);
 
   const calculatePercent = () => {
     const wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
@@ -147,7 +185,11 @@ export const SettingsProvider = ({ children }) => {
         isSoundEnabled,
         toggleSound,
         language,
-        setLanguage
+        setLanguage,
+        isLoggedIn,
+        setIsLoggedIn,
+        user,
+        setUser,
       }}
     >
       {children}

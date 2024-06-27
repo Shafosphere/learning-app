@@ -7,8 +7,12 @@ import { IoMdHome } from "react-icons/io";
 import { IoMdSettings } from "react-icons/io";
 import { MdAccountBox } from "react-icons/md";
 import { MdLogin } from "react-icons/md";
+import { SettingsContext } from "../../pages/settings/properties";
+import { useContext } from "react";
 
 export default function Sidebar() {
+  const { isLoggedIn, setIsLoggedIn, user, setUser } = useContext(SettingsContext); // Uzyskaj wartości z kontekstu
+
   const handleDivClick = (event) => {
     const link = event.currentTarget.querySelector("a");
     if (link) {
@@ -19,6 +23,8 @@ export default function Sidebar() {
   const logout = async () => {
     try {
       await api.post("/logout");
+      setIsLoggedIn(false); // Ustaw stan logowania na false
+      setUser(null); // Usuń dane użytkownika
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -61,14 +67,16 @@ export default function Sidebar() {
               <div className="nine" onClick={handleDivClick}></div>
             </div>
           </div>
-          <div onClick={logout} className="logout-button">
-            <span>Hello!</span>
-            <MdLogin className="logout-icon" />
-            <div className="logout-text-container">
-              <span className="logout-text">Log</span>
-              <span className="logout-text">out</span>
+          {isLoggedIn && (
+            <div onClick={logout} className="logout-button">
+              <span>Hello!</span>
+              <MdLogin className="logout-icon" />
+              <div className="logout-text-container">
+                <span className="logout-text">Log</span>
+                <span className="logout-text">out</span>
+              </div>
             </div>
-          </div>
+          )}
           <div className="github-sidebar">
             <div className="bar">
               <div className="border"></div>

@@ -4,6 +4,7 @@ import pg from "pg";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import { body, validationResult } from "express-validator";
+import cookieParser from "cookie-parser"; // Importuj cookie-parser
 dotenv.config({ path: "./.env.local" });
 import jwt from 'jsonwebtoken';
 
@@ -19,6 +20,7 @@ const minWordId = 1;
 const DATABASE = process.env.REACT_APP_DATABASE;
 
 app.use(express.json());
+app.use(cookieParser());
 
 const db = new pg.Client({
   user: "postgres",
@@ -52,12 +54,14 @@ const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) return res.sendStatus(401);
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
+  jwt.verify(token, process.env.REACT_APP_TOKEN_KEY, (err, user) => {
+    if (err) return res.sendStatus(401);
     req.user = user;
     next();
   });
 };
+
+
 
 
 const authorizeAdmin = (req, res, next) => {
@@ -117,6 +121,10 @@ app.get("/admin", authenticateToken, authorizeAdmin, (req, res) => {
     success: true,
     message: "Welcome admin!",
   });
+});
+
+app.get('/check-auth', authenticateToken, (req, res) => {
+  res.status(200).json({ loggedIn: true, user: req.user });
 });
 
 

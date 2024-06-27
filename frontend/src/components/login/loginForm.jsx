@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 import api from "../../utils/api";
 import Popup from "../popup/popup";
+import { SettingsContext } from "../../pages/settings/properties";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
@@ -11,6 +12,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
+  const { setIsLoggedIn, setUser } = useContext(SettingsContext); // Uzyskaj funkcje z kontekstu
   const navigate = useNavigate();
   const intl = useIntl();
 
@@ -31,6 +33,8 @@ export default function LoginForm() {
           id: "loginSuccessful",
           defaultMessage: "Login successful",
         }));
+        setIsLoggedIn(true); // Ustaw stan logowania na true
+        setUser({ username }); // Ustaw zalogowanego użytkownika
       }
     } catch (error) {
       if (error.response.status === 401) {
