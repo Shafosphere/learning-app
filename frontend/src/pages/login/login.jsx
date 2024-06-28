@@ -2,10 +2,15 @@ import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import LoginForm from "../../components/login/loginForm";
 import RegiForm from "../../components/login/regiForm";
+import Popup from "../../components/popup/popup";
 import "./login.css";
 
 export default function Login() {
   const [display, setDisplay] = useState("login");
+
+  // popup
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupEmotion, setPopupEmotion] = useState("");
 
   return (
     <div className="container-logging">
@@ -13,7 +18,10 @@ export default function Login() {
         {display === "login" && (
           <>
             <div className="top-logg">
-              <LoginForm />
+              <LoginForm 
+                setPopupMessage={setPopupMessage} 
+                setPopupEmotion={setPopupEmotion}
+              />
             </div>
             <div className="bot-logg">
               <button
@@ -59,6 +67,13 @@ export default function Login() {
           </>
         )}
       </div>
+      {popupMessage && (
+        <Popup
+          message={popupMessage}
+          emotion={popupEmotion}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
     </div>
   );
 }

@@ -1,17 +1,22 @@
-import "./sidebar.css";
-import api from "../../utils/api";
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import { LuMenuSquare } from "react-icons/lu";
 import { FaGithub } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { IoMdHome } from "react-icons/io";
-import { IoMdSettings } from "react-icons/io";
-import { MdAccountBox } from "react-icons/md";
-import { MdLogin } from "react-icons/md";
+import { IoMdHome, IoMdSettings } from "react-icons/io";
+import { MdAccountBox, MdLogin } from "react-icons/md";
+import { FormattedMessage, useIntl } from "react-intl";
+import api from "../../utils/api";
+import Popup from "../popup/popup";
 import { SettingsContext } from "../../pages/settings/properties";
-import { useContext } from "react";
+import "./sidebar.css";
 
 export default function Sidebar() {
-  const { isLoggedIn, setIsLoggedIn, user, setUser } = useContext(SettingsContext); // Uzyskaj wartości z kontekstu
+  const { isLoggedIn, setIsLoggedIn, user, setUser } =
+    useContext(SettingsContext); // Uzyskaj wartości z kontekstu
+
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupEmotion, setPopupEmotion] = useState("");
+  const intl = useIntl();
 
   const handleDivClick = (event) => {
     const link = event.currentTarget.querySelector("a");
@@ -25,10 +30,18 @@ export default function Sidebar() {
       await api.post("/logout");
       setIsLoggedIn(false); // Ustaw stan logowania na false
       setUser(null); // Usuń dane użytkownika
+      setPopupEmotion("positive");
+      setPopupMessage(intl.formatMessage({
+        id: "logoutSuccessful",
+        defaultMessage: "Logout successful",
+      }));
     } catch (error) {
       console.error("Logout error:", error);
-    } finally {
-      console.log("logget out");
+      setPopupEmotion("negative");
+      setPopupMessage(intl.formatMessage({
+        id: "logoutError",
+        defaultMessage: "An error occurred during logout",
+      }));
     }
   };
 
@@ -67,16 +80,18 @@ export default function Sidebar() {
               <div className="nine" onClick={handleDivClick}></div>
             </div>
           </div>
-          {isLoggedIn && (
-            <div onClick={logout} className="logout-button">
-              <span>Hello!</span>
-              <MdLogin className="logout-icon" />
-              <div className="logout-text-container">
-                <span className="logout-text">Log</span>
-                <span className="logout-text">out</span>
+          <div className="btn-container">
+            {isLoggedIn && (
+              <div onClick={logout} className="logout-button">
+                <span>Hi! {user.username} </span>
+                <MdLogin className="logout-icon" />
+                <div className="logout-text-container">
+                  <span className="logout-text">Log</span>
+                  <span className="logout-text">out</span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
           <div className="github-sidebar">
             <div className="bar">
               <div className="border"></div>
@@ -88,6 +103,13 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
+      {popupMessage && (
+        <Popup
+          message={popupMessage}
+          emotion={popupEmotion}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
     </>
   );
 }

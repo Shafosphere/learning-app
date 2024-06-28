@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 import api from "../../utils/api";
-import Popup from "../popup/popup";
 import { SettingsContext } from "../../pages/settings/properties";
 
-export default function LoginForm() {
+export default function LoginForm({ setPopupMessage, setPopupEmotion }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -15,10 +14,6 @@ export default function LoginForm() {
   const { setIsLoggedIn, setUser } = useContext(SettingsContext); // Uzyskaj funkcje z kontekstu
   const navigate = useNavigate();
   const intl = useIntl();
-
-  // popup
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -123,13 +118,6 @@ export default function LoginForm() {
           <FormattedMessage id="loginButton" defaultMessage="Log in" />
         </button>
       </form>
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
-        />
-      )}
     </div>
   );
 }

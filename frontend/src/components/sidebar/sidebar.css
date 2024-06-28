@@ -182,3 +182,6 @@
 .logout-button:active {
   scale: 97%;
 }
+.btn-container {
+  height: 10%;
+}
