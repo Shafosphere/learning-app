@@ -71,6 +71,12 @@
   align-content: center;
   gap: 5px;
   font-size: 20px;
+  transition: all 0.25s ease-out;
+}
+.github-sidebar:hover {
+  cursor: pointer;
+  color: var(--highlight);
+  scale: 105%;
 }
 .bar {
   height: auto;

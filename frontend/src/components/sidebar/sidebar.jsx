@@ -31,17 +31,21 @@ export default function Sidebar() {
       setIsLoggedIn(false); // Ustaw stan logowania na false
       setUser(null); // Usuń dane użytkownika
       setPopupEmotion("positive");
-      setPopupMessage(intl.formatMessage({
-        id: "logoutSuccessful",
-        defaultMessage: "Logout successful",
-      }));
+      setPopupMessage(
+        intl.formatMessage({
+          id: "logoutSuccessful",
+          defaultMessage: "Logout successful",
+        })
+      );
     } catch (error) {
       console.error("Logout error:", error);
       setPopupEmotion("negative");
-      setPopupMessage(intl.formatMessage({
-        id: "logoutError",
-        defaultMessage: "An error occurred during logout",
-      }));
+      setPopupMessage(
+        intl.formatMessage({
+          id: "logoutError",
+          defaultMessage: "An error occurred during logout",
+        })
+      );
     }
   };
 
@@ -92,15 +96,21 @@ export default function Sidebar() {
               </div>
             )}
           </div>
-          <div className="github-sidebar">
-            <div className="bar">
-              <div className="border"></div>
+          <a
+            href="https://github.com/Shafosphere"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div className="github-sidebar">
+              <div className="bar">
+                <div className="border"></div>
+              </div>
+              <FaGithub />
+              <div className="bar">
+                <div className="border"></div>
+              </div>
             </div>
-            <FaGithub />
-            <div className="bar">
-              <div className="border"></div>
-            </div>
-          </div>
+          </a>
         </div>
       </div>
       {popupMessage && (
