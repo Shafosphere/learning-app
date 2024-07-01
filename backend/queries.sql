@@ -17,3 +17,14 @@ CREATE TABLE users(
   password VARCHAR(255) NOT NULL
 )
 ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'user';
+
+CREATE TABLE Report (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  report_type VARCHAR(20) NOT NULL, -- 'normal' or 'word_issue'
+  word_id INT, -- This will be NULL for 'normal' reports
+  description TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (word_id) REFERENCES Word(id) -- Only relevant for 'word_issue' reports
+);

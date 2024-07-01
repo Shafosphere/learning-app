@@ -1,0 +1,9 @@
+.draggable {
+    position: absolute;
+    font-size: 50px;
+    background-color: var(--secondBackground);
+    padding: 1rem 1rem 0.5rem 1rem;
+    border: 3px solid var(--border);
+    color: var(--headline);
+    border-radius: 20px;
+  }
