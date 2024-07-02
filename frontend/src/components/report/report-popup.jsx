@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import "./report.css"; // importuj plik CSS
+import "./report.css";
 import { FaBug } from "react-icons/fa";
 import Draggable from "react-draggable";
 import ReportForm from './report';
+import { IoMdCloseCircle } from "react-icons/io";
 
 export default function ReportPopup() {
   const [isFormVisible, setFormVisible] = useState(false);
@@ -26,7 +27,8 @@ export default function ReportPopup() {
         <div className="overlay">
           <div className="form-container">
             <ReportForm />
-            <button className="close-button" onClick={handleCloseForm}>Close</button>
+            <button className="close-button"
+             onClick={handleCloseForm}><IoMdCloseCircle/></button>
           </div>
         </div>
       )}

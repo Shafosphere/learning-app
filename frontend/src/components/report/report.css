@@ -1,9 +1,12 @@
 .draggable {
     position: absolute;
-    font-size: 50px;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: var(--secondBackground);
-    padding: 1rem 1rem 0.5rem 1rem;
-    border: 3px solid var(--border);
+    padding: 1rem 1rem 1rem 1rem;
+    border: 5px solid var(--border);
     color: var(--headline);
     border-radius: 20px;
   }
@@ -13,7 +16,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); /* Półprzezroczyste tło */
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,39 +24,51 @@
   }
   
   .form-container {
-    background-color: #fff;
-    padding: 20px;
+    transition: all 0.1s ease-in-out 0s;
+
+    background-color: var(--background);
+    padding: 2rem 1.5rem 0.5rem 1.5rem;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     position: relative;
+    color: var(--paragraph);
+    border-width: 1rem 0.6rem; /* Ustal grubość ramki: góra/dół 0.5rem, boki 1rem */
+    border-style: solid; /* Ustal styl ramki */
+    border-color: var(--border); /* Ustal kolor ramki */
   }
+  
+  
   
   .close-button {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: red;
-    color: white;
+    color: var(--secondary);
+    background: transparent;
     border: none;
-    border-radius: 5px;
-    padding: 5px 10px;
     cursor: pointer;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0.5rem 0.5rem 0rem 0rem;
   }
   
   .report-form {
     display: flex;
     flex-direction: column;
-    width: 300px;
+    justify-content: space-between;
+    width: 30rem;
+    min-height: 30rem;
     margin: 0 auto;
   }
   
   .report-form div {
-    margin-bottom: 10px;
+    margin-bottom: 1.25rem;
   }
   
   .report-form label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 0.5rem;
   }
   
   .report-form input,
@@ -61,19 +76,27 @@
   .report-form textarea {
     width: 100%;
     padding: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border);
     border-radius: 5px;
+    color: var(--headline);
+    background-color: var(--secondBackground);
+  }
+  .report-form textarea{
+    min-height: 10rem;
   }
   
-  .report-form button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
+  .language-field {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .question-icon {
+    margin-left: 8px;
     cursor: pointer;
   }
   
-  .report-form button:hover {
-    background-color: #0056b3;
+  .question-form {
+    display: flex;
+    flex-direction: row;
+    gap: 0.05rem;
   }
