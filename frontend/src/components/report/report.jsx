@@ -1,18 +1,38 @@
 import React, { useState } from "react";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import "./report.css";
+import api from "../../utils/api";
 
 export default function ReportForm() {
-  const [reportType, setReportType] = useState("normal");
-  const [wordId, setWordId] = useState("");
+  const [reportType, setReportType] = useState("other");
+  const [word, setWord] = useState("");
   const [description, setDescription] = useState("");
   const [language, setLanguage] = useState("");
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e) {
+    console.log("sending");
     e.preventDefault();
-    // Tutaj możesz dodać kod do wysłania formularza na serwer
-    console.log({ reportType, wordId, description });
-  };
+    try {
+      const response = await api.post(
+        "/report",
+        {
+          reportType,
+          word,
+          description,
+          language,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("test");
+      console.log(response.data); // Dodatkowy log, aby zobaczyć odpowiedź serwera
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <form className="report-form" onSubmit={handleSubmit}>
@@ -24,17 +44,17 @@ export default function ReportForm() {
             value={reportType}
             onChange={(e) => setReportType(e.target.value)}
           >
-            <option value="normal">Other</option>
+            <option value="other">Other</option>
             <option value="word_issue">Word Issue</option>
           </select>
         </div>
         {reportType === "word_issue" && (
           <div>
-            <label htmlFor="wordId">Word:</label>
+            <label htmlFor="word">Word:</label>
             <input
-              id="wordId"
-              value={wordId}
-              onChange={(e) => setWordId(e.target.value)}
+              id="word"
+              value={word}
+              onChange={(e) => setWord(e.target.value)}
             />
           </div>
         )}
@@ -52,8 +72,9 @@ export default function ReportForm() {
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
             >
-              <option value="Polish">Polish</option>
-              <option value="English">English</option>
+            <option value=""></option>
+              <option value="pl">Polish</option>
+              <option value="en">English</option>
             </select>
           </div>
         )}
@@ -71,6 +92,7 @@ export default function ReportForm() {
         <button
           style={{ "--buttonColor": "var(--highlight)", width: "100%" }}
           className="button report-btn"
+          type="submit" // Dodano atrybut type="submit"
         >
           Submit Report
         </button>

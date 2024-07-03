@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 import api from "../../utils/api";
@@ -12,7 +12,7 @@ export default function LoginForm({ setPopupMessage, setPopupEmotion }) {
   const [error, setError] = useState("");
 
   const { setIsLoggedIn, setUser } = useContext(SettingsContext); // Uzyskaj funkcje z kontekstu
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const intl = useIntl();
 
   async function handleSubmit(event) {
