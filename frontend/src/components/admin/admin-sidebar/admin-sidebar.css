@@ -1,0 +1,44 @@
+.container-adminsidebar{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--secondBackground);
+    height: 100%;
+    width: 10rem;
+    padding: 2rem 0rem 2rem 0rem;
+}
+.plate {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    color: var(--headline);
+    gap: 0.5rem;
+
+    border-bottom: solid 2px var(--border);
+    padding: 0.5rem 0rem 0.5rem 0rem;
+}
+.plate:hover{
+    background-color: var(--border);
+    cursor: pointer;
+}
+/* Górne obramowanie dla pierwszego elementu */
+.plate.first {
+    border-top: solid 2px var(--border);
+}
+
+/* Brak dolnego obramowania dla ostatniego elementu */
+.plate.last {
+    border-bottom: solid 2px var(--border);
+}
+
+
+.plate-icon{
+    font-size: 40px;
+    display: flex;
+}
+.plate-title{
+    text-transform: uppercase;
+    font-weight: 800;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

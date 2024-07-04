@@ -1,8 +1,9 @@
-import "./admin.css"
+import "./admin.css";
+import AdminSidebar from "../../components/admin/admin-sidebar/admin-sidebar";
 export default function AdminPanel(){
     return(
         <div className="container-admin">
-            ADMIN
+            <AdminSidebar/>
         </div>
     )
 }
