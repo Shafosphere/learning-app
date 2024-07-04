@@ -1,0 +1,35 @@
+.container-reports {
+    height: 100%;
+    width: 40rem;
+    background-color: var(--secondBackground);
+    padding: 2rem 2rem 2rem 2rem;
+  }
+
+  .table-reports{
+    overflow-y: auto;
+    max-height: 100%;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--headline);
+  }
+  th, td {
+    border-bottom: 2px solid var(--border);;
+    padding: 8px;
+    text-align: left;
+  }
+  tr:hover{
+    cursor: pointer;
+    background-color: var(--background);
+  }
+  th {
+    background-color: var(--secondBackground);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding-bottom: 1rem;
+    text-align: center;
+  }
+  

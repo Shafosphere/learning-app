@@ -70,6 +70,18 @@ const authorizeAdmin = (req, res, next) => {
   next();
 };
 
+app.post("/data-reports", authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const response = await db.query("SELECT report_type AS type, description AS desc, created_at AS time FROM reports");
+    const data = response.rows;
+    res.json(data); // Zwrócenie wszystkich wyników
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
 app.post(
   "/register",
   [
