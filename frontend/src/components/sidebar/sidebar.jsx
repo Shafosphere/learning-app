@@ -1,9 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { LuMenuSquare } from "react-icons/lu";
 import { FaGithub } from "react-icons/fa";
 import { IoMdHome, IoMdSettings } from "react-icons/io";
 import { MdAccountBox, MdLogin } from "react-icons/md";
+import { MdAdminPanelSettings } from "react-icons/md";
 import { FormattedMessage, useIntl } from "react-intl";
 import api from "../../utils/api";
 import Popup from "../popup/popup";
@@ -11,12 +12,30 @@ import { SettingsContext } from "../../pages/settings/properties";
 import "./sidebar.css";
 
 export default function Sidebar() {
-  const { isLoggedIn, setIsLoggedIn, user, setUser } =
-    useContext(SettingsContext); // Uzyskaj wartości z kontekstu
+  const { isLoggedIn, setIsLoggedIn, user, setUser } = useContext(SettingsContext);
 
+  const [isAdmin, setIsAdmin] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupEmotion, setPopupEmotion] = useState("");
   const intl = useIntl();
+
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      try {
+        const response = await api.get("/admin");
+        if (response.data && response.data.success) {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        console.log(error);
+        setIsAdmin(false);
+      }
+    };
+
+    if (isLoggedIn) {
+      checkAdminRole();
+    }
+  }, [isLoggedIn]);
 
   const handleDivClick = (event) => {
     const link = event.currentTarget.querySelector("a");
@@ -28,8 +47,8 @@ export default function Sidebar() {
   const logout = async () => {
     try {
       await api.post("/logout");
-      setIsLoggedIn(false); // Ustaw stan logowania na false
-      setUser(null); // Usuń dane użytkownika
+      setIsLoggedIn(false);
+      setUser(null);
       setPopupEmotion("positive");
       setPopupMessage(
         intl.formatMessage({
@@ -76,7 +95,13 @@ export default function Sidebar() {
                   <MdAccountBox />
                 </Link>
               </div>
-              <div className="four" onClick={handleDivClick}></div>
+              {isAdmin && (
+                <div className="four" onClick={handleDivClick}>
+                  <Link to="/admin">
+                    <MdAdminPanelSettings />
+                  </Link>
+                </div>
+              )}
               <div className="five" onClick={handleDivClick}></div>
               <div className="six" onClick={handleDivClick}></div>
               <div className="seven" onClick={handleDivClick}></div>
