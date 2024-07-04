@@ -6,13 +6,11 @@ const api = axios.create({
   withCredentials: true, // Umożliwia wysyłanie ciasteczek
 });
 
-// Middleware dla Axios
+// Middleware dla Axios (interceptory)
+// Nie potrzebujemy dodawać tokena do nagłówków, ponieważ jest on wysyłany automatycznie jako ciasteczko httpOnly
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // Można tutaj dodać inne modyfikacje konfiguracji zapytań, jeśli są potrzebne
     return config;
   },
   (error) => {

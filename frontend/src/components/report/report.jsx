@@ -10,7 +10,6 @@ export default function ReportForm() {
   const [language, setLanguage] = useState("");
 
   async function handleSubmit(e) {
-    console.log("sending");
     e.preventDefault();
     try {
       const response = await api.post(

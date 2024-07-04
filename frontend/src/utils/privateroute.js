@@ -1,23 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
-import Cookies from 'js-cookie';
+import api from './api';
 
-function getRoleFromToken() {
-    const token = Cookies.get('token');
-    if (!token) return null;
+async function getRoleFromToken() {
     try {
-        const decoded = jwtDecode(token);
-        console.log(decoded)
-        return decoded.role;
+        const response = await api.get("/admin");
+        if (response.data && response.data.success) {
+            return 'admin';
+        }
     } catch (error) {
-        console.error('Failed to decode token', error);
-        return null;
+        console.log(error);
     }
+    return null;
 }
 
 function PrivateRoute({ children }) {
-    const role = getRoleFromToken();
+    const [role, setRole] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchRole() {
+            const role = await getRoleFromToken();
+            setRole(role);
+            setLoading(false);
+        }
+        fetchRole();
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
     return role === 'admin' ? children : <Navigate to='/login' />;
 }
 
