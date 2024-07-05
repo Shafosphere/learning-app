@@ -1,8 +1,8 @@
-CREATE TABLE Word (
+CREATE TABLE word (
   id SERIAL PRIMARY KEY,
   word VARCHAR(100) NOT NULL
 );
-CREATE TABLE Translation (
+CREATE TABLE translation (
   id SERIAL PRIMARY KEY,
   word_id INT NOT NULL,
   language VARCHAR(2) NOT NULL, -- 'en' for English, 'pl' for Polish
@@ -17,7 +17,7 @@ CREATE TABLE users(
   password VARCHAR(255) NOT NULL,
   role VARCHAR(20) DEFAULT 'user'
 );
-CREATE TABLE Report (
+CREATE TABLE reports (
   id SERIAL PRIMARY KEY,
   user_id INT NOT NULL,
   report_type VARCHAR(20) NOT NULL, -- 'normal' or 'word_issue'

@@ -70,16 +70,68 @@ const authorizeAdmin = (req, res, next) => {
   next();
 };
 
-app.post("/data-reports", authenticateToken, authorizeAdmin, async (req, res) => {
-  try {
-    const response = await db.query("SELECT report_type AS type, description AS desc, created_at AS time FROM reports");
-    const data = response.rows;
-    res.json(data); // Zwrócenie wszystkich wyników
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
+app.post(
+  "/data-reports",
+  authenticateToken,
+  authorizeAdmin,
+  async (req, res) => {
+    try {
+      const response = await db.query(
+        "SELECT report_type AS type, description AS desc, created_at AS time, id AS id FROM reports"
+      );
+      const data = response.rows;
+      res.json(data); // Zwrócenie wszystkich wyników
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Internal Server Error");
+    }
   }
-});
+);
+
+app.post(
+  "/detail-report",
+  authenticateToken,
+  authorizeAdmin,
+  async (req, res) => {
+    const { report_id } = req.body;
+    try {
+      const report_data = await db.query(
+        `SELECT reports.*, users.username 
+         FROM reports 
+         JOIN users ON reports.user_id = users.id 
+         WHERE reports.id = $1`,
+        [report_id]
+      );
+
+      if (report_data.rows.length === 0) {
+        return res.status(404).send("Report not found");
+      }
+
+      const report = report_data.rows[0];
+      let response_data = { ...report };
+
+      if (report.report_type === "word_issue" && report.word_id) {
+        try {
+          const translation_data = await db.query(
+            "SELECT * FROM translation WHERE word_id = $1",
+            [report.word_id]
+          );
+          
+          response_data.translations = translation_data.rows;
+        } catch (error) {
+          console.error(error);
+          return res.status(500).send("Internal Server Error");
+        }
+      }
+
+      res.json(response_data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+
 
 
 app.post(

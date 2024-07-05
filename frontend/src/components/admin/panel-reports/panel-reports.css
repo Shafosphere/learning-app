@@ -1,8 +1,10 @@
 .container-reports {
+    position: relative;
     height: 100%;
-    width: 40rem;
+    width: 70rem;
     background-color: var(--secondBackground);
     padding: 2rem 2rem 2rem 2rem;
+    flex: 0 0 40rem;
   }
 
   .table-reports{
@@ -33,3 +35,52 @@
     text-align: center;
   }
   
+  .ReportDetails {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background-color: var(--secondBackground);
+    color: var(--headline);
+}
+
+.ReportHeader, .TranslationItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.ReportHeader {
+    border-bottom: 2px solid var(--paragraph);
+    margin-bottom: 20px;
+}
+
+.TranslationItem {
+  border-bottom: 2px solid var(--paragraph);
+}
+
+.TranslationItem:last-child {
+    border-bottom: none;
+}
+
+.TranslationItem input, .TranslationItem textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+}
+
+.ReportDetails h2 {
+    margin-top: 0;
+}
+
+input[type="text"], textarea {
+    width: calc(100% - 10px);
+    padding: 10px;
+    margin-top: 5px;
+}

@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/api";
 import "./panel-reports.css";
-
+import ReportDetails from "./report-details";
 export default function ReportsPanel() {
   const [reports, setReports] = useState([]);
+  const [reportID, setReportID] = useState(null);
 
   useEffect(() => {
 
     const formatDate = (date) => {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Miesiące są indeksowane od 0
-        const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
-      };
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Miesiące są indeksowane od 0
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    };
 
     const getData = async () => {
       try {
@@ -34,27 +35,30 @@ export default function ReportsPanel() {
 
 
   return (
-    <div className="container-reports">
-      <div className="table-reports">
-        <table>
-          <thead>
-            <tr>
-              <th>TYPE</th>
-              <th>DESC</th>
-              <th>TIME</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reports.map((report, index) => (
-              <tr key={index}>
-                <td>{report.type}</td>
-                <td>{report.desc}</td>
-                <td>{report.time}</td>
+    <>
+      <div className="container-reports">
+        <div className="table-reports">
+          <table>
+            <thead>
+              <tr>
+                <th>TYPE</th>
+                <th>DESC</th>
+                <th>TIME</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {reports.map((report, index) => (
+                <tr key={index} onClick={()=>(setReportID(report.id))}>
+                  <td>{report.type}</td>
+                  <td>{report.desc}</td>
+                  <td>{report.time}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+      <ReportDetails reportID={reportID}/>
+    </>
   );
 }

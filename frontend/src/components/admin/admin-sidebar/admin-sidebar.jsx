@@ -10,24 +10,6 @@ export default function AdminSidebar() {
         </span>
         <span className="plate-title">reports</span>
       </div>
-      <div className="plate">
-        <span className="plate-icon">
-          <MdReportProblem />
-        </span>
-        <span className="plate-title">reports</span>
-      </div>
-      <div className="plate">
-        <span className="plate-icon">
-          <MdReportProblem />
-        </span>
-        <span className="plate-title">reports</span>
-      </div>
-      <div className="plate last">
-        <span className="plate-icon">
-          <MdReportProblem />
-        </span>
-        <span className="plate-title">reports</span>
-      </div>
     </div>
   );
 }
