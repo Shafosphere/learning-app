@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import api from "../../../utils/api";
 import "./panel-reports.css";
 import ReportDetails from "./report-details";
+
 export default function ReportsPanel() {
   const [reports, setReports] = useState([]);
   const [reportID, setReportID] = useState(null);
 
   useEffect(() => {
-
     const formatDate = (date) => {
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Miesiące są indeksowane od 0
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Miesiące są indeksowane od 0
       const year = date.getFullYear();
       return `${day}-${month}-${year}`;
     };
@@ -20,9 +20,9 @@ export default function ReportsPanel() {
         const response = await api.post("/data-reports");
         console.log(response.data); // Dodatkowy log, aby zobaczyć odpowiedź serwera
 
-        const formattedReports = response.data.map(report => ({
+        const formattedReports = response.data.map((report) => ({
           ...report,
-          time: formatDate(new Date(report.time))
+          time: formatDate(new Date(report.time)),
         }));
 
         setReports(formattedReports); // Aktualizacja stanu `reports` danymi z bazy danych
@@ -33,11 +33,10 @@ export default function ReportsPanel() {
     getData();
   }, []);
 
-
   return (
     <>
-      <div className="container-reports">
-        <div className="table-reports">
+      <div className="reports-container">
+        <div className="reports-table">
           <table>
             <thead>
               <tr>
@@ -48,7 +47,7 @@ export default function ReportsPanel() {
             </thead>
             <tbody>
               {reports.map((report, index) => (
-                <tr key={index} onClick={()=>(setReportID(report.id))}>
+                <tr key={index} onClick={() => setReportID(report.id)}>
                   <td>{report.type}</td>
                   <td>{report.desc}</td>
                   <td>{report.time}</td>
@@ -58,7 +57,7 @@ export default function ReportsPanel() {
           </table>
         </div>
       </div>
-      <ReportDetails reportID={reportID}/>
+      <ReportDetails reportID={reportID} />
     </>
   );
 }
