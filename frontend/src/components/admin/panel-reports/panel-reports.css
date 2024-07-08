@@ -53,14 +53,12 @@
   color: var(--headline);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .report-header,
 .translation-item {
   display: flex;
   justify-content: space-between;
-  /* align-items: center; */
   gap: 1rem;
 }
 
@@ -83,20 +81,26 @@
   margin-bottom: 1rem;
   padding-bottom: 1rem;
 }
+
 .translation-item div {
   width: 100%;
 }
-.translation-item textarea{
+
+.translation-item textarea {
   height: 10rem;
 }
-.report-description{
+
+.report-description {
   width: 100%;
   padding: 0.25rem;
   border-bottom: 2px solid var(--paragraph);
   margin-bottom: 1rem;
   padding-bottom: 1rem;
+  flex-grow: 1; 
 }
-
+.report-description textarea{
+  height: 10rem;
+}
 .report-details input[type="text"],
 .report-details textarea {
   margin-top: 0.25rem;
@@ -107,11 +111,12 @@
   color: var(--headline);
   font-size: 17px;
 }
-.buttons-reports{
+
+.buttons-reports {
   display: flex;
   flex-direction: row;
-  width: 100%;
-  justify-content: right;
+  justify-content: flex-end;
   gap: 2rem;
   padding: 0.25rem;
+  margin-top: auto; /* Dodane */
 }

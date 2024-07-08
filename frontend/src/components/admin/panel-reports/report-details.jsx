@@ -1,32 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import api from "../../../utils/api";
 import "./panel-reports.css";
 
 export default function ReportDetails({ reportID }) {
-  const [report, setReport] = useState({
-    id: 1,
-    user_id: 2,
-    username: "exampleUser",
-    report_type: "word_issue",
-    word_id: 3,
-    description: "Incorrect translation",
-    created_at: "2024-07-05T10:00:00.000Z",
-    translations: [
-      {
-        id: 1,
-        word_id: 3,
-        language: "en",
-        translation: "example",
-        description: "example description",
-      },
-      {
-        id: 2,
-        word_id: 3,
-        language: "pl",
-        translation: "przykład",
-        description: "opis przykładu",
-      },
-    ],
-  });
+  const [report, setReport] = useState(null); // Początkowy stan ustawiony na null
 
   const handleInputChange = (index, field, value) => {
     const newTranslations = [...report.translations];
@@ -34,9 +11,30 @@ export default function ReportDetails({ reportID }) {
     setReport({ ...report, translations: newTranslations });
   };
 
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const response = await api.post("/detail-report", { id: reportID });
+        if (response.data) {
+          setReport(response.data);
+        } else {
+          console.error("Niepoprawna odpowiedź z serwera", response);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (reportID) {
+      getData();
+    }
+  }, [reportID]);
+
+  if (!report) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="report-details">
-      <div>
       <div className="report-header">
         <h2>Report ID: {report.id}</h2>
         <p>
@@ -54,45 +52,50 @@ export default function ReportDetails({ reportID }) {
           }
         />
       </div>
-      {report.translations.map((translation, index) => (
-        <div key={translation.id} className="translation-item">
-          <div>
-            <h4>Word ({translation.language.toUpperCase()})</h4>
-            <input
-              type="text"
-              value={translation.translation}
-              onChange={(e) =>
-                handleInputChange(index, "translation", e.target.value)
-              }
-            />
-          </div>
-          <div>
-            <h4>Description ({translation.language.toUpperCase()})</h4>
-            <textarea
-              value={translation.description}
-              onChange={(e) =>
-                handleInputChange(index, "description", e.target.value)
-              }
-            />
-          </div>
-        </div>
-      ))}
-      </div>
+      
+      {report.report_type === "word_issue" && report.translations && (
+        <>
+          {report.translations.map((translation, index) => (
+            <div key={translation.id} className="translation-item">
+              <div>
+                <h4>Word ({translation.language.toUpperCase()})</h4>
+                <input
+                  type="text"
+                  value={translation.translation}
+                  onChange={(e) =>
+                    handleInputChange(index, "translation", e.target.value)
+                  }
+                />
+              </div>
+              <div>
+                <h4>Description ({translation.language.toUpperCase()})</h4>
+                <textarea
+                  value={translation.description}
+                  onChange={(e) =>
+                    handleInputChange(index, "description", e.target.value)
+                  }
+                />
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+      
       <div className="buttons-reports">
-      <button
-        className="button"
-        style={{ "--buttonColor": "var(--secondary)" }}
-        onClick={() => alert("Saved!")}
-      >
-        delete report
-      </button>
-      <button
-        className="button"
-        style={{ "--buttonColor": "var(--highlight)" }}
-        onClick={() => alert("Saved!")}
-      >
-        update changes
-      </button>
+        <button
+          className="button"
+          style={{ "--buttonColor": "var(--secondary)" }}
+          onClick={() => alert("Deleted!")}
+        >
+          delete report
+        </button>
+        <button
+          className="button"
+          style={{ "--buttonColor": "var(--highlight)" }}
+          onClick={() => alert("Saved!")}
+        >
+          update changes
+        </button>
       </div>
     </div>
   );

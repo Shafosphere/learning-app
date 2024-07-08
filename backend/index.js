@@ -93,7 +93,8 @@ app.post(
   authenticateToken,
   authorizeAdmin,
   async (req, res) => {
-    const { report_id } = req.body;
+    const { id } = req.body;
+    const report_id = id;
     try {
       const report_data = await db.query(
         `SELECT reports.*, users.username 
@@ -124,6 +125,7 @@ app.post(
         }
       }
 
+      console.log(response_data);
       res.json(response_data);
     } catch (error) {
       console.error(error);
