@@ -7,7 +7,6 @@ import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
 import Popup from "../../components/popup/popup";
 import Progressbar from "../../components/home/bar/bar";
-import ReportPopup from "../../components/report/report-popup";
 
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
 import { SettingsContext } from "../settings/properties";
@@ -354,7 +353,6 @@ export default function Home() {
 
   return (
     <div className="container-home">
-      <ReportPopup/>
       <div className="home-left">
         {randomWord ? (
           <Flashcard

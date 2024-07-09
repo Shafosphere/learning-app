@@ -1,23 +1,30 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { LuMenuSquare } from "react-icons/lu";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaBug } from "react-icons/fa";
 import { IoMdHome, IoMdSettings } from "react-icons/io";
-import { MdAccountBox, MdLogin } from "react-icons/md";
-import { MdAdminPanelSettings } from "react-icons/md";
+import { MdAccountBox, MdLogin, MdAdminPanelSettings } from "react-icons/md";
 import { FormattedMessage, useIntl } from "react-intl";
 import api from "../../utils/api";
 import Popup from "../popup/popup";
+import ReportPopup from "../report/report-popup";
 import { SettingsContext } from "../../pages/settings/properties";
 import "./sidebar.css";
 
 export default function Sidebar() {
-  const { isLoggedIn, setIsLoggedIn, user, setUser } = useContext(SettingsContext);
+  const { isLoggedIn, setIsLoggedIn, user, setUser } =
+    useContext(SettingsContext);
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupEmotion, setPopupEmotion] = useState("");
   const intl = useIntl();
+
+  const [isFormVisible, setFormVisible] = useState(false);
+
+  const handleFormVisibleChange = (visible) => {
+    setFormVisible(visible);
+  };
 
   useEffect(() => {
     const checkAdminRole = async () => {
@@ -95,7 +102,7 @@ export default function Sidebar() {
                   <MdAccountBox />
                 </Link>
               </div>
-              {isAdmin && (
+              {isAdmin && isLoggedIn && (
                 <div className="four" onClick={handleDivClick}>
                   <Link to="/admin">
                     <MdAdminPanelSettings />
@@ -108,6 +115,15 @@ export default function Sidebar() {
               <div className="eight" onClick={handleDivClick}></div>
               <div className="nine" onClick={handleDivClick}></div>
             </div>
+
+            <div>
+            {isLoggedIn && (
+                <div className="bug" onClick={() => setFormVisible(true)}>
+                  <FaBug />
+                </div>
+              )}
+            </div>
+
           </div>
           <div className="btn-container">
             {isLoggedIn && (
@@ -145,6 +161,10 @@ export default function Sidebar() {
           onClose={() => setPopupMessage("")}
         />
       )}
+      <ReportPopup
+        isFormVisible={isFormVisible}
+        onFormVisibleChange={handleFormVisibleChange}
+      />
     </>
   );
 }

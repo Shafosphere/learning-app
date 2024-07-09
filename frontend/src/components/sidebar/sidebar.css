@@ -61,6 +61,18 @@
   font-size: 25px;
   font-weight: 600;
   padding: 0rem 2rem 0rem 2rem;
+  /* justify-content: space-between; */
+}
+.bug{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+.bug:hover{
+  cursor: pointer;
+  scale: 110%;
+  color: var(--tertiary);
 }
 .github-sidebar {
   width: 100%;
