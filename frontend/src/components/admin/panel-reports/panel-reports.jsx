@@ -6,6 +6,7 @@ import ReportDetails from "./report-details";
 export default function ReportsPanel() {
   const [reports, setReports] = useState([]);
   const [reportID, setReportID] = useState(null);
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     const formatDate = (date) => {
@@ -31,7 +32,12 @@ export default function ReportsPanel() {
       }
     };
     getData();
-  }, []);
+  }, [reload]);
+
+  function reloadData () {
+    setReload(prev => !prev);
+    setReportID(null)
+  }
 
   return (
     <>
@@ -57,7 +63,7 @@ export default function ReportsPanel() {
           </table>
         </div>
       </div>
-      <ReportDetails reportID={reportID} />
+      <ReportDetails reportID={reportID} reloadData={reloadData}/>
     </>
   );
 }

@@ -1,9 +1,33 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../utils/api";
+import ConfirmWindow from "../../confirm/confirm";
+import Popup from "../../popup/popup";
+
 import "./panel-reports.css";
 
-export default function ReportDetails({ reportID }) {
+export default function ReportDetails({ reportID, reloadData }) {
   const [report, setReport] = useState(null); // Początkowy stan ustawiony na null
+
+  // popup
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupEmotion, setPopupEmotion] = useState("");
+
+  // confirm
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmCallback, setConfirmCallback] = useState(null);
+
+  const handleConfirmClose = (result) => {
+    if (result && confirmCallback) {
+      confirmCallback();
+    }
+    setConfirmMessage("");
+    setConfirmCallback(null);
+  };
+
+  function showConfirm(text, callback) {
+    setConfirmMessage(text);
+    setConfirmCallback(() => callback);
+  }
 
   const handleInputChange = (index, field, value) => {
     const newTranslations = [...report.translations];
@@ -33,6 +57,33 @@ export default function ReportDetails({ reportID }) {
     return <div>Loading...</div>;
   }
 
+  const updateData = async () => {
+    try {
+      const response = await api.patch("/detail-update", { report: report });
+      setPopupEmotion("positive");
+      setPopupMessage(response.data);
+    } catch (error) {
+      setPopupEmotion("negative");
+      setPopupMessage(error.response?.data || "An error occurred");
+      console.error("Error updating data:", error);
+    }
+  };
+
+  const deleteData = async () => {
+    try {
+      const response = await api.delete("/detail-delete", {
+        data: { id: report.id },
+      });
+      setPopupEmotion("positive");
+      setPopupMessage(response.data);
+      reloadData();
+    } catch (error) {
+      setPopupEmotion("negative");
+      setPopupMessage(error.response?.data || "An error occurred");
+      console.error("Error deleting data:", error);
+    }
+  };
+
   return (
     <div className="report-details">
       <div className="report-header">
@@ -52,7 +103,7 @@ export default function ReportDetails({ reportID }) {
           }
         />
       </div>
-      
+
       {report.report_type === "word_issue" && report.translations && (
         <>
           {report.translations.map((translation, index) => (
@@ -80,23 +131,43 @@ export default function ReportDetails({ reportID }) {
           ))}
         </>
       )}
-      
+
       <div className="buttons-reports">
         <button
           className="button"
           style={{ "--buttonColor": "var(--secondary)" }}
-          onClick={() => alert("Deleted!")}
+          onClick={() =>
+            showConfirm("Do you really want to delete these report?", () =>
+              deleteData()
+            )
+          }
         >
           delete report
         </button>
-        <button
-          className="button"
-          style={{ "--buttonColor": "var(--highlight)" }}
-          onClick={() => alert("Saved!")}
-        >
-          update changes
-        </button>
+        {report.report_type === "word_issue" && report.translations && (
+          <button
+            className="button"
+            style={{ "--buttonColor": "var(--highlight)" }}
+            onClick={() =>
+              showConfirm("Are you sure you want to update your data?", () =>
+                updateData()
+              )
+            }
+          >
+            update changes
+          </button>
+        )}
       </div>
+      {popupMessage && (
+        <Popup
+          message={popupMessage}
+          emotion={popupEmotion}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
+      {confirmMessage && (
+        <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
+      )}
     </div>
   );
 }

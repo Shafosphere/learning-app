@@ -134,6 +134,51 @@ app.post(
   }
 );
 
+app.patch(
+  "/detail-update",
+  authenticateToken,
+  authorizeAdmin,
+  async (req, res) => {
+    const { report } = req.body;
+    try {
+      const translations = report.translations;
+
+      for (const translation of translations) {
+        await db.query(
+          `UPDATE translation
+          SET translation = $1, description = $2
+          WHERE word_id = $3 AND language = $4`,
+          [translation.translation, translation.description, translation.word_id, translation.language]
+        );
+      }
+
+      res.status(200).send("Translations updated successfully.");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+
+app.delete(
+  "/detail-delete",
+  authenticateToken,
+  authorizeAdmin,
+  async (req, res) => {
+    const { id } = req.body;
+    try {
+      await db.query(
+        `DELETE FROM reports WHERE id = $1`,
+        [id]
+      );
+
+      res.status(200).send("Report has been deleted.");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
 
 
 app.post(
