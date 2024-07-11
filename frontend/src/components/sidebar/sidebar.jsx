@@ -11,7 +11,8 @@ import { SettingsContext } from "../../pages/settings/properties";
 import "./sidebar.css";
 
 export default function Sidebar() {
-  const { isLoggedIn, setIsLoggedIn, user, setUser } = useContext(SettingsContext);
+  const { isLoggedIn, setIsLoggedIn, user, setUser } =
+    useContext(SettingsContext);
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
@@ -40,13 +41,6 @@ export default function Sidebar() {
       checkAdminRole();
     }
   }, [isLoggedIn]);
-
-  const handleDivClick = (event) => {
-    const link = event.currentTarget.querySelector("a");
-    if (link) {
-      link.click();
-    }
-  };
 
   const logout = async () => {
     try {
@@ -80,10 +74,82 @@ export default function Sidebar() {
           <span className="sidebar-full">emolingo</span>
         </div>
         <div className="sidebar-top">
-          {/* Add your sidebar content here */}
+          <Link className="link" to="/home">
+            <span className="sidebar-initial link-icon">
+              <IoMdHome />
+            </span>
+            <span className="sidebar-full">
+              <div className="link-text">Main</div>
+            </span>
+          </Link>
+
+          <Link className="link" to="/settings">
+            <span className="sidebar-initial link-icon">
+              <IoMdSettings />
+            </span>
+            <span className="sidebar-full">
+              <div className="link-text">settings</div>
+            </span>
+          </Link>
+
+          <Link className="link" to="/login">
+            <span className="sidebar-initial link-icon">
+              <MdAccountBox />
+            </span>
+            <span className="sidebar-full">
+              <div className="link-text">account</div>
+            </span>
+          </Link>
+
+          {isAdmin && isLoggedIn && (
+            <Link className="link" to="/admin">
+              <span className="sidebar-initial link-icon">
+                <MdAdminPanelSettings />
+              </span>
+              <span className="sidebar-full">
+                <div className="link-text">admin_panel</div>
+              </span>
+            </Link>
+          )}
         </div>
+
         <div className="sidebar-bottom">
-          {/* Add your sidebar content here */}
+          {isLoggedIn && (
+            <div onClick={() => setFormVisible(true)} className="link">
+              <span className="sidebar-initial link-icon">
+                <FaBug />
+              </span>
+              <span className="sidebar-full">
+                <div className="link-text">report_a_bug</div>
+              </span>
+            </div>
+          )}
+
+          {isLoggedIn && (
+            <div onClick={logout} className="link">
+              <span className="sidebar-initial link-icon">
+                <MdLogin />
+              </span>
+              <span className="sidebar-full">
+                <div className="link-text">{user.username}_Logout</div>
+              </span>
+            </div>
+          )}
+
+          <a
+            href="https://github.com/Shafosphere"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div className="link">
+              <span className="sidebar-initial link-icon">
+                <FaGithub />
+              </span>
+              <span className="sidebar-full">
+                <div className="link-text">github</div>
+              </span>
+            </div>
+          </a>
         </div>
       </div>
       {popupMessage && (
