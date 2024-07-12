@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { IoMdHome, IoMdSettings } from "react-icons/io";
-import { MdAccountBox, MdLogin, MdAdminPanelSettings } from "react-icons/md";
-import { FaBug, FaGithub } from "react-icons/fa";
+import { MdAccountBox, MdAdminPanelSettings } from "react-icons/md";
 import { useIntl } from "react-intl";
 import api from "../../utils/api";
 import Popup from "../popup/popup";
 import ReportPopup from "../report/report-popup";
 import { SettingsContext } from "../../pages/settings/properties";
 import "./sidebar.css";
+import { IoBug } from "react-icons/io5";
+import { IoLogoGithub } from "react-icons/io5";
+import { MdLogout } from "react-icons/md";
 
 export default function Sidebar() {
-  const { isLoggedIn, setIsLoggedIn, user, setUser } =
+  const { isLoggedIn, setIsLoggedIn, setUser } =
     useContext(SettingsContext);
 
   const [isAdmin, setIsAdmin] = useState(false);
@@ -74,12 +76,13 @@ export default function Sidebar() {
           <span className="sidebar-full">emolingo</span>
         </div>
         <div className="sidebar-top">
+
           <Link className="link" to="/home">
             <span className="sidebar-initial link-icon">
               <IoMdHome />
             </span>
             <span className="sidebar-full">
-              <div className="link-text">Main</div>
+              <div className="link-text">Ucz sie</div>
             </span>
           </Link>
 
@@ -117,7 +120,7 @@ export default function Sidebar() {
           {isLoggedIn && (
             <div onClick={() => setFormVisible(true)} className="link">
               <span className="sidebar-initial link-icon">
-                <FaBug />
+                <IoBug />
               </span>
               <span className="sidebar-full">
                 <div className="link-text">report_a_bug</div>
@@ -128,10 +131,10 @@ export default function Sidebar() {
           {isLoggedIn && (
             <div onClick={logout} className="link">
               <span className="sidebar-initial link-icon">
-                <MdLogin />
+                <MdLogout />
               </span>
               <span className="sidebar-full">
-                <div className="link-text">{user.username}_Logout</div>
+                <div className="link-text">Logout</div>
               </span>
             </div>
           )}
@@ -143,7 +146,7 @@ export default function Sidebar() {
           >
             <div className="link">
               <span className="sidebar-initial link-icon">
-                <FaGithub />
+                <IoLogoGithub />
               </span>
               <span className="sidebar-full">
                 <div className="link-text">github</div>

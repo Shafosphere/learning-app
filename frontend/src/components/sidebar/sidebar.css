@@ -9,11 +9,11 @@
   overflow: hidden;
   
   color: var(--headline);
-  border-right: 1px solid var(--border);
+  border-right: 2px solid var(--border);
 
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  /* justify-content: space-between; */
 }
 
 .container-sidebar:hover {
@@ -27,6 +27,7 @@
   /* background-color: blue; */
   display: flex;
   flex-direction: row;
+  color: var(--highlight);
 }
 
 .sidebar-top{
