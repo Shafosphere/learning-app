@@ -2,12 +2,17 @@ import React, { useState } from "react";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import "./report.css";
 import api from "../../utils/api";
+import Popup from "../popup/popup";
 
 export default function ReportForm() {
   const [reportType, setReportType] = useState("other");
   const [word, setWord] = useState("");
   const [description, setDescription] = useState("");
   const [language, setLanguage] = useState("");
+
+  // popup
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupEmotion, setPopupEmotion] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -26,76 +31,89 @@ export default function ReportForm() {
           },
         }
       );
-      console.log("test");
-      console.log(response.data); // Dodatkowy log, aby zobaczyć odpowiedź serwera
+      if (response.data.success) {
+        setPopupEmotion("positive");
+        setPopupMessage("report recived");
+      }
     } catch (error) {
+      setPopupEmotion("negative");
+      setPopupMessage('something is wrong');
       console.log(error);
     }
   }
 
   return (
-    <form className="report-form" onSubmit={handleSubmit}>
-      <div className="report-top">
-        <div>
-          <label htmlFor="reportType">Report Type:</label>
-          <select
-            id="reportType"
-            value={reportType}
-            onChange={(e) => setReportType(e.target.value)}
-          >
-            <option value="other">Other</option>
-            <option value="word_issue">Word Issue</option>
-          </select>
-        </div>
-        {reportType === "word_issue" && (
+    <>
+      <form className="report-form" onSubmit={handleSubmit}>
+        <div className="report-top">
           <div>
-            <label htmlFor="word">Word:</label>
-            <input
-              id="word"
-              value={word}
-              onChange={(e) => setWord(e.target.value)}
-            />
-          </div>
-        )}
-        {reportType === "word_issue" && (
-          <div className="language-field">
-            <span className="question-form">
-              <label htmlFor="language">Language:</label>
-              <FaRegQuestionCircle
-                className="question-icon"
-                title="w jakim języku wpisałeś słowo wyżej?"
-              />
-            </span>
+            <label htmlFor="reportType">Report Type:</label>
             <select
-              id="language"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
+              id="reportType"
+              value={reportType}
+              onChange={(e) => setReportType(e.target.value)}
             >
-            <option value=""></option>
-              <option value="pl">Polish</option>
-              <option value="en">English</option>
+              <option value="other">Other</option>
+              <option value="word_issue">Word Issue</option>
             </select>
           </div>
-        )}
-        <div>
-          <label htmlFor="description">Description:</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
+          {reportType === "word_issue" && (
+            <div>
+              <label htmlFor="word">Word:</label>
+              <input
+                id="word"
+                value={word}
+                onChange={(e) => setWord(e.target.value)}
+              />
+            </div>
+          )}
+          {reportType === "word_issue" && (
+            <div className="language-field">
+              <span className="question-form">
+                <label htmlFor="language">Language:</label>
+                <FaRegQuestionCircle
+                  className="question-icon"
+                  title="w jakim języku wpisałeś słowo wyżej?"
+                />
+              </span>
+              <select
+                id="language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+              >
+                <option value=""></option>
+                <option value="pl">Polish</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          )}
+          <div>
+            <label htmlFor="description">Description:</label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </div>
         </div>
-      </div>
-      <div className="report-bottom">
-        <button
-          style={{ "--buttonColor": "var(--highlight)", width: "100%" }}
-          className="button report-btn"
-          type="submit" // Dodano atrybut type="submit"
-        >
-          Submit Report
-        </button>
-      </div>
-    </form>
+        <div className="report-bottom">
+          <button
+            style={{ "--buttonColor": "var(--highlight)", width: "100%" }}
+            className="button report-btn"
+            type="submit" // Dodano atrybut type="submit"
+          >
+            Submit Report
+          </button>
+        </div>
+      </form>
+      {popupMessage && (
+        <Popup
+          message={popupMessage}
+          emotion={popupEmotion}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
+    </>
   );
 }
