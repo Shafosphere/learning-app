@@ -6,10 +6,12 @@ import Login from "./login/login";
 import Sidebar from "../components/sidebar/sidebar";
 import AdminPanel from "./admin/admin";
 import PrivateRoute from "../utils/privateroute";
+import Account from "./account/account";
 import { SettingsProvider, SettingsContext } from "./settings/properties";
 import { IntlProvider } from "react-intl";
 import enMessages from "../locales/en.json";
 import plMessages from "../locales/pl.json";
+
 
 // Obiekt zawierający tłumaczenia dla różnych języków
 const messages = {
@@ -19,7 +21,7 @@ const messages = {
 
 // Komponent do owijania całej aplikacji z `IntlProvider`
 const AppWrapper = () => {
-  const { language } = useContext(SettingsContext);
+  const { language, isLoggedIn } = useContext(SettingsContext);
 
   return (
     <IntlProvider locale={language} messages={messages[language]}>
@@ -29,6 +31,7 @@ const AppWrapper = () => {
         <Route path="/home" element={<Home />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/account" element={isLoggedIn ? <Account /> : <Login />} />
         <Route
           path="/admin"
           element={

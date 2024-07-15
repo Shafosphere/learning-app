@@ -117,7 +117,7 @@ app.post(
             "SELECT * FROM translation WHERE word_id = $1",
             [report.word_id]
           );
-          
+
           response_data.translations = translation_data.rows;
         } catch (error) {
           console.error(error);
@@ -148,7 +148,12 @@ app.patch(
           `UPDATE translation
           SET translation = $1, description = $2
           WHERE word_id = $3 AND language = $4`,
-          [translation.translation, translation.description, translation.word_id, translation.language]
+          [
+            translation.translation,
+            translation.description,
+            translation.word_id,
+            translation.language,
+          ]
         );
       }
 
@@ -167,10 +172,7 @@ app.delete(
   async (req, res) => {
     const { id } = req.body;
     try {
-      await db.query(
-        `DELETE FROM reports WHERE id = $1`,
-        [id]
-      );
+      await db.query(`DELETE FROM reports WHERE id = $1`, [id]);
 
       res.status(200).send("Report has been deleted.");
     } catch (error) {
@@ -179,7 +181,6 @@ app.delete(
     }
   }
 );
-
 
 app.post(
   "/register",
@@ -385,6 +386,41 @@ app.post("/data", async (req, res) => {
       .status(500)
       .json({ message: "Error fetching data", error: error.message });
   }
+});
+
+app.post("/account-data", authenticateToken, async (req, res) => {
+  console.log(req.user);
+  const username = req.user.username; // Poprawka tutaj
+  let email;
+
+  try {
+    const userResult = await db.query(
+      "SELECT email FROM users WHERE username = $1",
+      [username]
+    );
+    email = userResult.rows[0].email; // Poprawka tutaj
+  } catch (error) {
+    console.error("Login error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred on the server.",
+    });
+  }
+
+  console.log(username);
+  res.status(200).json({
+    success: true,
+    message: "Data received",
+    username: req.user.username, // Poprawka tutaj
+    email: email, // Poprawka tutaj
+  });
+});
+
+app.patch('/account-update', authenticateToken, async (req, res) => {
+  console.log('dziala');
+  res.status(200).json({
+    success: true,
+  });
 });
 
 app.listen(port, () => {

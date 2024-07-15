@@ -95,7 +95,7 @@ export default function Sidebar() {
             </span>
           </Link>
 
-          <Link className="link" to="/login">
+          <Link className="link" to="/account">
             <span className="sidebar-initial link-icon">
               <MdAccountBox />
             </span>
