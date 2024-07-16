@@ -66,7 +66,7 @@ export default function LoginForm({ setPopupMessage, setPopupEmotion }) {
         <div className="container-input">
           <div className="custom_input">
             <input
-              className="input"
+              className="input-login"
               name="username"
               type="text"
               value={username}
@@ -84,7 +84,7 @@ export default function LoginForm({ setPopupMessage, setPopupEmotion }) {
             style={{ display: "flex", alignItems: "center" }}
           >
             <input
-              className="input"
+              className="input-login"
               name="password"
               type={showPassword ? "text" : "password"}
               value={password}

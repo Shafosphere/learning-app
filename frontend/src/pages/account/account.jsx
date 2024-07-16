@@ -2,18 +2,25 @@ import "./account.css";
 import Popup from "../../components/popup/popup";
 import React, { useEffect, useRef, useState } from "react";
 import api from "../../utils/api";
+import ConfirmWindow from "../../components/confirm/confirm";
+import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
+
 
 export default function Account() {
+  const navigate = useNavigate();
+
   const username = useRef(null);
   const email = useRef(null);
   const oldPass = useRef(null);
   const newPass = useRef(null);
   const confirmPass = useRef(null);
 
-  const OldUsername = useRef(null);
-  const OldEmail = useRef(null);
-
+  const [initialData, setInitialData] = useState({});
+  const [editedData, setEditedData] = useState({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   // popup
   const [popupMessage, setPopupMessage] = useState("");
@@ -22,24 +29,42 @@ export default function Account() {
   // span management
   const [activeSpan, setSpan] = useState("");
 
-  function buttonStatus() {
-    if (
-      username.current &&
-      email.current &&
-      oldPass.current &&
-      newPass.current &&
-      confirmPass.current &&
-      (username.current.value !== OldUsername.current.value ||
-        email.current.value !== OldEmail.current.value ||
-        oldPass.current.value !== "" ||
-        newPass.current.value !== "" ||
-        confirmPass.current.value !== "")
-    ) {
-      setIsButtonDisabled(false);
-    } else {
-      setIsButtonDisabled(true);
+  // confirm
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmCallback, setConfirmCallback] = useState(null);
+
+  const handleConfirmClose = (result) => {
+    if (result && confirmCallback) {
+      confirmCallback();
     }
+    setConfirmMessage("");
+    setConfirmCallback(null);
+  };
+
+  function showConfirm(text, callback) {
+    setConfirmMessage(text);
+    setConfirmCallback(() => callback);
   }
+
+  async function deleteAccount() {
+    try {
+      const response = await api.delete('/delete-account');
+      if (response.data.success) {
+        setPopupMessage('Accound has been deleted :(');
+        setPopupEmotion('positive');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } else {
+        setPopupMessage('Failed to delete account.');
+        setPopupEmotion('warning');
+      }
+    } catch (error) {
+      console.error(error);
+      setPopupMessage('An error occurred.');
+      setPopupEmotion('negative');
+    }
+  } 
 
   useEffect(() => {
     async function getData() {
@@ -48,8 +73,7 @@ export default function Account() {
         const data = response.data;
         username.current.value = data.username;
         email.current.value = data.email;
-        OldUsername.current = { value: data.username };
-        OldEmail.current = { value: data.email };
+        setInitialData(data);
       } catch (error) {
         console.error(error);
       }
@@ -57,92 +81,171 @@ export default function Account() {
     getData();
   }, []);
 
-  async function updateData() {
+  const handleChange = (field, value) => {
+    setEditedData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+    setIsButtonDisabled(false);
+  };
+
+  const handleSubmit = async () => {
     try {
-      const response = await api.patch("/account-update", {});
-      console.log(response);
+      const response = await api.patch("/account-update", editedData);
+      if (response.data.success) {
+        setPopupMessage("Changes saved successfully!");
+        setPopupEmotion("positive");
+      } else {
+        setPopupMessage("Failed to save changes.");
+        setPopupEmotion("warning");
+      }
     } catch (error) {
       console.log(error);
+      setPopupMessage("An error occurred.");
+      setPopupEmotion("negative");
     }
-  }
+  };
 
   return (
     <div className="container-settings">
       <div className="window-settings">
         <div className="settings-left">
           <div className="account-input-container">
-            <span
-              onMouseEnter={() => setSpan("username")}
-              className="account-text"
-            >
-              Username
-            </span>
-            <input
-              onMouseEnter={() => setSpan("username")}
-              onChange={buttonStatus}
-              className="account-input"
-              type="text"
-              ref={username}
-            />
-            <span
-              onMouseEnter={() => setSpan("email")}
-              className="account-text"
-            >
-              Email Address
-            </span>
-            <input
-              onMouseEnter={() => setSpan("email")}
-              onChange={buttonStatus}
-              className="account-input"
-              type="email"
-              ref={email}
-            />
-            <span
-              onMouseEnter={() => setSpan("password")}
-              className="account-text"
-            >
-              Old Password
-            </span>
-            <input
-              onMouseEnter={() => setSpan("password")}
-              autoComplete="current-password"
-              name="password"
-              type="password"
-              className="account-input"
-              ref={oldPass}
-              onChange={buttonStatus}
-            />
-            <span
-              onMouseEnter={() => setSpan("password")}
-              className="account-text"
-            >
-              New Password
-            </span>
-            <input
-              onMouseEnter={() => setSpan("password")}
-              autoComplete="current-password"
-              name="password"
-              type="password"
-              className="account-input"
-              ref={newPass}
-              onChange={buttonStatus}
-            />
-            <span
-              onMouseEnter={() => setSpan("password")}
-              className="account-text"
-            >
-              Confirm New Password
-            </span>
-            <input
-              onMouseEnter={() => setSpan("password")}
-              className="account-input"
-              autoComplete="current-password"
-              name="password"
-              type="password"
-              ref={confirmPass}
-              onChange={buttonStatus}
-            />
+            <div className="input-group">
+              <span
+                onMouseEnter={() => setSpan("username")}
+                className="account-text"
+              >
+                Username
+              </span>
+              <input
+                onMouseEnter={() => setSpan("username")}
+                onChange={(e) => handleChange("username", e.target.value)}
+                className="account-input account-top-input"
+                type="text"
+                ref={username}
+              />
+            </div>
+
+            <div className="input-group">
+              <span
+                onMouseEnter={() => setSpan("email")}
+                className="account-text"
+              >
+                Email Address
+              </span>
+              <input
+                onMouseEnter={() => setSpan("email")}
+                onChange={(e) => handleChange("email", e.target.value)}
+                className="account-input account-top-input"
+                type="email"
+                ref={email}
+              />
+            </div>
+
+            <div className="input-group">
+              <span
+                onMouseEnter={() => setSpan("password")}
+                className="account-text"
+              >
+                Old Password
+              </span>
+              <div
+                className="custom_input-acc"
+                style={{ position: "relative" }}
+              >
+                <input
+                  onMouseEnter={() => setSpan("password")}
+                  autoComplete="current-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className="account-input"
+                  ref={oldPass}
+                  onChange={(e) => handleChange("oldPass", e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn-pass-acc"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <MdOutlineLockOpen size={30} />
+                  ) : (
+                    <MdOutlineLock size={30} />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="input-group">
+              <span
+                onMouseEnter={() => setSpan("password")}
+                className="account-text"
+              >
+                New Password
+              </span>
+              <div
+                className="custom_input-acc"
+                style={{ position: "relative" }}
+              >
+                <input
+                  onMouseEnter={() => setSpan("password")}
+                  autoComplete="current-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className="account-input"
+                  ref={newPass}
+                  onChange={(e) => handleChange("newPass", e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn-pass-acc"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <MdOutlineLockOpen size={30} />
+                  ) : (
+                    <MdOutlineLock size={30} />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="input-group">
+              <span
+                onMouseEnter={() => setSpan("password")}
+                className="account-text"
+              >
+                Confirm New Password
+              </span>
+              <div
+                className="custom_input-acc"
+                style={{ position: "relative" }}
+              >
+                <input
+                  onMouseEnter={() => setSpan("password")}
+                  autoComplete="current-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className="account-input"
+                  ref={confirmPass}
+                  onChange={(e) => handleChange("confirmPass", e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn-pass-acc"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <MdOutlineLockOpen size={30} />
+                  ) : (
+                    <MdOutlineLock size={30} />
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
+
           <div
             onMouseEnter={() => setSpan("buttons")}
             className="account-buttons"
@@ -150,7 +253,12 @@ export default function Account() {
             <button
               style={{ "--buttonColor": "var(--secondary)" }}
               className="button"
-              // onClick={deleteAccount}
+              onClick={() =>
+                showConfirm(
+                  "Are you sure you want to delete your account?",
+                  deleteAccount
+                )
+              }
             >
               DELETE ACCOUNT
             </button>
@@ -158,7 +266,12 @@ export default function Account() {
             <button
               style={{ "--buttonColor": "var(--highlight)" }}
               className="button"
-              onClick={updateData}
+              onClick={() =>
+                showConfirm(
+                  "Czy chcesz zaktualizowac swoje dane?",
+                  handleSubmit
+                )
+              }
               disabled={isButtonDisabled}
             >
               SAVE CHANGES
@@ -169,7 +282,7 @@ export default function Account() {
         {/* descriptions */}
         <div className="settings-right">
           <div className="explanation">
-          <span
+            <span
               className={`${activeSpan === "username" ? "" : "hide-span-sett"}`}
             >
               zmień swój nickname
@@ -200,9 +313,9 @@ export default function Account() {
           onClose={() => setPopupMessage("")}
         />
       )}
-      {/* {confirmMessage && (
+      {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
-      )} */}
+      )}
     </div>
   );
 }

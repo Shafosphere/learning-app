@@ -2,29 +2,72 @@
     display: flex;
     flex-direction: column;
 }
+.input-group{
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0.5rem 1.5rem 0.5rem;
+    border-bottom: solid 1px var(--border);
+    border-radius: 10px;
+}
+.input-group:hover{
+    background-color: var(--border);
+}
 .account-text{
-    margin-top: 2rem;
-    margin-bottom: 0.5rem;
     text-transform: uppercase;
     font-weight: 600;
     color: var(--paragraph);
-    
+    margin-bottom: 0.5rem;
 }
-.account-input{
-    padding: 0.4rem;
-    border-radius: 10px;
-    border: 4px solid;
-    font-size: 17px;
+.account-input {
+    padding: 0.2rem 1rem 0.2rem 1rem;
+    border-radius: 10px 0px 0px 10px;
+    border: 4px solid var(--border); 
+    border-right: none;
+    font-size: 20px;
     font-weight: 500;
-    border-color: var(--border);
     color: var(--paragraph);
     background-color: var(--background);
+    height: 3rem;
+    width: 100%;
 }
+
 .account-buttons{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin: 2rem 0rem 1rem 0rem;
-    border-top: 2px solid var(--border);
-    padding: 2rem 0rem 0rem 0rem;
+    margin: 1rem 0rem 1rem 0rem;
+    padding: 1rem 0.5rem 0rem 0.5rem;
 }
+.btn-pass-acc{
+    height: 3rem;
+    width: 3rem;
+    background: var(--background);
+    color: var(--headline);
+    border-radius: 0px 10px 10px 0px;
+    border: 4px solid var(--border); 
+    border-left: none; 
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .btn-pass-acc:hover{
+    scale: 105%;
+    cursor: pointer;
+  }
+  .btn-pass-acc:active{
+    background: var(--border);
+  }
+
+  .custom_input-acc {
+    display: flex;
+    align-items: center;
+    position: relative;
+    gap: 0.1rem;
+    max-width: 100%;
+  }
+
+  .account-top-input{
+    border: 4px solid var(--border);
+    border-radius: 10px;
+  }

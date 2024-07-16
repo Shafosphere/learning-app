@@ -73,7 +73,7 @@ export default function RegiForm({ setDisplay }) {
         <div className="container-input">
           <div className="custom_input">
             <input
-              className="input"
+              className="input-login"
               type="text"
               value={username}
               autoComplete="username"
@@ -87,7 +87,7 @@ export default function RegiForm({ setDisplay }) {
           </div>
           <div className="custom_input">
             <input
-              className="input"
+              className="input-login"
               type="email"
               value={email}
               autoComplete="username"
@@ -101,7 +101,7 @@ export default function RegiForm({ setDisplay }) {
           </div>
           <div className="custom_input" style={{ position: "relative" }}>
             <input
-              className="input"
+              className="input-login"
               type={showPassword ? "text" : "password"}
               value={password}
               autoComplete="new-password"
@@ -122,7 +122,7 @@ export default function RegiForm({ setDisplay }) {
           </div>
           <div className="custom_input" style={{ position: "relative" }}>
             <input
-              className="input"
+              className="input-login"
               type={showConfirmPassword ? "text" : "password"}
               value={confirmPass}
               autoComplete="new-password"

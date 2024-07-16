@@ -389,8 +389,7 @@ app.post("/data", async (req, res) => {
 });
 
 app.post("/account-data", authenticateToken, async (req, res) => {
-  console.log(req.user);
-  const username = req.user.username; // Poprawka tutaj
+  const username = req.user.username; 
   let email;
 
   try {
@@ -398,7 +397,7 @@ app.post("/account-data", authenticateToken, async (req, res) => {
       "SELECT email FROM users WHERE username = $1",
       [username]
     );
-    email = userResult.rows[0].email; // Poprawka tutaj
+    email = userResult.rows[0].email; 
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({
@@ -407,20 +406,106 @@ app.post("/account-data", authenticateToken, async (req, res) => {
     });
   }
 
-  console.log(username);
   res.status(200).json({
     success: true,
     message: "Data received",
-    username: req.user.username, // Poprawka tutaj
-    email: email, // Poprawka tutaj
+    username: req.user.username,
+    email: email,
   });
 });
 
-app.patch('/account-update', authenticateToken, async (req, res) => {
-  console.log('dziala');
-  res.status(200).json({
-    success: true,
-  });
+const accountUpdateValidationRules = [
+  body("username").optional().isLength({ min: 4 }).trim().escape(),
+  body("email").optional().isEmail().normalizeEmail(),
+  body("oldPass").optional().isLength({ min: 6 }).trim(),
+  body("newPass").optional().isLength({ min: 6 }).trim(),
+  body("confirmPass").optional().custom((value, { req }) => {
+    if (value !== req.body.newPass) {
+      throw new Error('Passwords do not match');
+    }
+    return true;
+  }),
+];
+
+app.patch('/account-update', authenticateToken, accountUpdateValidationRules, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { username, email, oldPass, newPass } = req.body;
+  const userId = req.user.id; // Assuming the user ID is available after authentication
+
+  try {
+    // Fetch current user data
+    const userResult = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
+    const user = userResult.rows[0];
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check old password if provided
+    if (oldPass && !await bcrypt.compare(oldPass, user.password)) {
+      return res.status(400).json({ message: 'Old password is incorrect' });
+    }
+
+    // Hash new password if provided
+    let hashedPassword = user.password;
+    if (newPass) {
+      hashedPassword = await bcrypt.hash(newPass, 10);
+    }
+
+    // Update user data
+    const updatedUser = {
+      username: username || user.username,
+      email: email || user.email,
+      password: hashedPassword,
+    };
+
+    await db.query(
+      'UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4',
+      [updatedUser.username, updatedUser.email, updatedUser.password, userId]
+    );
+
+    // Generate a new token
+    const newToken = generateToken(updatedUser);
+
+    // Clear the old token and set the new token
+    res.cookie("token", newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 3600000, // 1 hour
+    });
+
+    res.status(200).json({ success: true, message: 'Account updated successfully!', token: newToken });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to update account.' });
+  }
+});
+
+app.delete('/delete-account', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    // Delete the user account
+    await db.query('DELETE FROM users WHERE id = $1', [userId]);
+
+    // Clear the token
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    });
+
+    res.status(200).json({ success: true, message: 'Account deleted and logged out successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to delete account.' });
+  }
 });
 
 app.listen(port, () => {
