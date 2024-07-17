@@ -53,6 +53,9 @@
     margin: 0.5rem 0.5rem 0rem 0rem;
   }
   
+  .close-button:hover{
+    scale: 105%;
+  }
   .report-form {
     display: flex;
     flex-direction: column;

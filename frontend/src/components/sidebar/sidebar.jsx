@@ -10,7 +10,7 @@ import { SettingsContext } from "../../pages/settings/properties";
 import "./sidebar.css";
 import { IoBug } from "react-icons/io5";
 import { IoLogoGithub } from "react-icons/io5";
-import { MdLogout } from "react-icons/md";
+import { MdLogout, MdLogin } from "react-icons/md";
 
 export default function Sidebar() {
   const { isLoggedIn, setIsLoggedIn, setUser } =
@@ -137,6 +137,17 @@ export default function Sidebar() {
                 <div className="link-text">Logout</div>
               </span>
             </div>
+          )}
+
+          {!isLoggedIn && (
+            <Link className="link" to="/login">
+              <span className="sidebar-initial link-icon">
+                <MdLogin  />
+              </span>
+              <span className="sidebar-full">
+                <div className="link-text">Login</div>
+              </span>
+            </Link>
           )}
 
           <a

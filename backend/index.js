@@ -508,6 +508,40 @@ app.delete('/delete-account', authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/words', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { page = 1, limit = 50 } = req.query;
+
+  console.log(`Fetching words for page: ${page}, limit: ${limit}`);
+  try {
+    const offset = (page - 1) * limit;
+    console.log(`Calculated offset: ${offset}`);
+    const result = await db.query('SELECT * FROM word ORDER BY id LIMIT $1 OFFSET $2', [parseInt(limit), offset]);
+    console.log('Fetched words:', result.rows);
+    res.status(200).json(result.rows); // Returning status 200
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+app.get('/word-detail', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { id } = req.body;
+  const report_id = id;
+
+  try {
+    const translation_data = await db.query(
+      "SELECT * FROM translation WHERE word_id = $1",
+      [report.word_id]
+    );
+
+    response_data.translations = translation_data.rows;
+    res.json(response_data);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
