@@ -524,23 +524,77 @@ app.get('/words', authenticateToken, authorizeAdmin, async (req, res) => {
   }
 });
 
-app.get('/word-detail', authenticateToken, authorizeAdmin, async (req, res) => {
+app.post('/word-detail', authenticateToken, authorizeAdmin, async (req, res) => {
   const { id } = req.body;
-  const report_id = id;
 
   try {
     const translation_data = await db.query(
       "SELECT * FROM translation WHERE word_id = $1",
-      [report.word_id]
+      [id]
     );
 
-    response_data.translations = translation_data.rows;
+    const response_data = {
+      translations: translation_data.rows
+    };
+
     res.json(response_data);
   } catch (error) {
     console.error(error);
     return res.status(500).send("Internal Server Error");
   }
 });
+
+app.patch(
+  "/word-update",
+  authenticateToken,
+  authorizeAdmin,
+  async (req, res) => {
+    const { word } = req.body;
+    try {
+      const translations = word.translations;
+
+      for (const translation of translations) {
+        await db.query(
+          `UPDATE translation
+          SET translation = $1, description = $2
+          WHERE word_id = $3 AND language = $4`,
+          [
+            translation.translation,
+            translation.description,
+            translation.word_id,
+            translation.language,
+          ]
+        );
+      }
+
+      res.status(200).send("Translations updated successfully.");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+
+app.get('/search', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    let result;
+    if (!isNaN(query)) {
+      // Jeśli query jest liczbą
+      result = await db.query('SELECT * FROM word WHERE id = $1', [parseInt(query)]);
+    } else {
+      // Jeśli query jest ciągiem znaków
+      result = await db.query('SELECT * FROM word WHERE word ILIKE $1', [`%${query}%`]);
+    }
+    console.log(result.rows);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
