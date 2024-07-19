@@ -13,7 +13,8 @@ const app = express();
 const port = 8080;
 
 // B2 > 2974 < C1
-const maxWordId = 2974;
+// B2 >= 3264 < C1
+const maxWordId = 3264;
 const minWordId = 1;
 
 const DATABASE = process.env.REACT_APP_DATABASE;

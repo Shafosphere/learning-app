@@ -66,7 +66,7 @@ export default function WordsPanel() {
   const handleSearchChange = async (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-  
+
     if (value.length > 0) {
       try {
         const response = await api.get(`/search?query=${value}`);
@@ -83,13 +83,11 @@ export default function WordsPanel() {
       setSearchResults([]);
     }
   };
-  
-
 
   return (
     <>
       <div className="words-container">
-        <div className="searchbar">
+        <div className="searchbar" tabindex="0">
           <input
             type="text"
             placeholder="Search by ID or word"
@@ -99,21 +97,24 @@ export default function WordsPanel() {
           {searchResults.length > 0 && (
             <div className="search-results">
               <ul>
-                {searchResults.map((result) => (
+                {searchResults.map((result, index) => (
                   <li
                     key={result.id}
+                    className={index % 2 === 0 ? "even" : "odd"}
                     onClick={() => {
-                      clickedWord(result.id)
+                      clickedWord(result.id);
                     }}
                   >
-                    <span>{result.id}</span>
-                    <span>{result.word}</span>
+                    <span className="id-span">{result.id}</span>
+                    <span className="word-span">{result.word}</span>
+                    <span className="level-span">
+                      {result.id > 3264 ? "C2" : "B2"}
+                    </span>
                   </li>
                 ))}
               </ul>
             </div>
           )}
-
         </div>
         <div className="words-table">
           <InfiniteScroll
