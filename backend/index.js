@@ -71,7 +71,6 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-
 const authorizeAdmin = (req, res, next) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({
@@ -401,7 +400,7 @@ app.post("/data", async (req, res) => {
 });
 
 app.post("/account-data", authenticateToken, async (req, res) => {
-  const username = req.user.username; 
+  const username = req.user.username;
   let email;
 
   try {
@@ -409,7 +408,7 @@ app.post("/account-data", authenticateToken, async (req, res) => {
       "SELECT email FROM users WHERE username = $1",
       [username]
     );
-    email = userResult.rows[0].email; 
+    email = userResult.rows[0].email;
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({
@@ -431,80 +430,96 @@ const accountUpdateValidationRules = [
   body("email").optional().isEmail().normalizeEmail(),
   body("oldPass").optional().isLength({ min: 6 }).trim(),
   body("newPass").optional().isLength({ min: 6 }).trim(),
-  body("confirmPass").optional().custom((value, { req }) => {
-    if (value !== req.body.newPass) {
-      throw new Error('Passwords do not match');
-    }
-    return true;
-  }),
+  body("confirmPass")
+    .optional()
+    .custom((value, { req }) => {
+      if (value !== req.body.newPass) {
+        throw new Error("Passwords do not match");
+      }
+      return true;
+    }),
 ];
 
-app.patch('/account-update', authenticateToken, accountUpdateValidationRules, async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+app.patch(
+  "/account-update",
+  authenticateToken,
+  accountUpdateValidationRules,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, email, oldPass, newPass } = req.body;
+    const userId = req.user.id; // Assuming the user ID is available after authentication
+
+    try {
+      // Fetch current user data
+      const userResult = await db.query("SELECT * FROM users WHERE id = $1", [
+        userId,
+      ]);
+      const user = userResult.rows[0];
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Check old password if provided
+      if (oldPass && !(await bcrypt.compare(oldPass, user.password))) {
+        return res.status(400).json({ message: "Old password is incorrect" });
+      }
+
+      // Hash new password if provided
+      let hashedPassword = user.password;
+      if (newPass) {
+        hashedPassword = await bcrypt.hash(newPass, 10);
+      }
+
+      // Update user data
+      const updatedUser = {
+        username: username || user.username,
+        email: email || user.email,
+        password: hashedPassword,
+      };
+
+      await db.query(
+        "UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4",
+        [updatedUser.username, updatedUser.email, updatedUser.password, userId]
+      );
+
+      // Generate a new token
+      const newToken = generateToken(updatedUser);
+
+      // Clear the old token and set the new token
+      res.cookie("token", newToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+        maxAge: 3600000, // 1 hour
+      });
+
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "Account updated successfully!",
+          token: newToken,
+        });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ success: false, message: "Failed to update account." });
+    }
   }
+);
 
-  const { username, email, oldPass, newPass } = req.body;
-  const userId = req.user.id; // Assuming the user ID is available after authentication
-
-  try {
-    // Fetch current user data
-    const userResult = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
-    const user = userResult.rows[0];
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Check old password if provided
-    if (oldPass && !await bcrypt.compare(oldPass, user.password)) {
-      return res.status(400).json({ message: 'Old password is incorrect' });
-    }
-
-    // Hash new password if provided
-    let hashedPassword = user.password;
-    if (newPass) {
-      hashedPassword = await bcrypt.hash(newPass, 10);
-    }
-
-    // Update user data
-    const updatedUser = {
-      username: username || user.username,
-      email: email || user.email,
-      password: hashedPassword,
-    };
-
-    await db.query(
-      'UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4',
-      [updatedUser.username, updatedUser.email, updatedUser.password, userId]
-    );
-
-    // Generate a new token
-    const newToken = generateToken(updatedUser);
-
-    // Clear the old token and set the new token
-    res.cookie("token", newToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 3600000, // 1 hour
-    });
-
-    res.status(200).json({ success: true, message: 'Account updated successfully!', token: newToken });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Failed to update account.' });
-  }
-});
-
-app.delete('/delete-account', authenticateToken, async (req, res) => {
+app.delete("/delete-account", authenticateToken, async (req, res) => {
   const userId = req.user.id;
 
   try {
     // Delete the user account
-    await db.query('DELETE FROM users WHERE id = $1', [userId]);
+    await db.query("DELETE FROM users WHERE id = $1", [userId]);
 
     // Clear the token
     res.clearCookie("token", {
@@ -513,48 +528,63 @@ app.delete('/delete-account', authenticateToken, async (req, res) => {
       sameSite: "Strict",
     });
 
-    res.status(200).json({ success: true, message: 'Account deleted and logged out successfully.' });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Account deleted and logged out successfully.",
+      });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: 'Failed to delete account.' });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to delete account." });
   }
 });
 
-app.get('/words', authenticateToken, authorizeAdmin, async (req, res) => {
+app.get("/words", authenticateToken, authorizeAdmin, async (req, res) => {
   const { page = 1, limit = 50 } = req.query;
 
   console.log(`Fetching words for page: ${page}, limit: ${limit}`);
   try {
     const offset = (page - 1) * limit;
     console.log(`Calculated offset: ${offset}`);
-    const result = await db.query('SELECT * FROM word ORDER BY id LIMIT $1 OFFSET $2', [parseInt(limit), offset]);
-    console.log('Fetched words:', result.rows);
+    const result = await db.query(
+      "SELECT * FROM word ORDER BY id LIMIT $1 OFFSET $2",
+      [parseInt(limit), offset]
+    );
+    console.log("Fetched words:", result.rows);
     res.status(200).json(result.rows); // Returning status 200
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 });
 
-app.post('/word-detail', authenticateToken, authorizeAdmin, async (req, res) => {
-  const { id } = req.body;
+app.post(
+  "/word-detail",
+  authenticateToken,
+  authorizeAdmin,
+  async (req, res) => {
+    const { id } = req.body;
 
-  try {
-    const translation_data = await db.query(
-      "SELECT * FROM translation WHERE word_id = $1",
-      [id]
-    );
+    try {
+      const translation_data = await db.query(
+        "SELECT * FROM translation WHERE word_id = $1",
+        [id]
+      );
 
-    const response_data = {
-      translations: translation_data.rows
-    };
-    console.log(response_data)
-    res.json(response_data);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send("Internal Server Error");
+      const response_data = {
+        translations: translation_data.rows,
+      };
+      console.log(response_data);
+      res.json(response_data);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).send("Internal Server Error");
+    }
   }
-});
+);
 
 app.patch(
   "/word-update",
@@ -587,23 +617,92 @@ app.patch(
   }
 );
 
-app.get('/search', authenticateToken, authorizeAdmin, async (req, res) => {
+app.get("/search", authenticateToken, authorizeAdmin, async (req, res) => {
   const { query } = req.query;
 
   try {
     let result;
     if (!isNaN(query)) {
       // Jeśli query jest liczbą
-      result = await db.query('SELECT * FROM word WHERE id = $1', [parseInt(query)]);
+      result = await db.query("SELECT * FROM word WHERE id = $1", [
+        parseInt(query),
+      ]);
     } else {
       // Jeśli query jest ciągiem znaków
-      result = await db.query('SELECT * FROM word WHERE word ILIKE $1', [`%${query}%`]);
+      result = await db.query("SELECT * FROM word WHERE word ILIKE $1", [
+        `%${query}%`,
+      ]);
     }
     console.log(result.rows);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
+  }
+});
+
+app.post("/add-word", authenticateToken, authorizeAdmin, async (req, res) => {
+  const { translations } = req.body;
+
+  // Find the English translation
+  const englishTranslation = translations.find(t => t.language === 'en');
+  if (!englishTranslation) {
+    return res.status(400).send("English translation is required.");
+  }
+
+  const word = englishTranslation.translation;
+
+  try {
+    // Insert the word and get the new word ID
+    const wordResult = await db.query(
+      'INSERT INTO word (word) VALUES ($1) RETURNING id',
+      [word]
+    );
+    const wordId = wordResult.rows[0].id;
+
+    // Prepare translation promises
+    const translationPromises = translations.map((translation) => {
+      return db.query(
+        'INSERT INTO translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)',
+        [wordId, translation.language, translation.translation, translation.description]
+      );
+    });
+
+    // Execute all translation queries
+    await Promise.all(translationPromises);
+
+    res.status(200).send("Word added successfully.");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred while adding the word.");
+  }
+});
+
+app.delete("/word-delete", authenticateToken, authorizeAdmin, async (req, res) => {
+  const client = await pool.connect();
+  const { id } = req.body;
+
+  try {
+    await client.query('BEGIN');
+
+    await client.query(
+      'DELETE FROM translation WHERE word_id = $1',
+      [id]
+    );
+
+    await client.query(
+      'DELETE FROM word WHERE id = $1',
+      [id]
+    );
+
+    await client.query('COMMIT');
+    res.status(200).send("Word and its translations deleted successfully.");
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).send("An error occurred while deleting the word.");
+  } finally {
+    client.release();
   }
 });
 

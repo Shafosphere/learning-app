@@ -83,18 +83,32 @@ export default function WordDetail({ word, setWord }) {
             </div>
             <div className="buttons-reports">
               {word.translations && (
-                <button
-                  className="button"
-                  style={{ "--buttonColor": "var(--highlight)" }}
-                  onClick={() =>
-                    showConfirm(
-                      "Are you sure you want to update your data?",
-                      () => updateData()
-                    )
-                  }
-                >
-                  update changes
-                </button>
+                <>
+                  <button
+                    className="button"
+                    style={{ "--buttonColor": "var(--secondary)" }}
+                    // onClick={() =>
+                    //   showConfirm(
+                    //     "Are you sure you want to update your data?",
+                    //     () => updateData()
+                    //   )
+                    // }
+                  >
+                    delete word
+                  </button>
+                  <button
+                    className="button"
+                    style={{ "--buttonColor": "var(--highlight)" }}
+                    onClick={() =>
+                      showConfirm(
+                        "Are you sure you want to update your data?",
+                        () => updateData()
+                      )
+                    }
+                  >
+                    update changes
+                  </button>
+                </>
               )}
             </div>
           </div>

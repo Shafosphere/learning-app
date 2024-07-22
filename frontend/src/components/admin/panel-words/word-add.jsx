@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Popup from "../../popup/popup";
 import ConfirmWindow from "../../confirm/confirm";
+import api from "../../../utils/api";
 
 export default function AddWord() {
   // popup
@@ -46,8 +47,17 @@ export default function AddWord() {
     setWord({ ...word, translations: newTranslations });
   };
 
-  function addWord() {
+  async function addWord() {
     console.log("works");
+    try {
+      const response = await api.post("/add-word", { word: word });
+      setPopupEmotion("positive");
+      setPopupMessage(response.data);
+    } catch (error) {
+      console.log(error);
+      setPopupEmotion("negative");
+      setPopupMessage(error.response?.data || "An error occurred");
+    }
   }
 
   return (
