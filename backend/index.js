@@ -52,14 +52,25 @@ const generateToken = (user) => {
 
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
-  if (!token) return res.sendStatus(401);
+  if (!token) {
+    return res.status(403).json({
+      success: false,
+      message: "Token not found. Please login.",
+    });
+  }
 
   jwt.verify(token, process.env.REACT_APP_TOKEN_KEY, (err, user) => {
-    if (err) return res.sendStatus(401);
+    if (err) {
+      return res.status(403).json({
+        success: false,
+        message: "Invalid or expired token. Please login again.",
+      });
+    }
     req.user = user;
     next();
   });
 };
+
 
 const authorizeAdmin = (req, res, next) => {
   if (req.user.role !== "admin") {
@@ -537,7 +548,7 @@ app.post('/word-detail', authenticateToken, authorizeAdmin, async (req, res) => 
     const response_data = {
       translations: translation_data.rows
     };
-
+    console.log(response_data)
     res.json(response_data);
   } catch (error) {
     console.error(error);

@@ -49,29 +49,38 @@ export default function WordDetail({ word, setWord }) {
       {word.translations && (
         <>
           <div className="word-details">
-            {word.translations.map((translation, index) => (
-              <div key={translation.id} className="translation-item">
-                <div>
-                  <h4>Word ({translation.language.toUpperCase()})</h4>
-                  <input
-                    type="text"
-                    value={translation.translation}
-                    onChange={(e) =>
-                      handleInputChange(index, "translation", e.target.value)
-                    }
-                  />
+            <div className="translation-container">
+              {word.translations.map((translation, index) => (
+                <div key={translation.id} className="translation-item-words">
+                  <div>
+                    <div className="translation-header">
+                      <span className="input-header">Word </span>
+                      <span>
+                        <h4>{translation.language}</h4>
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      value={translation.translation}
+                      onChange={(e) =>
+                        handleInputChange(index, "translation", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <div className="translation-header">
+                      <span className="input-header">description</span>
+                    </div>
+                    <textarea
+                      value={translation.description}
+                      onChange={(e) =>
+                        handleInputChange(index, "description", e.target.value)
+                      }
+                    />
+                  </div>
                 </div>
-                <div>
-                  <h4>Description ({translation.language.toUpperCase()})</h4>
-                  <textarea
-                    value={translation.description}
-                    onChange={(e) =>
-                      handleInputChange(index, "description", e.target.value)
-                    }
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
             <div className="buttons-reports">
               {word.translations && (
                 <button

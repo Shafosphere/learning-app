@@ -6,34 +6,24 @@
     width: 12.5rem;
     flex: 0 0 12.5rem;
     padding: 2rem 0rem 2rem 0rem;
-
+/* 
     border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 }
 .plate {
     display: flex;
     flex-direction: row;
-    justify-content: center;
     color: var(--headline);
     gap: 1.5rem;
-
-    border-bottom: solid 2px var(--border);
-    padding: 0.5rem 0rem 0.5rem 0rem;
+    padding: 0.75rem 0.5rem 0.75rem 2rem;
 }
 .plate:hover{
     background-color: var(--border);
     cursor: pointer;
 }
-/* Górne obramowanie dla pierwszego elementu */
-.plate.first {
-    border-top: solid 2px var(--border);
+.plate:active{
+    scale: 105%;
 }
-
-/* Brak dolnego obramowania dla ostatniego elementu */
-.plate.last {
-    border-bottom: solid 2px var(--border);
-}
-
 
 .plate-icon{
     font-size: 40px;

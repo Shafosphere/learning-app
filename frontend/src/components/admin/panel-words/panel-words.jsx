@@ -2,7 +2,7 @@ import "./panel-words.css";
 import api from "../../../utils/api";
 import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { FaSearch } from "react-icons/fa";
+import AddWord from "./word-add";
 
 import WordDetail from "./word-details";
 export default function WordsPanel() {
@@ -13,6 +13,7 @@ export default function WordsPanel() {
   const [word, setWord] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Dodanie searchTerm
   const [searchResults, setSearchResults] = useState([]);
+  const [focus, setFocus] = useState("");
 
   async function getWords(page) {
     try {
@@ -59,6 +60,7 @@ export default function WordsPanel() {
   }
 
   async function clickedWord(id) {
+    setFocus("detail");
     setActiveId(id);
     await wordData(id);
   }
@@ -87,7 +89,7 @@ export default function WordsPanel() {
   return (
     <>
       <div className="words-container">
-        <div className="searchbar" tabindex="0">
+        <div className="searchbar" tabIndex="0">
           <input
             type="text"
             placeholder="Search by ID or word"
@@ -122,7 +124,7 @@ export default function WordsPanel() {
             next={getMoreWords}
             hasMore={hasMore}
             loader={<h4>Loading...</h4>}
-            height={800}
+            height={720}
             endMessage={
               <p style={{ textAlign: "center" }}>
                 <b>You have seen it all!</b>
@@ -153,7 +155,13 @@ export default function WordsPanel() {
           </InfiniteScroll>
         </div>
       </div>
-      <WordDetail word={word} setWord={setWord} />
+      <div className="empty-panel">
+        <div onClick={() => setFocus("addword")} className="add-word button">
+          add word
+        </div>
+        {focus === "addword" && <AddWord />}
+        {focus === "detail" && <WordDetail word={word} setWord={setWord} />}
+      </div>
     </>
   );
 }
