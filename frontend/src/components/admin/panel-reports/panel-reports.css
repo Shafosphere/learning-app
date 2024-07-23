@@ -28,7 +28,7 @@
 
 .reports-table tr:hover {
   cursor: pointer;
-  background-color: var(--background);
+  background-color: var(--highlight);
 }
 
 .reports-table th {
@@ -39,7 +39,9 @@
   padding-bottom: 1rem;
   text-align: center;
 }
-
+.reports-table th:hover{
+  font-weight: 900;
+}
 .report-details {
   width: 100%;
   height: 100%;
