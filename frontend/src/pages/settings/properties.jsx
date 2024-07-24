@@ -143,14 +143,29 @@ export const SettingsProvider = ({ children }) => {
   }, [user]);
 
   const calculatePercent = () => {
+    console.log('calculatePercent');
     const wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
-    const startIndex = wordIds.indexOf(lastID);
-
-    if (startIndex !== -1) {
-      const newArray = wordIds.filter((_, index) => index > startIndex);
-      console.log(newArray.length);
+    console.log('wordIds:', wordIds);
+    console.log('lastID:', lastID);
+  
+    let startIndex = wordIds.indexOf(lastID);
+    console.log('startIndex:', startIndex);
+  
+    // Jeśli lastID jest równy 0 lub lastID znajduje się w wordIds
+    if (lastID === 0 || startIndex !== -1) {
+      // Jeżeli lastID jest równy 0, używamy całej tablicy wordIds
+      const newArray = lastID === 0 ? wordIds : wordIds.slice(startIndex + 1);
+      console.log('newArray:', newArray);
+  
+      // Obliczanie procentu ukończenia
       const percentComplete = (newArray.length * 100) / dailyGoal;
+      console.log('percentComplete:', percentComplete);
+  
+      // Zaokrąglanie procentu
       const roundedPercentComplete = parseFloat(percentComplete.toFixed(2));
+      console.log('roundedPercentComplete:', roundedPercentComplete);
+  
+      // Ustawienie nowej wartości procentu
       setProcent(roundedPercentComplete);
     } else {
       console.log("Element not found");

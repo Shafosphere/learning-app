@@ -194,6 +194,7 @@ export default function Home() {
     }
   }
 
+  //save progress
   function brunWords() {
     // console.log(boxes[activeBox][1].id);
     let db;
