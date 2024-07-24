@@ -9,6 +9,7 @@ import Popup from "../../components/popup/popup";
 import Progressbar from "../../components/home/bar/bar";
 
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
+import { addWord, getAllWords, getWordsByIds } from "../../utils/indexedDB";
 import { SettingsContext } from "../settings/properties";
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -95,7 +96,7 @@ export default function Home() {
     setActiveBox(item);
   }
 
-  function moveWord(id, chosen_word, moveToFirst = false) {
+  async function moveWord(id, chosen_word, moveToFirst = false) {
     const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
     const currentBoxIndex = boxOrder.indexOf(activeBox);
     let nextBox = boxOrder[currentBoxIndex + 1];
@@ -108,26 +109,31 @@ export default function Home() {
     }
     if (activeBox === "boxFive" && !moveToFirst) {
       const newid = randomWord.id;
-      let wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
-      if (!wordIds.includes(newid)) {
-        wordIds.push(newid);
-        localStorage.setItem("wordIds", JSON.stringify(wordIds));
+      const wordIds = await getAllWords();
+      if (!wordIds.some(word => word.id === newid)) {
+        await addWord(newid);
         calculatePercent();
         calculateTotalPercent();
       }
-
+    
       setBoxes((prevBoxes) => {
         const updatedBoxFive = prevBoxes[activeBox].filter(
           (obiekt) =>
             obiekt.wordPl.word !== chosen_word &&
             obiekt.wordEng.word !== chosen_word
         );
+        
+        if (updatedBoxFive.length === 0) {
+          setRandom(null);
+        }
+    
         return {
           ...prevBoxes,
           [activeBox]: updatedBoxFive,
         };
       });
     }
+    
 
     if (moveToFirst || currentBoxIndex < boxOrder.length - 1) {
       const find_word = boxes[activeBox].filter(
@@ -179,18 +185,17 @@ export default function Home() {
       });
     });
 
-    const storedWordIds = localStorage.getItem("wordIds");
     try {
-      const wordIds = storedWordIds ? JSON.parse(storedWordIds) : [];
+      const wordIds = await getAllWords();
       const response = await axios.post(
         "http://localhost:8080/data",
         { wordIds, words_used },
         { withCredentials: true }
       );
-      return response; // Return the response object
+      return response; // Zwracamy obiekt response
     } catch (error) {
       console.error("Data error:", error);
-      throw error; // Rethrow the error to be caught by the caller
+      throw error; // Ponownie rzucamy błąd do złapania przez wywołującego
     }
   }
 

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import api from "../../utils/api"; // Importuj api do wykonywania zapytań do serwera
+import { getAllWords } from "../../utils/indexedDB";
 
 export const SettingsContext = createContext();
 
@@ -142,38 +143,33 @@ export const SettingsProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(user));
   }, [user]);
 
-  const calculatePercent = () => {
+  const calculatePercent = async () => {
     console.log('calculatePercent');
-    const wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
+    const wordIds = await getAllWords();
     console.log('wordIds:', wordIds);
     console.log('lastID:', lastID);
-  
-    let startIndex = wordIds.indexOf(lastID);
+
+    let startIndex = wordIds.findIndex(word => word.id === lastID);
     console.log('startIndex:', startIndex);
-  
-    // Jeśli lastID jest równy 0 lub lastID znajduje się w wordIds
+
     if (lastID === 0 || startIndex !== -1) {
-      // Jeżeli lastID jest równy 0, używamy całej tablicy wordIds
       const newArray = lastID === 0 ? wordIds : wordIds.slice(startIndex + 1);
       console.log('newArray:', newArray);
-  
-      // Obliczanie procentu ukończenia
+
       const percentComplete = (newArray.length * 100) / dailyGoal;
       console.log('percentComplete:', percentComplete);
-  
-      // Zaokrąglanie procentu
+
       const roundedPercentComplete = parseFloat(percentComplete.toFixed(2));
       console.log('roundedPercentComplete:', roundedPercentComplete);
-  
-      // Ustawienie nowej wartości procentu
+
       setProcent(roundedPercentComplete);
     } else {
       console.log("Element not found");
     }
   };
-
-  const calculateTotalPercent = () => {
-    const wordIds = JSON.parse(localStorage.getItem("wordIds")) || [];
+  
+  const calculateTotalPercent = async () => {
+    const wordIds = await getAllWords();
     const percentComplete = (wordIds.length * 100) / 2974;
     const roundedPercentComplete = parseFloat(percentComplete.toFixed(2));
     setTotalPercent(roundedPercentComplete);
