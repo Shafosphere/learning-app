@@ -17,23 +17,18 @@ async function initDB() {
   });
 }
 
-// Sprawdza, czy dane słowo już istnieje w bazie danych
-// async function wordExists(word) {
-//   const db = await initDB();
-//   const index = db.transaction(STORE_NAME).store.index("word");
-//   const result = await index.get(word);
-//   return result !== undefined;
-// }
-
 // Dodaje nowy wpis do bazy danych IndexedDB, jeśli słowo nie istnieje
 export async function addWord(word) {
   const db = await initDB();
-//   if (await wordExists(word)) {
-//     console.log(`Word "${word}" already exists in the database.`);
-//     return;
-//   }
+  let words = await getAllWords();
+  const wordExists = words.find(entry => entry.word === word);
+  if (wordExists) {
+    console.log(`Word "${word}" already exists in the database.`);
+    return;
+  }
   return await db.add(STORE_NAME, { word });
 }
+
 
 // Pobiera wszystkie wpisy z bazy danych IndexedDB
 export async function getAllWords() {
