@@ -22,7 +22,7 @@ export const SettingsProvider = ({ children }) => {
 
   const [lastID, setLastID] = useState(() => {
     const savedLastID = localStorage.getItem("lastID");
-    return savedLastID !== null ? JSON.parse(savedLastID) : null;
+    return savedLastID !== null ? JSON.parse(savedLastID) : 0;
   });
 
   const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
