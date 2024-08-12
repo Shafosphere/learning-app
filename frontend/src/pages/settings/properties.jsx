@@ -47,6 +47,11 @@ export const SettingsProvider = ({ children }) => {
     return savedTheme !== null ? savedTheme : 'light';
   });
 
+  const [level, setLevel] = useState(() => {
+    const savedLevel = localStorage.getItem("level");
+    return savedLevel !== null ? JSON.parse(savedLevel) : 'B2';
+  });
+
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const savedLoginStatus = localStorage.getItem("isLoggedIn");
     return savedLoginStatus !== null ? JSON.parse(savedLoginStatus) : false;
@@ -71,6 +76,12 @@ export const SettingsProvider = ({ children }) => {
     const newTheme = themeMode === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
+  };
+
+  const toggleLevel = () => {
+    const newLevel = level === 'C1' ? 'B2' : 'C1';
+    setLevel(newLevel);
+    localStorage.setItem('level', newLevel);
   };
 
   const toggleSound = () => {
@@ -114,6 +125,10 @@ export const SettingsProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("sound", JSON.stringify(isSoundEnabled));
   }, [isSoundEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem("level", JSON.stringify(level));
+  }, [level]);
 
   useEffect(() => {
     localStorage.setItem("lastResetDate", JSON.stringify(lastResetDate));
@@ -201,6 +216,9 @@ export const SettingsProvider = ({ children }) => {
         setIsLoggedIn,
         user,
         setUser,
+        level,
+        setLevel,
+        toggleLevel,
       }}
     >
       {children}

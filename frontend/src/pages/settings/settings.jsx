@@ -18,6 +18,8 @@ export default function Settings() {
     toggleSound,
     language,
     setLanguage,
+    level,
+    toggleLevel
   } = useContext(SettingsContext);
 
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
@@ -162,9 +164,9 @@ export default function Settings() {
               </span>
               <label className="switch">
                 <input
-                  onClick={toggleTheme}
-                  defaultChecked={themeMode === "dark"}
                   type="checkbox"
+                  checked={themeMode === "dark"}
+                  onChange={() => toggleTheme()}
                 />
                 <span className="slider round"></span>
               </label>
@@ -178,7 +180,11 @@ export default function Settings() {
                 <FormattedMessage id="c1" />
               </span>
               <label className="switch">
-                <input type="checkbox" />
+              <input
+                  onChange={() => toggleLevel()}
+                  type="checkbox"
+                  checked={level === "C1"} 
+                />
                 <span className="slider round"></span>
               </label>
             </div>
