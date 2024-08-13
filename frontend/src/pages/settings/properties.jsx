@@ -27,7 +27,7 @@ export const SettingsProvider = ({ children }) => {
 
   const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
     const savedSound = localStorage.getItem("sound");
-    return savedSound !== null ? JSON.parse(savedSound) : true;
+    return savedSound !== null ? JSON.parse(savedSound) : 'true';
   });
 
   const [language, setLanguage] = useState(() => {

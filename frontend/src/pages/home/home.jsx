@@ -51,6 +51,7 @@ export default function Home() {
     procent,
     totalPercent,
     isSoundEnabled,
+    level,
   } = useContext(SettingsContext);
 
   function check(userWord, word, id) {
@@ -179,25 +180,55 @@ export default function Home() {
   async function getData() {
     const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
     let words_used = [];
+    const maxWordId = 5260;
+    const minWordId = 1;
+    let maxRange;
+  
+    // Ustal zakres na podstawie poziomu trudności
+    if (level === "B2") {
+      maxRange = 2974;
+    } else if (level === "C1") {
+      maxRange = maxWordId;
+    } else {
+      throw new Error("Nieznany poziom trudności");
+    }
+  
+    // Pobieranie już użytych słów
+    const wordIds = new Set(await getAllWords());
+  
+    // Zbieranie ID słów z boxów
     boxOrder.forEach((item) => {
       boxes[item].forEach((second_item) => {
         words_used.push(second_item.id);
       });
     });
-
+    words_used = new Set(words_used);
+  
+    // Losowanie 20 unikalnych identyfikatorów z uwzględnieniem już użytych
+    let wordList = new Set();
+    while (wordList.size < 20) {
+      const randomWordId = Math.floor(Math.random() * (maxRange - minWordId + 1)) + minWordId;
+  
+      if (!wordIds.has(randomWordId) && !words_used.has(randomWordId)) {
+        wordList.add(randomWordId);
+      }
+    }
+  
+    wordList = Array.from(wordList);
+  
     try {
-      const wordIds = await getAllWords();
       const response = await axios.post(
         "http://localhost:8080/data",
-        { wordIds, words_used },
+        { wordIds: Array.from(wordIds), words_used: Array.from(words_used), wordList },
         { withCredentials: true }
       );
-      return response; // Zwracamy obiekt response
+      return response;
     } catch (error) {
       console.error("Data error:", error);
-      throw error; // Ponownie rzucamy błąd do złapania przez wywołującego
+      throw error;
     }
   }
+  
 
   //save progress
   function brunWords() {

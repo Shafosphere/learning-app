@@ -14,7 +14,8 @@ const port = 8080;
 
 // B2 > 2974 < C1
 // B2 >= 3264 < C1
-const maxWordId = 3264;
+// const maxWordId = 3264;
+const maxWordId = 5260;
 const minWordId = 1;
 
 const DATABASE = process.env.REACT_APP_DATABASE;
@@ -350,18 +351,7 @@ app.post("/logout", (req, res) => {
 app.post("/data", async (req, res) => {
   const wordIds = new Set(req.body.wordIds);
   const words_used = new Set(req.body.words_used);
-  let wordList = new Set();
-
-  while (wordList.size < 20) {
-    const randomWordId =
-      Math.floor(Math.random() * (maxWordId - minWordId + 1)) + minWordId;
-
-    if (!wordIds.has(randomWordId) && !words_used.has(randomWordId)) {
-      wordList.add(randomWordId);
-    }
-  }
-
-  wordList = Array.from(wordList);
+  const wordList = req.body.wordList;
 
   try {
     const results = await Promise.all(
@@ -393,11 +383,10 @@ app.post("/data", async (req, res) => {
     res.json({ message: "working", data: formattedResults });
   } catch (error) {
     console.error("Error fetching data:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching data", error: error.message });
+    res.status(500).json({ message: "Error fetching data", error: error.message });
   }
 });
+
 
 app.post("/account-data", authenticateToken, async (req, res) => {
   const username = req.user.username;
