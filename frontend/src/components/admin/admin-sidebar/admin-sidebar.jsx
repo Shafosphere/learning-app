@@ -21,7 +21,7 @@ export default function AdminSidebar({setActivePanel}) {
         <span className="plate-title">Words</span>
       </div>
 
-      <div onClick={()=> setActivePanel('reports')} className="plate first">
+      <div onClick={()=> setActivePanel('data')} className="plate first">
         <span className="plate-icon">
           <ImStatsDots />
         </span>

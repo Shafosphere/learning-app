@@ -27,3 +27,10 @@ CREATE TABLE reports (
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (word_id) REFERENCES Word(id) -- Only relevant for 'word_issue' reports
 );
+CREATE TABLE user_activity_log (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    activity_type VARCHAR(50) NOT NULL,
+    activity_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);3
