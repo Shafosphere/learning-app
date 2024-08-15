@@ -383,10 +383,11 @@ app.post("/data", async (req, res) => {
     res.json({ message: "working", data: formattedResults });
   } catch (error) {
     console.error("Error fetching data:", error);
-    res.status(500).json({ message: "Error fetching data", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching data", error: error.message });
   }
 });
-
 
 app.post("/account-data", authenticateToken, async (req, res) => {
   const username = req.user.username;
@@ -487,13 +488,11 @@ app.patch(
         maxAge: 3600000, // 1 hour
       });
 
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Account updated successfully!",
-          token: newToken,
-        });
+      res.status(200).json({
+        success: true,
+        message: "Account updated successfully!",
+        token: newToken,
+      });
     } catch (error) {
       console.error(error);
       res
@@ -517,12 +516,10 @@ app.delete("/delete-account", authenticateToken, async (req, res) => {
       sameSite: "Strict",
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Account deleted and logged out successfully.",
-      });
+    res.status(200).json({
+      success: true,
+      message: "Account deleted and logged out successfully.",
+    });
   } catch (error) {
     console.error(error);
     res
@@ -634,7 +631,7 @@ app.post("/add-word", authenticateToken, authorizeAdmin, async (req, res) => {
   const { translations } = req.body;
 
   // Find the English translation
-  const englishTranslation = translations.find(t => t.language === 'en');
+  const englishTranslation = translations.find((t) => t.language === "en");
   if (!englishTranslation) {
     return res.status(400).send("English translation is required.");
   }
@@ -644,7 +641,7 @@ app.post("/add-word", authenticateToken, authorizeAdmin, async (req, res) => {
   try {
     // Insert the word and get the new word ID
     const wordResult = await db.query(
-      'INSERT INTO word (word) VALUES ($1) RETURNING id',
+      "INSERT INTO word (word) VALUES ($1) RETURNING id",
       [word]
     );
     const wordId = wordResult.rows[0].id;
@@ -652,8 +649,13 @@ app.post("/add-word", authenticateToken, authorizeAdmin, async (req, res) => {
     // Prepare translation promises
     const translationPromises = translations.map((translation) => {
       return db.query(
-        'INSERT INTO translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)',
-        [wordId, translation.language, translation.translation, translation.description]
+        "INSERT INTO translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)",
+        [
+          wordId,
+          translation.language,
+          translation.translation,
+          translation.description,
+        ]
       );
     });
 
@@ -667,34 +669,32 @@ app.post("/add-word", authenticateToken, authorizeAdmin, async (req, res) => {
   }
 });
 
-app.delete("/word-delete", authenticateToken, authorizeAdmin, async (req, res) => {
-  const client = await pool.connect();
-  const { id } = req.body;
+app.delete(
+  "/word-delete",
+  authenticateToken,
+  authorizeAdmin,
+  async (req, res) => {
+    const client = await pool.connect();
+    const { id } = req.body;
 
-  try {
-    await client.query('BEGIN');
+    try {
+      await client.query("BEGIN");
 
-    await client.query(
-      'DELETE FROM translation WHERE word_id = $1',
-      [id]
-    );
+      await client.query("DELETE FROM translation WHERE word_id = $1", [id]);
 
-    await client.query(
-      'DELETE FROM word WHERE id = $1',
-      [id]
-    );
+      await client.query("DELETE FROM word WHERE id = $1", [id]);
 
-    await client.query('COMMIT');
-    res.status(200).send("Word and its translations deleted successfully.");
-  } catch (err) {
-    await client.query('ROLLBACK');
-    console.error(err);
-    res.status(500).send("An error occurred while deleting the word.");
-  } finally {
-    client.release();
+      await client.query("COMMIT");
+      res.status(200).send("Word and its translations deleted successfully.");
+    } catch (err) {
+      await client.query("ROLLBACK");
+      console.error(err);
+      res.status(500).send("An error occurred while deleting the word.");
+    } finally {
+      client.release();
+    }
   }
-});
-
+);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
