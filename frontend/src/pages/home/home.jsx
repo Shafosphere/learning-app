@@ -12,6 +12,7 @@ import { useEffect, useState, useRef, useCallback, useContext } from "react";
 import { addWord, getAllWords, getWordsByIds } from "../../utils/indexedDB";
 import { SettingsContext } from "../settings/properties";
 import { FormattedMessage, useIntl } from 'react-intl';
+import api from "../../utils/api";
 
 export default function Home() {
   const intl = useIntl();
@@ -180,13 +181,23 @@ export default function Home() {
   async function getData() {
     const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
     let words_used = [];
-    const maxWordId = 5260;
-    const minWordId = 1;
+    let maxWordId;
+    let minWordId;
+    let b2;
     let maxRange;
   
+    try {
+      const response = await api.get("/pre-data");
+      minWordId = response.data.minWordId;
+      maxWordId = response.data.maxWordId;
+      b2 = response.data.b2;
+    } catch (error) {
+      console.log(error);
+    }
+
     // Ustal zakres na podstawie poziomu trudności
     if (level === "B2") {
-      maxRange = 2974;
+      maxRange = b2;
     } else if (level === "C1") {
       maxRange = maxWordId;
     } else {

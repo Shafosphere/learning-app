@@ -12,11 +12,10 @@ import jwt from "jsonwebtoken";
 const app = express();
 const port = 8080;
 
-// B2 > 2974 < C1
 // B2 >= 3264 < C1
-// const maxWordId = 3264;
 const maxWordId = 5260;
 const minWordId = 1;
+const b2 = 3264;
 
 const DATABASE = process.env.REACT_APP_DATABASE;
 
@@ -346,6 +345,15 @@ app.post("/logout", (req, res) => {
     sameSite: "Strict",
   });
   res.status(200).json({ success: true, message: "Logged out successfully" });
+});
+
+app.get("/pre-data", async (req, res) => {
+  const data = {
+    b2: b2,
+    minWordId: minWordId,
+    maxWordId: maxWordId,
+  }
+  res.json(data);
 });
 
 app.post("/data", async (req, res) => {
