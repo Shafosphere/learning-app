@@ -1,13 +1,16 @@
 import "./bar.css";
-export default function Progressbar({procent, text}) {
-  const newpercent = 100 - procent
+export default function Progressbar({ procent, text }) {
+  const newpercent = 100 - procent;
   return (
     <>
       <div className="container-bar">
         <div className="wrapper">
-          <div className="progressbar"
-            style={{ "--barGradient": `var(--secondary) 0%, var(--secondary) ${newpercent}%, var(--highlight) ${newpercent}%, var(--highlight) 100%` }}
-            >
+          <div
+            className="progressbar"
+            style={{
+              "--barGradient": `var(--secondary) 0%, var(--secondary) ${newpercent}%, var(--highlight) ${newpercent}%, var(--highlight) 100%`,
+            }}
+          >
             <div className="stylization"></div>
           </div>
         </div>

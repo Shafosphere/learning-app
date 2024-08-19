@@ -9,7 +9,7 @@ import Popup from "../../components/popup/popup";
 import Progressbar from "../../components/home/bar/bar";
 
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
-import { addWord, getAllWords, getWordsByIds } from "../../utils/indexedDB";
+import { addWord, getAllWords, getStatistics } from "../../utils/indexedDB";
 import { SettingsContext } from "../settings/properties";
 import { FormattedMessage, useIntl } from 'react-intl';
 import api from "../../utils/api";

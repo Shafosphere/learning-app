@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import api from "../../utils/api"; // Importuj api do wykonywania zapytań do serwera
-import { getAllWords } from "../../utils/indexedDB";
+import { getAllWords, getStatistics } from "../../utils/indexedDB";
 
 export const SettingsContext = createContext();
 
@@ -80,8 +80,9 @@ export const SettingsProvider = ({ children }) => {
 
   const toggleLevel = () => {
     const newLevel = level === 'C1' ? 'B2' : 'C1';
-    setLevel(newLevel);
     localStorage.setItem('level', newLevel);
+    setLevel(newLevel);
+    console.log("obecny level: " + newLevel); 
   };
 
   const toggleSound = () => {
@@ -158,6 +159,10 @@ export const SettingsProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(user));
   }, [user]);
 
+  useEffect(() => {
+    calculateTotalPercent();
+  }, [level]);
+
   const calculatePercent = async () => {
     console.log('calculatePercent');
     const wordIds = await getAllWords();
@@ -185,10 +190,38 @@ export const SettingsProvider = ({ children }) => {
   
   const calculateTotalPercent = async () => {
     const wordIds = await getAllWords();
-    const percentComplete = (wordIds.length * 100) / 2974;
+    let userWords = await getStatistics();
+    
+    // Znajdź statystyki dla B2, jeśli istnieją, w przeciwnym razie ustaw domyślną wartość
+    const b2Stat = userWords.find(stat => stat.category === "B2") || { count: 0 };
+  
+    let maxWordId;
+    let b2;
+    let percentComplete;
+  
+    try {
+      const response = await api.get("/pre-data");
+      maxWordId = response.data.maxWordId;
+      b2 = response.data.b2;
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  
+    if (level === "B2") {
+      percentComplete = (b2Stat.count * 100) / b2;
+      console.log(`B2: ${b2}, liczba słów: ${b2Stat.count}`);
+    } else if (level === "C1") {
+      percentComplete = (wordIds.length * 100) / maxWordId;
+      console.log(`C1: ${maxWordId}, liczba słów: ${wordIds.length}`);
+    } else {
+      throw new Error("Nieznany poziom trudności");
+    }
+  
     const roundedPercentComplete = parseFloat(percentComplete.toFixed(2));
     setTotalPercent(roundedPercentComplete);
   };
+  
 
   return (
     <SettingsContext.Provider
