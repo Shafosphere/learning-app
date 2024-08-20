@@ -1,0 +1,219 @@
+.users-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background-color: var(--secondBackground);
+    padding: 2rem 2rem 2rem 2rem;
+    /* flex: 0 0 25rem; */
+    /* border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  }
+  .users-table {
+    overflow-y: auto;
+    max-height: 100%;
+    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+  }
+  .empty-panel{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background-color: var(--secondBackground);
+  }
+  .users-table table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--headline);
+  }
+  .infinite {
+    max-height: 100%;
+  }
+  .users-table th,
+  .users-table td {
+    border-bottom: 2px solid var(--border);
+    padding: 8px;
+    text-align: left;
+  }
+  .users-table td:nth-child(2) {
+    width: 10rem;
+    border-left: 2px solid var(--border);
+  }
+  .users-table th:nth-child(2) {
+    border-left: 2px solid var(--border);
+  }
+  .users-table tr:hover {
+    cursor: pointer;
+    background-color: var(--highlight);
+  }
+  
+  .users-table th {
+    background-color: var(--secondBackground);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+    text-transform: uppercase;
+  }
+  
+  .word-details {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    padding: 2rem;
+    /* border: 1px solid var(--border);
+    border-radius: 5px; */
+    /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+    background-color: var(--secondBackground);
+    color: var(--headline);
+    display: flex;
+    flex-direction: column;
+  }
+  .translation-container {
+    display: flex;
+    flex-direction: row;
+    gap: 3rem;
+  }
+  .translation-item-words {
+    width: 50%;
+    gap: 1rem;
+  }
+  .translation-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0.6rem 0rem 0.6rem 0rem;
+  }
+  .translation-header h4{
+    text-transform: uppercase;
+    font-size: 17px;
+  }
+  .input-header {
+    text-transform: uppercase;
+    font-size: 17px;
+    font-weight: 400;
+    opacity: 0.4;
+    color: var(--paragraph);
+  }
+  .word-details input[type="text"],
+  .word-details textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    background-color: var(--background);
+    color: var(--headline);
+    font-size: 16px;
+  }
+  .word-details textarea {
+    height: 15rem;
+    resize: none;
+  }
+  
+  .buttons-reports {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 2rem;
+    padding: 0rem;
+    margin-top: auto;
+  }
+  .searchbar {
+    position: relative;
+    padding: 1rem 0rem 1rem 0rem;
+    display: flex;
+    justify-content: right;
+    gap: 0.25rem;
+    width: 100%;
+  }
+  .searchbar input {
+    padding: 0.45rem;
+    width: 100%;
+    border: solid 2px var(--border);
+    text-transform: uppercase;
+    color: var(--font);
+    font-weight: 600;
+  }
+  .searchbar button {
+    display: flex;
+    padding: 0.2rem;
+    width: 2rem;
+    border: solid 2px var(--border);
+    border-left: none;
+    font-size: 30px;
+    background-color: var(--background);
+    color: var(--headline);
+  }
+  .searchbar button:hover {
+    background-color: var(--highlight);
+    scale: 110%;
+    cursor: pointer;
+    border: solid 2px var(--border);
+  }
+  .searchbar button:active {
+    scale: 100%;
+  }
+  .search-results {
+    display: none;
+    position: absolute;
+    background-color: var(--background);
+    border: 4px solid var(--border);
+    border-top: none;
+    max-height: 19.7rem;
+    overflow: hidden;
+    width: 21rem;
+    z-index: 1000;
+    top: 3.5rem; /* Przesuń w dół o 50px */
+    left: 0rem; /* Przesuń w prawo o 10px */
+    /* Możesz również użyć right i bottom */
+  }
+  
+  .searchbar:focus-within .search-results {
+    display: block;
+  }
+  
+  .search-results ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .search-results li {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    padding: 10px;
+  }
+  
+  .search-results ul li.even {
+    background-color: var(--secondBackground);
+  }
+  
+  .search-results ul li.odd {
+    background-color: var(--background);
+  }
+  
+  .search-results ul li:hover {
+    cursor: pointer;
+    font-weight: 500;
+    background-color: var(--highlight);
+  }
+  
+  .search-results ul li .id-span {
+    width: 10%;
+  }
+  .search-results ul li .word-span {
+    width: 75%;
+  }
+  
+  .search-results ul li .level-span {
+    width: 10%;
+  }
+  .add-word {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--tertiary);
+    bottom: 2rem; /* Odległość od dołu kontenera */
+    left: 2rem;
+  }
+  

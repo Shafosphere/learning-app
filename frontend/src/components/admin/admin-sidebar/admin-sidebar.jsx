@@ -1,6 +1,6 @@
 import "./admin-sidebar.css";
 import { MdReportProblem } from "react-icons/md";
-import { FaDatabase } from "react-icons/fa";
+import { FaDatabase, FaUsers } from "react-icons/fa";
 import { ImStatsDots } from "react-icons/im";
 
 export default function AdminSidebar({setActivePanel}) {
@@ -26,6 +26,13 @@ export default function AdminSidebar({setActivePanel}) {
           <ImStatsDots />
         </span>
         <span className="plate-title">data</span>
+      </div>
+
+      <div onClick={()=> setActivePanel('users')} className="plate first">
+        <span className="plate-icon">
+          <FaUsers />
+        </span>
+        <span className="plate-title">users</span>
       </div>
 
     </div>

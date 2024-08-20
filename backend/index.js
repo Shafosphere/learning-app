@@ -555,6 +555,23 @@ app.get("/words", authenticateToken, authorizeAdmin, async (req, res) => {
   }
 });
 
+app.get("/users", authenticateToken, authorizeAdmin, async (req, res) => {
+  const { page = 1, limit = 50 } = req.query;
+
+  const offset = (page - 1) * limit;
+  try {
+    const result = await db.query(
+      "SELECT id, username, email, role, created_at, last_login FROM users ORDER BY id LIMIT $1 OFFSET $2",
+      [parseInt(limit), offset]
+    );
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).send("Server Error");
+  }
+});
+
+
 app.post(
   "/word-detail",
   authenticateToken,

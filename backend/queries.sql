@@ -15,7 +15,9 @@ CREATE TABLE users(
   username VARCHAR(100) NOT NULL UNIQUE,
   email VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
-  role VARCHAR(20) DEFAULT 'user'
+  role VARCHAR(20) DEFAULT 'user',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data utworzenia konta
+  last_login TIMESTAMP                             -- Data ostatniego logowania
 );
 CREATE TABLE reports (
   id SERIAL PRIMARY KEY,
@@ -27,10 +29,10 @@ CREATE TABLE reports (
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (word_id) REFERENCES Word(id) -- Only relevant for 'word_issue' reports
 );
-CREATE TABLE user_activity_log (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    activity_type VARCHAR(50) NOT NULL,
-    activity_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);3
+-- CREATE TABLE user_activity_log (
+--     id SERIAL PRIMARY KEY,
+--     user_id INT NOT NULL,
+--     activity_type VARCHAR(50) NOT NULL,
+--     activity_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (user_id) REFERENCES users(id)
+-- );3
