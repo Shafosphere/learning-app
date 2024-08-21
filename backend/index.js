@@ -315,6 +315,11 @@ app.post("/login", async (req, res) => {
       });
     }
 
+    await db.query(
+      "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1",
+      [user.id]
+    );
+    
     const token = generateToken(user);
 
     // Ustaw ciasteczko z tokenem
@@ -651,6 +656,35 @@ app.get("/search", authenticateToken, authorizeAdmin, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
+app.get("/search-user", authenticateToken, authorizeAdmin, async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    let result;
+    if (!isNaN(query)) {
+      // Jeśli query jest liczbą
+      result = await db.query("SELECT * FROM users WHERE id = $1", [parseInt(query)]);
+    } else if (query.includes('@')) {
+      // Jeśli query jest emailem
+      result = await db.query("SELECT * FROM users WHERE email ILIKE $1", [`%${query}%`]);
+    } else {
+      // Jeśli query jest tekstem
+      result = await db.query("SELECT * FROM users WHERE username ILIKE $1", [`%${query}%`]);
+    }
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "No records found" });
+    }
+    
+    console.log(result.rows);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
 
 app.post("/add-word", authenticateToken, authorizeAdmin, async (req, res) => {
   const { translations } = req.body;

@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export default function AdminPanel() {
 
-  const [activePanel, setActivePanel] = useState("words");
+  const [activePanel, setActivePanel] = useState("users");
 
   return (
     <div className="container-admin">
