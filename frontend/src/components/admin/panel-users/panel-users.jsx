@@ -1,14 +1,13 @@
 import "./panel-users.css";
 import api from "../../../utils/api";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { MdDeleteSweep, MdEditNote } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
-import { FaTrash } from "react-icons/fa";
 import { IoIosTrash } from "react-icons/io";
 import { FaCheck } from "react-icons/fa6";
+import { FaUndoAlt } from "react-icons/fa";
 
-// import { FaCheckSquare } from "react-icons/fa";
+import ConfirmWindow from "../../confirm/confirm";
 
 export default function UsersPanel() {
   const [users, setUsers] = useState([]);
@@ -23,8 +22,27 @@ export default function UsersPanel() {
     role: "",
   });
 
-  const [editedRows, setEditedRows] = useState({});
+  const userRef = useRef(null);
 
+  // confirm
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmCallback, setConfirmCallback] = useState(null);
+
+  const handleConfirmClose = (result) => {
+    if (result && confirmCallback) {
+      confirmCallback();
+    }
+    setConfirmMessage("");
+    setConfirmCallback(null);
+  };
+
+  function showConfirm(text, callback) {
+    setConfirmMessage(text);
+    setConfirmCallback(() => callback);
+  }
+  ////
+
+  const [editedRows, setEditedRows] = useState({});
 
   async function getUsers(page) {
     try {
@@ -78,6 +96,40 @@ export default function UsersPanel() {
     }
   };
 
+  async function sendData() {
+    console.log(editedRows);
+
+    try {
+      const response = await api.patch(`/users-update`, { editedRows });
+      console.log(response);
+    } catch (error) {
+      console.error("Error searching words:", error);
+      setSearchResults([]);
+    }
+  }
+
+  const handleSearchResultClick = (userId) => {
+    scrollToUser(userId);
+  };
+
+  const scrollToUser = async (userId) => {
+    // Sprawdź, czy użytkownik jest już załadowany
+    const userExists = users.find((user) => user.id === userId);
+
+    if (userExists) {
+      const userElement = document.getElementById(`user-${userId}`);
+      if (userElement) {
+        userElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    } else if (hasMore) {
+      // Jeśli użytkownik nie jest załadowany i są kolejne strony do załadowania
+      await getMoreUsers(); // Załaduj więcej użytkowników
+      scrollToUser(userId); // Sprawdź ponownie
+    } else {
+      console.log("User not found.");
+    }
+  };
+
   function enableEditMode(user) {
     setEditingRowId(user.id);
     setEditValues({
@@ -111,7 +163,6 @@ export default function UsersPanel() {
     );
     setEditingRowId(null);
   }
-  
 
   return (
     <>
@@ -130,6 +181,7 @@ export default function UsersPanel() {
                   <li
                     key={result.id}
                     className={index % 2 === 0 ? "even" : "odd"}
+                    onClick={() => handleSearchResultClick(result.id)}
                   >
                     <span className="id-span">{result.id}</span>
                     <span className="word-span">{result.username}</span>
@@ -162,7 +214,12 @@ export default function UsersPanel() {
               </thead>
               <tbody>
                 {users.map((user) => (
-                  <tr key={user.id} className={user.isEdited ? "edited" : ""}>
+                  <tr
+                    key={user.id}
+                    id={`user-${user.id}`}
+                    ref={user.id === editingRowId ? userRef : null}
+                    className={user.isEdited ? "edited" : ""}
+                  >
                     <td>{user.id}</td>
                     <td className="username">
                       {editingRowId === user.id ? (
@@ -197,7 +254,7 @@ export default function UsersPanel() {
                           name="role"
                           value={editValues.role}
                           onChange={handleInputChange} // Przekazujesz event, nie wartość
-                        > 
+                        >
                           <option value="user">user</option>
                           <option value="admin">admin</option>
                         </select>
@@ -209,7 +266,10 @@ export default function UsersPanel() {
                       <div className="user-icons">
                         {editingRowId === user.id ? (
                           <>
-                            <FaCheck  onClick={()=>confirm()}/>
+                            <FaCheck
+                              className="confirm-user"
+                              onClick={() => confirm()}
+                            />
                           </>
                         ) : (
                           <MdEdit onClick={() => enableEditMode(user)} />
@@ -223,8 +283,27 @@ export default function UsersPanel() {
             </table>
           </InfiniteScroll>
         </div>
-        <div className="edit-user button">send changes</div>
+        <div className="buttons-users-container">
+          <div
+            onClick={() =>
+              showConfirm("Are you sure you want to add these changes?", () =>
+                sendData()
+              )
+            }
+            className="edit-user button"
+          >
+            send changes
+          </div>
+
+          <div className="undo-user button">
+            <FaUndoAlt />
+          </div>
+        </div>
       </div>
+
+      {confirmMessage && (
+        <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
+      )}
     </>
   );
 }

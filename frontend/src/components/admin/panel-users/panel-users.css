@@ -237,14 +237,28 @@
 .search-results-users ul li .level-span {
   width: 10%;
 }
-.edit-user {
+
+.buttons-users-container{
   position: absolute;
+  display: flex;
+  gap: 1.5rem;
+  bottom: 2rem; /* Odległość od dołu kontenera */
+  left: 2rem;
+}
+.edit-user {
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--highlight);
+}
+.undo-user{
+  width: 5rem;
+  font-size: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: var(--tertiary);
-  bottom: 2rem; /* Odległość od dołu kontenera */
-  left: 2rem;
 }
 
 .user-icons {
@@ -266,4 +280,12 @@
 }
 .edited {
   background-color: var(--tertiary);
+}
+.confirm-user{
+  background-color: var(--highlight);
+  padding: 0.1rem;
+}
+.confirm-user:hover{
+  border: solid 2px var(--paragraph);
+  border-radius: 5px;
 }

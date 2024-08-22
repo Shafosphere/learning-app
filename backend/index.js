@@ -633,6 +633,17 @@ app.patch(
   }
 );
 
+app.patch("/users-update", authenticateToken, authorizeAdmin, async (req, res) => {
+  const { users } = req.body;
+  console.log(users)
+  try {
+    res.status(200).send("Users updated successfully.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+})
+
 app.get("/search", authenticateToken, authorizeAdmin, async (req, res) => {
   const { query } = req.query;
 
