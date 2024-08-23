@@ -30,9 +30,13 @@
   color: var(--highlight);
 }
 
-.sidebar-top{
+.sidebar-content{
+  height: 100%;
   padding-left: 0.2rem;
-  
+  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .link{
@@ -82,10 +86,6 @@
   opacity: 0;
   transition: opacity 1300ms, max-width 1000ms;
   overflow: hidden;
-}
-
-.sidebar-bottom{
-  padding-left: 0.2rem;
 }
 
 .container-sidebar:hover .sidebar-full {
