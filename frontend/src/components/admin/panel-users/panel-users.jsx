@@ -16,6 +16,10 @@ export default function UsersPanel() {
   const [searchTerm, setSearchTerm] = useState(""); // Dodanie searchTerm
   const [searchResults, setSearchResults] = useState([]);
   const [editingRowId, setEditingRowId] = useState(null);
+
+  const [editedRows, setEditedRows] = useState({});
+  const [undoValues, setUndoValues] = useState([]);
+
   const [editValues, setEditValues] = useState({
     username: "",
     email: "",
@@ -41,8 +45,6 @@ export default function UsersPanel() {
     setConfirmCallback(() => callback);
   }
   ////
-
-  const [editedRows, setEditedRows] = useState({});
 
   async function getUsers(page) {
     try {
@@ -148,6 +150,15 @@ export default function UsersPanel() {
   }
 
   function confirm() {
+    const user = users.find((user) => user.id === editingRowId);
+    if (user) {
+      const updatedUser = { ...user };
+      setUndoValues((prevUndoValues) => [
+        ...prevUndoValues,
+        { id: user.id, previousValues: updatedUser }
+      ]);
+    }
+  
     setUsers((prevUsers) =>
       prevUsers.map((user) => {
         if (user.id === editingRowId) {
@@ -163,6 +174,31 @@ export default function UsersPanel() {
     );
     setEditingRowId(null);
   }
+
+  function undo() {
+    const lastEdit = undoValues.pop(); // Pobranie ostatniego wpisu z tablicy
+  
+    if (lastEdit) {
+      const { id, previousValues } = lastEdit;
+  
+      // Przywrócenie poprzednich wartości do stanu users
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === id ? { ...user, ...previousValues, isEdited: false } : user
+        )
+      );
+  
+      // Usunięcie cofniętych zmian z editedRows
+      setEditedRows((prevEditedRows) => {
+        const { [id]: removed, ...rest } = prevEditedRows;
+        return rest;
+      });
+  
+      // Aktualizacja undoValues bez ostatniego elementu (pop automatycznie usuwa)
+      setUndoValues([...undoValues]);
+    }
+  }
+  
 
   return (
     <>
@@ -295,7 +331,7 @@ export default function UsersPanel() {
             send changes
           </div>
 
-          <div className="undo-user button">
+          <div onClick={() => undo(editingRowId)} className="undo-user button">
             <FaUndoAlt />
           </div>
         </div>
