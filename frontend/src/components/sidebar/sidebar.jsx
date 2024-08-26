@@ -88,7 +88,7 @@ export default function Sidebar() {
               </span>
             </Link>
 
-            <Link className="link">
+            <Link className="link" to="/words">
               <span className="sidebar-initial link-icon">
                 <FaScroll />
               </span>

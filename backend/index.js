@@ -353,6 +353,7 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/pre-data", async (req, res) => {
+  console.log('pre-data')
   const data = {
     b2: b2,
     minWordId: minWordId,
@@ -362,10 +363,11 @@ app.get("/pre-data", async (req, res) => {
 });
 
 app.post("/data", async (req, res) => {
-  const wordIds = new Set(req.body.wordIds);
-  const words_used = new Set(req.body.words_used);
+  // const wordIds = new Set(req.body.wordIds);
+  // const words_used = new Set(req.body.words_used);
   const wordList = req.body.wordList;
 
+  console.log('data')
   try {
     const results = await Promise.all(
       wordList.map(async (item) => {

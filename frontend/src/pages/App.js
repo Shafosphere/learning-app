@@ -4,6 +4,7 @@ import Home from "./home/home";
 import Settings from "./settings/settings";
 import Login from "./login/login";
 import Sidebar from "../components/sidebar/sidebar";
+import Words from "./words/words";
 import AdminPanel from "./admin/admin";
 import PrivateRoute from "../utils/privateroute";
 import Account from "./account/account";
@@ -31,6 +32,7 @@ const AppWrapper = () => {
         <Route path="/home" element={<Home />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/words" element={<Words/>}/>
         <Route path="/account" element={isLoggedIn ? <Account /> : <Login />} />
         <Route
           path="/admin"
