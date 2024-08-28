@@ -6,7 +6,6 @@ import Card from "./card";
 export default function Words() {
   const [currentWord, setWord] = useState("");
   const [data, setData] = useState([]);
-
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -87,20 +86,25 @@ export default function Words() {
             />
           </div>
           <div className="top-right-words">
-            <div className="top-word">
-              {currentIndex > 0 && (
-                <Card word={data[currentIndex - 1].wordEng.word} state="prev" />
-              )}
-            </div>
-            <div className="middle-word">
-              {data && data.length > 0 && (
-                <Card word={data[currentIndex].wordEng.word} state="active" />
-              )}
-            </div>
-            <div className="bottom-word">
-              {currentIndex < data.length - 1 && (
-                <Card word={data[currentIndex + 1].wordEng.word} state="next" />
-              )}
+            <div className="wrapper">
+              {/* Karta poprzednia z opóźnieniem -1 */}
+              <Card
+                word={currentIndex > 0 ? data[currentIndex]?.wordEng.word : "prev"}
+                state="prev"
+                delay="-1"
+              />
+              {/* Karta aktualna z opóźnieniem 0 */}
+              <Card
+                word={data[currentIndex]?.wordEng.word || "current"}
+                state="current"
+                delay="0"
+              />
+              {/* Karta następna z opóźnieniem 1 */}
+              <Card
+                word={currentIndex < data.length - 1 ? data[currentIndex + 1]?.wordEng.word : ""}
+                state="next"
+                delay="1"
+              />
             </div>
           </div>
         </div>
@@ -113,6 +117,9 @@ export default function Words() {
           >
             Start
           </button>
+          {data && data[currentIndex] && (
+            <span>{data[currentIndex].wordPl.word}</span>
+          )}
         </div>
       </div>
     </div>

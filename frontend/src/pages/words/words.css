@@ -1,22 +1,18 @@
 .container-words {
     width: 100%;
     min-height: 100vh;
-    padding: 6rem 0rem 0rem 21rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: var(--background);
     background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
     background-size: 40px 40px;
   }
   .window-words {
-    min-height: 10rem;
-    width: 80.5rem;
-    /* display: flex; */
+    height: 50rem;
+    width: 80rem;
     background-color: var(--secondBackground);
-    /* -webkit-box-shadow: inset 0px 0px 24px 0px var(--background);
-    -moz-box-shadow: inset 0px 0px 24px 0px var(--background);
-    box-shadow: inset 0px 0px 24px 0px var(--background); */
     color: var(--headline);
-    /* flex-direction: row;
-    gap: 2rem; */
     padding: 2rem;
     border: 2px solid var(--border);
   }
@@ -25,11 +21,61 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    gap: 2rem;
+    flex-direction: row;
+    background-color: yellow;
+    height: 30rem;
   }
   .top-left-words{
-
+    background-color: brown;
+    height: 5rem;
+    width: 20rem;
   }
   .top-right-words{
     display: flex;
     flex-direction: column;
+    height: auto;
+    width: 20rem;
+    background-color: aqua;
+  }
+
+  .wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .wrapper .card {
+    background: #e7c49c;
+    width: 10rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.5s ease-in-out;
+    animation: animate 9s linear infinite;
+    position: absolute;
+    animation-delay: calc(3s * var(--delay));
+    font-size: 20px;
+    font-weight: 500;
+    padding-left: 1rem;
+  }
+  .card-stop{
+    animation-play-state: paused;
+  }
+  @keyframes animate {
+    0%{
+      opacity: 0;
+      transform: translateY(100%) scale(0.5);
+    }
+    25%, 40%{
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0%) scale(1);
+    }
+    65%, 100%{
+      opacity: 0;
+      transform: translateY(-100%) scale(0.5);
+    }
   }
