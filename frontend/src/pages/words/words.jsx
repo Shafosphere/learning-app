@@ -9,17 +9,26 @@ export default function Words() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [carousel, setCarousel] = useState({
-    1: "top",
-    2: "middle",
-    3: "bottom",
+    1: "top-bot",
+    2: "top",
+    3: "middle",
+    4: "bottom",
+    5: "bottom-bot"
   });
 
   const handleClick = () => {
     let newCarousel = { ...carousel };
 
-    newCarousel[1] = carousel[3];
+    // newCarousel[1] = carousel[3];
+    // newCarousel[2] = carousel[1];
+    // newCarousel[3] = carousel[2];
+
     newCarousel[2] = carousel[1];
     newCarousel[3] = carousel[2];
+    newCarousel[4] = carousel[3];
+    newCarousel[5] = carousel[4];
+    newCarousel[1] = carousel[5];
+
       setCarousel(newCarousel);
   };
 
@@ -118,6 +127,18 @@ export default function Words() {
               className={`box ${carousel[3]} `}
             >
               Div 3
+            </div>
+            <div
+              id={4}
+              className={`box ${carousel[4]} `}
+            >
+              Div 4
+            </div>
+            <div
+              id={5}
+              className={`box ${carousel[5]} `}
+            >
+              Div 5
             </div>
           </div>
         </div>

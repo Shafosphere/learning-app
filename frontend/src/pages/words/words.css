@@ -23,13 +23,21 @@
     width: 100%;
     gap: 2rem;
     flex-direction: row;
-    /* background-color: yellow; */
+    background-color: var(--background);
     height: 30rem;
   }
   .top-left-words{
-    background-color: brown;
+    display: flex;
+    align-items: center;
+    justify-content: right;
     height: 5rem;
     width: 20rem;
+  }
+  .top-left-words input{
+    background-color: rgb(255, 255, 255);
+    padding: 1rem;
+    border: solid 3px var(--highlight);
+    border-radius: 1rem;
   }
   .top-right-words{
     display: flex;
@@ -37,7 +45,7 @@
     align-items: center;     /* Center items vertically */
     width: 400px; /* Adjust width as needed */
     height: 200px; /* Adjust height as needed */
-    background-color: antiquewhite;
+    /* background-color: antiquewhite; */
     position: relative;
   }
 
@@ -49,20 +57,6 @@
     height: 100%;
   }
 
-  .wrapper .card {
-    background: #e7c49c;
-    width: 10rem;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    transition: all 0.5s ease-in-out;
-    animation: animate 9s linear infinite;
-    position: absolute;
-    animation-delay: calc(3s * var(--delay));
-    font-size: 20px;
-    font-weight: 500;
-    padding-left: 1rem;
-  }
   .card-stop{
     animation-play-state: paused;
   }
@@ -104,10 +98,24 @@
     font-weight: 400;
     z-index: 9;
   }
+  .top-bot{
+    opacity: 0.0;
+    transform: translateY(-4rem);
+    scale: 0.3;
+    font-weight: 400;
+    z-index: 8;
+  }
   .bottom{
     opacity: 0.8;
     transform: translateY(4rem);
     scale: 0.8;
+    font-weight: 400;
+    z-index: 9;
+  }
+  .bottom-bot{
+    opacity: 0.0;
+    transform: translateY(4rem);
+    scale: 0.3;
     font-weight: 400;
     z-index: 8;
   }
