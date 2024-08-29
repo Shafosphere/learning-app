@@ -23,7 +23,7 @@
     width: 100%;
     gap: 2rem;
     flex-direction: row;
-    background-color: yellow;
+    /* background-color: yellow; */
     height: 30rem;
   }
   .top-left-words{
@@ -33,10 +33,12 @@
   }
   .top-right-words{
     display: flex;
-    flex-direction: column;
-    height: auto;
-    width: 20rem;
-    background-color: aqua;
+    justify-content: center; /* Center items horizontally */
+    align-items: center;     /* Center items vertically */
+    width: 400px; /* Adjust width as needed */
+    height: 200px; /* Adjust height as needed */
+    background-color: antiquewhite;
+    position: relative;
   }
 
   .wrapper{
@@ -64,7 +66,7 @@
   .card-stop{
     animation-play-state: paused;
   }
-  @keyframes animate {
+  /* @keyframes animate {
     0%{
       opacity: 0;
       transform: translateY(100%) scale(0.5);
@@ -78,4 +80,45 @@
       opacity: 0;
       transform: translateY(-100%) scale(0.5);
     }
+  } */
+
+  .box {
+    width: 20em;
+    height: 4rem;
+    padding: 0rem 0rem 0rem 1rem;
+    background-color: var(--border);
+    border: 3px solid var(--border);
+    border-radius: 1rem;
+    display: flex;
+    justify-content: center;
+    margin: 0 10px;
+    transition: all 1s ease;
+    position: absolute; /* To position items absolutely within the carousel */
+    font-size: 20px;
+  }
+
+  .top{
+    opacity: 0.8;
+    transform: translateY(-4rem);
+    scale: 0.8;
+    font-weight: 400;
+    z-index: 9;
+  }
+  .bottom{
+    opacity: 0.8;
+    transform: translateY(4rem);
+    scale: 0.8;
+    font-weight: 400;
+    z-index: 8;
+  }
+  .middle{
+    z-index: 10;
+    opacity: 1;
+    transform: translateY(0px);
+    background-color: var(--secondBackground);
+    font-weight: 500;
+  }
+  .hidden {
+    opacity: 0; /* Ukrywa element przez ustawienie przezroczystości */
+    pointer-events: none; /* Zapobiega interakcji z ukrytym elementem */
   }

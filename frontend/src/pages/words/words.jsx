@@ -8,6 +8,21 @@ export default function Words() {
   const [data, setData] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const [carousel, setCarousel] = useState({
+    1: "top",
+    2: "middle",
+    3: "bottom",
+  });
+
+  const handleClick = () => {
+    let newCarousel = { ...carousel };
+
+    newCarousel[1] = carousel[3];
+    newCarousel[2] = carousel[1];
+    newCarousel[3] = carousel[2];
+      setCarousel(newCarousel);
+  };
+
   useEffect(() => {
     setWord("");
   }, []);
@@ -86,31 +101,30 @@ export default function Words() {
             />
           </div>
           <div className="top-right-words">
-            <div className="wrapper">
-              {/* Karta poprzednia z opóźnieniem -1 */}
-              <Card
-                word={currentIndex > 0 ? data[currentIndex]?.wordEng.word : "prev"}
-                state="prev"
-                delay="-1"
-              />
-              {/* Karta aktualna z opóźnieniem 0 */}
-              <Card
-                word={data[currentIndex]?.wordEng.word || "current"}
-                state="current"
-                delay="0"
-              />
-              {/* Karta następna z opóźnieniem 1 */}
-              <Card
-                word={currentIndex < data.length - 1 ? data[currentIndex + 1]?.wordEng.word : ""}
-                state="next"
-                delay="1"
-              />
+            <div
+              id={1}
+              className={`box ${carousel[1]} `}
+            >
+              Div 1
+            </div>
+            <div
+              id={2}
+              className={`box ${carousel[2]} `}
+            >
+              Div 2
+            </div>
+            <div
+              id={3}
+              className={`box ${carousel[3]} `}
+            >
+              Div 3
             </div>
           </div>
         </div>
         <div className="bot-words">
           <button
-            onClick={startGame}
+            // onClick={startGame}
+            onClick={handleClick}
             className="button"
             type="button"
             style={{ "--buttonColor": "var(--tertiary)" }}
