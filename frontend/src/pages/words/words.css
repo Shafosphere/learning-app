@@ -11,10 +11,10 @@
   .window-words {
     height: 50rem;
     width: 80rem;
-    background-color: var(--secondBackground);
+    /* background-color: var(--secondBackground); */
     color: var(--headline);
     padding: 2rem;
-    border: 2px solid var(--border);
+    /* border: 2px solid var(--border); */
   }
   .top-words{
     display: flex;
@@ -23,7 +23,7 @@
     width: 100%;
     gap: 2rem;
     flex-direction: row;
-    background-color: var(--background);
+    /* background-color: var(--background); */
     height: 30rem;
   }
   .top-left-words{
@@ -34,10 +34,14 @@
     width: 20rem;
   }
   .top-left-words input{
-    background-color: rgb(255, 255, 255);
+    background-color: var(--secondBackground);
     padding: 1rem;
     border: solid 3px var(--highlight);
-    border-radius: 1rem;
+    color: var(--headline);
+    border-radius: 0.5rem;
+    font-size: 20px;
+    width: 20em;
+    height: 5rem;
   }
   .top-right-words{
     display: flex;
@@ -60,31 +64,16 @@
   .card-stop{
     animation-play-state: paused;
   }
-  /* @keyframes animate {
-    0%{
-      opacity: 0;
-      transform: translateY(100%) scale(0.5);
-    }
-    25%, 40%{
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0%) scale(1);
-    }
-    65%, 100%{
-      opacity: 0;
-      transform: translateY(-100%) scale(0.5);
-    }
-  } */
 
-  .box {
+  .box-words {
     width: 20em;
-    height: 4rem;
+    height: 5rem;
     padding: 0rem 0rem 0rem 1rem;
-    background-color: var(--border);
+    background-color: var(--background);
     border: 3px solid var(--border);
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     display: flex;
-    justify-content: center;
+    align-items: center;
     margin: 0 10px;
     transition: all 1s ease;
     position: absolute; /* To position items absolutely within the carousel */
@@ -93,29 +82,29 @@
 
   .top{
     opacity: 0.8;
-    transform: translateY(-4rem);
+    transform: translateY(-6rem);
     scale: 0.8;
     font-weight: 400;
     z-index: 9;
   }
   .top-bot{
     opacity: 0.0;
-    transform: translateY(-4rem);
-    scale: 0.3;
+    transform: translateY(-6rem);
+    scale: 0.5;
     font-weight: 400;
     z-index: 8;
   }
   .bottom{
     opacity: 0.8;
-    transform: translateY(4rem);
+    transform: translateY(6rem);
     scale: 0.8;
     font-weight: 400;
     z-index: 9;
   }
   .bottom-bot{
     opacity: 0.0;
-    transform: translateY(4rem);
-    scale: 0.3;
+    transform: translateY(6rem);
+    scale: 0.5;
     font-weight: 400;
     z-index: 8;
   }
@@ -125,6 +114,7 @@
     transform: translateY(0px);
     background-color: var(--secondBackground);
     font-weight: 500;
+    border-color: var(--highlight);
   }
   .hidden {
     opacity: 0; /* Ukrywa element przez ustawienie przezroczystości */
