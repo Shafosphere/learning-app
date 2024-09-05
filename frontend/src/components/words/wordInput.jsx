@@ -7,6 +7,7 @@ export default function InputField({ currentWord, onChange, onKeyDown }) {
         value={currentWord}
         onChange={onChange}
         onKeyDown={onKeyDown}
+        placeholder="translate the word"
       />
     );
   }

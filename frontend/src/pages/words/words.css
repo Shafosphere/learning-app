@@ -57,7 +57,7 @@
 .top-left-words input {
   background-color: var(--lightbg);
   padding: 1rem;
-  border: solid 3px var(--highlight);
+  border: solid 7px var(--tertiary);
   border-radius: 0.5rem;
   font-size: 20px;
   width: 20em;
@@ -133,7 +133,7 @@
   background-color: var(--lightbg);
   font-weight: 500;
   border-color: var(--highlight);
-  border: 4px solid var(--highlight);
+  border: 7px solid var(--highlight);
 }
 .hidden {
   opacity: 0;
