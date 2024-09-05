@@ -1,12 +1,16 @@
 :root {
+  --background-rgba: 242, 244, 246;
   --background: #f2f4f6;
+
   --secondBackground: #fffffe;
   --headline: #00214d;
   --paragraph: #1b2d45;
   --highlight: #00ebc7;
   --secondary: #ff5470;
   --tertiary: #fde24f;
+
   --border: #E9E9E9;
+  --border-rgba: 233, 233, 233;
 
   --font: #00214d;
   
@@ -14,14 +18,19 @@
   --lightbg: #fffffe;
 }
 .dark {
+  --background-rgba: 0, 21, 52;
   --background: #001534;
+
   --secondBackground: #1b2d45;
   --headline: #fffffe;
   --paragraph: #b7c9e4;
   --highlight: #00af95;
   --secondary: #b9344a;
   --tertiary: #c4af3a;
+
+  --border-rgba: 0, 33, 77;
   --border: #00214d;
+
   --font: #00214d;
 
   --darkbg: #001534;

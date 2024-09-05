@@ -1,7 +1,11 @@
 import "./words.css";
 import api from "../../utils/api";
 import { useEffect, useRef, useState } from "react";
-import { addNumberToGood, addNumberToWrong, getAllMinigameWords } from "../../utils/indexedDB";
+import {
+  addNumberToGood,
+  addNumberToWrong,
+  getAllMinigameWords,
+} from "../../utils/indexedDB";
 import Carousel from "../../components/words/carousel";
 import InputField from "../../components/words/wordInput";
 import Progressbar from "../../components/home/bar/bar";
@@ -56,6 +60,7 @@ export default function Words() {
     if (loading && data.length > 0) {
       updateDivs();
       setLoading(false);
+      calcPercent();
     }
   }, [loading, data]);
 
@@ -96,16 +101,16 @@ export default function Words() {
   }
 
   async function calcPercent() {
-    const minigameWords = await getAllMinigameWords(); 
+    const minigameWords = await getAllMinigameWords();
     if (minigameWords.length > 0) {
-      
       const goodCount = minigameWords[0].good.length;
       const wrongCount = minigameWords[0].wrong.length;
-      const total = ((goodCount + wrongCount)*100)/maxium;
+      const total = (((goodCount + wrongCount) * 100) / maxium).toFixed(2);
+      setPercent(total);
 
       setPercent(total);
     } else {
-      console.log('Brak danych w minigameWords.');
+      console.log("Brak danych w minigameWords.");
     }
   }
 
@@ -169,7 +174,7 @@ export default function Words() {
         </div>
         <div className="bot-words">
           <div className="progressbar-words">
-            <label>Progress {percent}</label>
+            <label>Progress {percent} %</label>
             <div className="progressbar-words-containter">
               <Progressbar procent={percent} barHeight="60rem" />
             </div>

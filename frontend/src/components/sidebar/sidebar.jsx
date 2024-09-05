@@ -93,7 +93,7 @@ export default function Sidebar() {
                 <FaScroll />
               </span>
               <span className="sidebar-full">
-                <div className="link-text">words</div>
+                <div className="link-text">vocabulary test</div>
               </span>
             </Link>
 
