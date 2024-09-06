@@ -70,6 +70,12 @@
   font-weight: 800;
   border-left: solid 1px var(--headline);
   padding-left: 0.5rem;
+  white-space: nowrap;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
 }
 .link-icon{
   font-size: 40px;
@@ -83,6 +89,7 @@
 
 .sidebar-full {
   display: flex;
+  justify-content: center;
   opacity: 0;
   transition: opacity 1300ms, max-width 1000ms;
   overflow: hidden;
@@ -92,4 +99,39 @@
   transition-delay: 250ms;
   opacity: 1;
   max-width: 100%; /* Adjust this value to fit the actual width of the text */
+}
+
+.theme-checkbox {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 13rem;
+  height: 2.5rem;
+  background: linear-gradient(to right, #f2f4f6 50%, #001534 50%) no-repeat;
+  background-size: 205%;
+  background-position: 0;
+  -webkit-transition: 0.4s;
+  -o-transition: 0.4s;
+  transition: 0.4s;
+  position: relative;
+  cursor: pointer;
+
+}
+
+.theme-checkbox:checked {
+  background-position: 100%;
+}
+
+.theme-checkbox::before {
+  white-space: nowrap;
+  content: 'D-MODE';
+  position: absolute;
+  top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+  color: var(--headline); /* Kolor tekstu */
+  font-size: 20px;
+  text-transform: uppercase;
+  font-weight: 800;
+  pointer-events: none; /* Zapobiega klikaniu na napis */
 }

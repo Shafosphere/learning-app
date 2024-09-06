@@ -13,9 +13,11 @@ import { IoLogoGithub } from "react-icons/io5";
 import { MdLogout, MdLogin } from "react-icons/md";
 import { FaBook } from "react-icons/fa";
 import { FaScroll } from "react-icons/fa";
+import { MdDarkMode } from "react-icons/md";
 
 export default function Sidebar() {
-  const { isLoggedIn, setIsLoggedIn, setUser } = useContext(SettingsContext);
+  const { isLoggedIn, setIsLoggedIn, setUser, themeMode, toggleTheme } =
+    useContext(SettingsContext);
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
@@ -150,6 +152,22 @@ export default function Sidebar() {
               </div>
             )}
 
+            <div className="link">
+              <span className="sidebar-initial link-icon">
+                <MdDarkMode />
+              </span>
+              <span className="sidebar-full">
+                <div className="link-text">
+                    <input
+                      type="checkbox"
+                      className="theme-checkbox"
+                      checked={themeMode === "dark"}
+                      onChange={() => toggleTheme()}
+                    />
+                </div>
+              </span>
+            </div>
+
             {!isLoggedIn && (
               <Link className="link" to="/login">
                 <span className="sidebar-initial link-icon">
@@ -176,9 +194,7 @@ export default function Sidebar() {
               </div>
             </a>
           </div>
-
         </div>
-
       </div>
       {popupMessage && (
         <Popup
