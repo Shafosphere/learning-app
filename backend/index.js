@@ -319,7 +319,7 @@ app.post("/login", async (req, res) => {
       "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1",
       [user.id]
     );
-    
+
     const token = generateToken(user);
 
     // Ustaw ciasteczko z tokenem
@@ -353,12 +353,12 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/pre-data", async (req, res) => {
-  console.log('pre-data')
+  console.log("pre-data");
   const data = {
     b2: b2,
     minWordId: minWordId,
     maxWordId: maxWordId,
-  }
+  };
   res.json(data);
 });
 
@@ -367,7 +367,7 @@ app.post("/data", async (req, res) => {
   // const words_used = new Set(req.body.words_used);
   const wordList = req.body.wordList;
 
-  console.log('data')
+  console.log("data");
   try {
     const results = await Promise.all(
       wordList.map(async (item) => {
@@ -578,6 +578,24 @@ app.get("/users", authenticateToken, authorizeAdmin, async (req, res) => {
   }
 });
 
+app.get("/global-data", authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT 
+        (SELECT COUNT(DISTINCT language) FROM translation) AS liczba_jezykow,
+        (SELECT COUNT(*) FROM users) AS liczba_uzytkownikow,
+        (SELECT COUNT(*) FROM word) AS liczba_slowek,
+        (SELECT COUNT(*) FROM reports) AS liczba_raportow
+    `);
+
+    res.status(200).json(result.rows[0]); // Zwracamy pierwszy wiersz jako obiekt
+  } catch (err) {
+    console.error("Error fetching global data:", err);
+    res.status(500).send("Server Error");
+  }
+});
+
+
 
 app.post(
   "/word-detail",
@@ -635,16 +653,21 @@ app.patch(
   }
 );
 
-app.patch("/users-update", authenticateToken, authorizeAdmin, async (req, res) => {
-  const { users } = req.body;
-  console.log(users)
-  try {
-    res.status(200).send("Users updated successfully.");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
+app.patch(
+  "/users-update",
+  authenticateToken,
+  authorizeAdmin,
+  async (req, res) => {
+    const { users } = req.body;
+    console.log(users);
+    try {
+      res.status(200).send("Users updated successfully.");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
   }
-})
+);
 
 app.get("/search", authenticateToken, authorizeAdmin, async (req, res) => {
   const { query } = req.query;
@@ -677,19 +700,25 @@ app.get("/search-user", authenticateToken, authorizeAdmin, async (req, res) => {
     let result;
     if (!isNaN(query)) {
       // Jeśli query jest liczbą
-      result = await db.query("SELECT * FROM users WHERE id = $1", [parseInt(query)]);
-    } else if (query.includes('@')) {
+      result = await db.query("SELECT * FROM users WHERE id = $1", [
+        parseInt(query),
+      ]);
+    } else if (query.includes("@")) {
       // Jeśli query jest emailem
-      result = await db.query("SELECT * FROM users WHERE email ILIKE $1", [`%${query}%`]);
+      result = await db.query("SELECT * FROM users WHERE email ILIKE $1", [
+        `%${query}%`,
+      ]);
     } else {
       // Jeśli query jest tekstem
-      result = await db.query("SELECT * FROM users WHERE username ILIKE $1", [`%${query}%`]);
+      result = await db.query("SELECT * FROM users WHERE username ILIKE $1", [
+        `%${query}%`,
+      ]);
     }
-    
+
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "No records found" });
     }
-    
+
     console.log(result.rows);
     res.json(result.rows);
   } catch (err) {
@@ -697,7 +726,6 @@ app.get("/search-user", authenticateToken, authorizeAdmin, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-
 
 app.post("/add-word", authenticateToken, authorizeAdmin, async (req, res) => {
   const { translations } = req.body;
