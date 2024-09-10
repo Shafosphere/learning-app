@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/api";
-import "./panel-data.css";
+import "./panel-main.css";
 
-export default function DataPanel() {
+export default function MainPanel() {
   const [data, setData] = useState({});
 
   useEffect(() => {
@@ -22,6 +22,20 @@ export default function DataPanel() {
     getData();
   }, []);
 
+  async function handleGeneratePatches() {
+    try {
+      const respone = await api.post("/generate-patches");
+
+      if (respone) {
+        alert("Patche zostały wygenerowane pomyślnie.");
+      } else {
+        alert("Wystąpił problem podczas generowania patchy.");
+      }
+    } catch (error) {
+      console.error("Błąd:", error);
+    }
+  }
+
   return (
     <>
       <div className="data-container">
@@ -29,6 +43,14 @@ export default function DataPanel() {
         <div>Users: {data.liczba_uzytkownikow}</div>
         <div>Words: {data.liczba_slowek}</div>
         <div>Reports: {data.liczba_raportow}</div>
+
+        <button
+          className="button"
+          style={{ "--buttonColor": "var(--secondary)" }}
+          onClick={() => handleGeneratePatches}
+        >
+          patch
+        </button>
       </div>
     </>
   );

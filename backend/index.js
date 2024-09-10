@@ -774,20 +774,19 @@ app.delete(
   authenticateToken,
   authorizeAdmin,
   async (req, res) => {
-    const client = await pool.connect();
     const { id } = req.body;
 
     try {
-      await client.query("BEGIN");
+      await db.query("BEGIN");
 
-      await client.query("DELETE FROM translation WHERE word_id = $1", [id]);
+      await db.query("DELETE FROM translation WHERE word_id = $1", [id]);
 
-      await client.query("DELETE FROM word WHERE id = $1", [id]);
+      await db.query("DELETE FROM word WHERE id = $1", [id]);
 
-      await client.query("COMMIT");
+      await db.query("COMMIT");
       res.status(200).send("Word and its translations deleted successfully.");
     } catch (err) {
-      await client.query("ROLLBACK");
+      await db.query("ROLLBACK");
       console.error(err);
       res.status(500).send("An error occurred while deleting the word.");
     } finally {
@@ -795,6 +794,55 @@ app.delete(
     }
   }
 );
+
+app.post('/api/generate-patches', async (req, res) => {
+  async function getUsedWordIds() {
+    const [rows] = await db.query('SELECT word_ids FROM word_patches');
+    const usedIds = new Set();
+  
+    rows.forEach(row => {
+      const wordIds = JSON.parse(row.word_ids);
+      wordIds.forEach(id => usedIds.add(id));
+    });
+  
+    return usedIds;
+  }
+
+  async function generatePatches(patchSize) {
+    // Pobieranie dostępnych i już użytych ID słów
+    const availableWordIds = await getAvailableWordIds();
+    const usedWordIds = await getUsedWordIds();
+  
+    // Filtracja dostępnych ID, usunięcie tych, które były już użyte
+    const remainingIds = availableWordIds.filter(id => !usedWordIds.has(id));
+  
+    while (remainingIds.length >= patchSize) {
+      // Losowanie unikalnych ID z dostępnej puli
+      const patchIds = [];
+      for (let i = 0; i < patchSize; i++) {
+        const randomIndex = Math.floor(Math.random() * remainingIds.length);
+        patchIds.push(remainingIds[randomIndex]);
+        remainingIds.splice(randomIndex, 1); // Usuwanie wybranego ID z puli
+      }
+  
+      // Zapis patcha do bazy danych
+      await db.query('INSERT INTO word_patches (word_ids) VALUES (?)', [JSON.stringify(patchIds)]);
+      console.log(`Patch stworzony z ID: ${patchIds}`);
+    }
+  
+    console.log('Wszystkie patche zostały wygenerowane.');
+  }
+  
+
+
+  try {
+    await generatePatches(30); // Rozmiar patcha można modyfikować
+    res.status(200).send('Patche zostały wygenerowane.');
+  } catch (error) {
+    console.error('Błąd podczas generowania patchy:', error);
+    res.status(500).send('Wystąpił problem podczas generowania patchy.');
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
