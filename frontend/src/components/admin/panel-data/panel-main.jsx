@@ -23,6 +23,7 @@ export default function MainPanel() {
   }, []);
 
   async function handleGeneratePatches() {
+    console.log('start')
     try {
       const respone = await api.post("/generate-patches");
 
@@ -47,7 +48,7 @@ export default function MainPanel() {
         <button
           className="button"
           style={{ "--buttonColor": "var(--secondary)" }}
-          onClick={() => handleGeneratePatches}
+          onClick={() => handleGeneratePatches()}
         >
           patch
         </button>

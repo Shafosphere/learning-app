@@ -795,47 +795,91 @@ app.delete(
   }
 );
 
-app.post('/api/generate-patches', async (req, res) => {
+app.post('/generate-patches', authenticateToken, authorizeAdmin, async (req, res) => {
+  console.log('start-gene');
+
+  // Funkcja do usuwania starych patchy
+  async function deleteOldPatches() {
+    try {
+      await db.query('DELETE FROM word_patches');
+      console.log('Stare patche zostały usunięte.');
+    } catch (error) {
+      console.error('Błąd podczas usuwania starych patchy:', error);
+      throw error;
+    }
+  }
+
   async function getUsedWordIds() {
-    const [rows] = await db.query('SELECT word_ids FROM word_patches');
-    const usedIds = new Set();
+    try {
+      const result = await db.query('SELECT word_ids FROM word_patches');
+      console.log('Wynik zapytania:', result); // Logowanie wyniku zapytania
+      
+      const rows = result.rows; // Poprawne uzyskiwanie wierszy
+      console.log('Rows:', rows); // Logowanie wierszy dla lepszego zrozumienia
+
+      const usedIds = new Set();
+
+      rows.forEach(row => {
+        const wordIds = JSON.parse(row.word_ids);
+        wordIds.forEach(id => usedIds.add(id));
+      });
+
+      return usedIds;
+    } catch (error) {
+      console.error('Błąd podczas pobierania użytych ID słów:', error);
+      throw error;
+    }
+  }
+
+  async function getAvailableWordIds() {
+    try {
+      const result = await db.query('SELECT id FROM word');
+      console.log('Wynik zapytania:', result); // Logowanie wyniku zapytania
   
-    rows.forEach(row => {
-      const wordIds = JSON.parse(row.word_ids);
-      wordIds.forEach(id => usedIds.add(id));
-    });
+      const rows = result.rows; // Poprawne uzyskiwanie wierszy
+      console.log('Rows:', rows); // Logowanie wierszy dla lepszego zrozumienia
   
-    return usedIds;
+      if (!Array.isArray(rows)) {
+        throw new TypeError('Wynik zapytania nie jest iterowalny');
+      }
+  
+      return rows.map(row => row.id);
+    } catch (error) {
+      console.error('Błąd podczas pobierania dostępnych ID słów:', error);
+      throw error;
+    }
   }
 
   async function generatePatches(patchSize) {
-    // Pobieranie dostępnych i już użytych ID słów
     const availableWordIds = await getAvailableWordIds();
-    const usedWordIds = await getUsedWordIds();
-  
-    // Filtracja dostępnych ID, usunięcie tych, które były już użyte
-    const remainingIds = availableWordIds.filter(id => !usedWordIds.has(id));
-  
+    const remainingIds = [...availableWordIds]; // Kopia tablicy ID do modyfikacji
+
     while (remainingIds.length >= patchSize) {
-      // Losowanie unikalnych ID z dostępnej puli
       const patchIds = [];
       for (let i = 0; i < patchSize; i++) {
         const randomIndex = Math.floor(Math.random() * remainingIds.length);
         patchIds.push(remainingIds[randomIndex]);
         remainingIds.splice(randomIndex, 1); // Usuwanie wybranego ID z puli
       }
-  
-      // Zapis patcha do bazy danych
-      await db.query('INSERT INTO word_patches (word_ids) VALUES (?)', [JSON.stringify(patchIds)]);
+
+      await db.query('INSERT INTO word_patches (word_ids) VALUES ($1)', [JSON.stringify(patchIds)]);
       console.log(`Patch stworzony z ID: ${patchIds}`);
     }
-  
+
+    // Dodaj ostatni patch, jeśli pozostało mniej niż patchSize ID
+    if (remainingIds.length > 0) {
+      await db.query('INSERT INTO word_patches (word_ids) VALUES ($1)', [JSON.stringify(remainingIds)]);
+      console.log(`Ostatni patch stworzony z ID: ${remainingIds}`);
+    }
+
     console.log('Wszystkie patche zostały wygenerowane.');
   }
-  
-
 
   try {
+    // Usuń stare patche przed generowaniem nowych
+    await deleteOldPatches();
+
+    // Generuj nowe patche
     await generatePatches(30); // Rozmiar patcha można modyfikować
     res.status(200).send('Patche zostały wygenerowane.');
   } catch (error) {
@@ -843,6 +887,7 @@ app.post('/api/generate-patches', async (req, res) => {
     res.status(500).send('Wystąpił problem podczas generowania patchy.');
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

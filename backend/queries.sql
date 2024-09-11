@@ -29,6 +29,10 @@ CREATE TABLE reports (
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (word_id) REFERENCES Word(id) -- Only relevant for 'word_issue' reports
 );
+CREATE TABLE word_patches (
+  patch_id SERIAL PRIMARY KEY,  -- SERIAL automatycznie inkrementuje wartość
+  word_ids JSON                 -- Możesz użyć również JSONB dla lepszej wydajności
+);
 -- CREATE TABLE user_activity_log (
 --     id SERIAL PRIMARY KEY,
 --     user_id INT NOT NULL,
