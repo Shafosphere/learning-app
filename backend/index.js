@@ -363,44 +363,101 @@ app.get("/pre-data", async (req, res) => {
 });
 
 app.post("/data", async (req, res) => {
-  // const wordIds = new Set(req.body.wordIds);
-  // const words_used = new Set(req.body.words_used);
   const wordList = req.body.wordList;
+  const patchNumber = req.body.patchNumber;
 
-  console.log("data");
-  try {
-    const results = await Promise.all(
-      wordList.map(async (item) => {
-        const checkResult = await db.query(
-          "SELECT * FROM translation WHERE word_id = $1",
-          [item]
-        );
-        return checkResult.rows;
-      })
-    );
+  if (patchNumber && patchNumber > 0) {
+    console.log(`Pobieranie danych dla patcha numer ${patchNumber}`);
+    try {
+      const result = await db.query(
+        "SELECT word_ids FROM word_patches WHERE patch_id = $1",
+        [patchNumber]
+      );
 
-    const formattedResults = results.map((wordPair) => {
-      const wordEng = wordPair.find((w) => w.language === "en");
-      const wordPl = wordPair.find((w) => w.language === "pl");
-      return {
-        id: wordEng.word_id,
-        wordEng: {
-          word: wordEng.translation,
-          description: wordEng.description,
-        },
-        wordPl: {
-          word: wordPl.translation,
-          description: wordPl.description,
-        },
-      };
-    });
+      if (result.rows.length === 0) {
+        console.log('cos nie dziala: ' + result);
+        return res.status(404).json({ message: "Patch nie znaleziony" });
+      }
 
-    res.json({ message: "working", data: formattedResults });
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching data", error: error.message });
+      let wordIds = result.rows[0].word_ids;
+
+      // Jeśli dane są w formacie tekstowym, przekształć je do formatu JSON
+      if (typeof wordIds === 'string') {
+        wordIds = `[${wordIds}]`; // Dodanie nawiasów do stworzenia poprawnego JSON
+        wordIds = JSON.parse(wordIds); // Parsowanie do tablicy
+      } else if (typeof wordIds === 'object' && wordIds !== null) {
+        // Jeżeli wordIds jest już obiektem JSON
+        wordIds = wordIds.map(Number); // Upewnij się, że elementy są liczbami
+      }
+
+      console.log('word_ids:', wordIds);
+
+      const results = await Promise.all(
+        wordIds.map(async (id) => {
+          const checkResult = await db.query(
+            "SELECT * FROM translation WHERE word_id = $1",
+            [id]
+          );
+          return checkResult.rows;
+        })
+      );
+
+      const formattedResults = results.map((wordPair) => {
+        const wordEng = wordPair.find((w) => w.language === "en");
+        const wordPl = wordPair.find((w) => w.language === "pl");
+        return {
+          id: wordEng.word_id,
+          wordEng: {
+            word: wordEng.translation,
+            description: wordEng.description,
+          },
+          wordPl: {
+            word: wordPl.translation,
+            description: wordPl.description,
+          },
+        };
+      });
+
+      console.log('zwracam:', formattedResults);
+      res.json({ message: "working", data: formattedResults });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      res.status(500).json({ message: "Error fetching data", error: error.message });
+    }
+  } else {
+    // Obsługa dla starej logiki, jeśli patchNumber nie jest podany
+    try {
+      const results = await Promise.all(
+        wordList.map(async (item) => {
+          const checkResult = await db.query(
+            "SELECT * FROM translation WHERE word_id = $1",
+            [item]
+          );
+          return checkResult.rows;
+        })
+      );
+
+      const formattedResults = results.map((wordPair) => {
+        const wordEng = wordPair.find((w) => w.language === "en");
+        const wordPl = wordPair.find((w) => w.language === "pl");
+        return {
+          id: wordEng.word_id,
+          wordEng: {
+            word: wordEng.translation,
+            description: wordEng.description,
+          },
+          wordPl: {
+            word: wordPl.translation,
+            description: wordPl.description,
+          },
+        };
+      });
+
+      res.json({ message: "working", data: formattedResults });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      res.status(500).json({ message: "Error fetching data", error: error.message });
+    }
   }
 });
 
@@ -594,8 +651,6 @@ app.get("/global-data", authenticateToken, authorizeAdmin, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-
-
 
 app.post(
   "/word-detail",
@@ -795,99 +850,114 @@ app.delete(
   }
 );
 
-app.post('/generate-patches', authenticateToken, authorizeAdmin, async (req, res) => {
-  console.log('start-gene');
+app.post(
+  "/generate-patches",
+  authenticateToken,
+  authorizeAdmin,
+  async (req, res) => {
+    console.log("start-gene");
 
-  // Funkcja do usuwania starych patchy
-  async function deleteOldPatches() {
-    try {
-      await db.query('DELETE FROM word_patches');
-      console.log('Stare patche zostały usunięte.');
-    } catch (error) {
-      console.error('Błąd podczas usuwania starych patchy:', error);
-      throw error;
-    }
-  }
-
-  async function getUsedWordIds() {
-    try {
-      const result = await db.query('SELECT word_ids FROM word_patches');
-      console.log('Wynik zapytania:', result); // Logowanie wyniku zapytania
-      
-      const rows = result.rows; // Poprawne uzyskiwanie wierszy
-      console.log('Rows:', rows); // Logowanie wierszy dla lepszego zrozumienia
-
-      const usedIds = new Set();
-
-      rows.forEach(row => {
-        const wordIds = JSON.parse(row.word_ids);
-        wordIds.forEach(id => usedIds.add(id));
-      });
-
-      return usedIds;
-    } catch (error) {
-      console.error('Błąd podczas pobierania użytych ID słów:', error);
-      throw error;
-    }
-  }
-
-  async function getAvailableWordIds() {
-    try {
-      const result = await db.query('SELECT id FROM word');
-      console.log('Wynik zapytania:', result); // Logowanie wyniku zapytania
-  
-      const rows = result.rows; // Poprawne uzyskiwanie wierszy
-      console.log('Rows:', rows); // Logowanie wierszy dla lepszego zrozumienia
-  
-      if (!Array.isArray(rows)) {
-        throw new TypeError('Wynik zapytania nie jest iterowalny');
+    // Funkcja do usuwania starych patchy
+    async function deleteOldPatches() {
+      try {
+        // Usuń wszystkie stare patche
+        await db.query('DELETE FROM word_patches');
+        console.log('Stare patche zostały usunięte.');
+    
+        // Resetuj sekwencję SERIAL dla patch_id
+        await db.query('ALTER SEQUENCE word_patches_patch_id_seq RESTART WITH 1');
+        console.log('Sekwencja patch_id została zresetowana.');
+      } catch (error) {
+        console.error('Błąd podczas usuwania starych patchy i resetowania sekwencji:', error);
+        throw error;
       }
-  
-      return rows.map(row => row.id);
-    } catch (error) {
-      console.error('Błąd podczas pobierania dostępnych ID słów:', error);
-      throw error;
     }
-  }
 
-  async function generatePatches(patchSize) {
-    const availableWordIds = await getAvailableWordIds();
-    const remainingIds = [...availableWordIds]; // Kopia tablicy ID do modyfikacji
+    async function getUsedWordIds() {
+      try {
+        const result = await db.query("SELECT word_ids FROM word_patches");
+        console.log("Wynik zapytania:", result); // Logowanie wyniku zapytania
 
-    while (remainingIds.length >= patchSize) {
-      const patchIds = [];
-      for (let i = 0; i < patchSize; i++) {
-        const randomIndex = Math.floor(Math.random() * remainingIds.length);
-        patchIds.push(remainingIds[randomIndex]);
-        remainingIds.splice(randomIndex, 1); // Usuwanie wybranego ID z puli
+        const rows = result.rows; // Poprawne uzyskiwanie wierszy
+        console.log("Rows:", rows); // Logowanie wierszy dla lepszego zrozumienia
+
+        const usedIds = new Set();
+
+        rows.forEach((row) => {
+          const wordIds = JSON.parse(row.word_ids);
+          wordIds.forEach((id) => usedIds.add(id));
+        });
+
+        return usedIds;
+      } catch (error) {
+        console.error("Błąd podczas pobierania użytych ID słów:", error);
+        throw error;
       }
-
-      await db.query('INSERT INTO word_patches (word_ids) VALUES ($1)', [JSON.stringify(patchIds)]);
-      console.log(`Patch stworzony z ID: ${patchIds}`);
     }
 
-    // Dodaj ostatni patch, jeśli pozostało mniej niż patchSize ID
-    if (remainingIds.length > 0) {
-      await db.query('INSERT INTO word_patches (word_ids) VALUES ($1)', [JSON.stringify(remainingIds)]);
-      console.log(`Ostatni patch stworzony z ID: ${remainingIds}`);
+    async function getAvailableWordIds() {
+      try {
+        const result = await db.query("SELECT id FROM word");
+        console.log("Wynik zapytania:", result); // Logowanie wyniku zapytania
+
+        const rows = result.rows; // Poprawne uzyskiwanie wierszy
+        console.log("Rows:", rows); // Logowanie wierszy dla lepszego zrozumienia
+
+        if (!Array.isArray(rows)) {
+          throw new TypeError("Wynik zapytania nie jest iterowalny");
+        }
+
+        return rows.map((row) => row.id);
+      } catch (error) {
+        console.error("Błąd podczas pobierania dostępnych ID słów:", error);
+        throw error;
+      }
     }
 
-    console.log('Wszystkie patche zostały wygenerowane.');
+    async function generatePatches(patchSize) {
+      const availableWordIds = await getAvailableWordIds();
+      const remainingIds = [...availableWordIds];
+    
+      while (remainingIds.length >= patchSize) {
+        const patchIds = [];
+        for (let i = 0; i < patchSize; i++) {
+          const randomIndex = Math.floor(Math.random() * remainingIds.length);
+          patchIds.push(remainingIds[randomIndex]);
+          remainingIds.splice(randomIndex, 1);
+        }
+    
+        // Upewnij się, że patchIds jest w formacie JSON
+        const patchIdsJson = JSON.stringify(patchIds);
+    
+        await db.query('INSERT INTO word_patches (word_ids) VALUES ($1)', [patchIdsJson]);
+        console.log(`Patch stworzony z ID: ${patchIds}`);
+      }
+    
+      // Dodaj ostatni patch, jeśli pozostało mniej niż patchSize ID
+      if (remainingIds.length > 0) {
+        const remainingIdsJson = JSON.stringify(remainingIds);
+    
+        await db.query('INSERT INTO word_patches (word_ids) VALUES ($1)', [remainingIdsJson]);
+        console.log(`Ostatni patch stworzony z ID: ${remainingIds}`);
+      }
+    
+      console.log('Wszystkie patche zostały wygenerowane.');
+    }
+    
+
+    try {
+      // Usuń stare patche przed generowaniem nowych
+      await deleteOldPatches();
+
+      // Generuj nowe patche
+      await generatePatches(30); // Rozmiar patcha można modyfikować
+      res.status(200).send("Patche zostały wygenerowane.");
+    } catch (error) {
+      console.error("Błąd podczas generowania patchy:", error);
+      res.status(500).send("Wystąpił problem podczas generowania patchy.");
+    }
   }
-
-  try {
-    // Usuń stare patche przed generowaniem nowych
-    await deleteOldPatches();
-
-    // Generuj nowe patche
-    await generatePatches(30); // Rozmiar patcha można modyfikować
-    res.status(200).send('Patche zostały wygenerowane.');
-  } catch (error) {
-    console.error('Błąd podczas generowania patchy:', error);
-    res.status(500).send('Wystąpił problem podczas generowania patchy.');
-  }
-});
-
+);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

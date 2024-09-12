@@ -16,6 +16,7 @@ export default function Words() {
   const [nextWordIndex, setnextWordIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const [patch, setPatch] = useState([]);
   //percent calc
   const [maxium, setMaxium] = useState(100);
   const [percent, setPercent] = useState(0);
@@ -39,12 +40,30 @@ export default function Words() {
     }));
   };
 
+  // useEffect(() => {
+  //   if (!mounted.current) {
+  //     mounted.current = true;
+
+  //     async function startGame() {
+  //       const gameData = await getData();
+  //       if (gameData && gameData.data && gameData.data.length > 0) {
+  //         setData(gameData.data);
+  //         setnextWordIndex(2);
+  //       } else {
+  //         console.log("Brak danych");
+  //       }
+  //     }
+  //     startGame();
+  //   }
+  // }, []);
+
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
-
+  
       async function startGame() {
-        const gameData = await getData();
+        const currentPatch = await getPatchNumber(); // Funkcja do pobrania numeru aktualnego patcha z local storage
+        const gameData = await getData(currentPatch);
         if (gameData && gameData.data && gameData.data.length > 0) {
           setData(gameData.data);
           setnextWordIndex(2);
@@ -55,6 +74,7 @@ export default function Words() {
       startGame();
     }
   }, []);
+  
 
   useEffect(() => {
     if (loading && data.length > 0) {
@@ -80,25 +100,36 @@ export default function Words() {
     }
   };
 
-  async function getData() {
-    try {
-      const response = await api.get("/pre-data");
-      const minWordId = response.data.minWordId;
-      const maxWordId = response.data.maxWordId;
-      setMaxium(maxWordId);
-      const wordList = Array.from(
-        { length: 20 },
-        () =>
-          Math.floor(Math.random() * (maxWordId - minWordId + 1)) + minWordId
-      );
+  // async function getData() {
+  //   try {
+  //     const response = await api.get("/pre-data");
+  //     const minWordId = response.data.minWordId;
+  //     const maxWordId = response.data.maxWordId;
+  //     setMaxium(maxWordId);
+  //     const wordList = Array.from(
+  //       { length: 20 },
+  //       () =>
+  //         Math.floor(Math.random() * (maxWordId - minWordId + 1)) + minWordId
+  //     );
 
-      const dataResponse = await api.post("/data", { wordList });
+  //     const dataResponse = await api.post("/data", { wordList });
+  //     return dataResponse.data;
+  //   } catch (error) {
+  //     console.error("Błąd podczas pobierania danych:", error);
+  //     return null;
+  //   }
+  // }
+
+  async function getData(patchNumber) {
+    try {
+      const dataResponse = await api.post("/data", { patchNumber });
       return dataResponse.data;
     } catch (error) {
       console.error("Błąd podczas pobierania danych:", error);
       return null;
     }
   }
+  
 
   async function calcPercent() {
     const minigameWords = await getAllMinigameWords();
@@ -157,6 +188,37 @@ export default function Words() {
     }
   };
 
+  function getPatchNumber() {
+    const currentPatch = localStorage.getItem("currentPatch");
+    return currentPatch ? parseInt(currentPatch) : 1;
+  }
+
+  function updatePatchNumber(newPatchNumber) {
+    localStorage.setItem("currentPatch", newPatchNumber);
+  }
+
+  async function clicked() {
+    const patchNumber = 1;
+    try {
+      const dataResponse = await api.post("/data", { patchNumber });
+      if (dataResponse) {
+        setPatch(dataResponse.data.data); // Tylko tablica danych
+      }
+    } catch (error) {
+      console.error("Błąd podczas pobierania danych:", error);
+    }
+  }
+  
+  function markPatchAsCompleted(currentPatch) {
+    const completedPatches = JSON.parse(localStorage.getItem('completedPatches')) || [];
+    if (!completedPatches.includes(currentPatch)) {
+      completedPatches.push(currentPatch);
+      localStorage.setItem('completedPatches', JSON.stringify(completedPatches));
+    }
+    updatePatchNumber(currentPatch + 1); // Przejście do następnego patcha
+  }
+  
+
   return (
     <div className="container-words">
       <div className="window-words">
@@ -173,6 +235,15 @@ export default function Words() {
           </div>
         </div>
         <div className="bot-words">
+          <button
+            onClick={() => clicked()}
+            className="button"
+            type="button"
+            style={{ "--buttonColor": "var(--tertiary)" }}
+          >
+            test
+          </button>
+
           <div className="progressbar-words">
             <label>Progress {percent} %</label>
             <div className="progressbar-words-containter">
