@@ -60,7 +60,7 @@ export default function Words() {
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
-  
+
       async function startGame() {
         const currentPatch = await getPatchNumber(); // Funkcja do pobrania numeru aktualnego patcha z local storage
         const gameData = await getData(currentPatch);
@@ -71,10 +71,24 @@ export default function Words() {
           console.log("Brak danych");
         }
       }
+
+      async function maximum() {
+        try {
+          const response = await api.get("/pre-data");
+          const maxWordId = response.data.maxWordId;
+          setMaxium(maxWordId)
+        } catch (error) {
+          console.error("Błąd podczas pobierania danych:", error);
+          return null;
+        }
+      }
+
+
       startGame();
+      maximum();
+
     }
   }, []);
-  
 
   useEffect(() => {
     if (loading && data.length > 0) {
@@ -129,7 +143,6 @@ export default function Words() {
       return null;
     }
   }
-  
 
   async function calcPercent() {
     const minigameWords = await getAllMinigameWords();
@@ -208,16 +221,19 @@ export default function Words() {
       console.error("Błąd podczas pobierania danych:", error);
     }
   }
-  
+
   function markPatchAsCompleted(currentPatch) {
-    const completedPatches = JSON.parse(localStorage.getItem('completedPatches')) || [];
+    const completedPatches =
+      JSON.parse(localStorage.getItem("completedPatches")) || [];
     if (!completedPatches.includes(currentPatch)) {
       completedPatches.push(currentPatch);
-      localStorage.setItem('completedPatches', JSON.stringify(completedPatches));
+      localStorage.setItem(
+        "completedPatches",
+        JSON.stringify(completedPatches)
+      );
     }
     updatePatchNumber(currentPatch + 1); // Przejście do następnego patcha
   }
-  
 
   return (
     <div className="container-words">
