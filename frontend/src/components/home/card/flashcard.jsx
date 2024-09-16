@@ -141,6 +141,7 @@ export default function Flashcard({
         <form onSubmit={handleSubmit}>
           <div className="top-flashcard">
             <div className={`window-flashcard ${className}`}>
+              <div className="flashcard-level">B2</div>
               <div className={`learning ${showWrongAnswer}`}>
                 <div className="label-container">
                   <label>{word}</label>
