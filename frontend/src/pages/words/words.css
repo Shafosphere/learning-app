@@ -156,8 +156,8 @@
   justify-content: center;
   flex-direction: column;
   /* background-color: aqua; */
-
   width: 60rem;
+  margin-bottom: 3rem;
 }
 .progressbar-words-containter {
   transform: rotate(-270deg);

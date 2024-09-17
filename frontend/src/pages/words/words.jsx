@@ -13,13 +13,13 @@ import Progressbar from "../../components/home/bar/bar";
 export default function Words() {
   const [currentWord, setWord] = useState("");
   const [data, setData] = useState([]);
-  const [nextWordIndex, setnextWordIndex] = useState(0);
+  const [nextWordIndex, setnextWordIndex] = useState(2);
   const [loading, setLoading] = useState(true);
 
-  const [patch, setPatch] = useState([]);
   //percent calc
   const [maxium, setMaxium] = useState(100);
   const [percent, setPercent] = useState(0);
+  const [secondPercent, setSecondPercent] = useState(0);
 
   const mounted = useRef(false);
   const [carousel, setCarousel] = useState({
@@ -30,7 +30,7 @@ export default function Words() {
     5: "bottom-bot",
   });
 
-  const handleClick = () => {
+  function handleClick() {
     setCarousel((prevCarousel) => ({
       1: prevCarousel[5],
       2: prevCarousel[1],
@@ -38,24 +38,14 @@ export default function Words() {
       4: prevCarousel[3],
       5: prevCarousel[4],
     }));
-  };
+  }
 
-  // useEffect(() => {
-  //   if (!mounted.current) {
-  //     mounted.current = true;
-
-  //     async function startGame() {
-  //       const gameData = await getData();
-  //       if (gameData && gameData.data && gameData.data.length > 0) {
-  //         setData(gameData.data);
-  //         setnextWordIndex(2);
-  //       } else {
-  //         console.log("Brak danych");
-  //       }
-  //     }
-  //     startGame();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (data.length > 0) {
+      const calculatedPercent = ((nextWordIndex / data.length) * 100).toFixed(2);
+      setSecondPercent(calculatedPercent);
+    }
+  }, [nextWordIndex, data]);
 
   useEffect(() => {
     if (!mounted.current) {
@@ -66,7 +56,6 @@ export default function Words() {
         const gameData = await getData(currentPatch);
         if (gameData && gameData.data && gameData.data.length > 0) {
           setData(gameData.data);
-          setnextWordIndex(2);
         } else {
           console.log("Brak danych");
         }
@@ -76,17 +65,15 @@ export default function Words() {
         try {
           const response = await api.get("/pre-data");
           const maxWordId = response.data.maxWordId;
-          setMaxium(maxWordId)
+          setMaxium(maxWordId);
         } catch (error) {
           console.error("Błąd podczas pobierania danych:", error);
           return null;
         }
       }
 
-
       startGame();
       maximum();
-
     }
   }, []);
 
@@ -98,7 +85,7 @@ export default function Words() {
     }
   }, [loading, data]);
 
-  const updateDivs = () => {
+  function updateDivs() {
     const div3 = document.getElementById("3");
     const div4 = document.getElementById("4");
 
@@ -112,27 +99,7 @@ export default function Words() {
       div4.dataset.id = data[1].id;
       div4.dataset.translate = data[1].wordPl.word;
     }
-  };
-
-  // async function getData() {
-  //   try {
-  //     const response = await api.get("/pre-data");
-  //     const minWordId = response.data.minWordId;
-  //     const maxWordId = response.data.maxWordId;
-  //     setMaxium(maxWordId);
-  //     const wordList = Array.from(
-  //       { length: 20 },
-  //       () =>
-  //         Math.floor(Math.random() * (maxWordId - minWordId + 1)) + minWordId
-  //     );
-
-  //     const dataResponse = await api.post("/data", { wordList });
-  //     return dataResponse.data;
-  //   } catch (error) {
-  //     console.error("Błąd podczas pobierania danych:", error);
-  //     return null;
-  //   }
-  // }
+  }
 
   async function getData(patchNumber) {
     try {
@@ -151,16 +118,16 @@ export default function Words() {
       const wrongCount = minigameWords[0].wrong.length;
       const total = (((goodCount + wrongCount) * 100) / maxium).toFixed(2);
       setPercent(total);
-
-      setPercent(total);
     } else {
       console.log("Brak danych w minigameWords.");
     }
   }
 
-  const correctWordChange = (event) => setWord(event.target.value);
+  function correctWordChange(event) {
+    setWord(event.target.value);
+  }
 
-  const handleKeyDown = (event) => {
+  function handleKeyDown(event) {
     if (event.key === "Enter" && data.length > 0) {
       const middleDiv = document.querySelector(".middle");
       if (currentWord === middleDiv.dataset.translate) {
@@ -178,28 +145,29 @@ export default function Words() {
         bottomBotDiv.dataset.translate = data[nextWordIndex].wordPl.word;
       }
 
+      const patchNumber = getPatchNumber();
       setnextWordIndex((prevIndex) => {
         if (prevIndex >= data.length - 1) {
-          return 0;
+          newData(); // Call newData when at the last element
+          markPatchAsCompleted(patchNumber);
+          return 0; // Reset index to 0
         } else {
-          if (prevIndex + 1 >= data.length - 1) {
-            resetGameData();
-          }
-          return prevIndex + 1;
+          return prevIndex + 1; // Otherwise, simply increment the index
         }
       });
 
       setWord("");
       handleClick();
     }
-  };
+  }
 
-  const resetGameData = async () => {
-    const gameData = await getData();
+  async function newData() {
+    const patchNumber = getPatchNumber();
+    const gameData = await getData(patchNumber);
     if (gameData && gameData.data && gameData.data.length > 0) {
       setData(gameData.data);
     }
-  };
+  }
 
   function getPatchNumber() {
     const currentPatch = localStorage.getItem("currentPatch");
@@ -208,18 +176,6 @@ export default function Words() {
 
   function updatePatchNumber(newPatchNumber) {
     localStorage.setItem("currentPatch", newPatchNumber);
-  }
-
-  async function clicked() {
-    const patchNumber = 1;
-    try {
-      const dataResponse = await api.post("/data", { patchNumber });
-      if (dataResponse) {
-        setPatch(dataResponse.data.data); // Tylko tablica danych
-      }
-    } catch (error) {
-      console.error("Błąd podczas pobierania danych:", error);
-    }
   }
 
   function markPatchAsCompleted(currentPatch) {
@@ -251,14 +207,20 @@ export default function Words() {
           </div>
         </div>
         <div className="bot-words">
-          <button
-            onClick={() => clicked()}
+          {/* <button
             className="button"
             type="button"
             style={{ "--buttonColor": "var(--tertiary)" }}
           >
-            test
-          </button>
+            {nextWordIndex - 2}
+          </button> */}
+
+          <div className="progressbar-words">
+            <label>current series {secondPercent} %</label>
+            <div className="progressbar-words-containter">
+              <Progressbar procent={secondPercent} barHeight="60rem" />
+            </div>
+          </div>
 
           <div className="progressbar-words">
             <label>Progress {percent} %</label>
