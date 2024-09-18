@@ -15,6 +15,7 @@ export default function Words() {
   const [data, setData] = useState([]);
   const [nextWordIndex, setnextWordIndex] = useState(2);
   const [loading, setLoading] = useState(true);
+  const [currentID, setCurrentID] = useState(0);
 
   //percent calc
   const [maxium, setMaxium] = useState(100);
@@ -42,10 +43,10 @@ export default function Words() {
 
   useEffect(() => {
     if (data.length > 0) {
-      const calculatedPercent = ((nextWordIndex / data.length) * 100).toFixed(2);
+      const calculatedPercent = ((currentID / data.length) * 100).toFixed(2);
       setSecondPercent(calculatedPercent);
     }
-  }, [nextWordIndex, data]);
+  }, [currentID, data]);
 
   useEffect(() => {
     if (!mounted.current) {
@@ -59,6 +60,10 @@ export default function Words() {
         } else {
           console.log("Brak danych");
         }
+
+        
+      const oldID = localStorage.getItem("VocaCurrIDNumber");
+      setCurrentID( oldID ? parseInt(oldID) : 0)
       }
 
       async function maximum() {
@@ -111,6 +116,12 @@ export default function Words() {
     }
   }
 
+  function updateCurrID(){
+    const newNumber = currentID + 1;
+    setCurrentID(newNumber);
+    localStorage.setItem("VocaCurrIDNumber", newNumber);
+  }
+
   async function calcPercent() {
     const minigameWords = await getAllMinigameWords();
     if (minigameWords.length > 0) {
@@ -156,6 +167,7 @@ export default function Words() {
         }
       });
 
+      updateCurrID();
       setWord("");
       handleClick();
     }
@@ -188,7 +200,7 @@ export default function Words() {
         JSON.stringify(completedPatches)
       );
     }
-    updatePatchNumber(currentPatch + 1); // Przejście do następnego patcha
+    updatePatchNumber(currentPatch + 1);
   }
 
   return (
@@ -207,23 +219,16 @@ export default function Words() {
           </div>
         </div>
         <div className="bot-words">
-          {/* <button
-            className="button"
-            type="button"
-            style={{ "--buttonColor": "var(--tertiary)" }}
-          >
-            {nextWordIndex - 2}
-          </button> */}
 
           <div className="progressbar-words">
-            <label>current series {secondPercent} %</label>
+            <label>current part {secondPercent} %</label>
             <div className="progressbar-words-containter">
               <Progressbar procent={secondPercent} barHeight="60rem" />
             </div>
           </div>
 
           <div className="progressbar-words">
-            <label>Progress {percent} %</label>
+            <label>total Progress {percent} %</label>
             <div className="progressbar-words-containter">
               <Progressbar procent={percent} barHeight="60rem" />
             </div>
