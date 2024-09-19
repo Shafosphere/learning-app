@@ -31,6 +31,7 @@ export default function Words() {
     5: "bottom-bot",
   });
 
+  //obracam karuzelą
   function handleClick() {
     setCarousel((prevCarousel) => ({
       1: prevCarousel[5],
@@ -41,6 +42,7 @@ export default function Words() {
     }));
   }
 
+  //aktualizuje procent w paatchu
   useEffect(() => {
     if (data.length > 0) {
       const calculatedPercent = ((currentID / data.length) * 100).toFixed(2);
@@ -48,6 +50,7 @@ export default function Words() {
     }
   }, [currentID, data]);
 
+  //wywoluje sie raz na starcie serwera, pobieram dane
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
@@ -61,9 +64,6 @@ export default function Words() {
           console.log("Brak danych");
         }
 
-        
-      const oldID = localStorage.getItem("VocaCurrIDNumber");
-      setCurrentID( oldID ? parseInt(oldID) : 0)
       }
 
       async function maximum() {
@@ -79,49 +79,43 @@ export default function Words() {
 
       startGame();
       maximum();
+
+      const oldID = localStorage.getItem("VocaCurrIDNumber");
+      setCurrentID(oldID ? parseInt(oldID) : 0);
     }
   }, []);
 
+  //wywołuje sie raz na starcie strony kiedy dane sa załadowane
   useEffect(() => {
     if (loading && data.length > 0) {
+      function updateDivs() {
+        let number = 0;
+        if (currentID !== 0) {
+          number = currentID;
+        }
+
+        const div3 = document.getElementById("3");
+        const div4 = document.getElementById("4");
+
+        if (div3) {
+          div3.textContent = data[number].wordEng.word;
+          div3.dataset.id = data[number].id;
+          div3.dataset.translate = data[number].wordPl.word;
+        }
+        if (div4) {
+          div4.textContent = data[number + 1].wordEng.word;
+          div4.dataset.id = data[number + 1].id;
+          div4.dataset.translate = data[number + 1].wordPl.word;
+        }
+      }
+
       updateDivs();
       setLoading(false);
       calcPercent();
     }
   }, [loading, data]);
 
-  function updateDivs() {
-    const div3 = document.getElementById("3");
-    const div4 = document.getElementById("4");
-
-    if (div3) {
-      div3.textContent = data[0].wordEng.word;
-      div3.dataset.id = data[0].id;
-      div3.dataset.translate = data[0].wordPl.word;
-    }
-    if (div4) {
-      div4.textContent = data[1].wordEng.word;
-      div4.dataset.id = data[1].id;
-      div4.dataset.translate = data[1].wordPl.word;
-    }
-  }
-
-  async function getData(patchNumber) {
-    try {
-      const dataResponse = await api.post("/data", { patchNumber });
-      return dataResponse.data;
-    } catch (error) {
-      console.error("Błąd podczas pobierania danych:", error);
-      return null;
-    }
-  }
-
-  function updateCurrID(){
-    const newNumber = currentID + 1;
-    setCurrentID(newNumber);
-    localStorage.setItem("VocaCurrIDNumber", newNumber);
-  }
-
+  //oblicza % ukonczynych słówek ogólnie
   async function calcPercent() {
     const minigameWords = await getAllMinigameWords();
     if (minigameWords.length > 0) {
@@ -134,45 +128,76 @@ export default function Words() {
     }
   }
 
+  //slowo wprowadzane przez uzytkownika
   function correctWordChange(event) {
     setWord(event.target.value);
   }
 
+  //uzytkownik kliknął enter:
   function handleKeyDown(event) {
     if (event.key === "Enter" && data.length > 0) {
-      const middleDiv = document.querySelector(".middle");
-      if (currentWord === middleDiv.dataset.translate) {
-        addNumberToGood(middleDiv.dataset.id);
-        calcPercent();
-      } else {
-        addNumberToWrong(middleDiv.dataset.id);
-        calcPercent();
-      }
-
-      const bottomBotDiv = document.querySelector(".bottom-bot");
-      if (bottomBotDiv) {
-        bottomBotDiv.textContent = data[nextWordIndex].wordEng.word;
-        bottomBotDiv.dataset.id = data[nextWordIndex].id;
-        bottomBotDiv.dataset.translate = data[nextWordIndex].wordPl.word;
-      }
-
-      const patchNumber = getPatchNumber();
-      setnextWordIndex((prevIndex) => {
-        if (prevIndex >= data.length - 1) {
-          newData(); // Call newData when at the last element
-          markPatchAsCompleted(patchNumber);
-          return 0; // Reset index to 0
-        } else {
-          return prevIndex + 1; // Otherwise, simply increment the index
-        }
-      });
-
-      updateCurrID();
-      setWord("");
-      handleClick();
+      compare(); //sprawdza wyniki
+      carouselUpdate(); //dodaje nowe dane do petli w karuzeli w .bottom-bot
+      updateCurrID(); //zapisuje id slowa z data ktore jest uzywane w .middle
+      setWord(""); //slowo wpisywane przez uzytkownika
+      handleClick(); //ruch karuzeli
     }
   }
 
+  //zapisuje id slowa w localstorage z data jakie jest uzyte obecnie w .middle
+  function updateCurrID() {
+    const newNumber = currentID + 1;
+    setCurrentID(newNumber);
+    localStorage.setItem("VocaCurrIDNumber", newNumber);
+  }
+
+  //dodaj nowe dane do karuzeli
+  function carouselUpdate() {
+    const bottomBotDiv = document.querySelector(".bottom-bot");
+    if (bottomBotDiv) {
+      bottomBotDiv.textContent = data[nextWordIndex].wordEng.word;
+      bottomBotDiv.dataset.id = data[nextWordIndex].id;
+      bottomBotDiv.dataset.translate = data[nextWordIndex].wordPl.word;
+      console.log("ustawiam donly div na " + data[nextWordIndex].wordEng.word);
+    }
+
+    const patchNumber = getPatchNumber();
+    setnextWordIndex((prevIndex) => {
+      if (prevIndex >= data.length - 1) {
+        newData(); // Call newData when at the last element
+        markPatchAsCompleted(patchNumber);
+        setCurrentID(0);
+        return 0; // Reset index to 0
+      } else {
+        return prevIndex + 1; // Otherwise, simply increment the index
+      }
+    });
+  }
+
+  //sprawdx wyniki i dodaj nowe słowo do karuzeli
+  function compare() {
+    const middleDiv = document.querySelector(".middle");
+    if (currentWord === middleDiv.dataset.translate) {
+      addNumberToGood(middleDiv.dataset.id);
+      calcPercent();
+    } else {
+      addNumberToWrong(middleDiv.dataset.id);
+      calcPercent();
+    }
+  }
+
+  //pobieram dane z serwera
+  async function getData(patchNumber) {
+    try {
+      const dataResponse = await api.post("/data", { patchNumber });
+      return dataResponse.data;
+    } catch (error) {
+      console.error("Błąd podczas pobierania danych:", error);
+      return null;
+    }
+  }
+
+  //pobieram nowe dane z serwera z adekwatnego patcha
   async function newData() {
     const patchNumber = getPatchNumber();
     const gameData = await getData(patchNumber);
@@ -181,15 +206,13 @@ export default function Words() {
     }
   }
 
+  //pobieram patch z localstorage
   function getPatchNumber() {
     const currentPatch = localStorage.getItem("currentPatch");
     return currentPatch ? parseInt(currentPatch) : 1;
   }
 
-  function updatePatchNumber(newPatchNumber) {
-    localStorage.setItem("currentPatch", newPatchNumber);
-  }
-
+  //ustaiwam patch jako skonczony
   function markPatchAsCompleted(currentPatch) {
     const completedPatches =
       JSON.parse(localStorage.getItem("completedPatches")) || [];
@@ -200,7 +223,7 @@ export default function Words() {
         JSON.stringify(completedPatches)
       );
     }
-    updatePatchNumber(currentPatch + 1);
+    localStorage.setItem("currentPatch", currentPatch + 1);
   }
 
   return (
@@ -219,7 +242,6 @@ export default function Words() {
           </div>
         </div>
         <div className="bot-words">
-
           <div className="progressbar-words">
             <label>current part {secondPercent} %</label>
             <div className="progressbar-words-containter">
