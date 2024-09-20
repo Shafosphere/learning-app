@@ -1,10 +1,10 @@
 import React from "react";
 
-export default function InputField({ currentWord, onChange, onKeyDown }) {
+export default function InputField({ userWord, onChange, onKeyDown }) {
   return (
     <input
       type="text"
-      value={currentWord}
+      value={userWord}
       onChange={onChange}
       onKeyDown={onKeyDown}
       placeholder="translate the word"
