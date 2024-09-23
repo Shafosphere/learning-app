@@ -2,37 +2,71 @@ import "./words.css";
 import { useState, useEffect } from "react";
 import api from "../../utils/api";
 import InputField from "../../components/words/wordInput";
+import { addNumberToGood, addNumberToWrong } from "../../utils/indexedDB";
 
 export default function Words() {
   const [userWord, setWord] = useState("");
 
   // Dane z serwera
   const [data, setData] = useState([]);
+  const [patchNumber, setPatch] = useState(null);
 
   // Indeks danych dla bottom-bot
-  const [dataIndexForBottomDiv, setDataIndexForBottomDiv] = useState(0);
-
+  const [dataIndexForBottomDiv, setDataIndexForBottomDiv] = useState(() => {
+    const savedIndex = localStorage.getItem("dataIndexForBottomDiv");
+    return savedIndex ? parseInt(savedIndex) : 0;
+  });
+  
   // Stan karuzeli
-  const [carouselItems, setCarouselItems] = useState([
-    { id: 1, className: "top-bot", data: null },
-    { id: 2, className: "top", data: null },
-    { id: 3, className: "middle", data: null },
-    { id: 4, className: "bottom", data: null },
-    { id: 5, className: "bottom-bot", data: null },
-  ]);
+  const [carouselItems, setCarouselItems] = useState(() => {
+    const savedCarouselItems = localStorage.getItem("carouselItems");
+    if (savedCarouselItems) {
+      return JSON.parse(savedCarouselItems);
+    } else {
+      return [
+        { id: 1, className: "top-bot", data: null },
+        { id: 2, className: "top", data: null },
+        { id: 3, className: "middle", data: null },
+        { id: 4, className: "bottom", data: null },
+        { id: 5, className: "bottom-bot", data: null },
+      ];
+    }
+  });
+
+  useEffect(() => {
+    const currentPatch = localStorage.getItem("currentPatch");
+    setPatch(currentPatch ? parseInt(currentPatch) : 1);
+  }, []);
 
   useEffect(() => {
     async function startGame() {
-      const currentPatch = 1;
-      const gameData = await getData(currentPatch);
-      if (gameData && gameData.data && gameData.data.length > 0) {
-        setData(gameData.data);
-      } else {
-        console.log("Brak danych");
+      if (patchNumber !== null) {
+        // Sprawdzamy, czy patchNumber jest ustawiony
+        const gameData = await getData(patchNumber);
+        if (gameData && gameData.data && gameData.data.length > 0) {
+          setData(gameData.data);
+        } else {
+          console.log("Brak danych");
+        }
       }
     }
+
     startGame();
-  }, []);
+  }, [patchNumber]);
+
+  useEffect(() => {
+    localStorage.setItem("dataIndexForBottomDiv", dataIndexForBottomDiv);
+  }, [dataIndexForBottomDiv]);
+
+  useEffect(() => {
+    localStorage.setItem("carouselItems", JSON.stringify(carouselItems));
+  }, [carouselItems]);
+
+  function nextPatch() {
+    const nextPatchNumber = patchNumber + 1;
+    localStorage.setItem("currentPatch", nextPatchNumber);
+    setPatch(nextPatchNumber);
+  }
 
   async function getData(patchNumber) {
     try {
@@ -51,7 +85,10 @@ export default function Words() {
 
       // Rotujemy klasy CSS
       const lastClassName = classNames[classNames.length - 1];
-      const newClassNames = [lastClassName, ...classNames.slice(0, classNames.length - 1)];
+      const newClassNames = [
+        lastClassName,
+        ...classNames.slice(0, classNames.length - 1),
+      ];
 
       // Aktualizujemy klasy CSS w divach
       const newItems = prevItems.map((item, index) => ({
@@ -67,7 +104,9 @@ export default function Words() {
     if (data.length > 0) {
       setCarouselItems((prevItems) => {
         // Znajdujemy diva z klasą 'bottom-bot'
-        const bottomBotIndex = prevItems.findIndex((item) => item.className === "bottom-bot");
+        const bottomBotIndex = prevItems.findIndex(
+          (item) => item.className === "bottom-bot"
+        );
 
         // Przypisujemy nowe dane do tego diva
         const newItems = prevItems.map((item, index) => {
@@ -84,7 +123,14 @@ export default function Words() {
       });
 
       // Aktualizujemy indeks danych
-      setDataIndexForBottomDiv((prevIndex) => (prevIndex + 1) % data.length);
+      setDataIndexForBottomDiv((prevIndex) => {
+        if (prevIndex === data.length - 1) {
+          nextPatch();
+          return 0;
+        } else {
+          return prevIndex + 1;
+        }
+      });
     }
   }
 
@@ -94,11 +140,35 @@ export default function Words() {
 
   function handleKeyDown(event) {
     if (event.key === "Enter") {
+      checkAnswer();
       moveCarousel();
       carouselUpdate();
     }
   }
 
+  function checkAnswer() {
+    const currentItem = carouselItems.find(
+      (item) => item.className === "middle" // Poprawne porównanie klas
+    );
+  
+    if (currentItem && currentItem.data && currentItem.data.wordPl) { // Sprawdzamy, czy currentItem, data i wordPl istnieją
+      const correctAnswer = currentItem.data.wordPl.word || "";
+      const idOfTheWord = currentItem.data.id || "";
+  
+      if (userWord.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+        addNumberToGood(idOfTheWord);
+        console.log("good");
+        setWord("");
+      } else {
+        addNumberToWrong(idOfTheWord);
+        console.log("wrong");
+        setWord("");
+      }
+    } else {
+      console.log("Brak danych do porównania!");
+    }
+  }
+  
   return (
     <div className="container-words">
       <div className="window-words">
