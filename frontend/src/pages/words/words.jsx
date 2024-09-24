@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import api from "../../utils/api";
 import InputField from "../../components/words/wordInput";
 import { addNumberToGood, addNumberToWrong } from "../../utils/indexedDB";
+import Progressbar from "../../components/home/bar/bar";
 
 export default function Words() {
   const [userWord, setWord] = useState("");
@@ -16,22 +17,18 @@ export default function Words() {
     const savedIndex = localStorage.getItem("dataIndexForBottomDiv");
     return savedIndex ? parseInt(savedIndex) : 0;
   });
-  
+
   // Stan karuzeli
-  const [carouselItems, setCarouselItems] = useState(() => {
-    const savedCarouselItems = localStorage.getItem("carouselItems");
-    if (savedCarouselItems) {
-      return JSON.parse(savedCarouselItems);
-    } else {
-      return [
-        { id: 1, className: "top-bot", data: null },
-        { id: 2, className: "top", data: null },
-        { id: 3, className: "middle", data: null },
-        { id: 4, className: "bottom", data: null },
-        { id: 5, className: "bottom-bot", data: null },
-      ];
-    }
+  const [carouselItems, setCarouselItems] = useState(null);
+
+  // Licznik odpowiedzi użytkownika
+  const [wordsAnsweredCount, setWordsAnsweredCount] = useState(() => {
+    const savedCount = localStorage.getItem("wordsAnsweredCount");
+    return savedCount ? parseInt(savedCount) : 0;
   });
+
+  // Procent postępu
+  const [percent, setPercent] = useState(0);
 
   useEffect(() => {
     const currentPatch = localStorage.getItem("currentPatch");
@@ -41,7 +38,6 @@ export default function Words() {
   useEffect(() => {
     async function startGame() {
       if (patchNumber !== null) {
-        // Sprawdzamy, czy patchNumber jest ustawiony
         const gameData = await getData(patchNumber);
         if (gameData && gameData.data && gameData.data.length > 0) {
           setData(gameData.data);
@@ -54,18 +50,52 @@ export default function Words() {
     startGame();
   }, [patchNumber]);
 
+  // Inicjalizacja carouselItems po pobraniu danych
+  useEffect(() => {
+    if (data.length > 0 && carouselItems === null) {
+      const savedCarouselItems = localStorage.getItem("carouselItems");
+      if (savedCarouselItems) {
+        setCarouselItems(JSON.parse(savedCarouselItems));
+      } else {
+        setCarouselItems([
+          { id: 1, className: "top-bot", data: null },
+          { id: 2, className: "top", data: null },
+          { id: 3, className: "middle", data: data[0] },
+          { id: 4, className: "bottom", data: data[1] },
+          { id: 5, className: "bottom-bot", data: data[2] },
+        ]);
+        setDataIndexForBottomDiv(3);
+        localStorage.setItem("lastDataItemId", data[data.length - 1].id);
+      }
+    }
+  }, [data, carouselItems]);
+
+  useEffect(() => {
+    if (carouselItems !== null) {
+      localStorage.setItem("carouselItems", JSON.stringify(carouselItems));
+    }
+  }, [carouselItems]);
+
   useEffect(() => {
     localStorage.setItem("dataIndexForBottomDiv", dataIndexForBottomDiv);
   }, [dataIndexForBottomDiv]);
 
   useEffect(() => {
-    localStorage.setItem("carouselItems", JSON.stringify(carouselItems));
-  }, [carouselItems]);
+    localStorage.setItem("wordsAnsweredCount", wordsAnsweredCount);
+  }, [wordsAnsweredCount]);
 
   function nextPatch() {
     const nextPatchNumber = patchNumber + 1;
     localStorage.setItem("currentPatch", nextPatchNumber);
     setPatch(nextPatchNumber);
+
+    // Zresetuj licznik odpowiedzi
+    // setWordsAnsweredCount(0);
+    // setPercent(0);
+
+    // Resetuj inne stany
+    // setCarouselItems(null);
+    // setData([]);
   }
 
   async function getData(patchNumber) {
@@ -141,34 +171,79 @@ export default function Words() {
   function handleKeyDown(event) {
     if (event.key === "Enter") {
       checkAnswer();
+    }
+  }
+
+  function handleAnswer(isCorrect) {
+    const currentItem = carouselItems.find(
+      (item) => item.className === "middle"
+    );
+
+    if (currentItem && currentItem.data) {
+      const idOfTheWord = currentItem.data.id || "";
+
+      if (isCorrect) {
+        addNumberToGood(idOfTheWord);
+        console.log("good");
+      } else {
+        addNumberToWrong(idOfTheWord);
+        console.log("wrong");
+      }
+
+      const lastDataItemId = parseInt(localStorage.getItem("lastDataItemId"));
+
+      if (currentItem.data.id === lastDataItemId) {
+        // User has reached the last word
+        setWordsAnsweredCount(0);
+      }
+
+      setWord("");
       moveCarousel();
       carouselUpdate();
+
+      // Inkrementuj licznik odpowiedzi
+      setWordsAnsweredCount((prevCount) => prevCount + 1);
+
+      // Oblicz procent postępu
+      calcPercent();
+    } else {
+      console.log("Brak danych do przetworzenia!");
     }
+  }
+
+  function handleClickKnow() {
+    handleAnswer(true);
+  }
+
+  function handleClickDontKnow() {
+    handleAnswer(false);
   }
 
   function checkAnswer() {
     const currentItem = carouselItems.find(
-      (item) => item.className === "middle" // Poprawne porównanie klas
+      (item) => item.className === "middle"
     );
-  
-    if (currentItem && currentItem.data && currentItem.data.wordPl) { // Sprawdzamy, czy currentItem, data i wordPl istnieją
+
+    if (currentItem && currentItem.data && currentItem.data.wordPl) {
       const correctAnswer = currentItem.data.wordPl.word || "";
-      const idOfTheWord = currentItem.data.id || "";
-  
+
       if (userWord.trim().toLowerCase() === correctAnswer.toLowerCase()) {
-        addNumberToGood(idOfTheWord);
-        console.log("good");
-        setWord("");
+        handleAnswer(true);
       } else {
-        addNumberToWrong(idOfTheWord);
-        console.log("wrong");
-        setWord("");
+        handleAnswer(false);
       }
     } else {
       console.log("Brak danych do porównania!");
     }
   }
-  
+
+  function calcPercent() {
+    if (data.length > 0) {
+      const total = ((wordsAnsweredCount / data.length) * 100).toFixed(2);
+      setPercent(total);
+    }
+  }
+
   return (
     <div className="container-words">
       <div className="window-words">
@@ -181,14 +256,44 @@ export default function Words() {
             />
           </div>
           <div className="top-right-words">
-            {carouselItems.map((item) => (
-              <div key={item.id} className={`box-words ${item.className}`}>
-                {item.data ? item.data.wordEng.word : ""}
-              </div>
-            ))}
+            {carouselItems ? (
+              carouselItems.map((item) => (
+                <div key={item.id} className={`box-words ${item.className}`}>
+                  {item.data ? item.data.wordEng.word : ""}
+                </div>
+              ))
+            ) : (
+              <div>Ładowanie...</div>
+            )}
           </div>
         </div>
-        <div className="bot-words"></div>
+        <div className="bot-words">
+          <div className="buttons-words">
+            <button
+              onClick={handleClickKnow}
+              className="button"
+              type="button"
+              style={{ "--buttonColor": "var(--tertiary)" }}
+            >
+              znam
+            </button>
+            <button
+              onClick={handleClickDontKnow}
+              className="button"
+              type="button"
+              style={{ "--buttonColor": "var(--tertiary)" }}
+            >
+              nie znam
+            </button>
+          </div>
+
+          <div className="progressbar-words">
+            <label>patch Progress {percent} %</label>
+            <div className="progressbar-words-containter">
+              <Progressbar procent={percent} barHeight="60rem" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
