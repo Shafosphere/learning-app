@@ -1,5 +1,5 @@
 import "./words.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import api from "../../utils/api";
 import InputField from "../../components/words/wordInput";
 import { addNumberToGood, addNumberToWrong } from "../../utils/indexedDB";
@@ -27,13 +27,25 @@ export default function Words() {
     return savedCount ? parseInt(savedCount) : 0;
   });
 
-  // Procent postępu
-  const [percent, setPercent] = useState(0);
+  // Obliczanie procentu za pomocą useMemo
+  const percent = useMemo(() => {
+    if (data.length > 0) {
+      return ((wordsAnsweredCount / data.length) * 100).toFixed(2);
+    } else {
+      return 0;
+    }
+  }, [wordsAnsweredCount, data]);
+
+  const[lastDataItemId, setLastDataItemId] = useState(() => {
+    const savedId = localStorage.getItem("lastDataItemId");
+    return savedId ? parseInt(savedId) : null;
+  });
 
   useEffect(() => {
     const currentPatch = localStorage.getItem("currentPatch");
     setPatch(currentPatch ? parseInt(currentPatch) : 1);
   }, []);
+
 
   useEffect(() => {
     async function startGame() {
@@ -65,7 +77,10 @@ export default function Words() {
           { id: 5, className: "bottom-bot", data: data[2] },
         ]);
         setDataIndexForBottomDiv(3);
-        localStorage.setItem("lastDataItemId", data[data.length - 1].id);
+
+        const lastId = data[data.length - 1].id;
+        localStorage.setItem("lastDataItemId", lastId);
+        setLastDataItemId(lastId);
       }
     }
   }, [data, carouselItems]);
@@ -88,14 +103,6 @@ export default function Words() {
     const nextPatchNumber = patchNumber + 1;
     localStorage.setItem("currentPatch", nextPatchNumber);
     setPatch(nextPatchNumber);
-
-    // Zresetuj licznik odpowiedzi
-    // setWordsAnsweredCount(0);
-    // setPercent(0);
-
-    // Resetuj inne stany
-    // setCarouselItems(null);
-    // setData([]);
   }
 
   async function getData(patchNumber) {
@@ -133,12 +140,10 @@ export default function Words() {
   function carouselUpdate() {
     if (data.length > 0) {
       setCarouselItems((prevItems) => {
-        // Znajdujemy diva z klasą 'bottom-bot'
         const bottomBotIndex = prevItems.findIndex(
           (item) => item.className === "bottom-bot"
         );
 
-        // Przypisujemy nowe dane do tego diva
         const newItems = prevItems.map((item, index) => {
           if (index === bottomBotIndex) {
             return {
@@ -152,7 +157,6 @@ export default function Words() {
         return newItems;
       });
 
-      // Aktualizujemy indeks danych
       setDataIndexForBottomDiv((prevIndex) => {
         if (prevIndex === data.length - 1) {
           nextPatch();
@@ -190,22 +194,20 @@ export default function Words() {
         console.log("wrong");
       }
 
-      const lastDataItemId = parseInt(localStorage.getItem("lastDataItemId"));
+      setWordsAnsweredCount((prevCount) => prevCount + 1);
 
       if (currentItem.data.id === lastDataItemId) {
-        // User has reached the last word
         setWordsAnsweredCount(0);
+
+        const lastId = data[data.length - 1].id;
+        localStorage.setItem("lastDataItemId", lastId);
+        setLastDataItemId(lastId);
       }
 
       setWord("");
       moveCarousel();
       carouselUpdate();
 
-      // Inkrementuj licznik odpowiedzi
-      setWordsAnsweredCount((prevCount) => prevCount + 1);
-
-      // Oblicz procent postępu
-      calcPercent();
     } else {
       console.log("Brak danych do przetworzenia!");
     }
@@ -234,13 +236,6 @@ export default function Words() {
       }
     } else {
       console.log("Brak danych do porównania!");
-    }
-  }
-
-  function calcPercent() {
-    if (data.length > 0) {
-      const total = ((wordsAnsweredCount / data.length) * 100).toFixed(2);
-      setPercent(total);
     }
   }
 
