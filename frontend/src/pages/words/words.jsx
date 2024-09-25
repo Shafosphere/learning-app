@@ -21,6 +21,8 @@ export default function Words() {
   // Stan karuzeli
   const [carouselItems, setCarouselItems] = useState(null);
 
+  const [mode, setMode] = useState(false);
+
   // Licznik odpowiedzi użytkownika
   const [wordsAnsweredCount, setWordsAnsweredCount] = useState(() => {
     const savedCount = localStorage.getItem("wordsAnsweredCount");
@@ -36,7 +38,7 @@ export default function Words() {
     }
   }, [wordsAnsweredCount, data]);
 
-  const[lastDataItemId, setLastDataItemId] = useState(() => {
+  const [lastDataItemId, setLastDataItemId] = useState(() => {
     const savedId = localStorage.getItem("lastDataItemId");
     return savedId ? parseInt(savedId) : null;
   });
@@ -45,7 +47,6 @@ export default function Words() {
     const currentPatch = localStorage.getItem("currentPatch");
     setPatch(currentPatch ? parseInt(currentPatch) : 1);
   }, []);
-
 
   useEffect(() => {
     async function startGame() {
@@ -207,7 +208,6 @@ export default function Words() {
       setWord("");
       moveCarousel();
       carouselUpdate();
-
     } else {
       console.log("Brak danych do przetworzenia!");
     }
@@ -241,15 +241,28 @@ export default function Words() {
 
   return (
     <div className="container-words">
+      <div className="switch-container-words onMouse ">
+        <span className="switch-text">Mode</span>
+        <label className="switch">
+          <input
+            onChange={() => setMode(mode ? false : true)}
+            type="checkbox"
+          />
+          <span className="slider round"></span>
+        </label>
+      </div>
       <div className="window-words">
         <div className="top-words">
-          <div className="top-left-words">
-            <InputField
-              userWord={userWord}
-              onChange={correctWordChange}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
+          {!mode ? (
+            <div className="top-left-words">
+              <InputField
+                userWord={userWord}
+                onChange={correctWordChange}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
+          ) : null}
+
           <div className="top-right-words">
             {carouselItems ? (
               carouselItems.map((item) => (
@@ -263,24 +276,26 @@ export default function Words() {
           </div>
         </div>
         <div className="bot-words">
-          <div className="buttons-words">
-            <button
-              onClick={handleClickKnow}
-              className="button"
-              type="button"
-              style={{ "--buttonColor": "var(--tertiary)" }}
-            >
-              znam
-            </button>
-            <button
-              onClick={handleClickDontKnow}
-              className="button"
-              type="button"
-              style={{ "--buttonColor": "var(--tertiary)" }}
-            >
-              nie znam
-            </button>
-          </div>
+          {mode ? (
+            <div className="buttons-words">
+              <button
+                onClick={handleClickKnow}
+                className="button"
+                type="button"
+                style={{ "--buttonColor": "var(--tertiary)" }}
+              >
+                znam
+              </button>
+              <button
+                onClick={handleClickDontKnow}
+                className="button"
+                type="button"
+                style={{ "--buttonColor": "var(--tertiary)" }}
+              >
+                nie znam
+              </button>
+            </div>
+          ) : null}
 
           <div className="progressbar-words">
             <label>patch Progress {percent} %</label>

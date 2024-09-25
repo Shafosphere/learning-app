@@ -5,7 +5,7 @@ import Popup from "../../components/popup/popup";
 import ConfirmWindow from "../../components/confirm/confirm";
 import polandFlag from "../../data/poland.png";
 import usaFlag from "../../data/united-states.png";
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage } from "react-intl";
 
 export default function Settings() {
   const {
@@ -19,7 +19,7 @@ export default function Settings() {
     language,
     setLanguage,
     level,
-    toggleLevel
+    toggleLevel,
   } = useContext(SettingsContext);
 
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
@@ -135,7 +135,6 @@ export default function Settings() {
     <div className="container-settings">
       <div className="window-settings">
         <div className="settings-left">
-
           {/* switches */}
           <div className="switches">
             <div
@@ -180,10 +179,10 @@ export default function Settings() {
                 <FormattedMessage id="c1" />
               </span>
               <label className="switch">
-              <input
+                <input
                   onChange={() => toggleLevel()}
                   type="checkbox"
-                  checked={level === "C1"} 
+                  checked={level === "C1"}
                 />
                 <span className="slider round"></span>
               </label>
@@ -311,9 +310,7 @@ export default function Settings() {
             </span>
 
             <span
-              className={`${
-                activeSpan === "darkmode" ? "" : "hide-span-sett"
-              }`}
+              className={`${activeSpan === "darkmode" ? "" : "hide-span-sett"}`}
             >
               <FormattedMessage id="mode" />
             </span>
@@ -323,7 +320,9 @@ export default function Settings() {
                 activeSpan === "resetsbuttons" ? "" : "hide-span-sett"
               }`}
             >
-              <p><FormattedMessage id="resetButtons" /></p>
+              <p>
+                <FormattedMessage id="resetButtons" />
+              </p>
               <ul className="reset-list">
                 <li>
                   - <FormattedMessage id="resetBoxesDescription" />
@@ -338,9 +337,7 @@ export default function Settings() {
             </span>
 
             <span
-              className={`${
-                activeSpan === "language" ? "" : "hide-span-sett"
-              }`}
+              className={`${activeSpan === "language" ? "" : "hide-span-sett"}`}
             >
               <FormattedMessage id="changeLanguage" />
             </span>
@@ -355,10 +352,7 @@ export default function Settings() {
         />
       )}
       {confirmMessage && (
-        <ConfirmWindow
-          message={confirmMessage}
-          onClose={handleConfirmClose}
-        />
+        <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}
     </div>
   );
