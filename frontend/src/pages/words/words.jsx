@@ -4,9 +4,12 @@ import api from "../../utils/api";
 import InputField from "../../components/words/wordInput";
 import { addNumberToGood, addNumberToWrong } from "../../utils/indexedDB";
 import Progressbar from "../../components/home/bar/bar";
+import Confetti from "../../components/words/confetti";
 
 export default function Words() {
   const [userWord, setWord] = useState("");
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [generateConfetti, setGenerateConfetti] = useState(false);
 
   // Dane z serwera
   const [data, setData] = useState([]);
@@ -62,6 +65,36 @@ export default function Words() {
 
     startGame();
   }, [patchNumber]);
+
+  // useEffect(() => {
+  //   if (percent >= 100) {
+  //     setShowConfetti(true);
+  //     const timer = setTimeout(() => {
+  //       setShowConfetti(false);
+  //     }, 3000); // Confetti zniknie po 3 sekundach
+  
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [percent]);
+  
+  function confettiShow(){
+    setShowConfetti(true);
+    setGenerateConfetti(true);
+
+      const generateTimer = setTimeout(() => {
+        setGenerateConfetti(false);
+      }, 2000);
+
+      // Usuwamy komponent Confetti po dodatkowych 3 sekundach
+      const hideTimer = setTimeout(() => {
+        setShowConfetti(false);
+      }, 4000);
+
+      return () => {
+        clearTimeout(generateTimer);
+        clearTimeout(hideTimer);
+      };
+  }
 
   // Inicjalizacja carouselItems po pobraniu danych
   useEffect(() => {
@@ -203,6 +236,7 @@ export default function Words() {
         const lastId = data[data.length - 1].id;
         localStorage.setItem("lastDataItemId", lastId);
         setLastDataItemId(lastId);
+        confettiShow();
       }
 
       setWord("");
@@ -241,28 +275,47 @@ export default function Words() {
 
   return (
     <div className="container-words">
-      <div className="switch-container-words onMouse ">
-        <span className="switch-text">Mode</span>
-        <label className="switch">
-          <input
-            onChange={() => setMode(mode ? false : true)}
-            type="checkbox"
-          />
-          <span className="slider round"></span>
-        </label>
+
+      <div className="switch-container-words">
+        <input
+          onChange={() => setMode(mode ? false : true)}
+          type="checkbox"
+          id="checkboxInput"
+        />
+        <label for="checkboxInput" class="toggleSwitch"></label>
       </div>
+
       <div className="window-words">
+
         <div className="top-words">
+        <div className="top-left-words">
           {!mode ? (
-            <div className="top-left-words">
+
               <InputField
                 userWord={userWord}
                 onChange={correctWordChange}
                 onKeyDown={handleKeyDown}
               />
-            </div>
-          ) : null}
 
+          ) :             <div className="buttons-words">
+          <button
+            onClick={handleClickKnow}
+            className="button"
+            type="button"
+            style={{ "--buttonColor": "var(--tertiary)" }}
+          >
+            znam
+          </button>
+          <button
+            onClick={handleClickDontKnow}
+            className="button"
+            type="button"
+            style={{ "--buttonColor": "var(--tertiary)" }}
+          >
+            nie znam
+          </button>
+        </div>}
+        </div>
           <div className="top-right-words">
             {carouselItems ? (
               carouselItems.map((item) => (
@@ -276,26 +329,7 @@ export default function Words() {
           </div>
         </div>
         <div className="bot-words">
-          {mode ? (
-            <div className="buttons-words">
-              <button
-                onClick={handleClickKnow}
-                className="button"
-                type="button"
-                style={{ "--buttonColor": "var(--tertiary)" }}
-              >
-                znam
-              </button>
-              <button
-                onClick={handleClickDontKnow}
-                className="button"
-                type="button"
-                style={{ "--buttonColor": "var(--tertiary)" }}
-              >
-                nie znam
-              </button>
-            </div>
-          ) : null}
+
 
           <div className="progressbar-words">
             <label>patch Progress {percent} %</label>
@@ -305,6 +339,10 @@ export default function Words() {
           </div>
         </div>
       </div>
+
+      {showConfetti && <Confetti generateConfetti={generateConfetti} />}
+
+
     </div>
   );
 }

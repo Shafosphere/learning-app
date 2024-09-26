@@ -28,7 +28,7 @@
   justify-content: center;
   color: black;
   position: relative;
-  gap: 10rem;
+  gap: 6rem;
 
   border-right: 10px solid var(--border);
   border-left: 10px solid var(--border);
@@ -152,7 +152,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: row;
+  flex-direction: column;
   gap: 2rem;
 }
 
@@ -176,11 +176,45 @@
   width: 100%;
 }
 .switch-container-words {
+  position: absolute;
+  bottom: 2%;
+  z-index: 10;
+}
+.toggleSwitch {
   display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  min-width: 10rem;
-  border-bottom: solid 1px var(--border);
-  padding: 1rem 0.5rem 1rem 0.5rem;
-  transform: rotate(90deg);
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 10rem;
+  height: 2.3rem;
+  background-color: var(--background);
+  border-radius: 20px;
+
+  cursor: pointer;
+  transition-duration: .2s;
+}
+#checkboxInput {
+  display: none;
+}
+.toggleSwitch::after {
+  content: "";
+  position: absolute;
+  height: 1rem;
+  width: 1rem;
+  left: 5px;
+  background-color: transparent;
+  border-radius: 50%;
+  transition-duration: .2s;
+  border: 0.4rem solid var(--border);
+}
+
+#checkboxInput:checked+.toggleSwitch::after {
+  transform: translateX(440%);
+  transition-duration: .2s;
+  background-color: white;
+}
+/* Switch background change */
+#checkboxInput:checked+.toggleSwitch {
+  background-color: var(--highlight);
+  transition-duration: .2s;
 }
