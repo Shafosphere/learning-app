@@ -13,6 +13,7 @@ export default function Words() {
 
   // Dane z serwera
   const [data, setData] = useState([]);
+  const [isThisLastOne, setLastOne] = useState(null);
   const [patchNumber, setPatch] = useState(null);
 
   // Indeks danych dla bottom-bot
@@ -57,6 +58,7 @@ export default function Words() {
         const gameData = await getData(patchNumber);
         if (gameData && gameData.data && gameData.data.length > 0) {
           setData(gameData.data);
+          setLastOne(gameData.isThisLastOne);
         } else {
           console.log("Brak danych");
         }
@@ -66,17 +68,6 @@ export default function Words() {
     startGame();
   }, [patchNumber]);
 
-  // useEffect(() => {
-  //   if (percent >= 100) {
-  //     setShowConfetti(true);
-  //     const timer = setTimeout(() => {
-  //       setShowConfetti(false);
-  //     }, 3000); // Confetti zniknie po 3 sekundach
-  
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [percent]);
-  
   function confettiShow(){
     setShowConfetti(true);
     setGenerateConfetti(true);
@@ -341,7 +332,6 @@ export default function Words() {
       </div>
 
       {showConfetti && <Confetti generateConfetti={generateConfetti} />}
-
 
     </div>
   );

@@ -22,6 +22,8 @@ export default function Settings() {
     toggleLevel,
   } = useContext(SettingsContext);
 
+  const [bookMark, setBookMark] = useState(1);
+
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
 
   // popup
@@ -133,217 +135,103 @@ export default function Settings() {
 
   return (
     <div className="container-settings">
-      <div className="window-settings">
-        <div className="settings-left">
-          {/* switches */}
-          <div className="switches">
-            <div
-              className="switch-container onMouse"
-              onMouseEnter={() => setSpan("Sounds")}
-            >
-              <span className="switch-text">
-                <FormattedMessage id="sounds" />
-              </span>
-              <label className="switch">
-                <input
-                  onClick={toggleSound}
-                  defaultChecked={isSoundEnabled === "true"}
-                  type="checkbox"
-                />
-                <span className="slider round"></span>
-              </label>
-            </div>
-
-            <div
-              className="switch-container onMouse"
-              onMouseEnter={() => setSpan("darkmode")}
-            >
-              <span className="switch-text">
-                <FormattedMessage id="darkMode" />
-              </span>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  checked={themeMode === "dark"}
-                  onChange={() => toggleTheme()}
-                />
-                <span className="slider round"></span>
-              </label>
-            </div>
-
-            <div
-              className="switch-container onMouse"
-              onMouseEnter={() => setSpan("C1")}
-            >
-              <span className="switch-text">
-                <FormattedMessage id="c1" />
-              </span>
-              <label className="switch">
-                <input
-                  onChange={() => toggleLevel()}
-                  type="checkbox"
-                  checked={level === "C1"}
-                />
-                <span className="slider round"></span>
-              </label>
-            </div>
-          </div>
-
-          {/* language */}
-          <div
-            className="container-language onMouse"
-            onMouseEnter={() => setSpan("language")}
-          >
-            <span className="switch-text">
-              <FormattedMessage id="language" />
-            </span>
-            <div className="flags">
-              <img
-                alt="polish"
-                src={polandFlag}
-                className={language === "pl" ? "activated_lang" : ""}
-                onClick={() => setLanguage("pl")}
-              />
-              <img
-                alt="english"
-                src={usaFlag}
-                className={language === "en" ? "activated_lang" : ""}
-                onClick={() => setLanguage("en")}
-              />
-            </div>
-          </div>
-
-          {/* reset */}
-          <div
-            className="container-resets onMouse"
-            onMouseEnter={() => setSpan("resetsbuttons")}
-          >
-            <span className="switch-text">
-              <FormattedMessage id="resetButtons" />
-            </span>
-            <div className="resets-buttons">
-              <button
-                style={{ "--buttonColor": "var(--tertiary)" }}
-                className="button"
-                onClick={() =>
-                  showConfirm(
-                    <FormattedMessage id="areYouSureResetBoxes" />,
-                    () => clearBoxes()
-                  )
-                }
-              >
-                <FormattedMessage id="resetBoxes" />
-              </button>
-              <button
-                style={{ "--buttonColor": "var(--tertiary)" }}
-                className="button"
-                onClick={() =>
-                  showConfirm(
-                    <FormattedMessage id="areYouSureResetProgress" />,
-                    () => clearProgress()
-                  )
-                }
-              >
-                <FormattedMessage id="resetProgress" />
-              </button>
-              <button
-                style={{ "--buttonColor": "var(--tertiary)" }}
-                className="button"
-                onClick={() =>
-                  showConfirm(
-                    <FormattedMessage id="areYouSureResetEverything" />,
-                    () => clearEverything()
-                  )
-                }
-              >
-                <FormattedMessage id="resetEverything" />
-              </button>
-            </div>
-          </div>
-
-          {/* dailygoal */}
-          <div
-            className="dailyGoal onMouse"
-            onMouseEnter={() => setSpan("DailyGoal")}
-          >
-            <span className="switch-text">
-              <FormattedMessage id="dailyProgress" />
-            </span>
-            <input
-              type="number"
-              value={newDailyGoal}
-              onChange={handleDailyGoalChange}
-            />
-          </div>
-
-          {/* save button */}
-          <div className="button-container-save">
-            <button
-              style={{ "--buttonColor": "var(--secondary)" }}
-              className="button"
-              onClick={saveSettings}
-            >
-              <FormattedMessage id="saveSettings" />
-            </button>
-          </div>
+      <div>
+        <div className="bookmarks-sett">
+          <div onClick={() => setBookMark(1)}>1</div>
+          <div onClick={() => setBookMark(2)}>2</div>
         </div>
 
-        {/* descriptions */}
-        <div className="settings-right">
-          <div className="explanation">
-            <span
-              className={`${activeSpan === "Sounds" ? "" : "hide-span-sett"}`}
-            >
-              <FormattedMessage id="turnOffSoundEffects" />
-            </span>
+        <div className="window-settings">
+          <div className="settings-left">
+            {bookMark === 1 ? (
+              <FirstBookMark
+                activeSpan={activeSpan}
+                setSpan={setSpan}
+                toggleSound={toggleSound}
+                isSoundEnabled={isSoundEnabled}
+                toggleTheme={toggleTheme}
+                themeMode={themeMode}
+                toggleLevel={toggleLevel}
+                level={level}
+                language={language}
+                setLanguage={setLanguage}
+                showConfirm={showConfirm}
+                clearBoxes={clearBoxes}
+                clearProgress={clearProgress}
+                clearEverything={clearEverything}
+                handleDailyGoalChange={handleDailyGoalChange}
+                newDailyGoal={newDailyGoal}
+                saveSettings={saveSettings}
+              />
+            ) : (
+              <SecondBookMark />
+            )}
+          </div>
 
-            <span className={`${activeSpan === "C1" ? "" : "hide-span-sett"}`}>
-              <FormattedMessage id="addsC1WordPool" />
-            </span>
+          {/* descriptions */}
+          <div className="settings-right">
+            <div className="explanation">
+              <span
+                className={`${activeSpan === "Sounds" ? "" : "hide-span-sett"}`}
+              >
+                <FormattedMessage id="turnOffSoundEffects" />
+              </span>
 
-            <span
-              className={`${
-                activeSpan === "DailyGoal" ? "" : "hide-span-sett"
-              }`}
-            >
-              <FormattedMessage id="changeDailyProgress" />
-            </span>
+              <span
+                className={`${activeSpan === "C1" ? "" : "hide-span-sett"}`}
+              >
+                <FormattedMessage id="addsC1WordPool" />
+              </span>
 
-            <span
-              className={`${activeSpan === "darkmode" ? "" : "hide-span-sett"}`}
-            >
-              <FormattedMessage id="mode" />
-            </span>
+              <span
+                className={`${
+                  activeSpan === "DailyGoal" ? "" : "hide-span-sett"
+                }`}
+              >
+                <FormattedMessage id="changeDailyProgress" />
+              </span>
 
-            <span
-              className={`${
-                activeSpan === "resetsbuttons" ? "" : "hide-span-sett"
-              }`}
-            >
-              <p>
-                <FormattedMessage id="resetButtons" />
-              </p>
-              <ul className="reset-list">
-                <li>
-                  - <FormattedMessage id="resetBoxesDescription" />
-                </li>
-                <li>
-                  - <FormattedMessage id="resetProgressDescription" />
-                </li>
-                <li>
-                  - <FormattedMessage id="resetEverythingDescription" />
-                </li>
-              </ul>
-            </span>
+              <span
+                className={`${
+                  activeSpan === "darkmode" ? "" : "hide-span-sett"
+                }`}
+              >
+                <FormattedMessage id="mode" />
+              </span>
 
-            <span
-              className={`${activeSpan === "language" ? "" : "hide-span-sett"}`}
-            >
-              <FormattedMessage id="changeLanguage" />
-            </span>
+              <span
+                className={`${
+                  activeSpan === "resetsbuttons" ? "" : "hide-span-sett"
+                }`}
+              >
+                <p>
+                  <FormattedMessage id="resetButtons" />
+                </p>
+                <ul className="reset-list">
+                  <li>
+                    - <FormattedMessage id="resetBoxesDescription" />
+                  </li>
+                  <li>
+                    - <FormattedMessage id="resetProgressDescription" />
+                  </li>
+                  <li>
+                    - <FormattedMessage id="resetEverythingDescription" />
+                  </li>
+                </ul>
+              </span>
+
+              <span
+                className={`${
+                  activeSpan === "language" ? "" : "hide-span-sett"
+                }`}
+              >
+                <FormattedMessage id="changeLanguage" />
+              </span>
+            </div>
           </div>
         </div>
       </div>
+
       {popupMessage && (
         <Popup
           message={popupMessage}
@@ -356,4 +244,182 @@ export default function Settings() {
       )}
     </div>
   );
+}
+
+function FirstBookMark({
+  activeSpan,
+  setSpan,
+  toggleSound,
+  isSoundEnabled,
+  toggleTheme,
+  themeMode,
+  toggleLevel,
+  level,
+  language,
+  setLanguage,
+  showConfirm,
+  clearBoxes,
+  clearProgress,
+  clearEverything,
+  handleDailyGoalChange,
+  newDailyGoal,
+  saveSettings,
+}) {
+  return (
+    <>
+      <div className="switches">
+        <div
+          className="switch-container onMouse"
+          onMouseEnter={() => setSpan("Sounds")}
+        >
+          <span className="switch-text">
+            <FormattedMessage id="sounds" />
+          </span>
+          <label className="switch">
+            <input
+              onClick={toggleSound}
+              defaultChecked={isSoundEnabled === "true"}
+              type="checkbox"
+            />
+            <span className="slider round"></span>
+          </label>
+        </div>
+
+        <div
+          className="switch-container onMouse"
+          onMouseEnter={() => setSpan("darkmode")}
+        >
+          <span className="switch-text">
+            <FormattedMessage id="darkMode" />
+          </span>
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={themeMode === "dark"}
+              onChange={() => toggleTheme()}
+            />
+            <span className="slider round"></span>
+          </label>
+        </div>
+
+        <div
+          className="switch-container onMouse"
+          onMouseEnter={() => setSpan("C1")}
+        >
+          <span className="switch-text">
+            <FormattedMessage id="c1" />
+          </span>
+          <label className="switch">
+            <input
+              onChange={() => toggleLevel()}
+              type="checkbox"
+              checked={level === "C1"}
+            />
+            <span className="slider round"></span>
+          </label>
+        </div>
+      </div>
+
+      {/* language */}
+      <div
+        className="container-language onMouse"
+        onMouseEnter={() => setSpan("language")}
+      >
+        <span className="switch-text">
+          <FormattedMessage id="language" />
+        </span>
+        <div className="flags">
+          <img
+            alt="polish"
+            src={polandFlag}
+            className={language === "pl" ? "activated_lang" : ""}
+            onClick={() => setLanguage("pl")}
+          />
+          <img
+            alt="english"
+            src={usaFlag}
+            className={language === "en" ? "activated_lang" : ""}
+            onClick={() => setLanguage("en")}
+          />
+        </div>
+      </div>
+
+      {/* reset */}
+      <div
+        className="container-resets onMouse"
+        onMouseEnter={() => setSpan("resetsbuttons")}
+      >
+        <span className="switch-text">
+          <FormattedMessage id="resetButtons" />
+        </span>
+        <div className="resets-buttons">
+          <button
+            style={{ "--buttonColor": "var(--tertiary)" }}
+            className="button"
+            onClick={() =>
+              showConfirm(<FormattedMessage id="areYouSureResetBoxes" />, () =>
+                clearBoxes()
+              )
+            }
+          >
+            <FormattedMessage id="resetBoxes" />
+          </button>
+          <button
+            style={{ "--buttonColor": "var(--tertiary)" }}
+            className="button"
+            onClick={() =>
+              showConfirm(
+                <FormattedMessage id="areYouSureResetProgress" />,
+                () => clearProgress()
+              )
+            }
+          >
+            <FormattedMessage id="resetProgress" />
+          </button>
+          <button
+            style={{ "--buttonColor": "var(--tertiary)" }}
+            className="button"
+            onClick={() =>
+              showConfirm(
+                <FormattedMessage id="areYouSureResetEverything" />,
+                () => clearEverything()
+              )
+            }
+          >
+            <FormattedMessage id="resetEverything" />
+          </button>
+        </div>
+      </div>
+
+      {/* dailygoal */}
+      <div
+        className="dailyGoal onMouse"
+        onMouseEnter={() => setSpan("DailyGoal")}
+      >
+        <span className="switch-text">
+          <FormattedMessage id="dailyProgress" />
+        </span>
+        <input
+          type="number"
+          value={newDailyGoal}
+          onChange={handleDailyGoalChange}
+        />
+      </div>
+
+      {/* save button */}
+      <div className="button-container-save">
+        <button
+          style={{ "--buttonColor": "var(--secondary)" }}
+          className="button"
+          onClick={saveSettings}
+        >
+          <FormattedMessage id="saveSettings" />
+        </button>
+      </div>
+    </>
+  );
+}
+
+function SecondBookMark() {
+  return <></>;
 }

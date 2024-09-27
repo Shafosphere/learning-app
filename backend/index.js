@@ -418,8 +418,13 @@ app.post("/data", async (req, res) => {
         };
       });
 
+      const maxPatchResult = await db.query("SELECT MAX(patch_id) as max_patch_id FROM word_patches");
+      const maxPatchId = maxPatchResult.rows[0].max_patch_id;
+
+      const isThisLastOne = (patchNumber === maxPatchId);
+
       console.log('zwracam:', formattedResults);
-      res.json({ message: "working", data: formattedResults });
+      res.json({ message: "working", data: formattedResults, isThisLastOne });
     } catch (error) {
       console.error("Error fetching data:", error);
       res.status(500).json({ message: "Error fetching data", error: error.message });

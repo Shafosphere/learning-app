@@ -2,11 +2,17 @@
   width: 100%;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: var(--background);
+  /* background-color: var(--background);
   background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-  background-size: 40px 40px;
+  background-size: 40px 40px; */
+  background: linear-gradient(
+    180deg,
+    rgba(var(--background-rgba), 1) 0%,
+    rgba(var(--border-rgba), 1) 100%
+  );
 
   font-size: 20px;
   font-weight: 600;
@@ -20,19 +26,50 @@
   -webkit-box-shadow: inset 0px 0px 24px 0px var(--background);
   -moz-box-shadow: inset 0px 0px 24px 0px var(--background);
   box-shadow: inset 0px 0px 24px 0px var(--background);
-
-
-
   flex-direction: row;
   gap: 2rem;
   padding: 2rem;
   border: 2px solid var(--border);
+
+  position: relative;
+  z-index: 2;
+}
+.bookmarks-sett{
+  display: flex;
+  flex-direction: row;
+  margin-left: 1rem;
+}
+.bookmarks-sett div{
+  height: 2.5rem;
+  width: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: var(--secondBackground);
+  border-left: 2px solid var(--border);
+  border-right: 2px solid var(--border);
+  border-top: 2px solid var(--border);
+  border-bottom: none; /* Brak border na dole */
+  border-radius: 10px 10px 0 0;
+  z-index: 1;
+}
+.bookmarks-sett div:not(:last-child) {
+  margin-right: -2px; /* Przylegająca granica bez efektu "zgrubienia" */
+}
+.bookmarks-sett div:hover{
+  font-weight: 900;
+  cursor: pointer;
+}
+.bookmarks-sett div:active {
+  transform: translateY(5px); /* Przesunięcie w dół */
 }
 .settings-left {
   display: flex;
   flex-direction: column;
   width: 50%;
   height: auto;
+  min-height: 40rem;
 }
 .settings-right {
   display: flex;
