@@ -1,0 +1,43 @@
+/* Kontener wyników */
+.results-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Pełna wysokość ekranu */
+    position: relative;
+  }
+  
+  /* Styl dla tekstu podczas pisania */
+  .typing {
+    font-size: 2rem;
+    /* Dodatkowe style według potrzeb */
+  }
+  
+  /* Animacja przesuwania w górę */
+  .move-up {
+    animation: moveUp 1s forwards;
+  }
+  
+  @keyframes moveUp {
+    to {
+      transform: translateY(-50px);
+    }
+  }
+  
+  /* Styl dla wyników */
+  .results {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+    animation-delay: 1s; /* Czekamy na zakończenie animacji przesuwania w górę */
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  

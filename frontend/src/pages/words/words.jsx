@@ -5,6 +5,7 @@ import InputField from "../../components/words/wordInput";
 import { addNumberToGood, addNumberToWrong } from "../../utils/indexedDB";
 import Progressbar from "../../components/home/bar/bar";
 import Confetti from "../../components/words/confetti";
+import ResultsSummary from "../../components/words/summary/resultssummary";
 
 export default function Words() {
   const [userWord, setWord] = useState("");
@@ -13,13 +14,24 @@ export default function Words() {
 
   // Dane z serwera
   const [data, setData] = useState([]);
-  const [isThisLastOne, setLastOne] = useState(null);
   const [patchNumber, setPatch] = useState(null);
 
   // Indeks danych dla bottom-bot
   const [dataIndexForBottomDiv, setDataIndexForBottomDiv] = useState(() => {
     const savedIndex = localStorage.getItem("dataIndexForBottomDiv");
     return savedIndex ? parseInt(savedIndex) : 0;
+  });
+
+  //iscontent Ended?
+  const [isThisLastOne, setLastOne] = useState(() => {
+    const savedValue = localStorage.getItem("end");
+    return savedValue === "true"; // Konwersja do wartości logicznej
+  });
+
+  //showummary?
+  const [showSummary, setSummary] = useState(() => {
+    const savedValue = localStorage.getItem("summary");
+    return savedValue === "true"; // Konwersja do wartości logicznej
   });
 
   // Stan karuzeli
@@ -48,6 +60,14 @@ export default function Words() {
   });
 
   useEffect(() => {
+    localStorage.setItem("end", isThisLastOne);
+  }, [isThisLastOne]);
+
+  useEffect(() => {
+    localStorage.setItem("summary", showSummary);
+  }, [showSummary]);
+
+  useEffect(() => {
     const currentPatch = localStorage.getItem("currentPatch");
     setPatch(currentPatch ? parseInt(currentPatch) : 1);
   }, []);
@@ -68,23 +88,23 @@ export default function Words() {
     startGame();
   }, [patchNumber]);
 
-  function confettiShow(){
+  function confettiShow() {
     setShowConfetti(true);
     setGenerateConfetti(true);
 
-      const generateTimer = setTimeout(() => {
-        setGenerateConfetti(false);
-      }, 2000);
+    const generateTimer = setTimeout(() => {
+      setGenerateConfetti(false);
+    }, 2000);
 
-      // Usuwamy komponent Confetti po dodatkowych 3 sekundach
-      const hideTimer = setTimeout(() => {
-        setShowConfetti(false);
-      }, 4000);
+    // Usuwamy komponent Confetti po dodatkowych 3 sekundach
+    const hideTimer = setTimeout(() => {
+      setShowConfetti(false);
+    }, 4000);
 
-      return () => {
-        clearTimeout(generateTimer);
-        clearTimeout(hideTimer);
-      };
+    return () => {
+      clearTimeout(generateTimer);
+      clearTimeout(hideTimer);
+    };
   }
 
   // Inicjalizacja carouselItems po pobraniu danych
@@ -228,6 +248,10 @@ export default function Words() {
         localStorage.setItem("lastDataItemId", lastId);
         setLastDataItemId(lastId);
         confettiShow();
+
+        if (isThisLastOne) {
+          setSummary(true);
+        }
       }
 
       setWord("");
@@ -266,73 +290,76 @@ export default function Words() {
 
   return (
     <div className="container-words">
-
-      <div className="switch-container-words">
-        <input
-          onChange={() => setMode(mode ? false : true)}
-          type="checkbox"
-          id="checkboxInput"
-        />
-        <label for="checkboxInput" class="toggleSwitch"></label>
-      </div>
-
-      <div className="window-words">
-
-        <div className="top-words">
-        <div className="top-left-words">
-          {!mode ? (
-
-              <InputField
-                userWord={userWord}
-                onChange={correctWordChange}
-                onKeyDown={handleKeyDown}
-              />
-
-          ) :             <div className="buttons-words">
-          <button
-            onClick={handleClickKnow}
-            className="button"
-            type="button"
-            style={{ "--buttonColor": "var(--tertiary)" }}
-          >
-            znam
-          </button>
-          <button
-            onClick={handleClickDontKnow}
-            className="button"
-            type="button"
-            style={{ "--buttonColor": "var(--tertiary)" }}
-          >
-            nie znam
-          </button>
-        </div>}
-        </div>
-          <div className="top-right-words">
-            {carouselItems ? (
-              carouselItems.map((item) => (
-                <div key={item.id} className={`box-words ${item.className}`}>
-                  {item.data ? item.data.wordEng.word : ""}
-                </div>
-              ))
-            ) : (
-              <div>Ładowanie...</div>
-            )}
+      {showSummary ? (
+        <ResultsSummary />
+      ) : (
+        <>
+          <div className="switch-container-words">
+            <input
+              onChange={() => setMode(mode ? false : true)}
+              type="checkbox"
+              id="checkboxInput"
+            />
+            <label for="checkboxInput" class="toggleSwitch"></label>
           </div>
-        </div>
-        <div className="bot-words">
 
-
-          <div className="progressbar-words">
-            <label>patch Progress {percent} %</label>
-            <div className="progressbar-words-containter">
-              <Progressbar procent={percent} barHeight="60rem" />
+          <div className="window-words">
+            <div className="top-words">
+              <div className="top-left-words">
+                {!mode ? (
+                  <InputField
+                    userWord={userWord}
+                    onChange={correctWordChange}
+                    onKeyDown={handleKeyDown}
+                  />
+                ) : (
+                  <div className="buttons-words">
+                    <button
+                      onClick={handleClickKnow}
+                      className="button"
+                      type="button"
+                      style={{ "--buttonColor": "var(--tertiary)" }}
+                    >
+                      znam
+                    </button>
+                    <button
+                      onClick={handleClickDontKnow}
+                      className="button"
+                      type="button"
+                      style={{ "--buttonColor": "var(--tertiary)" }}
+                    >
+                      nie znam
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="top-right-words">
+                {carouselItems ? (
+                  carouselItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className={`box-words ${item.className}`}
+                    >
+                      {item.data ? item.data.wordEng.word : ""}
+                    </div>
+                  ))
+                ) : (
+                  <div>Ładowanie...</div>
+                )}
+              </div>
+            </div>
+            <div className="bot-words">
+              <div className="progressbar-words">
+                <label>patch Progress {percent} %</label>
+                <div className="progressbar-words-containter">
+                  <Progressbar procent={percent} barHeight="60rem" />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-
+        </>
+      )}
       {showConfetti && <Confetti generateConfetti={generateConfetti} />}
-
     </div>
   );
 }
