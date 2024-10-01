@@ -30,6 +30,12 @@
     opacity: 0;
     animation: fadeIn 1s forwards;
     animation-delay: 1s; /* Czekamy na zakończenie animacji przesuwania w górę */
+
+    background-color: aqua;
+    width: 30rem;
+    display: flex;
+    flex-direction: row;
+
   }
   
   @keyframes fadeIn {
