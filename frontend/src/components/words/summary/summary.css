@@ -1,49 +1,184 @@
 /* Kontener wyników */
 .results-summary {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh; /* Pełna wysokość ekranu */
-    position: relative;
-  }
-  
-  /* Styl dla tekstu podczas pisania */
-  .typing {
-    font-size: 2rem;
-    /* Dodatkowe style według potrzeb */
-  }
-  
-  /* Animacja przesuwania w górę */
-  .move-up {
-    animation: moveUp 1s forwards;
-  }
-  
-  @keyframes moveUp {
-    to {
-      transform: translateY(-50px);
-    }
-  }
-  
-  /* Styl dla wyników */
-  .results {
-    opacity: 0;
-    animation: fadeIn 1s forwards;
-    animation-delay: 1s; /* Czekamy na zakończenie animacji przesuwania w górę */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Pełna wysokość ekranu */
+  position: relative;
 
-    background-color: aqua;
-    width: 30rem;
-    display: flex;
+  width: 70rem;
+  border-right: 10px solid var(--border);
+  border-left: 10px solid var(--border);
+}
+
+/* Styl dla tekstu podczas pisania */
+.typing {
+  position: absolute;
+  font-size: 2rem;
+  color: var(--paragraph);
+  text-transform: uppercase;
+  font-weight: 800;
+  /* Dodatkowe style według potrzeb */
+}
+
+/* Animacja przesuwania w górę */
+.move-up {
+  animation: moveUp 1s forwards;
+}
+
+@keyframes moveUp {
+  to {
+    transform: translateY(-25rem);
+  }
+}
+
+/* Styl dla wyników */
+.results {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+  animation-delay: 1s; /* Czekamy na zakończenie animacji przesuwania w górę */
+
+  display: flex;
     flex-direction: row;
 
+  margin-top: 4rem;
+  gap: 1rem;
+}
+
+/* Zamiast zagnieżdżania: */
+.good-results {
+  border: solid 2px var(--highlight);
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+
+.good-results .table-results::-webkit-scrollbar {
+  width: 1rem;
+}
+
+.good-results .table-results::-webkit-scrollbar-track {
+  background: var(--background);
+  border-radius: 10px;
+}
+
+.good-results .table-results::-webkit-scrollbar-thumb {
+  background-color: var(--paragraph);
+  border-radius: 10px;
+  border: 2px solid var(--highlight);
+  height: 2rem;
+}
+
+.good-results .endMessage {
+  height: 1rem;
+  width: 100%;
+  background-color: var(--highlight);
+}
+
+/* Styl dla kontenera wyników błędnych */
+.wrong-results {
+  border: solid 2px var(--secondary);
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+
+/* Stylizacja paska przewijania dla elementów wewnątrz .wrong-results */
+.wrong-results .table-results::-webkit-scrollbar {
+  width: 1rem; /* Szerokość paska przewijania */
+}
+
+/* Stylizacja "track" (tło paska przewijania) */
+.wrong-results .table-results::-webkit-scrollbar-track {
+  background: var(--background); /* Kolor tła paska przewijania */
+  border-radius: 10px; /* Zaokrąglenie narożników tła */
+}
+
+/* Stylizacja "thumb" (suwak paska przewijania) */
+.wrong-results .table-results::-webkit-scrollbar-thumb {
+  background-color: var(--paragraph); /* Kolor suwaka */
+  border-radius: 10px; /* Zaokrąglone rogi suwaka */
+  border: 2px solid var(--secondary); /* Odstęp wokół suwaka */
+  height: 2rem; /* Wysokość suwaka */
+}
+
+/* Styl dla elementu .endMessage wewnątrz .wrong-results */
+.wrong-results .endMessage {
+  height: 1rem;
+  width: 100%;
+  background-color: var(--secondary);
+}
+
+
+.table-results {
+  max-height: 40rem;
+  width: 20rem;
+  color: var(--headline);
+}
+
+.results-title {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font-size: 30px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--paragraph);
+}
+
+.table-results thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-size: 20px;
+  padding: 0.1rem;
+}
+
+.wrong-thead {
+  background-color: var(--secondary);
+}
+
+.good-thead {
+  background-color: var(--highlight);
+}
+
+.table-results tbody tr td {
+  width: 50%;
+  padding: 0.25rem;
+  font-size: 15px;
+}
+
+.table-results tbody tr:nth-child(even) {
+  background-color: var(
+    --secondBackground
+  ); /* Ustaw kolor tła dla co drugiego wiersza */
+}
+
+.table-results table {
+  border-spacing: 0rem 0.25rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+  to {
+    opacity: 1;
   }
-  
+}
+
+.table-results tbody tr:hover {
+  background-color: var(--tertiary);
+  cursor: pointer;
+}
+
+.progressbar-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 60rem;
+  margin-bottom: 1rem;
+}
+.progressbar-summary {
+  transform: rotate(-270deg);
+}
