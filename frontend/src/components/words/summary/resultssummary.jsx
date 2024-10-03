@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./summary.css";
-import TableResults from "./results";
+import TableResults from "./tables";
+import Drawer from "./drawer";
 import Progressbar from "../../home/bar/bar";
 import { getAllMinigameWords } from "../../../utils/indexedDB";
 import api from "../../../utils/api";
 
+
 export default function ResultsSummary() {
   const messages = useMemo(
-    () => ["Gratulacje!", "Ukończyłeś wszystkie części! :D", "wyniki:"],
+    () => ["Gratulacje!", "Ukończyłeś wszystkie części! :D", "wyniki"],
     []
   );
 
@@ -92,7 +94,7 @@ export default function ResultsSummary() {
 
       {moveUp && (
         <div className="typing move-up">
-          {messages[2]}
+          {/* {messages[2]} */}
           <div className="progressbar-words">
             <label>{percent} %</label>
             <div className="progressbar-summary">
@@ -104,8 +106,17 @@ export default function ResultsSummary() {
 
       {/* Przekazujemy gotowe dane do TableResults */}
       {showResults && (
-        <TableResults goodWords={goodWords} wrongWords={wrongWords} />
+        <>
+          <TableResults goodWords={goodWords} wrongWords={wrongWords} />
+
+          <Drawer/>
+        </>
       )}
+
+
+
+      
+
     </div>
   );
 }

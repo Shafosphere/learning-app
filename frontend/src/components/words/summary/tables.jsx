@@ -2,6 +2,7 @@ import "./summary.css";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
+
 export default function TableResults({ goodWords, wrongWords }) {
   return (
     <div className="results">

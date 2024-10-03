@@ -19,6 +19,10 @@
   color: var(--paragraph);
   text-transform: uppercase;
   font-weight: 800;
+
+  display: flex;
+  flex-direction: column;
+  height: 10rem;
   /* Dodatkowe style według potrzeb */
 }
 
@@ -29,7 +33,7 @@
 
 @keyframes moveUp {
   to {
-    transform: translateY(-25rem);
+    transform: translateY(-22rem);
   }
 }
 
@@ -178,7 +182,66 @@
   flex-direction: column;
   width: 60rem;
   margin-bottom: 1rem;
+
+  opacity: 0;
+  animation: fadeIn 1s forwards;
 }
 .progressbar-summary {
   transform: rotate(-270deg);
+}
+
+
+.sign {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+
+  position: fixed; /* Używamy position: fixed zamiast absolute */
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--tertiary);
+  width: 4rem;
+  height: 2rem;
+  border-top-left-radius: 3rem;
+  border-top-right-radius: 3rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+
+  font-weight: 800;
+  font-size: 2rem;
+
+  cursor: pointer;
+}
+
+.drawer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 100%); /* Zaczyna poza ekranem */
+  transition: transform 0.2s ease-out; /* Animujemy transform */
+
+  width: 50%;
+
+  display: flex;
+  padding: 3rem 1rem 3rem 1rem;
+  gap: 1rem;
+  justify-content: space-around;
+
+  border: 2px solid var(--tertiary);
+  border-radius: 1rem;
+  color: var(--paragraph);
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 1.1rem;
+  background-color: var(--secondBackground);
+}
+
+.drawer p{
+  width: 70%;
+}
+
+.drawer.visible {
+  transform: translate(-50%, -250%); /* Przesuwa do środka ekranu */
 }
