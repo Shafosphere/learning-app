@@ -44,7 +44,7 @@
   animation-delay: 1s; /* Czekamy na zakończenie animacji przesuwania w górę */
 
   display: flex;
-    flex-direction: row;
+  flex-direction: row;
 
   margin-top: 4rem;
   gap: 1rem;
@@ -111,7 +111,6 @@
   width: 100%;
   background-color: var(--secondary);
 }
-
 
 .table-results {
   max-height: 40rem;
@@ -190,12 +189,11 @@
   transform: rotate(-270deg);
 }
 
-
 .sign {
   opacity: 0;
   animation: fadeIn 1s forwards;
 
-  position: fixed; /* Używamy position: fixed zamiast absolute */
+  position: fixed;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
@@ -214,13 +212,15 @@
 
   cursor: pointer;
 }
+.sign:active{
+  scale: 97%;
+}
 
 .drawer {
   position: fixed;
   bottom: 0;
   left: 50%;
-  transform: translate(-50%, 100%); /* Zaczyna poza ekranem */
-  transition: transform 0.2s ease-out; /* Animujemy transform */
+  transform: translate(-50%, 100%); /* Początkowa pozycja poza ekranem */
 
   width: 50%;
 
@@ -236,12 +236,46 @@
   font-weight: 600;
   font-size: 1.1rem;
   background-color: var(--secondBackground);
+
+  /* Ukrywamy element początkowo */
 }
 
-.drawer p{
+.drawer p {
   width: 70%;
 }
 
-.drawer.visible {
-  transform: translate(-50%, -250%); /* Przesuwa do środka ekranu */
+/* Klasa aktywująca animację wejścia */
+.drawer.visible-drawer {
+  visibility: visible;
+  animation: slideIn 0.5s forwards;
+}
+
+/* Klasa aktywująca animację wyjścia */
+.drawer.hidden-drawer {
+  animation: slideOut 0.5s forwards;
+}
+
+/* Definicje animacji */
+@keyframes slideIn {
+  from {
+    transform: translate(-50%, 100%); /* Początek poza ekranem */
+  }
+  85% {
+    transform: translate(-50%, -110%); /* Docelowa pozycja na ekranie */
+  }
+  to {
+    transform: translate(-50%, -100%); /* Docelowa pozycja na ekranie */
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translate(-50%, -100%); /* Aktualna pozycja na ekranie */
+  }
+  85% {
+    transform: translate(-50%, -110%); /* Docelowa pozycja na ekranie */
+  }
+  to {
+    transform: translate(-50%, 100%); /* Powrót poza ekran */
+  }
 }
