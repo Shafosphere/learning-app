@@ -6,12 +6,23 @@ import Progressbar from "../../home/bar/bar";
 import { getAllMinigameWords } from "../../../utils/indexedDB";
 import api from "../../../utils/api";
 
+import Loading from "../../loading/loading";
+
 
 export default function ResultsSummary() {
   const messages = useMemo(
     () => ["Gratulacje!", "Ukończyłeś wszystkie części! :D", "wyniki"],
     []
   );
+
+  const [skipLoad, setSkipLoad] = useState(() => {
+    const savedValue = localStorage.getItem("skipLoad-words");
+    return savedValue === "true"; 
+  })
+ 
+  useEffect(() => {
+    localStorage.setItem("skipLoad-words", skipLoad)
+  }, [skipLoad])
 
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
@@ -24,7 +35,11 @@ export default function ResultsSummary() {
   const [goodWords, setGoodWords] = useState([]);
   const [wrongWords, setWrongWords] = useState([]);
 
+  const [loadingData, setLoadingData] = useState(true);
+    
   useEffect(() => {
+    if (skipLoad) return;
+
     if (currentMessageIndex < messages.length) {
       if (charIndex < messages[currentMessageIndex].length) {
         const timeout = setTimeout(() => {
@@ -50,16 +65,25 @@ export default function ResultsSummary() {
         }
       }
     }
-  }, [charIndex, currentMessageIndex, messages]);
+  }, [charIndex, currentMessageIndex, messages, skipLoad]);
 
   useEffect(() => {
     if (moveUp) {
       const timeout = setTimeout(() => {
         setShowResults(true);
+        setSkipLoad(true);
       }, 1000);
       return () => clearTimeout(timeout);
     }
   }, [moveUp]);
+
+  useEffect(() => {
+    if (skipLoad) {
+      setMoveUp(true);
+      setShowResults(true);
+    }
+  }, [skipLoad]);
+  
 
   // Pobieranie danych z bazy i obliczanie procentu
   useEffect(() => {
@@ -69,54 +93,54 @@ export default function ResultsSummary() {
         const correct = ids[0].good.length;
         const total = ids[0].good.length + ids[0].wrong.length;
         setPercent(((correct / total) * 100).toFixed(2));
-
-        // Pobieranie danych słów na podstawie IDs
+  
+        // Fetch words data based on IDs
         const goodWordsData = await api.post("/data", {
           wordList: ids[0].good,
         });
         const wrongWordsData = await api.post("/data", {
           wordList: ids[0].wrong,
         });
-
+  
         setGoodWords(goodWordsData.data.data);
         setWrongWords(wrongWordsData.data.data);
       }
+      setLoadingData(false); // Set loadingData to false after fetching
     }
-
+  
     fetchData();
   }, []);
+  
 
   return (
     <div className="results-summary">
-      {currentMessageIndex < 3 && !moveUp && (
-        <div className="typing">{displayedText}</div>
-      )}
-
-      {moveUp && (
-        <div className="typing move-up">
-          {/* {messages[2]} */}
-          <div className="progressbar-words">
-            <label>{percent} %</label>
-            <div className="progressbar-summary">
-              <Progressbar procent={percent} barHeight="45rem" />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Przekazujemy gotowe dane do TableResults */}
-      {showResults && (
+      {loadingData ? (
+        <Loading />
+      ) : (
         <>
-          <TableResults goodWords={goodWords} wrongWords={wrongWords} />
-
-          <Drawer/>
+          {currentMessageIndex < 3 && !moveUp && (
+            <div className="typing">{displayedText}</div>
+          )}
+  
+          {moveUp && (
+            <div className="typing move-up">
+              <div className="progressbar-words">
+                <label>{percent} %</label>
+                <div className="progressbar-summary">
+                  <Progressbar procent={percent} barHeight="45rem" />
+                </div>
+              </div>
+            </div>
+          )}
+  
+          {showResults && (
+            <>
+              <TableResults goodWords={goodWords} wrongWords={wrongWords} />
+              <Drawer />
+            </>
+          )}
         </>
       )}
-
-
-
-      
-
     </div>
   );
 }
