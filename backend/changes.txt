@@ -1,0 +1,5 @@
+name changed:
+
+"/data-reports" >>> "/report/data" 
+"/detail-report" >>> "/report/details"
+"/detail-update" >>> "/report/update"

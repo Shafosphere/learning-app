@@ -1,0 +1,1 @@
+// Obsługa słów i nauki
