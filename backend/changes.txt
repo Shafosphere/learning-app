@@ -3,3 +3,12 @@ name changed:
 "/data-reports" >>> "/report/data" 
 "/detail-report" >>> "/report/details"
 "/detail-update" >>> "/report/update"
+"/detail-delete" >>> "/report/delete:id" - zmienic sposób wysyłania w front na :id
+"/register" >>> /auth/register"
+"/admin" >>> /auth/admin"
+"/check-auth" >>> "/auth/user"  - poprawic controlery i w frondendzie zeby było podobne do admina
+"/report" >>> /report/add"
+"/login" >>> "/auth/login",
+
+
+//skonczyłem login 09.10.2024
