@@ -1,6 +1,8 @@
 import express from "express";
 import reportRoutes from "./routes/reportRoutes.js"; // Import trasy do raportów szczegółowych
 import authRoutes from "./routes/authRoutes.js;";
+import wordRoutes from "./routes/wordRoutes.js";
+
 import cors from "cors";
 
 const app = express();
@@ -19,6 +21,7 @@ app.use("/report", reportRoutes); // Wszystkie endpointy zaczynające się od "/
 
 app.use("/auth", authRoutes);
 
+app.use("/word", wordRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

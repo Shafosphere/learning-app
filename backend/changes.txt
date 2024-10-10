@@ -9,6 +9,8 @@ name changed:
 "/check-auth" >>> "/auth/user"  - poprawic controlery i w frondendzie zeby było podobne do admina
 "/report" >>> /report/add"
 "/login" >>> "/auth/login",
+"logout" >>> /auth/logout"
+'pre-data" >>> "/word/information"
+"data" >>> "/word/data"
 
 
-//skonczyłem login 09.10.2024

@@ -64,10 +64,9 @@ export const insertReport = async (userId, reportType, wordId, description) => {
 };
 
 export const getUserByUsername = async (username) => {
-  const result = await pool.query(
-    "SELECT * FROM users WHERE username = $1",
-    [username]
-  );
+  const result = await pool.query("SELECT * FROM users WHERE username = $1", [
+    username,
+  ]);
   return result.rows[0]; // Zwracamy użytkownika, jeśli istnieje
 };
 
@@ -77,4 +76,44 @@ export const updateLastLogin = async (userId) => {
     "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1",
     [userId]
   );
+};
+
+export const getPatchWords = async (patchNumber) => {
+  const result = await pool.query(
+    "SELECT word_ids FROM word_patches WHERE patch_id = $1",
+    [patchNumber]
+  );
+
+  if (result.rows.length === 0) {
+    return null;
+  }
+
+  let wordIds = result.rows[0].word_ids;
+
+  // Jeśli dane są w formacie tekstowym, przekształć je do formatu JSON
+  if (typeof wordIds === "string") {
+    wordIds = `[${wordIds}]`;
+    wordIds = JSON.parse(wordIds);
+  } else if (typeof wordIds === "object" && wordIds !== null) {
+    wordIds = wordIds.map(Number);
+  }
+
+  return wordIds;
+};
+
+// Pobranie tłumaczeń dla słowa na podstawie `word_id`
+export const getWordTranslations = async (wordId) => {
+  const result = await pool.query(
+    "SELECT * FROM translation WHERE word_id = $1",
+    [wordId]
+  );
+  return result.rows;
+};
+
+// Pobranie maksymalnego numeru patcha
+export const getMaxPatchId = async () => {
+  const result = await pool.query(
+    "SELECT MAX(patch_id) as max_patch_id FROM word_patches"
+  );
+  return result.rows[0].max_patch_id;
 };

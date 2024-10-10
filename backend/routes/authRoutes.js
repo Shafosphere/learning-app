@@ -2,7 +2,7 @@ import express from "express";
 import authenticateToken from "../middleware/authenticateToken";
 import authorizeAdmin from "../middleware/authorizeAdmin";
 import { body } from "express-validator";
-import { registerUser, adminWelcome, userWelcome,loginUser } from "../controllers/authController";
+import { registerUser, adminWelcome, userWelcome,loginUser, logoutUser} from "../controllers/authController";
 
 const router = express.Router();
 
@@ -22,8 +22,6 @@ router.get("/user", authenticateToken, userWelcome);
 
 router.post("/login", loginUser);
 
+router.post('/logout', logoutUser);
+
 export default router;
-
-
-
-
