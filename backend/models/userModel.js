@@ -117,3 +117,28 @@ export const getMaxPatchId = async () => {
   );
   return result.rows[0].max_patch_id;
 };
+
+export const getUserByUserName = async (username) => {
+  const result = await pool.query(
+    "SELECT email FROM users WHERE username = $1",
+    [username]
+  );
+  return result.rows[0]; 
+};
+
+// Pobranie użytkownika na podstawie ID
+export const getUserById = async (userId) => {
+  const result = await pool.query(
+    "SELECT * FROM users WHERE id = $1",
+    [userId]
+  );
+  return result.rows[0];
+};
+
+// Aktualizacja danych użytkownika
+export const updateUserById = async (userId, { username, email, password }) => {
+  await pool.query(
+    "UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4",
+    [username, email, password, userId]
+  );
+};

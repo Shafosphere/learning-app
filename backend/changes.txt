@@ -1,16 +1,21 @@
 name changed:
+"/register" >>> "/auth/register"
+"/admin" >>> "/auth/admin"
+"/check-auth" >>> "/auth/user" - poprawic controlery i w frondendzie zeby było podobne do admina
+"/login" >>> "/auth/login"
+"/logout" >>> "/auth/logout"
+"/account-data" >>> "/auth/information" - trzeba to ulepszyc bo jezeli uzytniwk przejdzie autoryzacje tokenu to moze dostac inforamcje o jakimkolwiek uzytkowniku
+"/account-update" >>> "/auth/update" 
 
-"/data-reports" >>> "/report/data" 
+"/pre-data" >>> "/word/information"
+"/data" >>> "/word/data"
+
+"/data-reports" >>> "/report/data"
 "/detail-report" >>> "/report/details"
 "/detail-update" >>> "/report/update"
 "/detail-delete" >>> "/report/delete:id" - zmienic sposób wysyłania w front na :id
-"/register" >>> /auth/register"
-"/admin" >>> /auth/admin"
-"/check-auth" >>> "/auth/user"  - poprawic controlery i w frondendzie zeby było podobne do admina
-"/report" >>> /report/add"
-"/login" >>> "/auth/login",
-"logout" >>> /auth/logout"
-'pre-data" >>> "/word/information"
-"data" >>> "/word/data"
+"/report" >>> "/report/add"
+
+
 
 
