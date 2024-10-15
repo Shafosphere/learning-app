@@ -123,15 +123,14 @@ export const getUserByUserName = async (username) => {
     "SELECT email FROM users WHERE username = $1",
     [username]
   );
-  return result.rows[0]; 
+  return result.rows[0];
 };
 
 // Pobranie użytkownika na podstawie ID
 export const getUserById = async (userId) => {
-  const result = await pool.query(
-    "SELECT * FROM users WHERE id = $1",
-    [userId]
-  );
+  const result = await pool.query("SELECT * FROM users WHERE id = $1", [
+    userId,
+  ]);
   return result.rows[0];
 };
 
@@ -141,4 +140,16 @@ export const updateUserById = async (userId, { username, email, password }) => {
     "UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4",
     [username, email, password, userId]
   );
+};
+
+export const deleteUserById = async (userId) => {
+  await pool.query("DELETE FROM users WHERE id = $1", [userId]);
+};
+
+export const getWordsWithPagination = async (limit, offset) => {
+  const result = await pool.query(
+    "SELECT * FROM word ORDER BY id LIMIT $1 OFFSET $2",
+    [limit, offset]
+  );
+  return result.rows;
 };

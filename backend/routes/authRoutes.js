@@ -11,6 +11,7 @@ import {
   logoutUser,
   userInformation,
   updateUserAccount,
+  deleteUserAccount,
 } from "../controllers/authController";
 
 import { accountUpdateValidationRules } from "../accountValidators";
@@ -39,5 +40,33 @@ router.post("/information", authenticateToken, userInformation);
 
 router.patch("/update", authenticateToken, accountUpdateValidationRules, updateUserAccount);
 
+router.delete("/delete", authenticateToken, deleteUserAccount);
 
 export default router;
+
+
+app.delete("/delete-account", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    // Delete the user account
+    await db.query("DELETE FROM users WHERE id = $1", [userId]);
+
+    // Clear the token
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Account deleted and logged out successfully.",
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to delete account." });
+  }
+});

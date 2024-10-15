@@ -2,8 +2,15 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
-import { createUser, getUserByUsername, updateLastLogin, getUserByUserName, getUserById, updateUserById} from "../models/userModel";
-
+import {
+  createUser,
+  getUserByUsername,
+  updateLastLogin,
+  getUserByUserName,
+  getUserById,
+  updateUserById,
+  deleteUserByID,
+} from "../models/userModel";
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -66,7 +73,7 @@ export const loginUser = async (req, res) => {
   try {
     // Pobieramy użytkownika na podstawie nazwy użytkownika
     const user = await getUserByUsername(username);
-    
+
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -116,7 +123,7 @@ export const logoutUser = (req, res) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: "Strict",
   });
-  
+
   res.status(200).json({
     success: true,
     message: "Logged out successfully",
@@ -206,6 +213,30 @@ export const updateUserAccount = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating account:", error);
-    res.status(500).json({ success: false, message: "Failed to update account." });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update account." });
+  }
+};
+
+export const deleteUserAccount = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    await deleteUserById(userId);
+
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Account deleted and logged out successfully.",
+    });
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    res.status(500).json({ success: false, message: "Failed to delete account." });
   }
 };
