@@ -3,6 +3,7 @@ import {
   getPatchWords,
   getWordTranslations,
   getMaxPatchId,
+  getWordsWithPagination,
 } from "../models/userModel";
 
 // B2 >= 3264 < C1
@@ -92,4 +93,24 @@ const formatWordResults = (results) => {
       },
     };
   });
+};
+
+export const getWordsList = async (req, res) => {
+  const { page = 1, limit = 50 } = req.query;
+
+  console.log(`Fetching words for page: ${page}, limit: ${limit}`);
+
+  try {
+    const offset = (page - 1) * limit;
+    console.log(`Calculated offset: ${offset}`);
+
+    // Pobranie słów z modelu
+    const words = await getWordsWithPagination(parseInt(limit), offset);
+    console.log("Fetched words:", words);
+
+    res.status(200).json(words); // Zwracanie statusu 200 z danymi słów
+  } catch (error) {
+    console.error("Error fetching words:", error);
+    res.status(500).send("Server Error");
+  }
 };

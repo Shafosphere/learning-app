@@ -27,7 +27,7 @@ const db = new pg.Client({
   host: "localhost",
   database: "word-repository",
   password: DATABASE,
-  port: 5433,
+  port: 5432,
 });
 db.connect();
 
