@@ -2,6 +2,7 @@ import express from "express";
 import reportRoutes from "./routes/reportRoutes.js"; // Import trasy do raportów szczegółowych
 import authRoutes from "./routes/authRoutes.js;";
 import wordRoutes from "./routes/wordRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 import cors from "cors";
 
@@ -22,6 +23,8 @@ app.use("/report", reportRoutes); // Wszystkie endpointy zaczynające się od "/
 app.use("/auth", authRoutes);
 
 app.use("/word", wordRoutes);
+
+app.use("/admin", adminRoutes)
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

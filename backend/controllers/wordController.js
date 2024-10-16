@@ -4,6 +4,11 @@ import {
   getWordTranslations,
   getMaxPatchId,
   getWordsWithPagination,
+  getTranslationsByWordId,
+  updateTranslation,
+  searchWordById,
+  searchWordByText,
+  insertWord, insertTranslations, deleteWordById,
 } from "../models/userModel";
 
 // B2 >= 3264 < C1
@@ -112,5 +117,104 @@ export const getWordsList = async (req, res) => {
   } catch (error) {
     console.error("Error fetching words:", error);
     res.status(500).send("Server Error");
+  }
+};
+
+export const getWordDetail = async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    // Pobranie tłumaczeń z modelu
+    const translations = await getTranslationsByWordId(id);
+
+    const response_data = {
+      translations: translations,
+    };
+    console.log(response_data);
+    res.json(response_data);
+  } catch (error) {
+    console.error("Error fetching word details:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
+export const updateWordTranslations = async (req, res) => {
+  const { word } = req.body;
+
+  try {
+    const translations = word.translations;
+
+    // Aktualizowanie tłumaczeń słowa
+    await Promise.all(
+      translations.map(async (translation) => {
+        await updateTranslation(translation);
+      })
+    );
+
+    res.status(200).send("Translations updated successfully.");
+  } catch (error) {
+    console.error("Error updating translations:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+export const searchWords = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    let result;
+
+    if (!isNaN(query)) {
+      // Jeśli query jest liczbą (wyszukiwanie po ID)
+      result = await searchWordById(parseInt(query));
+    } else {
+      // Jeśli query jest ciągiem znaków (wyszukiwanie po nazwie)
+      result = await searchWordByText(query);
+    }
+
+    console.log("Search result:", result);
+    res.json(result);
+  } catch (error) {
+    console.error("Error during search:", error);
+    res.status(500).send("Server Error");
+  }
+};
+
+export const addWord = async (req, res) => {
+  const { translations } = req.body;
+
+  // Znalezienie tłumaczenia angielskiego
+  const englishTranslation = translations.find((t) => t.language === "en");
+  if (!englishTranslation) {
+    return res.status(400).send("English translation is required.");
+  }
+
+  const word = englishTranslation.translation;
+
+  try {
+    // Wstawienie słowa i uzyskanie nowego ID słowa
+    const wordId = await insertWord(word);
+
+    // Wstawienie tłumaczeń
+    await insertTranslations(wordId, translations);
+
+    res.status(200).send("Word added successfully.");
+  } catch (error) {
+    console.error("Error while adding the word:", error);
+    res.status(500).send("An error occurred while adding the word.");
+  }
+};
+
+export const deleteWord = async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    // Usunięcie słowa i jego tłumaczeń
+    await deleteWordById(id);
+
+    res.status(200).send("Word and its translations deleted successfully.");
+  } catch (error) {
+    console.error("Error while deleting the word:", error);
+    res.status(500).send("An error occurred while deleting the word.");
   }
 };
