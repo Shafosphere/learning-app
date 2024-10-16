@@ -7,13 +7,19 @@ name changed:
 "/account-data" >>> "/auth/information" - trzeba to ulepszyc bo jezeli uzytniwk przejdzie autoryzacje tokenu to moze dostac inforamcje o jakimkolwiek uzytkowniku
 "/account-update" >>> "/auth/update" 
 "/delete-account" >>> /auth/delete"
-
+"/users" >>> "/auth/list"
+"/users-update" >>> "/auth/userupdate
+"/search-user" >>> "/auth//search"
 
 
 "/pre-data" >>> "/word/information"
 "/data" >>> "/word/data"
-"/words" >>> "/words/list"
-
+"/words" >>> "/word/list"
+"/word-detail" >>> "/word/detail"
+"/word-update" >>> "/word/update"
+"/search" >>> "/word/search"
+"/add-word" >>> "/world/add"
+/word-delete", >>> "/world/delete"
 
 "/data-reports" >>> "/report/data"
 "/detail-report" >>> "/report/details"
@@ -21,22 +27,7 @@ name changed:
 "/detail-delete" >>> "/report/delete:id" - zmienic sposób wysyłania w front na :id
 "/report" >>> "/report/add"
 
+"/global-data" >>> "/admin/
+"/generate-patches" "/admin/generatepatch
 
-app.get("/words", authenticateToken, authorizeAdmin, async (req, res) => {
-  const { page = 1, limit = 50 } = req.query;
-
-  console.log(`Fetching words for page: ${page}, limit: ${limit}`);
-  try {
-    const offset = (page - 1) * limit;
-    console.log(`Calculated offset: ${offset}`);
-    const result = await db.query(
-      "SELECT * FROM word ORDER BY id LIMIT $1 OFFSET $2",
-      [parseInt(limit), offset]
-    );
-    console.log("Fetched words:", result.rows);
-    res.status(200).json(result.rows); // Returning status 200
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server Error");
-  }
-});
+"/generate-patches"

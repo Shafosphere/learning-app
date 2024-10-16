@@ -12,6 +12,9 @@ import {
   userInformation,
   updateUserAccount,
   deleteUserAccount,
+  getUsersList,
+  updateUsers,
+  searchUsers,
 } from "../controllers/authController";
 
 import { accountUpdateValidationRules } from "../accountValidators";
@@ -41,6 +44,12 @@ router.post("/information", authenticateToken, userInformation);
 router.patch("/update", authenticateToken, accountUpdateValidationRules, updateUserAccount);
 
 router.delete("/delete", authenticateToken, deleteUserAccount);
+
+router.get("/list", authenticateToken, authorizeAdmin, getUsersList);
+
+router.patch("/userupdate", authenticateToken, authorizeAdmin, updateUsers);
+
+router.get("/search-user", authenticateToken, authorizeAdmin, searchUsers);
 
 export default router;
 
