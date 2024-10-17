@@ -3,6 +3,7 @@ import reportRoutes from "./routes/reportRoutes.js"; // Import trasy do raportó
 import authRoutes from "./routes/authRoutes.js;";
 import wordRoutes from "./routes/wordRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 import cors from "cors";
 
@@ -25,6 +26,8 @@ app.use("/auth", authRoutes);
 app.use("/word", wordRoutes);
 
 app.use("/admin", adminRoutes)
+
+app.use("/user", userRoutes)
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

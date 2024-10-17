@@ -1,17 +1,14 @@
-name changed:
-"/register" >>> "/auth/register"
-"/admin" >>> "/auth/admin"
+Konta:
+"/register" >>> "/auth/register" - rejestruje
+"/admin" >>> "/auth/admin" - sprawdza czy uzytkownik jest adminem
 "/check-auth" >>> "/auth/user" - poprawic controlery i w frondendzie zeby było podobne do admina
-"/login" >>> "/auth/login"
-"/logout" >>> "/auth/logout"
+"/login" >>> "/auth/login" - loguje
+"/logout" >>> "/auth/logout" - wylogowje
 "/account-data" >>> "/auth/information" - trzeba to ulepszyc bo jezeli uzytniwk przejdzie autoryzacje tokenu to moze dostac inforamcje o jakimkolwiek uzytkowniku
-"/account-update" >>> "/auth/update" 
-"/delete-account" >>> /auth/delete"
-"/users" >>> "/auth/list"
-"/users-update" >>> "/auth/userupdate
-"/search-user" >>> "/auth//search"
+"/account-update" >>> "/auth/update" - uzytkownik aktualizwouje SWOJE dane
+"/delete-account" >>> /auth/delete" - uzytkownik usuwa swoje konto
 
-
+Słowa:
 "/pre-data" >>> "/word/information"
 "/data" >>> "/word/data"
 "/words" >>> "/word/list"
@@ -21,13 +18,20 @@ name changed:
 "/add-word" >>> "/world/add"
 /word-delete", >>> "/world/delete"
 
+
+Reporty
 "/data-reports" >>> "/report/data"
 "/detail-report" >>> "/report/details"
 "/detail-update" >>> "/report/update"
 "/detail-delete" >>> "/report/delete:id" - zmienic sposób wysyłania w front na :id
 "/report" >>> "/report/add"
 
-"/global-data" >>> "/admin/
-"/generate-patches" "/admin/generatepatch
 
-"/generate-patches"
+Tylko dla Admina:
+"/global-data" >>> "/admin/global-data - generuje statystki wyswietlajace sie w panelu admina
+"/generate-patches" "/admin/generatepatch - generuje losowe liczby na serwerze w zakresie liczby słów 
+
+Działania dla uzytnikikach
+"/users" >>> "/user/list" - zwraca liste uzytkowników z jego paraemtrami 
+"/users-update" >>> "/user/update - updatuje dane wybranego uzytkownika
+"/search-user" >>> "/user/search" - wyszuwiarka w panelu admina
