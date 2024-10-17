@@ -142,7 +142,7 @@ export const updateUserById = async (userId, { username, email, password }) => {
   );
 };
 
-export const deleteUserById = async (userId) => {
+export const deleteUserByID = async (userId) => {
   await pool.query("DELETE FROM users WHERE id = $1", [userId]);
 };
 
