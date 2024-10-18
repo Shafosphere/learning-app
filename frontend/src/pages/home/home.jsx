@@ -187,7 +187,7 @@ export default function Home() {
     let maxRange;
   
     try {
-      const response = await api.get("/pre-data");
+      const response = await api.get("/word/information");
       minWordId = response.data.minWordId;
       maxWordId = response.data.maxWordId;
       b2 = response.data.b2;
@@ -229,7 +229,7 @@ export default function Home() {
   
     try {
       const response = await axios.post(
-        "http://localhost:8080/data",
+        "http://localhost:8080/word/data",
         { wordIds: Array.from(wordIds), words_used: Array.from(words_used), wordList },
         { withCredentials: true }
       );

@@ -8,7 +8,7 @@ export default function MainPanel() {
   useEffect(() => {
     async function getData() {
       try {
-        const response = await api.get("/global-data");
+        const response = await api.get("/admin/global-data");
         if (response.data) {
           setData(response.data);
         } else {
@@ -25,7 +25,7 @@ export default function MainPanel() {
   async function handleGeneratePatches() {
     console.log('start')
     try {
-      const respone = await api.post("/generate-patches");
+      const respone = await api.post("/admin/generatepatch");
 
       if (respone) {
         alert("Patche zostały wygenerowane pomyślnie.");

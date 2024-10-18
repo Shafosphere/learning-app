@@ -32,7 +32,7 @@ export default function Sidebar() {
   useEffect(() => {
     const checkAdminRole = async () => {
       try {
-        const response = await api.get("/admin");
+        const response = await api.get("/auth/admin");
         if (response.data && response.data.success) {
           setIsAdmin(true);
         }
@@ -49,7 +49,7 @@ export default function Sidebar() {
 
   const logout = async () => {
     try {
-      await api.post("/logout");
+      await api.post("/auth/logout");
       setIsLoggedIn(false);
       setUser(null);
       setPopupEmotion("positive");

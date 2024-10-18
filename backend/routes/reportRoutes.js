@@ -1,13 +1,13 @@
 import express from "express";
-import authenticateToken from "../middleware/authenticateToken";
-import authorizeAdmin from "../middleware/authorizeAdmin";
+import authenticateToken from "../middleware/authenticateToken.js";
+import authorizeAdmin from "../middleware/authorizeAdmin.js";
 import {
   getDetailReport,
   getDataReports,
   updateReportTranslations,
   deleteReportData,
   createReport,
-} from "../controllers/reportController";
+} from "../controllers/reportController.js";
 
 const router = express.Router();
 

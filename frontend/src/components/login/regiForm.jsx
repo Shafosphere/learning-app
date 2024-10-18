@@ -29,7 +29,7 @@ export default function RegiForm({ setDisplay }) {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:8080/register", {
+      const response = await axios.post("http://localhost:8080/auth/register", {
         username,
         email,
         password,

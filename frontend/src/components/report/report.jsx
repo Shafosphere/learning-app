@@ -18,7 +18,7 @@ export default function ReportForm() {
     e.preventDefault();
     try {
       const response = await api.post(
-        "/report",
+        "/report/add",
         {
           reportType,
           word,

@@ -48,7 +48,7 @@ export default function UsersPanel() {
 
   async function getUsers(page) {
     try {
-      const response = await api.get(`/users?page=${page}&limit=50`);
+      const response = await api.get(`/user/list?page=${page}&limit=50`);
       return response.data;
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -83,7 +83,7 @@ export default function UsersPanel() {
 
     if (value.length > 0) {
       try {
-        const response = await api.get(`/search-user?query=${value}`);
+        const response = await api.get(`/user/search?query=${value}`);
         if (response.data.length > 0) {
           setSearchResults(response.data.slice(0, 10)); // Limitowanie wyników do 10
         } else {
@@ -102,7 +102,7 @@ export default function UsersPanel() {
     console.log(editedRows);
 
     try {
-      const response = await api.patch(`/users-update`, { editedRows });
+      const response = await api.patch(`/user/update`, { editedRows });
       console.log(response);
     } catch (error) {
       console.error("Error searching words:", error);

@@ -38,7 +38,7 @@ export default function ReportDetails({ reportID, reloadData }) {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await api.post("/detail-report", { id: reportID });
+        const response = await api.post("/report/details", { id: reportID });
         if (response.data) {
           setReport(response.data);
         } else {
@@ -59,7 +59,7 @@ export default function ReportDetails({ reportID, reloadData }) {
 
   const updateData = async () => {
     try {
-      const response = await api.patch("/detail-update", { report: report });
+      const response = await api.patch("/report/update", { report: report });
       setPopupEmotion("positive");
       setPopupMessage(response.data);
     } catch (error) {
@@ -71,9 +71,7 @@ export default function ReportDetails({ reportID, reloadData }) {
 
   const deleteData = async () => {
     try {
-      const response = await api.delete("/detail-delete", {
-        data: { id: report.id },
-      });
+      const response = await api.delete(`/report/delete/${report.id}`); // Przekazanie ID w ścieżce
       setPopupEmotion("positive");
       setPopupMessage(response.data);
       reloadData();
@@ -83,6 +81,7 @@ export default function ReportDetails({ reportID, reloadData }) {
       console.error("Error deleting data:", error);
     }
   };
+  
 
   return (
     <div className="report-details">

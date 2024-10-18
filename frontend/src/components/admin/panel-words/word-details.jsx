@@ -34,7 +34,7 @@ export default function WordDetail({ word, setWord }) {
 
   const updateData = async () => {
     try {
-      const response = await api.patch("/word-update", { word: word });
+      const response = await api.patch("/word/update", { word: word });
       setPopupEmotion("positive");
       setPopupMessage(response.data);
     } catch (error) {

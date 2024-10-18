@@ -95,10 +95,10 @@ export default function ResultsSummary() {
         setPercent(((correct / total) * 100).toFixed(2));
   
         // Fetch words data based on IDs
-        const goodWordsData = await api.post("/data", {
+        const goodWordsData = await api.post("/word/data", {
           wordList: ids[0].good,
         });
-        const wrongWordsData = await api.post("/data", {
+        const wrongWordsData = await api.post("/word/data", {
           wordList: ids[0].wrong,
         });
   

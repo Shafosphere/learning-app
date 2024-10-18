@@ -4,9 +4,6 @@ import authorizeAdmin from "../middleware/authorizeAdmin.js";
 import {
   getGlobalData,
   generatePatches,
-  getUsersList,
-  updateUserById,
-  searchUsers,
 } from "../controllers/adminController.js";
 
 const router = express.Router();

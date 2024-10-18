@@ -1,6 +1,6 @@
 import express from "express";
 import reportRoutes from "./routes/reportRoutes.js"; // Import trasy do raportów szczegółowych
-import authRoutes from "./routes/authRoutes.js;";
+import authRoutes from "./routes/authRoutes.js";
 import wordRoutes from "./routes/wordRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import userRoutes from "./routes/userRoutes.js";

@@ -9,7 +9,7 @@ import {
   searchWordById,
   searchWordByText,
   insertWord, insertTranslations, deleteWordById,
-} from "../models/userModel";
+} from "../models/userModel.js";
 
 // B2 >= 3264 < C1
 const maxWordId = 5260;

@@ -10,7 +10,7 @@ import {
   getUserById,
   updateUserById,
   deleteUserByID,
-} from "../models/userModel";
+} from "../models/userModel.js";
 
 const generateToken = (user) => {
   return jwt.sign(

@@ -16,7 +16,7 @@ Słowa:
 "/word-update" >>> "/word/update"
 "/search" >>> "/word/search"
 "/add-word" >>> "/world/add"
-/word-delete", >>> "/world/delete"
+/word-delete", >>> "/world/delete" ---- nie ma tego?
 
 
 Reporty
@@ -35,3 +35,5 @@ Działania dla uzytnikikach
 "/users" >>> "/user/list" - zwraca liste uzytkowników z jego paraemtrami 
 "/users-update" >>> "/user/update - updatuje dane wybranego uzytkownika
 "/search-user" >>> "/user/search" - wyszuwiarka w panelu admina
+
+do naprawy: panel admina nie działa?

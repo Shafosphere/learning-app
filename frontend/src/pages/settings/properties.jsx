@@ -93,7 +93,7 @@ export const SettingsProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await api.get('/check-auth');
+      const response = await api.get('/auth/user');
       if (response.status === 200 && response.data.loggedIn) {
         setIsLoggedIn(true);
         setUser(response.data.user);
@@ -200,7 +200,7 @@ export const SettingsProvider = ({ children }) => {
     let percentComplete;
   
     try {
-      const response = await api.get("/pre-data");
+      const response = await api.get("/word/information");
       maxWordId = response.data.maxWordId;
       b2 = response.data.b2;
     } catch (error) {
