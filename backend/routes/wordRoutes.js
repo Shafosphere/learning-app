@@ -7,9 +7,9 @@ import {
   updateWordTranslations,
   searchWords,
   addWord, deleteWord,
-} from "../controllers/wordController";
-import authenticateToken from "../middleware/authenticateToken";
-import authorizeAdmin from "../middleware/authorizeAdmin";
+} from "../controllers/wordController.js";
+import authenticateToken from "../middleware/authenticateToken.js";
+import authorizeAdmin from "../middleware/authorizeAdmin.js";
 
 const router = express.Router();
 

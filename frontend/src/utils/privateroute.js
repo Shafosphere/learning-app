@@ -4,7 +4,7 @@ import api from './api';
 
 async function getRoleFromToken() {
     try {
-        const response = await api.get("/admin");
+        const response = await api.get("/auth/admin");
         if (response.data && response.data.success) {
             return 'admin';
         }

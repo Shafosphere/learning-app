@@ -18,7 +18,7 @@ export default function LoginForm({ setPopupMessage, setPopupEmotion }) {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const response = await api.post("/login", {
+      const response = await api.post("/auth/login", {
         username,
         password,
       });

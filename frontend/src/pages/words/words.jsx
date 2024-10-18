@@ -152,7 +152,7 @@ export default function Words() {
 
   async function getData(patchNumber) {
     try {
-      const dataResponse = await api.post("/data", { patchNumber });
+      const dataResponse = await api.post("/word/data", { patchNumber });
       return dataResponse.data;
     } catch (error) {
       console.error("Błąd podczas pobierania danych:", error);

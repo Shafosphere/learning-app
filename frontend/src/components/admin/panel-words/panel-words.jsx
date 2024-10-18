@@ -17,7 +17,7 @@ export default function WordsPanel() {
 
   async function getWords(page) {
     try {
-      const response = await api.get(`/words?page=${page}&limit=50`);
+      const response = await api.get(`/word/list?page=${page}&limit=50`);
       return response.data;
     } catch (error) {
       console.error("Error fetching words:", error);
@@ -48,7 +48,7 @@ export default function WordsPanel() {
 
   async function wordData(activeID) {
     try {
-      const response = await api.post("/word-detail", { id: activeID });
+      const response = await api.post("/word/detail", { id: activeID });
       if (response.data) {
         setWord(response.data);
       } else {
@@ -71,7 +71,7 @@ export default function WordsPanel() {
 
     if (value.length > 0) {
       try {
-        const response = await api.get(`/search?query=${value}`);
+        const response = await api.get(`/word/search?query=${value}`);
         if (response.data.length > 0) {
           setSearchResults(response.data.slice(0, 10)); // Limitowanie wyników do 10
         } else {

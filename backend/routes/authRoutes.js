@@ -1,7 +1,7 @@
 import express from "express";
 
-import authenticateToken from "../middleware/authenticateToken";
-import authorizeAdmin from "../middleware/authorizeAdmin";
+import authenticateToken from "../middleware/authenticateToken.js";
+import authorizeAdmin from "../middleware/authorizeAdmin.js";
 import { body } from "express-validator";
 import {
   registerUser,
@@ -12,9 +12,9 @@ import {
   userInformation,
   updateUserAccount,
   deleteUserAccount,
-} from "../controllers/authController";
+} from "../controllers/authController.js";
 
-import { accountUpdateValidationRules } from "../accountValidators";
+import { accountUpdateValidationRules } from "../accountValidators.js";
 
 const router = express.Router();
 
@@ -44,30 +44,3 @@ router.delete("/delete", authenticateToken, deleteUserAccount);
 
 
 export default router;
-
-
-app.delete("/delete-account", authenticateToken, async (req, res) => {
-  const userId = req.user.id;
-
-  try {
-    // Delete the user account
-    await db.query("DELETE FROM users WHERE id = $1", [userId]);
-
-    // Clear the token
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Account deleted and logged out successfully.",
-    });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to delete account." });
-  }
-});

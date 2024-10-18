@@ -3,7 +3,7 @@ import {
   searchUserByEmail,
   searchUserByUsername,
   getUsersWithPagination,
-} from "../models/adminModel.js";
+} from "../models/userModel.js";
 
 export const getUsersList = async (req, res) => {
   const { page = 1, limit = 50 } = req.query;

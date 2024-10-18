@@ -48,7 +48,7 @@ export default function Account() {
 
   async function deleteAccount() {
     try {
-      const response = await api.delete('/delete-account');
+      const response = await api.delete('/auth/delete"');
       if (response.data.success) {
         setPopupMessage('Accound has been deleted :(');
         setPopupEmotion('positive');
@@ -69,7 +69,7 @@ export default function Account() {
   useEffect(() => {
     async function getData() {
       try {
-        const response = await api.post("/account-data");
+        const response = await api.post("/auth/information");
         const data = response.data;
         username.current.value = data.username;
         email.current.value = data.email;
@@ -91,7 +91,7 @@ export default function Account() {
 
   const handleSubmit = async () => {
     try {
-      const response = await api.patch("/account-update", editedData);
+      const response = await api.patch("/auth/update", editedData);
       if (response.data.success) {
         setPopupMessage("Changes saved successfully!");
         setPopupEmotion("positive");

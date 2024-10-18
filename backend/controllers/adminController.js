@@ -2,7 +2,7 @@ import {
   fetchGlobalData,
   deleteOldPatches,
   generatePatchesBatch,
-} from "../models/adminModel.js";
+} from "../models/userModel.js";
 
 export const getGlobalData = async (req, res) => {
   try {
