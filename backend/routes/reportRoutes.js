@@ -13,7 +13,10 @@ const router = express.Router();
 
 router.post("/details", authenticateToken, authorizeAdmin, getDetailReport);
 
-router.get("/data", authenticateToken, authorizeAdmin, getDataReports);
+router.post("/data", authenticateToken, authorizeAdmin, (req, res, next) => {
+  console.log("getDataReports function called");
+  next();
+}, getDataReports);
 
 router.patch("/update", authenticateToken, authorizeAdmin, updateReportTranslations);
 

@@ -9,10 +9,10 @@ import {
 
 const router = express.Router();
 
-router.get("/userlist", authenticateToken, authorizeAdmin, getUsersList);
+router.get("/list", authenticateToken, authorizeAdmin, getUsersList);
 
-router.patch("/userupdate", authenticateToken, authorizeAdmin, updateUserById);
+router.patch("/update", authenticateToken, authorizeAdmin, updateUserById);
 
-router.get("/usersearch", authenticateToken, authorizeAdmin, searchUsers);
+router.get("/search", authenticateToken, authorizeAdmin, searchUsers);
 
 export default router;

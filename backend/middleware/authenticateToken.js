@@ -1,5 +1,5 @@
-// Middleware do weryfikacji tokenu JWT
 import jwt from 'jsonwebtoken';
+import { config } from '../config.js';
 
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.token; // Pobieranie tokenu z ciasteczka
@@ -10,7 +10,7 @@ const authenticateToken = (req, res, next) => {
     });
   }
 
-  jwt.verify(token, process.env.REACT_APP_TOKEN_KEY, (err, user) => {
+  jwt.verify(token, config.tokenKey, (err, user) => {
     if (err) {
       return res.status(403).json({
         success: false,

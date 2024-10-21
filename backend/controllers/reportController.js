@@ -1,5 +1,5 @@
 // Obsługa raportów
-import { getReportById, getReports, deleteReport } from "../models/userModel.js";
+import { getReportById, getReports, deleteReport, insertReport} from "../models/userModel.js";
 
 export const getDetailReport = async (req, res) => {
   try {
@@ -16,6 +16,7 @@ export const getDetailReport = async (req, res) => {
 };
 
 export const getDataReports = async (req, res) => {
+  console.log('data reports')
   try {
     const data = await getReports();
     res.status(200).json(data);
