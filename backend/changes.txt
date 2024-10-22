@@ -1,40 +1,40 @@
 Konta:
-"/register" >>> "/auth/register" - rejestruje
-"/admin" >>> "/auth/admin" - sprawdza czy uzytkownik jest adminem
-"/check-auth" >>> "/auth/user" - poprawic controlery i w frondendzie zeby było podobne do admina
-"/login" >>> "/auth/login" - loguje
-"/logout" >>> "/auth/logout" - wylogowje
-"/account-data" >>> "/auth/information" - trzeba to ulepszyc bo jezeli uzytniwk przejdzie autoryzacje tokenu to moze dostac inforamcje o jakimkolwiek uzytkowniku
-"/account-update" >>> "/auth/update" - uzytkownik aktualizwouje SWOJE dane
-"/delete-account" >>> /auth/delete" - uzytkownik usuwa swoje konto
+t "/register" >>> "/auth/register" - rejestruje - 
+t "/admin" >>> "/auth/admin" - sprawdza czy uzytkownik jest adminem - 
+ "/check-auth" >>> "/auth/user" - poprawic controlery i w frondendzie zeby było podobne do admina
+t "/login" >>> "/auth/login" - loguje
+t "/logout" >>> "/auth/logout" - wylogowje
+t "/account-data" >>> "/auth/information" - trzeba to ulepszyc bo jezeli uzytniwk przejdzie autoryzacje tokenu to moze dostac inforamcje o jakimkolwiek uzytkowniku
+t "/account-update" >>> "/auth/update" - uzytkownik aktualizwouje SWOJE dane
+t "/delete-account" >>> /auth/delete" - uzytkownik usuwa swoje konto
 
 Słowa:
-"/pre-data" >>> "/word/information"
-"/data" >>> "/word/data"
-"/words" >>> "/word/list"
-"/word-detail" >>> "/word/detail"
-"/word-update" >>> "/word/update"
-"/search" >>> "/word/search"
+t "/pre-data" >>> "/word/information"
+t "/data" >>> "/word/data"
+t "/words" >>> "/word/list"
+t "/word-detail" >>> "/word/detail"
+t "/word-update" >>> "/word/update"
+t "/search" >>> "/word/search"
 "/add-word" >>> "/world/add"
 /word-delete", >>> "/world/delete" ---- nie ma tego?
 
 
 Reporty
-"/data-reports" >>> "/report/data"
-"/detail-report" >>> "/report/details"
+t "/data-reports" >>> "/report/data"
+t "/detail-report" >>> "/report/details"
 "/detail-update" >>> "/report/update"
-"/detail-delete" >>> "/report/delete:id" - zmienic sposób wysyłania w front na :id
-"/report" >>> "/report/add"
+t "/detail-delete" >>> "/report/delete:id" - zmienic sposób wysyłania w front na :id
+n "/report" >>> "/report/add" - zwykły dziala ale nie word
 
 
 Tylko dla Admina:
-"/global-data" >>> "/admin/global-data - generuje statystki wyswietlajace sie w panelu admina
+t "/global-data" >>> "/admin/global-data - generuje statystki wyswietlajace sie w panelu admina
 "/generate-patches" "/admin/generatepatch - generuje losowe liczby na serwerze w zakresie liczby słów 
 
 Działania dla uzytnikikach
-"/users" >>> "/user/list" - zwraca liste uzytkowników z jego paraemtrami 
-"/users-update" >>> "/user/update - updatuje dane wybranego uzytkownika
-"/search-user" >>> "/user/search" - wyszuwiarka w panelu admina
+t "/users" >>> "/user/list" - zwraca liste uzytkowników z jego paraemtrami 
+n "/users-update" >>> "/user/update - updatuje dane wybranego uzytkownika
+t "/search-user" >>> "/user/search" - wyszuwiarka w panelu admina
 
 do naprawy: panel admina nie działa? - naprawione
 znaleziony bug - wyszukiwanie po dacie w report panel dziwnie działa?

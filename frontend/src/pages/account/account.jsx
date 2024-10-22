@@ -48,7 +48,7 @@ export default function Account() {
 
   async function deleteAccount() {
     try {
-      const response = await api.delete('/auth/delete"');
+      const response = await api.delete('/auth/delete');
       if (response.data.success) {
         setPopupMessage('Accound has been deleted :(');
         setPopupEmotion('positive');
