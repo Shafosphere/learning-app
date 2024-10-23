@@ -93,7 +93,7 @@ app.post(
       const data = response.rows;
       res.json(data); // Zwrócenie wszystkich wyników
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       res.status(500).send("Internal Server Error");
     }
   }
@@ -136,7 +136,7 @@ app.post(
         }
       }
 
-      console.log(response_data);
+      // console.log(response_data);
       res.json(response_data);
     } catch (error) {
       console.error(error);

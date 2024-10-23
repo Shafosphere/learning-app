@@ -49,8 +49,9 @@ export default function AddWord() {
 
   async function addWord() {
     console.log("works");
+    console.log(word)
     try {
-      const response = await api.post("/world/add", { word: word });
+      const response = await api.post("/word/add", { word: word });
       setPopupEmotion("positive");
       setPopupMessage(response.data);
     } catch (error) {

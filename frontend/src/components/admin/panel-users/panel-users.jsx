@@ -6,6 +6,7 @@ import { MdEdit } from "react-icons/md";
 import { IoIosTrash } from "react-icons/io";
 import { FaCheck } from "react-icons/fa6";
 import { FaUndoAlt } from "react-icons/fa";
+import Popup from "../../popup/popup";
 
 import ConfirmWindow from "../../confirm/confirm";
 
@@ -31,6 +32,10 @@ export default function UsersPanel() {
   // confirm
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState(null);
+
+  // popup
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupEmotion, setPopupEmotion] = useState("");
 
   const handleConfirmClose = (result) => {
     if (result && confirmCallback) {
@@ -99,16 +104,37 @@ export default function UsersPanel() {
   };
 
   async function sendData() {
-    console.log(editedRows);
-
+    if (Object.keys(editedRows).length === 0) {
+      console.log("Brak zmian do wysłania");
+      return;
+    }
+  
     try {
-      const response = await api.patch(`/user/update`, { editedRows });
-      console.log(response);
+      // Wysyłamy zapytanie PATCH do endpointu "/user/update"
+      const response = await api.patch("/user/update", { editedRows });
+  
+      // Jeśli odpowiedź zwróciła sukces, ustaw pozytywny komunikat
+      if (response.status === 200) {
+        setPopupEmotion("positive");
+        setPopupMessage(response.data.message);
+  
+        // Aktualizacja stanu użytkowników na podstawie edytowanych danych
+        const updatedUsers = [...users].map((user) =>
+          editedRows[user.id] ? { ...user, ...editedRows[user.id], isEdited: false } : user
+        );
+  
+        // Aktualizuj stan `users` i wyczyść `editedRows`
+        setUsers(updatedUsers);
+        setEditedRows({});
+      }
     } catch (error) {
-      console.error("Error searching words:", error);
-      setSearchResults([]);
+      setPopupEmotion("negative");
+      setPopupMessage(error.response?.data?.message || "An error occurred");
+      console.error("Error updating users:", error);
     }
   }
+  
+  
 
   const handleSearchResultClick = (userId) => {
     scrollToUser(userId);
@@ -155,10 +181,10 @@ export default function UsersPanel() {
       const updatedUser = { ...user };
       setUndoValues((prevUndoValues) => [
         ...prevUndoValues,
-        { id: user.id, previousValues: updatedUser }
+        { id: user.id, previousValues: updatedUser },
       ]);
     }
-  
+
     setUsers((prevUsers) =>
       prevUsers.map((user) => {
         if (user.id === editingRowId) {
@@ -177,28 +203,29 @@ export default function UsersPanel() {
 
   function undo() {
     const lastEdit = undoValues.pop(); // Pobranie ostatniego wpisu z tablicy
-  
+
     if (lastEdit) {
       const { id, previousValues } = lastEdit;
-  
+
       // Przywrócenie poprzednich wartości do stanu users
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
-          user.id === id ? { ...user, ...previousValues, isEdited: false } : user
+          user.id === id
+            ? { ...user, ...previousValues, isEdited: false }
+            : user
         )
       );
-  
+
       // Usunięcie cofniętych zmian z editedRows
       setEditedRows((prevEditedRows) => {
         const { [id]: removed, ...rest } = prevEditedRows;
-        return rest;
+        return rest; // Usunięcie użytkownika, który cofnął zmiany, z editedRows
       });
-  
+
       // Aktualizacja undoValues bez ostatniego elementu (pop automatycznie usuwa)
       setUndoValues([...undoValues]);
     }
   }
-  
 
   return (
     <>
@@ -336,6 +363,14 @@ export default function UsersPanel() {
           </div>
         </div>
       </div>
+
+      {popupMessage && (
+        <Popup
+          message={popupMessage}
+          emotion={popupEmotion}
+          onClose={() => setPopupMessage("")}
+        />
+      )}
 
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />

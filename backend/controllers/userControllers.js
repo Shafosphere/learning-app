@@ -3,6 +3,7 @@ import {
   searchUserByEmail,
   searchUserByUsername,
   getUsersWithPagination,
+  updateUserInDb,
 } from "../models/userModel.js";
 
 export const getUsersList = async (req, res) => {
@@ -23,20 +24,33 @@ export const getUsersList = async (req, res) => {
   }
 };
 
-export const updateUserById = async (user) => {
-  const { id, username, email, role } = user;
+export const updateUsers = async (req, res) => {
+  const { editedRows } = req.body;
 
-  // Na razie jest to tylko szkielet funkcji - logika zostanie dodana później
-  // Przykładowe zapytanie mogłoby wyglądać tak:
-  /*
-    await pool.query(
-      "UPDATE users SET username = $1, email = $2, role = $3 WHERE id = $4",
-      [username, email, role, id]
-    );
-    */
-  console.log(
-    `Updating user with id: ${id}, username: ${username}, email: ${email}, role: ${role}`
-  );
+  if (!editedRows || Object.keys(editedRows).length === 0) {
+    return res.status(400).send("No data to update");
+  }
+
+  try {
+    // Iteracja po wszystkich użytkownikach i aktualizacja w bazie danych
+    const updatePromises = Object.values(editedRows).map(async (user) => {
+      await updateUserInDb(user);
+    });
+
+    // Czekanie na zakończenie wszystkich operacji aktualizacji
+    await Promise.all(updatePromises);
+
+    res.status(200).json({
+      success: true,
+      message: "Users updated successfully.",
+    });
+  } catch (error) {
+    console.error("Error updating users:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while processing user update.",
+    });
+  }
 };
 
 export const searchUsers = async (req, res) => {

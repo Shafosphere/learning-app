@@ -181,7 +181,16 @@ export const searchWords = async (req, res) => {
 };
 
 export const addWord = async (req, res) => {
-  const { translations } = req.body;
+  // Wyciągnięcie 'word' z 'req.body'
+  const { word } = req.body;
+
+  // Sprawdź, czy 'word' jest zdefiniowane i ma 'translations'
+  if (!word || !word.translations) {
+    return res.status(400).send("Translations data is missing.");
+  }
+
+  const { translations } = word; // Wyciągnięcie 'translations' z 'word'
+  console.log("Translations:", translations); // Logowanie danych, aby sprawdzić ich strukturę
 
   // Znalezienie tłumaczenia angielskiego
   const englishTranslation = translations.find((t) => t.language === "en");
@@ -189,11 +198,11 @@ export const addWord = async (req, res) => {
     return res.status(400).send("English translation is required.");
   }
 
-  const word = englishTranslation.translation;
+  const wordText = englishTranslation.translation;
 
   try {
     // Wstawienie słowa i uzyskanie nowego ID słowa
-    const wordId = await insertWord(word);
+    const wordId = await insertWord(wordText);
 
     // Wstawienie tłumaczeń
     await insertTranslations(wordId, translations);
@@ -206,7 +215,7 @@ export const addWord = async (req, res) => {
 };
 
 export const deleteWord = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params; // Pobranie ID ze ścieżki
 
   try {
     // Usunięcie słowa i jego tłumaczeń

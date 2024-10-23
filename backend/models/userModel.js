@@ -349,3 +349,16 @@ export const generatePatchesBatch = async (patchSize) => {
     client.release();
   }
 };
+
+export const updateUserInDb = async ({ id, username, email, role }) => {
+  try {
+    const result = await pool.query(
+      "UPDATE users SET username = $1, email = $2, role = $3 WHERE id = $4",
+      [username, email, role, id]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error updating user in database:", error);
+    throw error; // Przekazujemy błąd dalej, aby kontroler mógł go obsłużyć
+  }
+};

@@ -1,5 +1,5 @@
 // Obsługa raportów
-import { getReportById, getReports, deleteReport, insertReport} from "../models/userModel.js";
+import { getReportById, getReports, deleteReport, insertReport, getWordTranslations, getWordByTranslation, updateReport} from "../models/userModel.js";
 
 export const getDetailReport = async (req, res) => {
   try {
@@ -8,7 +8,20 @@ export const getDetailReport = async (req, res) => {
     if (!report) {
       return res.status(404).json({ message: "Report not found" });
     }
-    res.status(200).json(report);
+
+    let response_data = { ...report };
+
+    if (report.report_type === "word_issue" && report.word_id) {
+      try {
+        const translation_data = await getWordTranslations(report.word_id)
+        response_data.translations = translation_data;
+      } catch (error) {
+        console.error(error);
+        return res.status(500).send("Internal Server Error");
+      }
+    }
+
+    res.status(200).json(response_data);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -58,6 +71,8 @@ export const deleteReportData = async (req, res) => {
 export const createReport = async (req, res) => {
   const { reportType, word, description, language } = req.body;
   const userId = req.user.id;
+
+  console.log(reportType, word, description, language, userId);
 
   try {
     let wordId = null;

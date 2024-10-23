@@ -6,7 +6,8 @@ import {
   getWordDetail,
   updateWordTranslations,
   searchWords,
-  addWord, deleteWord,
+  addWord,
+  deleteWord,
 } from "../controllers/wordController.js";
 import authenticateToken from "../middleware/authenticateToken.js";
 import authorizeAdmin from "../middleware/authorizeAdmin.js";
@@ -32,6 +33,6 @@ router.get("/search", authenticateToken, authorizeAdmin, searchWords);
 
 router.post("/add", authenticateToken, authorizeAdmin, addWord);
 
-router.delete("/word-delete", authenticateToken, authorizeAdmin, deleteWord);
+router.delete("/delete/:id", authenticateToken, authorizeAdmin, deleteWord);
 
 export default router;

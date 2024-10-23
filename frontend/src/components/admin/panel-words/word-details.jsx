@@ -24,7 +24,6 @@ export default function WordDetail({ word, setWord }) {
     setConfirmMessage(text);
     setConfirmCallback(() => callback);
   }
-  ////
 
   const handleInputChange = (index, field, value) => {
     const newTranslations = [...word.translations];
@@ -44,6 +43,22 @@ export default function WordDetail({ word, setWord }) {
     }
   };
 
+  const deleteWord = async () => {
+    console.log("test");
+  
+    try {
+      const wordId = word.translations[0].word_id;
+
+      const response = await api.delete(`/word/delete/${wordId}`);
+      setPopupEmotion("positive");
+      setPopupMessage(response.data);
+    } catch (error) {
+      setPopupEmotion("negative");
+      setPopupMessage(error.response?.data || "An error occurred");
+      console.error("Error deleting word:", error);
+    }
+  };
+  
   return (
     <>
       {word.translations && (
@@ -87,12 +102,12 @@ export default function WordDetail({ word, setWord }) {
                   <button
                     className="button"
                     style={{ "--buttonColor": "var(--secondary)" }}
-                    // onClick={() =>
-                    //   showConfirm(
-                    //     "Are you sure you want to update your data?",
-                    //     () => updateData()
-                    //   )
-                    // }
+                    onClick={() =>
+                      showConfirm(
+                        "Are you sure you want to delete that word?",
+                        () => deleteWord()
+                      )
+                    }
                   >
                     delete word
                   </button>
@@ -101,7 +116,7 @@ export default function WordDetail({ word, setWord }) {
                     style={{ "--buttonColor": "var(--highlight)" }}
                     onClick={() =>
                       showConfirm(
-                        "Are you sure you want to update your data?",
+                        "Are you sure you want to update your word?",
                         () => updateData()
                       )
                     }

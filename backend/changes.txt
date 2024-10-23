@@ -1,7 +1,7 @@
 Konta:
 t "/register" >>> "/auth/register" - rejestruje - 
 t "/admin" >>> "/auth/admin" - sprawdza czy uzytkownik jest adminem - 
- "/check-auth" >>> "/auth/user" - poprawic controlery i w frondendzie zeby było podobne do admina
+t "/check-auth" >>> "/auth/user" - poprawic controlery i w frondendzie zeby było podobne do admina
 t "/login" >>> "/auth/login" - loguje
 t "/logout" >>> "/auth/logout" - wylogowje
 t "/account-data" >>> "/auth/information" - trzeba to ulepszyc bo jezeli uzytniwk przejdzie autoryzacje tokenu to moze dostac inforamcje o jakimkolwiek uzytkowniku
@@ -15,16 +15,16 @@ t "/words" >>> "/word/list"
 t "/word-detail" >>> "/word/detail"
 t "/word-update" >>> "/word/update"
 t "/search" >>> "/word/search"
-"/add-word" >>> "/world/add"
-/word-delete", >>> "/world/delete" ---- nie ma tego?
+t "/add-word" >>> "/word/add"
+t /word-delete", >>> "/word/delete" ---- nie ma tego?
 
 
 Reporty
 t "/data-reports" >>> "/report/data"
 t "/detail-report" >>> "/report/details"
-"/detail-update" >>> "/report/update"
+t "/detail-update" >>> "/report/update"
 t "/detail-delete" >>> "/report/delete:id" - zmienic sposób wysyłania w front na :id
-n "/report" >>> "/report/add" - zwykły dziala ale nie word
+t "/report" >>> "/report/add" - zwykły dziala ale nie word
 
 
 Tylko dla Admina:
@@ -33,8 +33,7 @@ t "/global-data" >>> "/admin/global-data - generuje statystki wyswietlajace sie 
 
 Działania dla uzytnikikach
 t "/users" >>> "/user/list" - zwraca liste uzytkowników z jego paraemtrami 
-n "/users-update" >>> "/user/update - updatuje dane wybranego uzytkownika
+t "/users-update" >>> "/user/update - updatuje dane wybranego uzytkownika
 t "/search-user" >>> "/user/search" - wyszuwiarka w panelu admina
 
-do naprawy: panel admina nie działa? - naprawione
-znaleziony bug - wyszukiwanie po dacie w report panel dziwnie działa?
+dodac user delete w panel-users (ikonka kosza na liscie)
