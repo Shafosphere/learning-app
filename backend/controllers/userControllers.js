@@ -4,6 +4,7 @@ import {
   searchUserByUsername,
   getUsersWithPagination,
   updateUserInDb,
+  deleteUserByID,
 } from "../models/userModel.js";
 
 export const getUsersList = async (req, res) => {
@@ -79,5 +80,23 @@ export const searchUsers = async (req, res) => {
   } catch (error) {
     console.error("Error during search:", error);
     res.status(500).send("Server Error");
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  console.log("deleteUser is Working");
+  const userId = req.params.id;
+  try {
+    await deleteUserByID(userId);
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Error deleting user:", error); // Dodaj logowanie błędu
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting user.",
+    });
   }
 };

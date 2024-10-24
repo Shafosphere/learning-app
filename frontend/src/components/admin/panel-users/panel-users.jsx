@@ -51,6 +51,8 @@ export default function UsersPanel() {
   }
   ////
 
+
+  //data
   async function getUsers(page) {
     try {
       const response = await api.get(`/user/list?page=${page}&limit=50`);
@@ -82,6 +84,36 @@ export default function UsersPanel() {
     setHasMore(newUsers.length > 0);
   }
 
+  async function sendData() {
+    if (Object.keys(editedRows).length === 0) {
+      console.log("Brak zmian do wysłania");
+      return;
+    }
+  
+    try {
+      const response = await api.patch("/user/update", { editedRows });
+  
+      if (response.status === 200) {
+        setPopupEmotion("positive");
+        setPopupMessage(response.data.message);
+  
+        const updatedUsers = [...users].map((user) =>
+          editedRows[user.id] ? { ...user, ...editedRows[user.id], isEdited: false } : user
+        );
+  
+        setUsers(updatedUsers);
+        setEditedRows({});
+      }
+    } catch (error) {
+      setPopupEmotion("negative");
+      setPopupMessage(error.response?.data?.message || "An error occurred");
+      console.error("Error updating users:", error);
+    }
+  }
+  ////
+
+
+  ///searchbar
   const handleSearchChange = async (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -102,39 +134,6 @@ export default function UsersPanel() {
       setSearchResults([]);
     }
   };
-
-  async function sendData() {
-    if (Object.keys(editedRows).length === 0) {
-      console.log("Brak zmian do wysłania");
-      return;
-    }
-  
-    try {
-      // Wysyłamy zapytanie PATCH do endpointu "/user/update"
-      const response = await api.patch("/user/update", { editedRows });
-  
-      // Jeśli odpowiedź zwróciła sukces, ustaw pozytywny komunikat
-      if (response.status === 200) {
-        setPopupEmotion("positive");
-        setPopupMessage(response.data.message);
-  
-        // Aktualizacja stanu użytkowników na podstawie edytowanych danych
-        const updatedUsers = [...users].map((user) =>
-          editedRows[user.id] ? { ...user, ...editedRows[user.id], isEdited: false } : user
-        );
-  
-        // Aktualizuj stan `users` i wyczyść `editedRows`
-        setUsers(updatedUsers);
-        setEditedRows({});
-      }
-    } catch (error) {
-      setPopupEmotion("negative");
-      setPopupMessage(error.response?.data?.message || "An error occurred");
-      console.error("Error updating users:", error);
-    }
-  }
-  
-  
 
   const handleSearchResultClick = (userId) => {
     scrollToUser(userId);
@@ -157,7 +156,12 @@ export default function UsersPanel() {
       console.log("User not found.");
     }
   };
+  ////
 
+  
+  
+
+  ///Table Value Edit
   function enableEditMode(user) {
     setEditingRowId(user.id);
     setEditValues({
@@ -226,6 +230,29 @@ export default function UsersPanel() {
       setUndoValues([...undoValues]);
     }
   }
+
+  function deleteUser(userId) {
+    showConfirm("Czy na pewno chcesz usunąć tego użytkownika?", async () => {
+      try {
+        const response = await api.delete(`/user/delete/${userId}`);
+        if (response.status === 200) {
+          // Usuń użytkownika ze stanu
+          setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+          // Pokaż komunikat sukcesu
+          setPopupEmotion("positive");
+          setPopupMessage("Użytkownik został pomyślnie usunięty.");
+        }
+      } catch (error) {
+        // Obsłuż błąd
+        setPopupEmotion("negative");
+        setPopupMessage("Wystąpił błąd podczas usuwania użytkownika.");
+        console.error("Error deleting user:", error);
+      }
+    });
+  }
+  
+  ////
+
 
   return (
     <>
@@ -316,7 +343,7 @@ export default function UsersPanel() {
                           id="reportType"
                           name="role"
                           value={editValues.role}
-                          onChange={handleInputChange} // Przekazujesz event, nie wartość
+                          onChange={handleInputChange}
                         >
                           <option value="user">user</option>
                           <option value="admin">admin</option>
@@ -337,7 +364,7 @@ export default function UsersPanel() {
                         ) : (
                           <MdEdit onClick={() => enableEditMode(user)} />
                         )}
-                        <IoIosTrash />
+                        <IoIosTrash onClick={() => deleteUser(user.id)} />
                       </div>
                     </td>
                   </tr>
@@ -375,6 +402,8 @@ export default function UsersPanel() {
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}
+
     </>
   );
+
 }
