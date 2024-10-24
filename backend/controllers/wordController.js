@@ -8,7 +8,10 @@ import {
   updateTranslation,
   searchWordById,
   searchWordByText,
-  insertWord, insertTranslations, deleteWordById,
+  insertWord,
+  insertTranslations,
+  deleteWordById,
+  patchLength,
 } from "../models/userModel.js";
 
 // B2 >= 3264 < C1
@@ -48,11 +51,18 @@ export const getWordData = async (req, res) => {
       // Formatowanie wyników
       const formattedResults = formatWordResults(results);
 
-      // Pobranie największego patch_id
+      // Pobranie największego patch_id oraz całkowitej liczby patchy
       const maxPatchId = await getMaxPatchId();
+      const totalPatches = await patchLength(); // Zmieniono nazwę zmiennej na totalPatches
+
       const isThisLastOne = patchNumber === maxPatchId;
 
-      res.json({ message: "working", data: formattedResults, isThisLastOne });
+      res.json({
+        message: "working",
+        data: formattedResults,
+        isThisLastOne,
+        totalPatches, // Zmieniono nazwę zmiennej na totalPatches
+      });
     } catch (error) {
       console.error("Error fetching data:", error);
       res
@@ -80,6 +90,7 @@ export const getWordData = async (req, res) => {
     }
   }
 };
+
 
 // Funkcja pomocnicza do formatowania wyników
 const formatWordResults = (results) => {

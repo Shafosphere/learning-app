@@ -15,6 +15,7 @@ export default function Words() {
   // Dane z serwera
   const [data, setData] = useState([]);
   const [patchNumber, setPatch] = useState(null);
+  const [patchLength, setLength] = useState(null);
 
   // Indeks danych dla bottom-bot
   const [dataIndexForBottomDiv, setDataIndexForBottomDiv] = useState(() => {
@@ -54,6 +55,18 @@ export default function Words() {
     }
   }, [wordsAnsweredCount, data]);
 
+  const totalpercent = useMemo(() => {
+    if (data.length > 0) {
+      return ((patchNumber / patchLength) * 100).toFixed(2);
+    } else {
+      return 0;
+    }
+  }, [patchNumber, patchLength, data]);
+
+  const [showPercent, setShowPercent] = useState(false);
+
+  /////
+
   const [lastDataItemId, setLastDataItemId] = useState(() => {
     const savedId = localStorage.getItem("lastDataItemId");
     return savedId ? parseInt(savedId) : null;
@@ -62,6 +75,10 @@ export default function Words() {
   useEffect(() => {
     localStorage.setItem("end", isThisLastOne);
   }, [isThisLastOne]);
+
+  useEffect(() => {
+    localStorage.setItem("patchLength", patchLength);
+  }, [patchLength]);
 
   useEffect(() => {
     localStorage.setItem("summary", showSummary);
@@ -79,6 +96,7 @@ export default function Words() {
         if (gameData && gameData.data && gameData.data.length > 0) {
           setData(gameData.data);
           setLastOne(gameData.isThisLastOne);
+          setLength(gameData.totalPatches);
         } else {
           console.log("Brak danych");
         }
@@ -295,12 +313,26 @@ export default function Words() {
       ) : (
         <>
           <div className="switch-container-words">
-            <input
-              onChange={() => setMode(mode ? false : true)}
-              type="checkbox"
-              id="checkboxInput"
-            />
-            <label for="checkboxInput" class="toggleSwitch"></label>
+            <div>
+              <input
+                onChange={() => setMode(mode ? false : true)}
+                type="checkbox"
+                id="checkboxInput"
+              />
+              <label htmlFor="checkboxInput" class="toggleSwitch"></label>
+            </div>
+
+            <div>
+              <input
+                onChange={() => setShowPercent(showPercent ? false : true)}
+                type="checkbox"
+                id="checkboxInputPercent"
+              />
+              <label
+                htmlFor="checkboxInputPercent"
+                class="toggleSwitch"
+              ></label>
+            </div>
           </div>
 
           <div className="window-words">
@@ -349,12 +381,21 @@ export default function Words() {
               </div>
             </div>
             <div className="bot-words">
-              <div className="progressbar-words">
-                <label>patch Progress {percent} %</label>
-                <div className="progressbar-words-containter">
-                  <Progressbar procent={percent} barHeight="60rem" />
+              {!showPercent ? (
+                <div className="progressbar-words">
+                  <label>{percent} % poznane słówka z tej częśći</label>
+                  <div className="progressbar-words-containter">
+                    <Progressbar procent={percent} barHeight="60rem" />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="progressbar-words">
+                  <label>{totalpercent} % ukończone częśći </label>
+                  <div className="progressbar-words-containter">
+                    <Progressbar procent={totalpercent} barHeight="60rem" />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </>

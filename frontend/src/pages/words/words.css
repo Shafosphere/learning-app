@@ -179,6 +179,10 @@
   position: absolute;
   bottom: 2%;
   z-index: 10;
+
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 .toggleSwitch {
   display: flex;
@@ -215,6 +219,21 @@
 }
 /* Switch background change */
 #checkboxInput:checked+.toggleSwitch {
+  background-color: var(--highlight);
+  transition-duration: .2s;
+}
+
+
+#checkboxInputPercent {
+  display: none;
+}
+#checkboxInputPercent:checked+.toggleSwitch::after {
+  transform: translateX(440%);
+  transition-duration: .2s;
+  background-color: white;
+}
+/* Switch background change */
+#checkboxInputPercent:checked+.toggleSwitch {
   background-color: var(--highlight);
   transition-duration: .2s;
 }

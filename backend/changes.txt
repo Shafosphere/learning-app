@@ -36,4 +36,3 @@ t "/users" >>> "/user/list" - zwraca liste uzytkowników z jego paraemtrami
 t "/users-update" >>> "/user/update - updatuje dane wybranego uzytkownika
 t "/search-user" >>> "/user/search" - wyszuwiarka w panelu admina
 t /user/delete
-dodac user delete w panel-users (ikonka kosza na liscie)

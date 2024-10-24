@@ -183,8 +183,13 @@ export const getTranslationsByWordId = async (wordId) => {
 
 // Aktualizacja tłumaczenia na podstawie `word_id` i `language`
 export const updateTranslation = async (translation) => {
-  const { translation: translationText, description, word_id, language } = translation;
-  
+  const {
+    translation: translationText,
+    description,
+    word_id,
+    language,
+  } = translation;
+
   await pool.query(
     `UPDATE translation
      SET translation = $1, description = $2
@@ -194,37 +199,29 @@ export const updateTranslation = async (translation) => {
 };
 
 export const searchWordById = async (id) => {
-  const result = await pool.query(
-    "SELECT * FROM word WHERE id = $1",
-    [id]
-  );
+  const result = await pool.query("SELECT * FROM word WHERE id = $1", [id]);
   return result.rows;
 };
 
 // Wyszukiwanie słowa na podstawie fragmentu tekstu (`word`)
 export const searchWordByText = async (text) => {
-  const result = await pool.query(
-    "SELECT * FROM word WHERE word ILIKE $1",
-    [`%${text}%`]
-  );
+  const result = await pool.query("SELECT * FROM word WHERE word ILIKE $1", [
+    `%${text}%`,
+  ]);
   return result.rows;
 };
 
 // Wyszukiwanie użytkownika na podstawie identyfikatora (`id`)
 export const searchUserById = async (id) => {
-  const result = await pool.query(
-    "SELECT * FROM users WHERE id = $1",
-    [id]
-  );
+  const result = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
   return result.rows;
 };
 
 // Wyszukiwanie użytkownika na podstawie adresu e-mail (`email`)
 export const searchUserByEmail = async (email) => {
-  const result = await pool.query(
-    "SELECT * FROM users WHERE email ILIKE $1",
-    [`%${email}%`]
-  );
+  const result = await pool.query("SELECT * FROM users WHERE email ILIKE $1", [
+    `%${email}%`,
+  ]);
   return result.rows;
 };
 
@@ -287,17 +284,22 @@ export const deleteWordById = async (wordId) => {
 export const deleteOldPatches = async () => {
   const client = await pool.connect();
   try {
-    await client.query('BEGIN');
-    await client.query('DELETE FROM word_patches');
-    console.log('Old patches have been deleted.');
+    await client.query("BEGIN");
+    await client.query("DELETE FROM word_patches");
+    console.log("Old patches have been deleted.");
 
-    await client.query('ALTER SEQUENCE word_patches_patch_id_seq RESTART WITH 1');
-    console.log('Patch ID sequence has been reset.');
+    await client.query(
+      "ALTER SEQUENCE word_patches_patch_id_seq RESTART WITH 1"
+    );
+    console.log("Patch ID sequence has been reset.");
 
-    await client.query('COMMIT');
+    await client.query("COMMIT");
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error while deleting old patches and resetting sequence:', error);
+    await client.query("ROLLBACK");
+    console.error(
+      "Error while deleting old patches and resetting sequence:",
+      error
+    );
     throw error;
   } finally {
     client.release();
@@ -307,7 +309,7 @@ export const deleteOldPatches = async () => {
 // Pobieranie dostępnych identyfikatorów słów
 export const getAvailableWordIds = async () => {
   try {
-    const result = await pool.query('SELECT id FROM word');
+    const result = await pool.query("SELECT id FROM word");
     return result.rows.map((row) => row.id);
   } catch (error) {
     console.error("Error while fetching available word IDs:", error);
@@ -331,17 +333,21 @@ export const generatePatchesBatch = async (patchSize) => {
       }
 
       const patchIdsJson = JSON.stringify(patchIds);
-      await client.query('INSERT INTO word_patches (word_ids) VALUES ($1)', [patchIdsJson]);
+      await client.query("INSERT INTO word_patches (word_ids) VALUES ($1)", [
+        patchIdsJson,
+      ]);
       console.log(`Patch created with IDs: ${patchIds}`);
     }
 
     if (remainingIds.length > 0) {
       const remainingIdsJson = JSON.stringify(remainingIds);
-      await client.query('INSERT INTO word_patches (word_ids) VALUES ($1)', [remainingIdsJson]);
+      await client.query("INSERT INTO word_patches (word_ids) VALUES ($1)", [
+        remainingIdsJson,
+      ]);
       console.log(`Last patch created with IDs: ${remainingIds}`);
     }
 
-    console.log('All patches have been generated successfully.');
+    console.log("All patches have been generated successfully.");
   } catch (error) {
     console.error("Error while generating patches:", error);
     throw error;
@@ -359,6 +365,18 @@ export const updateUserInDb = async ({ id, username, email, role }) => {
     return result;
   } catch (error) {
     console.error("Error updating user in database:", error);
+    throw error; // Przekazujemy błąd dalej, aby kontroler mógł go obsłużyć
+  }
+};
+
+export const patchLength = async () => {
+  try {
+    const totalPatchesResult = await pool.query(
+      "SELECT COUNT(*) as total_patches FROM word_patches"
+    );
+    return parseInt(totalPatchesResult.rows[0].total_patches, 10);
+  } catch (error) {
+    console.error("Error in patchLength:", error);
     throw error; // Przekazujemy błąd dalej, aby kontroler mógł go obsłużyć
   }
 };
