@@ -1,39 +1,22 @@
 import React, { createContext, useState, useEffect } from "react";
 import api from "../../utils/api"; // Importuj api do wykonywania zapytań do serwera
 import { getAllWords, getStatistics } from "../../utils/indexedDB";
+import usePersistedState from "../../components/settings/usePersistedState";
+
 
 export const SettingsContext = createContext();
 
 export const SettingsProvider = ({ children }) => {
-  const [procent, setProcent] = useState(() => {
-    const savedProcent = localStorage.getItem("procent");
-    return savedProcent !== null ? JSON.parse(savedProcent) : 0;
-  });
-
-  const [totalPercent, setTotalPercent] = useState(() => {
-    const savedTotalPercent = localStorage.getItem("totalPercent");
-    return savedTotalPercent !== null ? JSON.parse(savedTotalPercent) : 0;
-  });
-
-  const [dailyGoal, setDailyGoal] = useState(() => {
-    const savedDailyGoal = localStorage.getItem("dailyGoal");
-    return savedDailyGoal !== null ? JSON.parse(savedDailyGoal) : 20;
-  });
-
-  const [lastID, setLastID] = useState(() => {
-    const savedLastID = localStorage.getItem("lastID");
-    return savedLastID !== null ? JSON.parse(savedLastID) : 0;
-  });
-
-  const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
-    const savedSound = localStorage.getItem("sound");
-    return savedSound !== null ? JSON.parse(savedSound) : 'true';
-  });
-
-  const [language, setLanguage] = useState(() => {
-    const savedLanguage = localStorage.getItem("language");
-    return savedLanguage !== null ? JSON.parse(savedLanguage) : 'en';
-  });
+  
+  const [procent, setProcent] = usePersistedState("procent", 0);
+  const [totalPercent, setTotalPercent] = usePersistedState("totalPercent", 0);
+  const [dailyGoal, setDailyGoal] = usePersistedState("dailyGoal", 20);
+  const [lastID, setLastID] = usePersistedState("lastID", 0);
+  const [isSoundEnabled, setIsSoundEnabled] = usePersistedState("sound", "true");
+  const [language, setLanguage] = usePersistedState("language", "en");
+  const [level, setLevel] = usePersistedState("level", "B2");
+  const [isLoggedIn, setIsLoggedIn] = usePersistedState("isLoggedIn", false);
+  const [user, setUser] = usePersistedState("user", null);
 
   const [lastResetDate, setLastResetDate] = useState(() => {
     const savedDate = localStorage.getItem("lastResetDate");
@@ -45,21 +28,6 @@ export const SettingsProvider = ({ children }) => {
   const [themeMode, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
     return savedTheme !== null ? savedTheme : 'light';
-  });
-
-  const [level, setLevel] = useState(() => {
-    const savedLevel = localStorage.getItem("level");
-    return savedLevel !== null ? JSON.parse(savedLevel) : 'B2';
-  });
-
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    const savedLoginStatus = localStorage.getItem("isLoggedIn");
-    return savedLoginStatus !== null ? JSON.parse(savedLoginStatus) : false;
-  });
-
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("user");
-    return savedUser !== null ? JSON.parse(savedUser) : null;
   });
 
   const resetDateIfNeeded = () => {
@@ -120,44 +88,8 @@ export const SettingsProvider = ({ children }) => {
   }, [lastResetDate]);
 
   useEffect(() => {
-    localStorage.setItem("language", JSON.stringify(language));
-  }, [language]);
-
-  useEffect(() => {
-    localStorage.setItem("sound", JSON.stringify(isSoundEnabled));
-  }, [isSoundEnabled]);
-
-  useEffect(() => {
-    localStorage.setItem("level", JSON.stringify(level));
-  }, [level]);
-
-  useEffect(() => {
     localStorage.setItem("lastResetDate", JSON.stringify(lastResetDate));
   }, [lastResetDate]);
-
-  useEffect(() => {
-    localStorage.setItem("lastID", JSON.stringify(lastID));
-  }, [lastID]);
-
-  useEffect(() => {
-    localStorage.setItem("procent", JSON.stringify(procent));
-  }, [procent]);
-
-  useEffect(() => {
-    localStorage.setItem("totalPercent", JSON.stringify(totalPercent));
-  }, [totalPercent]);
-
-  useEffect(() => {
-    localStorage.setItem("dailyGoal", JSON.stringify(dailyGoal));
-  }, [dailyGoal]);
-
-  useEffect(() => {
-    localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(user));
-  }, [user]);
 
   useEffect(() => {
     calculateTotalPercent();
