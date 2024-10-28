@@ -319,7 +319,10 @@ export default function Words() {
                 type="checkbox"
                 id="checkboxInput"
               />
-              <label htmlFor="checkboxInput" class="toggleSwitch"></label>
+              <label
+                htmlFor="checkboxInput"
+                class="toggleSwitch rounded-left"
+              ></label>
             </div>
 
             <div>
@@ -330,7 +333,7 @@ export default function Words() {
               />
               <label
                 htmlFor="checkboxInputPercent"
-                class="toggleSwitch"
+                class="toggleSwitch rounded-right"
               ></label>
             </div>
           </div>
