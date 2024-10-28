@@ -22,6 +22,8 @@ export default function Settings() {
     setLanguage,
     level,
     toggleLevel,
+    diacritical,
+    setDiacritical,
   } = useContext(SettingsContext);
 
   const [bookMark, setBookMark] = useState(1);
@@ -166,7 +168,10 @@ export default function Settings() {
                 saveSettings={saveSettings}
               />
             ) : (
-              <SecondBookMark />
+              <SecondBookMark
+                diacritical={diacritical}
+                setDiacritical={setDiacritical}
+              />
             )}
           </div>
 

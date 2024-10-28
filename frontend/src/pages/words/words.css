@@ -193,7 +193,7 @@
   height: 2.3rem;
   background-color: var(--background);
   cursor: pointer;
-  transition-duration: .2s;
+  transition-duration: 0.2s;
 }
 .toggleSwitch.rounded-left {
   border-top-left-radius: 20px;
@@ -215,32 +215,32 @@
   left: 0.6rem;
   border-radius: 50%;
   background-color: transparent;
-  transition-duration: .2s;
+  transition-duration: 0.2s;
   border: 0.4rem solid var(--border);
 }
 
-#checkboxInput:checked+.toggleSwitch::after {
+#checkboxInput:checked + .toggleSwitch::after {
   transform: translateX(420%);
-  transition-duration: .2s;
+  transition-duration: 0.2s;
   background-color: white;
 }
 /* Switch background change */
-#checkboxInput:checked+.toggleSwitch {
+#checkboxInput:checked + .toggleSwitch {
   background-color: var(--highlight);
-  transition-duration: .2s;
+  transition-duration: 0.2s;
 }
-
 
 #checkboxInputPercent {
   display: none;
 }
-#checkboxInputPercent:checked+.toggleSwitch::after {
+
+#checkboxInputPercent:checked + .toggleSwitch::after {
   transform: translateX(420%);
-  transition-duration: .2s;
+  transition-duration: 0.2s;
   background-color: white;
 }
 /* Switch background change */
-#checkboxInputPercent:checked+.toggleSwitch {
+#checkboxInputPercent:checked + .toggleSwitch {
   background-color: var(--highlight);
-  transition-duration: .2s;
+  transition-duration: 0.2s;
 }

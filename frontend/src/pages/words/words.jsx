@@ -1,16 +1,20 @@
 import "./words.css";
-import { useState, useEffect, useMemo } from "react";
+import { useContext, useState, useEffect, useMemo } from "react";
 import api from "../../utils/api";
 import InputField from "../../components/words/wordInput";
 import { addNumberToGood, addNumberToWrong } from "../../utils/indexedDB";
 import Progressbar from "../../components/home/bar/bar";
 import Confetti from "../../components/words/confetti";
 import ResultsSummary from "../../components/words/summary/resultssummary";
+import { SettingsContext } from "../settings/properties";
 
 export default function Words() {
   const [userWord, setWord] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
   const [generateConfetti, setGenerateConfetti] = useState(false);
+
+  //ustawienia
+  const { diacritical } = useContext(SettingsContext);
 
   // Dane z serwera
   const [data, setData] = useState([]);
@@ -296,7 +300,18 @@ export default function Words() {
     if (currentItem && currentItem.data && currentItem.data.wordPl) {
       const correctAnswer = currentItem.data.wordPl.word || "";
 
-      if (userWord.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+      // Jeśli `diacritical` jest false, normalizujemy odpowiedzi do porównania
+      const processedUserWord = diacritical
+        ? userWord
+        : normalizeText(userWord);
+      const processedCorrectAnswer = diacritical
+        ? correctAnswer
+        : normalizeText(correctAnswer);
+
+      if (
+        processedUserWord.trim().toLowerCase() ===
+        processedCorrectAnswer.toLowerCase()
+      ) {
         handleAnswer(true);
       } else {
         handleAnswer(false);
@@ -304,6 +319,19 @@ export default function Words() {
     } else {
       console.log("Brak danych do porównania!");
     }
+  }
+
+  function normalizeText(text) {
+    return text
+      .replace(/ą/g, "a")
+      .replace(/ć/g, "c")
+      .replace(/ę/g, "e")
+      .replace(/ł/g, "l")
+      .replace(/ń/g, "n")
+      .replace(/ó/g, "o")
+      .replace(/ś/g, "s")
+      .replace(/ź/g, "z")
+      .replace(/ż/g, "z");
   }
 
   return (
