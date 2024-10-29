@@ -1,9 +1,47 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/api";
 import "./panel-main.css";
+import ConfirmWindow from "../../confirm/confirm";
+import PinWindow from "../../pin/pin";
 
 export default function MainPanel() {
   const [data, setData] = useState({});
+
+  // confirm
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmCallback, setConfirmCallback] = useState(null);
+
+  const handleConfirmClose = (result) => {
+    if (result && confirmCallback) {
+      confirmCallback();
+    }
+    setConfirmMessage("");
+    setConfirmCallback(null);
+  };
+
+  function showConfirm(text, callback) {
+    setConfirmMessage(text);
+    setConfirmCallback(() => callback);
+  }
+  ///
+
+  //Pin
+  const [isPinVisible, setIsPinVisible] = useState(false);
+  const [pinCallback, setPinCallback] = useState(null);
+
+  const handlePinClose = (pin) => {
+    if (pinCallback) {
+      pinCallback(pin);
+    }
+    setIsPinVisible(false);
+    setPinCallback(null);
+  };
+
+  const showPin = (callback) => {
+    setIsPinVisible(true);
+    setPinCallback(() => callback);
+  };
+  ///
 
   useEffect(() => {
     async function getData() {
@@ -22,20 +60,36 @@ export default function MainPanel() {
     getData();
   }, []);
 
-  async function handleGeneratePatches() {
-    console.log('start')
-    try {
-      const respone = await api.post("/admin/generatepatch");
-
-      if (respone) {
-        alert("Patche zostały wygenerowane pomyślnie.");
-      } else {
-        alert("Wystąpił problem podczas generowania patchy.");
-      }
-    } catch (error) {
-      console.error("Błąd:", error);
-    }
+  function handleGeneratePatches() {
+    showConfirm("Czy chcesz wygenerować nowe wartości w Patch?", () => {
+      showPin(async (pin) => {
+        if (pin === null) {
+          // Użytkownik anulował
+          return;
+        }
+        try {
+          // Wysyłamy żądanie do /admin/generatepatch z PIN-em w treści
+          const response = await api.post("/admin/generatepatch", { pin });
+          if (response.data.success) {
+            alert(response.data.message || "Patche zostały wygenerowane pomyślnie.");
+          } else {
+            alert(response.data.message || "Wystąpił problem podczas generowania patchy.");
+          }
+        } catch (error) {
+          console.error("Błąd:", error);
+          // Obsługa błędów z odpowiedzi backendu
+          if (error.response && error.response.data && error.response.data.message) {
+            alert(error.response.data.message);
+          } else {
+            alert("Wystąpił błąd podczas generowania patchy.");
+          }
+        }
+      });
+    });
   }
+
+
+
 
   return (
     <>
@@ -53,6 +107,13 @@ export default function MainPanel() {
           patch
         </button>
       </div>
+
+      {confirmMessage && (
+        <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
+      )}
+
+      {isPinVisible && <PinWindow onClose={handlePinClose} />}
+
     </>
   );
 }

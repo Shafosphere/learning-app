@@ -1,6 +1,7 @@
 import express from "express";
 import authenticateToken from "../middleware/authenticateToken.js";
 import authorizeAdmin from "../middleware/authorizeAdmin.js";
+import verifyPin from "../middleware/verifyPin.js";
 import {
   getGlobalData,
   generatePatches,
@@ -15,7 +16,9 @@ router.post(
   "/generatepatch",
   authenticateToken,
   authorizeAdmin,
+  verifyPin,
   generatePatches
 );
+
 
 export default router;

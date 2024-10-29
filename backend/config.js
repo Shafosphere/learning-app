@@ -9,4 +9,5 @@ export const config = {
   dbPassword: process.env.REACT_APP_DB_PASSWORD,
   dbPort: process.env.REACT_APP_DB_PORT,
   tokenKey: process.env.REACT_APP_TOKEN_KEY,
+  pin: process.env.REACT_APP_ADMIN_PIN,
 };
