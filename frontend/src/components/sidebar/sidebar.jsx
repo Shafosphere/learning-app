@@ -4,7 +4,8 @@ import { IoMdSettings } from "react-icons/io";
 import { MdAccountBox, MdAdminPanelSettings } from "react-icons/md";
 import { useIntl } from "react-intl";
 import api from "../../utils/api";
-import Popup from "../popup/popup";
+// import Popup from "../popup/popup";
+import NewPopup from "../popup/newpopup";
 import ReportPopup from "../report/report-popup";
 import { SettingsContext } from "../../pages/settings/properties";
 import "./sidebar.css";
@@ -20,8 +21,9 @@ export default function Sidebar() {
     useContext(SettingsContext);
 
   const [isAdmin, setIsAdmin] = useState(false);
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
+
+  const [popup, setPopup] = useState(null);
+
   const [isFormVisible, setFormVisible] = useState(false);
   const intl = useIntl();
 
@@ -52,22 +54,22 @@ export default function Sidebar() {
       await api.post("/auth/logout");
       setIsLoggedIn(false);
       setUser(null);
-      setPopupEmotion("positive");
-      setPopupMessage(
-        intl.formatMessage({
+      setPopup({
+        message: intl.formatMessage({
           id: "logoutSuccessful",
           defaultMessage: "Logout successful",
-        })
-      );
+        }),
+        emotion: "positive",
+      });
     } catch (error) {
       console.error("Logout error:", error);
-      setPopupEmotion("negative");
-      setPopupMessage(
-        intl.formatMessage({
+      setPopup({
+        message: intl.formatMessage({
           id: "logoutError",
           defaultMessage: "An error occurred during logout",
-        })
-      );
+        }),
+        emotion: "negative",
+      });
     }
   };
 
@@ -158,12 +160,12 @@ export default function Sidebar() {
               </span>
               <span className="sidebar-full">
                 <div className="link-text">
-                    <input
-                      type="checkbox"
-                      className="theme-checkbox"
-                      checked={themeMode === "dark"}
-                      onChange={() => toggleTheme()}
-                    />
+                  <input
+                    type="checkbox"
+                    className="theme-checkbox"
+                    checked={themeMode === "dark"}
+                    onChange={() => toggleTheme()}
+                  />
                 </div>
               </span>
             </div>
@@ -196,13 +198,14 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
+      {popup && (
+        <NewPopup
+          message={popup.message}
+          emotion={popup.emotion}
+          onClose={() => setPopup(null)}
         />
       )}
+
       <ReportPopup
         isFormVisible={isFormVisible}
         onFormVisibleChange={handleFormVisibleChange}
