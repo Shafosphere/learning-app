@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import api from "../../../utils/api";
 import ConfirmWindow from "../../confirm/confirm";
-import Popup from "../../popup/popup";
+import { PopupContext } from "../../popup/popupcontext";
 
 import "./panel-reports.css";
 
 export default function ReportDetails({ reportID, reloadData }) {
   const [report, setReport] = useState(null); // Początkowy stan ustawiony na null
 
-  // popup
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
+  const { setPopup } = useContext(PopupContext);
 
   // confirm
   const [confirmMessage, setConfirmMessage] = useState("");
@@ -60,11 +58,15 @@ export default function ReportDetails({ reportID, reloadData }) {
   const updateData = async () => {
     try {
       const response = await api.patch("/report/update", { report: report });
-      setPopupEmotion("positive");
-      setPopupMessage(response.data);
+      setPopup({
+        message: response.data,
+        emotion: "positive",
+      });
     } catch (error) {
-      setPopupEmotion("negative");
-      setPopupMessage(error.response?.data || "An error occurred");
+      setPopup({
+        message: error.response?.data || "An error occurred",
+        emotion: "negative",
+      });
       console.error("Error updating data:", error);
     }
   };
@@ -72,16 +74,19 @@ export default function ReportDetails({ reportID, reloadData }) {
   const deleteData = async () => {
     try {
       const response = await api.delete(`/report/delete/${report.id}`); // Przekazanie ID w ścieżce
-      setPopupEmotion("positive");
-      setPopupMessage(response.data);
+      setPopup({
+        message: response.data,
+        emotion: "positive",
+      });
       reloadData();
     } catch (error) {
-      setPopupEmotion("negative");
-      setPopupMessage(error.response?.data || "An error occurred");
+      setPopup({
+        message: error.response?.data || "An error occurred",
+        emotion: "negative",
+      });
       console.error("Error deleting data:", error);
     }
   };
-  
 
   return (
     <div className="report-details">
@@ -157,13 +162,7 @@ export default function ReportDetails({ reportID, reloadData }) {
           </button>
         )}
       </div>
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
-        />
-      )}
+
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}

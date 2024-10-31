@@ -1,12 +1,10 @@
-import { useState } from "react";
-import Popup from "../../popup/popup";
+import { useState, useContext } from "react";
 import ConfirmWindow from "../../confirm/confirm";
 import api from "../../../utils/api";
-
+import { PopupContext } from "../../popup/popupcontext";
 export default function AddWord() {
   // popup
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
+  const { setPopup } = useContext(PopupContext);
 
   // confirm
   const [confirmMessage, setConfirmMessage] = useState("");
@@ -49,15 +47,20 @@ export default function AddWord() {
 
   async function addWord() {
     console.log("works");
-    console.log(word)
+    console.log(word);
     try {
       const response = await api.post("/word/add", { word: word });
-      setPopupEmotion("positive");
-      setPopupMessage(response.data);
+
+      setPopup({
+        message: response.data,
+        emotion: "positive",
+      });
     } catch (error) {
       console.log(error);
-      setPopupEmotion("negative");
-      setPopupMessage(error.response?.data || "An error occurred");
+      setPopup({
+        message: error.response?.data || "An error occurred",
+        emotion: "negative",
+      });
     }
   }
 
@@ -113,13 +116,6 @@ export default function AddWord() {
           )}
         </div>
       </div>
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
-        />
-      )}
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}

@@ -5,13 +5,13 @@ import EmptyFlashcard from "../../components/home/card/empty-flashcard";
 import Boxes from "../../components/home/box/box";
 import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
-import Popup from "../../components/popup/popup";
 import Progressbar from "../../components/home/bar/bar";
 
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
 import { addWord, getAllWords, getStatistics } from "../../utils/indexedDB";
 import { SettingsContext } from "../settings/properties";
-import { FormattedMessage, useIntl } from 'react-intl';
+import { PopupContext } from "../../components/popup/popupcontext";
+import { FormattedMessage, useIntl } from "react-intl";
 import api from "../../utils/api";
 
 export default function Home() {
@@ -42,8 +42,7 @@ export default function Home() {
   const dongSoundRef = useRef(new Audio(dongSound));
 
   //popup
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
+  const { setPopup } = useContext(PopupContext);
 
   //progressBar
   const {
@@ -59,7 +58,7 @@ export default function Home() {
     if (userWord === word) {
       setClass("correct");
       clearTimeout(timeoutRef.current);
-      if (isSoundEnabled === 'true') {
+      if (isSoundEnabled === "true") {
         dingSoundRef.current.play();
       }
       timeoutRef.current = setTimeout(() => {
@@ -71,7 +70,7 @@ export default function Home() {
       setClass("notcorrect");
       setShowWrongAnswer("visible");
       correctWordRef.current.focus();
-      if (isSoundEnabled === 'true') {
+      if (isSoundEnabled === "true") {
         dongSoundRef.current.play();
       }
     }
@@ -112,30 +111,29 @@ export default function Home() {
     if (activeBox === "boxFive" && !moveToFirst) {
       const newid = randomWord.id;
       const wordIds = await getAllWords();
-      if (!wordIds.some(word => word.id === newid)) {
+      if (!wordIds.some((word) => word.id === newid)) {
         await addWord(newid);
         calculatePercent();
         calculateTotalPercent();
       }
-    
+
       setBoxes((prevBoxes) => {
         const updatedBoxFive = prevBoxes[activeBox].filter(
           (obiekt) =>
             obiekt.wordPl.word !== chosen_word &&
             obiekt.wordEng.word !== chosen_word
         );
-        
+
         if (updatedBoxFive.length === 0) {
           setRandom(null);
         }
-    
+
         return {
           ...prevBoxes,
           [activeBox]: updatedBoxFive,
         };
       });
     }
-    
 
     if (moveToFirst || currentBoxIndex < boxOrder.length - 1) {
       const find_word = boxes[activeBox].filter(
@@ -185,7 +183,7 @@ export default function Home() {
     let minWordId;
     let b2;
     let maxRange;
-  
+
     try {
       const response = await api.get("/word/information");
       minWordId = response.data.minWordId;
@@ -203,10 +201,10 @@ export default function Home() {
     } else {
       throw new Error("Nieznany poziom trudności");
     }
-  
+
     // Pobieranie już użytych słów
     const wordIds = new Set(await getAllWords());
-  
+
     // Zbieranie ID słów z boxów
     boxOrder.forEach((item) => {
       boxes[item].forEach((second_item) => {
@@ -214,23 +212,28 @@ export default function Home() {
       });
     });
     words_used = new Set(words_used);
-  
+
     // Losowanie 20 unikalnych identyfikatorów z uwzględnieniem już użytych
     let wordList = new Set();
     while (wordList.size < 20) {
-      const randomWordId = Math.floor(Math.random() * (maxRange - minWordId + 1)) + minWordId;
-  
+      const randomWordId =
+        Math.floor(Math.random() * (maxRange - minWordId + 1)) + minWordId;
+
       if (!wordIds.has(randomWordId) && !words_used.has(randomWordId)) {
         wordList.add(randomWordId);
       }
     }
-  
+
     wordList = Array.from(wordList);
-  
+
     try {
       const response = await axios.post(
         "http://localhost:8080/word/data",
-        { wordIds: Array.from(wordIds), words_used: Array.from(words_used), wordList },
+        {
+          wordIds: Array.from(wordIds),
+          words_used: Array.from(words_used),
+          wordList,
+        },
         { withCredentials: true }
       );
       return response;
@@ -239,7 +242,6 @@ export default function Home() {
       throw error;
     }
   }
-  
 
   //save progress
   function brunWords() {
@@ -297,11 +299,17 @@ export default function Home() {
           // Wait for all add requests to complete
           Promise.all(addRequests)
             .then(() => {
-              setPopupEmotion("positive");
-              setPopupMessage(intl.formatMessage({ id: "wordsSaved" }));
+              setPopup({
+                message: intl.formatMessage({ id: "wordsSaved" }),
+                emotion: "positive",
+              });
             })
             .catch((error) => {
               console.error("An error occurred:", error);
+              setPopup({
+                message: "An error occurred.",
+                emotion: "negative",
+              });
             });
         };
 
@@ -426,17 +434,16 @@ export default function Home() {
           addWords={addWords}
           brunWords={brunWords}
         />
-        {popupMessage && (
-          <Popup
-            message={popupMessage}
-            emotion={popupEmotion}
-            onClose={() => setPopupMessage("")}
-          />
-        )}
       </div>
       <div className="home-right">
-        <Progressbar procent={procent} text={intl.formatMessage({ id: "dailyProgress" })} />
-        <Progressbar procent={totalPercent} text={intl.formatMessage({ id: "totalProgress" })} />
+        <Progressbar
+          procent={procent}
+          text={intl.formatMessage({ id: "dailyProgress" })}
+        />
+        <Progressbar
+          procent={totalPercent}
+          text={intl.formatMessage({ id: "totalProgress" })}
+        />
       </div>
     </div>
   );

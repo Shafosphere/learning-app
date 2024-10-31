@@ -1,12 +1,12 @@
 import "./panel-users.css";
 import api from "../../../utils/api";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { MdEdit } from "react-icons/md";
 import { IoIosTrash } from "react-icons/io";
 import { FaCheck } from "react-icons/fa6";
 import { FaUndoAlt } from "react-icons/fa";
-import Popup from "../../popup/popup";
+import { PopupContext } from "../../popup/popupcontext";
 
 import ConfirmWindow from "../../confirm/confirm";
 
@@ -34,8 +34,7 @@ export default function UsersPanel() {
   const [confirmCallback, setConfirmCallback] = useState(null);
 
   // popup
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
+  const { setPopup } = useContext(PopupContext);
 
   const handleConfirmClose = (result) => {
     if (result && confirmCallback) {
@@ -50,7 +49,6 @@ export default function UsersPanel() {
     setConfirmCallback(() => callback);
   }
   ////
-
 
   //data
   async function getUsers(page) {
@@ -89,29 +87,35 @@ export default function UsersPanel() {
       console.log("Brak zmian do wysłania");
       return;
     }
-  
+
     try {
       const response = await api.patch("/user/update", { editedRows });
-  
+
       if (response.status === 200) {
-        setPopupEmotion("positive");
-        setPopupMessage(response.data.message);
-  
+        setPopup({
+          message: response.data.message,
+          emotion: "positive",
+        });
+
         const updatedUsers = [...users].map((user) =>
-          editedRows[user.id] ? { ...user, ...editedRows[user.id], isEdited: false } : user
+          editedRows[user.id]
+            ? { ...user, ...editedRows[user.id], isEdited: false }
+            : user
         );
-  
+
         setUsers(updatedUsers);
         setEditedRows({});
       }
     } catch (error) {
-      setPopupEmotion("negative");
-      setPopupMessage(error.response?.data?.message || "An error occurred");
+      setPopup({
+        message: error.response?.data?.message || "An error occurred",
+        emotion: "negative",
+      });
+
       console.error("Error updating users:", error);
     }
   }
   ////
-
 
   ///searchbar
   const handleSearchChange = async (e) => {
@@ -157,9 +161,6 @@ export default function UsersPanel() {
     }
   };
   ////
-
-  
-  
 
   ///Table Value Edit
   function enableEditMode(user) {
@@ -237,22 +238,27 @@ export default function UsersPanel() {
         const response = await api.delete(`/user/delete/${userId}`);
         if (response.status === 200) {
           // Usuń użytkownika ze stanu
-          setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-          // Pokaż komunikat sukcesu
-          setPopupEmotion("positive");
-          setPopupMessage("Użytkownik został pomyślnie usunięty.");
+          setUsers((prevUsers) =>
+            prevUsers.filter((user) => user.id !== userId)
+          );
+
+          setPopup({
+            message: "Użytkownik został pomyślnie usunięty.",
+            emotion: "positive",
+          });
         }
       } catch (error) {
-        // Obsłuż błąd
-        setPopupEmotion("negative");
-        setPopupMessage("Wystąpił błąd podczas usuwania użytkownika.");
+        setPopup({
+          message: "Wystąpił błąd podczas usuwania użytkownika.",
+          emotion: "negative",
+        });
+
         console.error("Error deleting user:", error);
       }
     });
   }
-  
-  ////
 
+  ////
 
   return (
     <>
@@ -390,20 +396,9 @@ export default function UsersPanel() {
           </div>
         </div>
       </div>
-
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
-        />
-      )}
-
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}
-
     </>
   );
-
 }

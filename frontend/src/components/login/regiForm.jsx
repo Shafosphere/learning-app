@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
-import Popup from "../popup/popup";
+import { PopupContext } from "../popup/popupcontext";
 
 export default function RegiForm({ setDisplay }) {
   const [username, setUsername] = useState("");
@@ -11,21 +11,21 @@ export default function RegiForm({ setDisplay }) {
   const [confirmPass, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
+
+  const { setPopup } = useContext(PopupContext);
 
   const intl = useIntl();
 
   async function handleSubmit(event) {
     event.preventDefault();
     if (!passwordsMatch()) {
-      setPopupEmotion("negative");
-      setPopupMessage(
-        intl.formatMessage({
+      setPopup({
+        message: intl.formatMessage({
           id: "passwordMismatch",
           defaultMessage: "Password does not match",
-        })
-      );
+        }),
+        emotion: "negative",
+      });
       return;
     }
     try {
@@ -36,24 +36,23 @@ export default function RegiForm({ setDisplay }) {
       });
 
       if (response.data.success) {
-        setPopupEmotion("positive");
-        setPopupMessage(
-          intl.formatMessage({
+        setPopup({
+          message: intl.formatMessage({
             id: "registrationSuccessful",
             defaultMessage: "Registration successful",
-          })
-        );
+          }),
+          emotion: "positive",
+        });
       }
     } catch (error) {
       console.error("Registration error", error);
-      setPopupEmotion("negative");
-      setPopupMessage(
-        error.response?.data?.message ||
-        intl.formatMessage({
+      setPopup({
+        message: intl.formatMessage({
           id: "registrationError",
           defaultMessage: "An error occurred during registration",
-        })
-      );
+        }),
+        emotion: "negative",
+      });
     }
   }
 
@@ -117,7 +116,11 @@ export default function RegiForm({ setDisplay }) {
               className="btn-pass"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <MdOutlineLockOpen size={35} /> : <MdOutlineLock size={35} />}
+              {showPassword ? (
+                <MdOutlineLockOpen size={35} />
+              ) : (
+                <MdOutlineLock size={35} />
+              )}
             </button>
           </div>
           <div className="custom_input" style={{ position: "relative" }}>
@@ -138,7 +141,11 @@ export default function RegiForm({ setDisplay }) {
               className="btn-pass"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {showConfirmPassword ? <MdOutlineLockOpen size={35} /> : <MdOutlineLock size={35} />}
+              {showConfirmPassword ? (
+                <MdOutlineLockOpen size={35} />
+              ) : (
+                <MdOutlineLock size={35} />
+              )}
             </button>
           </div>
         </div>
@@ -150,13 +157,6 @@ export default function RegiForm({ setDisplay }) {
           <FormattedMessage id="signUp" defaultMessage="Sign up" />
         </button>
       </form>
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
-        />
-      )}
     </div>
   );
 }

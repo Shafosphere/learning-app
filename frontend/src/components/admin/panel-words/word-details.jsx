@@ -1,12 +1,11 @@
 import api from "../../../utils/api";
-import Popup from "../../popup/popup";
 import ConfirmWindow from "../../confirm/confirm";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { PopupContext } from "../../popup/popupcontext";
 
 export default function WordDetail({ word, setWord }) {
   // popup
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
+  const { setPopup } = useContext(PopupContext);
 
   // confirm
   const [confirmMessage, setConfirmMessage] = useState("");
@@ -34,31 +33,39 @@ export default function WordDetail({ word, setWord }) {
   const updateData = async () => {
     try {
       const response = await api.patch("/word/update", { word: word });
-      setPopupEmotion("positive");
-      setPopupMessage(response.data);
+      setPopup({
+        message: response.data,
+        emotion: "positive",
+      });
     } catch (error) {
-      setPopupEmotion("negative");
-      setPopupMessage(error.response?.data || "An error occurred");
+      setPopup({
+        message: error.response?.data || "An error occurred",
+        emotion: "negative",
+      });
       console.error("Error updating data:", error);
     }
   };
 
   const deleteWord = async () => {
     console.log("test");
-  
+
     try {
       const wordId = word.translations[0].word_id;
 
       const response = await api.delete(`/word/delete/${wordId}`);
-      setPopupEmotion("positive");
-      setPopupMessage(response.data);
+      setPopup({
+        message: response.data,
+        emotion: "positive",
+      });
     } catch (error) {
-      setPopupEmotion("negative");
-      setPopupMessage(error.response?.data || "An error occurred");
+      setPopup({
+        message: error.response?.data || "An error occurred",
+        emotion: "negative",
+      });
       console.error("Error deleting word:", error);
     }
   };
-  
+
   return (
     <>
       {word.translations && (
@@ -128,13 +135,6 @@ export default function WordDetail({ word, setWord }) {
             </div>
           </div>
         </>
-      )}
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
-        />
       )}
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />

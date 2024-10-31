@@ -1,7 +1,7 @@
 import "./settings.css";
 import React, { useContext, useState, useEffect } from "react";
 import { SettingsContext } from "./properties";
-import Popup from "../../components/popup/popup";
+import { PopupContext } from "../../components/popup/popupcontext";
 import ConfirmWindow from "../../components/confirm/confirm";
 // import polandFlag from "../../data/poland.png";
 // import usaFlag from "../../data/united-states.png";
@@ -26,13 +26,12 @@ export default function Settings() {
     setDiacritical,
   } = useContext(SettingsContext);
 
+  //popup
+  const { setPopup } = useContext(PopupContext);
+
   const [bookMark, setBookMark] = useState(1);
 
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
-
-  // popup
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
 
   // confirm
   const [confirmMessage, setConfirmMessage] = useState("");
@@ -47,8 +46,10 @@ export default function Settings() {
 
   function saveSettings() {
     setDailyGoal(newDailyGoal);
-    setPopupEmotion("positive");
-    setPopupMessage("Settings saved");
+    setPopup({
+      message: "Settings saved",
+      emotion: "positive",
+    });
   }
 
   function showConfirm(text, callback) {
@@ -238,14 +239,6 @@ export default function Settings() {
           </div>
         </div>
       </div>
-
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
-        />
-      )}
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}

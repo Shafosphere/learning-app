@@ -1,10 +1,10 @@
 import "./account.css";
-import Popup from "../../components/popup/popup";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import api from "../../utils/api";
 import ConfirmWindow from "../../components/confirm/confirm";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { PopupContext } from "../../components/popup/popupcontext";
 
 
 export default function Account() {
@@ -23,8 +23,7 @@ export default function Account() {
   const [showPassword, setShowPassword] = useState(false);
 
   // popup
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
+  const { setPopup } = useContext(PopupContext);
 
   // span management
   const [activeSpan, setSpan] = useState("");
@@ -48,23 +47,29 @@ export default function Account() {
 
   async function deleteAccount() {
     try {
-      const response = await api.delete('/auth/delete');
+      const response = await api.delete("/auth/delete");
       if (response.data.success) {
-        setPopupMessage('Accound has been deleted :(');
-        setPopupEmotion('positive');
+        setPopup({
+          message: "Account has been deleted :(",
+          emotion: "positive",
+        });
         setTimeout(() => {
-          navigate('/login');
+          navigate("/login");
         }, 2000);
       } else {
-        setPopupMessage('Failed to delete account.');
-        setPopupEmotion('warning');
+        setPopup({
+          message: "Failed to delete account.",
+          emotion: "warning",
+        });
       }
     } catch (error) {
       console.error(error);
-      setPopupMessage('An error occurred.');
-      setPopupEmotion('negative');
+      setPopup({
+        message: "An error occurred.",
+        emotion: "negative",
+      });
     }
-  } 
+  }
 
   useEffect(() => {
     async function getData() {
@@ -93,16 +98,22 @@ export default function Account() {
     try {
       const response = await api.patch("/auth/update", editedData);
       if (response.data.success) {
-        setPopupMessage("Changes saved successfully!");
-        setPopupEmotion("positive");
+        setPopup({
+          message: "Changes saved successfully!",
+          emotion: "positive",
+        });
       } else {
-        setPopupMessage("Failed to save changes.");
-        setPopupEmotion("warning");
+        setPopup({
+          message: "Failed to save changes.",
+          emotion: "warning",
+        });
       }
     } catch (error) {
       console.log(error);
-      setPopupMessage("An error occurred.");
-      setPopupEmotion("negative");
+      setPopup({
+        message: "An error occurred.",
+        emotion: "negative",
+      });
     }
   };
 
@@ -306,13 +317,6 @@ export default function Account() {
           </div>
         </div>
       </div>
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
-        />
-      )}
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}

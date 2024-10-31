@@ -4,12 +4,15 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 import api from "../../utils/api";
 import { SettingsContext } from "../../pages/settings/properties";
+import { PopupContext } from "../popup/popupcontext";
 
-export default function LoginForm({ setPopupMessage, setPopupEmotion }) {
+export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+
+  const { setPopup } = useContext(PopupContext);
 
   const { setIsLoggedIn, setUser } = useContext(SettingsContext); // Uzyskaj funkcje z kontekstu
   // const navigate = useNavigate();
@@ -23,35 +26,41 @@ export default function LoginForm({ setPopupMessage, setPopupEmotion }) {
         password,
       });
       if (response.data.success) {
-        setPopupEmotion("positive");
-        setPopupMessage(intl.formatMessage({
-          id: "loginSuccessful",
-          defaultMessage: "Login successful",
-        }));
+        setPopup({
+          message: intl.formatMessage({
+            id: "loginSuccessful",
+            defaultMessage: "Login successful",
+          }),
+          emotion: "positive",
+        });
         setIsLoggedIn(true); // Ustaw stan logowania na true
         setUser({ username }); // Ustaw zalogowanego użytkownika
       }
     } catch (error) {
       if (error.response.status === 401) {
-        setPopupEmotion("negative");
-        setPopupMessage(intl.formatMessage({
-          id: "invalidCredentials",
-          defaultMessage: "Invalid username or password",
-        }));
+        setPopup({
+          message: intl.formatMessage({
+            id: "invalidCredentials",
+            defaultMessage: "Invalid username or password",
+          }),
+          emotion: "negative",
+        });
       } else if (error.response.status === 500) {
-        setPopupEmotion("warning");
-        setPopupMessage(intl.formatMessage({
-          id: "serverError",
-          defaultMessage: "Server error. Please try again later.",
-        }));
+        setPopup({
+          message: intl.formatMessage({
+            id: "serverError",
+            defaultMessage: "Server error. Please try again later.",
+          }),
+          emotion: "warning",
+        });
       } else {
-        setPopupEmotion("negative");
-        setPopupMessage(
-          intl.formatMessage({
+        setPopup({
+          message: intl.formatMessage({
             id: "unexpectedError",
             defaultMessage: "An unexpected error occurred",
-          })
-        );
+          }),
+          emotion: "negative",
+        });
       }
       setError(error.response.data.message);
     }

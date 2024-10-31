@@ -4,9 +4,8 @@ import { IoMdSettings } from "react-icons/io";
 import { MdAccountBox, MdAdminPanelSettings } from "react-icons/md";
 import { useIntl } from "react-intl";
 import api from "../../utils/api";
-// import Popup from "../popup/popup";
-import NewPopup from "../popup/newpopup";
 import ReportPopup from "../report/report-popup";
+import { PopupContext } from "../popup/popupcontext";
 import { SettingsContext } from "../../pages/settings/properties";
 import "./sidebar.css";
 import { IoBug } from "react-icons/io5";
@@ -20,9 +19,9 @@ export default function Sidebar() {
   const { isLoggedIn, setIsLoggedIn, setUser, themeMode, toggleTheme } =
     useContext(SettingsContext);
 
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { setPopup } = useContext(PopupContext);
 
-  const [popup, setPopup] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [isFormVisible, setFormVisible] = useState(false);
   const intl = useIntl();
@@ -198,14 +197,6 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      {popup && (
-        <NewPopup
-          message={popup.message}
-          emotion={popup.emotion}
-          onClose={() => setPopup(null)}
-        />
-      )}
-
       <ReportPopup
         isFormVisible={isFormVisible}
         onFormVisibleChange={handleFormVisibleChange}

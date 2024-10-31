@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import "./report.css";
 import api from "../../utils/api";
-import Popup from "../popup/popup";
+import { PopupContext } from "../popup/popupcontext";
 
 export default function ReportForm() {
   const [reportType, setReportType] = useState("other");
@@ -11,8 +11,7 @@ export default function ReportForm() {
   const [language, setLanguage] = useState("");
 
   // popup
-  const [popupMessage, setPopupMessage] = useState("");
-  const [popupEmotion, setPopupEmotion] = useState("");
+  const { setPopup } = useContext(PopupContext);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -32,12 +31,17 @@ export default function ReportForm() {
         }
       );
       if (response.data.success) {
-        setPopupEmotion("positive");
-        setPopupMessage("report recived");
+        setPopup({
+          message: "report recived",
+          emotion: "positive",
+        });
       }
     } catch (error) {
-      setPopupEmotion("negative");
-      setPopupMessage('something is wrong');
+      setPopup({
+        message: "An error occurred",
+        emotion: "negative",
+      });
+
       console.log(error);
     }
   }
@@ -107,13 +111,6 @@ export default function ReportForm() {
           </button>
         </div>
       </form>
-      {popupMessage && (
-        <Popup
-          message={popupMessage}
-          emotion={popupEmotion}
-          onClose={() => setPopupMessage("")}
-        />
-      )}
     </>
   );
 }

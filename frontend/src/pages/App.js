@@ -12,7 +12,7 @@ import { SettingsProvider, SettingsContext } from "./settings/properties";
 import { IntlProvider } from "react-intl";
 import enMessages from "../locales/en.json";
 import plMessages from "../locales/pl.json";
-
+import { PopupProvider } from "../components/popup/popupcontext";
 
 // Obiekt zawierający tłumaczenia dla różnych języków
 const messages = {
@@ -50,7 +50,9 @@ const AppWrapper = () => {
 function App() {
   return (
     <SettingsProvider>
-      <AppWrapper />
+      <PopupProvider>
+        <AppWrapper />
+      </PopupProvider>
     </SettingsProvider>
   );
 }
