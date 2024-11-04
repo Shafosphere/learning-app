@@ -8,10 +8,10 @@ import dongSound from "../../data/dong.wav";
 import Progressbar from "../../components/home/bar/bar";
 
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
-import { addWord, getAllWords, getStatistics } from "../../utils/indexedDB";
+import { addWord, getAllWords } from "../../utils/indexedDB";
 import { SettingsContext } from "../settings/properties";
 import { PopupContext } from "../../components/popup/popupcontext";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import api from "../../utils/api";
 
 export default function Home() {
@@ -245,27 +245,20 @@ export default function Home() {
 
   //save progress
   function brunWords() {
-    // console.log(boxes[activeBox][1].id);
     let db;
-    // Increment the version number to force onupgradeneeded to fire
     const request = indexedDB.open("MyTestDatabase", 2);
 
     request.onupgradeneeded = (event) => {
-      console.log("onupgradeneeded event fired");
       db = event.target.result;
-      console.log("Upgrading database to version", db.version);
       if (!db.objectStoreNames.contains("boxes")) {
         db.createObjectStore("boxes", { keyPath: "id" });
-        console.log('Object store "boxes" created.');
       } else {
         console.log('Object store "boxes" already exists.');
       }
     };
 
     request.onsuccess = (event) => {
-      console.log("onsuccess event fired");
       db = event.target.result;
-      console.log("Database opened successfully");
       if (db.objectStoreNames.contains("boxes")) {
         const transaction = db.transaction(["boxes"], "readwrite");
         const store = transaction.objectStore("boxes");
@@ -273,9 +266,6 @@ export default function Home() {
         const clearRequest = store.clear();
 
         clearRequest.onsuccess = () => {
-          console.log(`Object store 'boxes' has been cleared.`);
-
-          // Array to hold all the add requests
           const addRequests = [];
 
           for (const boxName in boxes) {
@@ -355,12 +345,9 @@ export default function Home() {
       const request = indexedDB.open("MyTestDatabase", 2);
 
       request.onupgradeneeded = (event) => {
-        console.log("onupgradeneeded event fired");
         db = event.target.result;
-        console.log("Upgrading database to version", db.version);
         if (!db.objectStoreNames.contains("boxes")) {
           db.createObjectStore("boxes", { keyPath: "id" });
-          console.log('Object store "boxes" created.');
         } else {
           console.log('Object store "boxes" already exists.');
         }

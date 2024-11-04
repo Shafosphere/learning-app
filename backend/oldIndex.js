@@ -968,39 +968,39 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-// app.post("/import", async (req, res) => {
-// console.log('startuje')
-//   try {
+app.post("/import", async (req, res) => {
+console.log('startuje')
+  try {
 
-//     await db.query("BEGIN");
+    await db.query("BEGIN");
 
-//     for (const item of data) {
-//       const wordRes = await db.query(
-//         "INSERT INTO Word (word) VALUES ($1) RETURNING id",
-//         [item.wordEng.word]
-//       );
-//       const wordId = wordRes.rows[0].id;
+    for (const item of data) {
+      const wordRes = await db.query(
+        "INSERT INTO Word (word) VALUES ($1) RETURNING id",
+        [item.wordEng.word]
+      );
+      const wordId = wordRes.rows[0].id;
 
-//       await db.query(
-//         "INSERT INTO Translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)",
-//         [wordId, "en", item.wordEng.word, item.wordEng.description]
-//       );
-//       await db.query(
-//         "INSERT INTO Translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)",
-//         [wordId, "pl", item.wordPl.word, item.wordPl.description]
-//       );
-//     }
+      await db.query(
+        "INSERT INTO Translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)",
+        [wordId, "en", item.wordEng.word, item.wordEng.description]
+      );
+      await db.query(
+        "INSERT INTO Translation (word_id, language, translation, description) VALUES ($1, $2, $3, $4)",
+        [wordId, "pl", item.wordPl.word, item.wordPl.description]
+      );
+    }
 
-//     await db.query("COMMIT");
-//     res.status(200).json({ message: "Dane zostały pomyślnie zaimportowane." });
-//   } catch (error) {
+    await db.query("COMMIT");
+    res.status(200).json({ message: "Dane zostały pomyślnie zaimportowane." });
+  } catch (error) {
 
-//     await db.query("ROLLBACK");
-//     res
-//       .status(500)
-//       .json({
-//         message: "Wystąpił błąd podczas importowania danych.",
-//         error: error.message,
-//       });
-//   }
-// });
+    await db.query("ROLLBACK");
+    res
+      .status(500)
+      .json({
+        message: "Wystąpił błąd podczas importowania danych.",
+        error: error.message,
+      });
+  }
+});
