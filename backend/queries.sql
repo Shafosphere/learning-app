@@ -40,3 +40,5 @@ CREATE TABLE word_patches (
 --     activity_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 --     FOREIGN KEY (user_id) REFERENCES users(id)
 -- );3
+ALTER TABLE word ADD COLUMN level VARCHAR(2) NOT NULL DEFAULT 'B2';
+UPDATE word SET level = 'C1' WHERE id >= '3265';
