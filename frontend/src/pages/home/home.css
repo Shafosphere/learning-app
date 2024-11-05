@@ -26,7 +26,7 @@
   flex-direction: row;
   gap: 5rem;
 }
-.button {
+/* .button {
   background-color: var(--buttonColor);
   color: var(--headline);
   display: block;
@@ -65,4 +65,4 @@
   -moz-transform: scale(1.03);
   -ms-transform: scale(1.03);
   -o-transform: scale(1.03);
-}
+} */

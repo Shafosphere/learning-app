@@ -2,6 +2,8 @@ import { useState, useContext } from "react";
 import ConfirmWindow from "../../confirm/confirm";
 import api from "../../../utils/api";
 import { PopupContext } from "../../popup/popupcontext";
+import MyButton from "../../button/button";
+
 export default function AddWord() {
   // popup
   const { setPopup } = useContext(PopupContext);
@@ -102,17 +104,14 @@ export default function AddWord() {
 
         <div className="buttons-reports">
           {word.translations && (
-            <button
-              className="button"
-              style={{ "--buttonColor": "var(--highlight)" }}
-              onClick={() =>
-                showConfirm("Are you sure you want to update your data?", () =>
-                  addWord()
-                )
-              }
-            >
-              confirm
-            </button>
+              <MyButton
+                message="confirm"
+                color="green"
+                onClick={() => showConfirm(
+                  "Are you sure you want to update your data?",
+                  () => addWord()
+                )}
+              />
           )}
         </div>
       </div>

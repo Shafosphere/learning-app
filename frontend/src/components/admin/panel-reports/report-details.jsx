@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import api from "../../../utils/api";
 import ConfirmWindow from "../../confirm/confirm";
 import { PopupContext } from "../../popup/popupcontext";
+import MyButton from "../../button/button";
 
 import "./panel-reports.css";
 
@@ -137,29 +138,25 @@ export default function ReportDetails({ reportID, reloadData }) {
       )}
 
       <div className="buttons-reports">
-        <button
-          className="button"
-          style={{ "--buttonColor": "var(--secondary)" }}
+        <MyButton
+          message="delete report"
+          color="red"
           onClick={() =>
             showConfirm("Do you really want to delete these report?", () =>
               deleteData()
             )
           }
-        >
-          delete report
-        </button>
+        />
         {report.report_type === "word_issue" && report.translations && (
-          <button
-            className="button"
-            style={{ "--buttonColor": "var(--highlight)" }}
+          <MyButton
+            message="update changes"
+            color="green"
             onClick={() =>
               showConfirm("Are you sure you want to update your data?", () =>
                 updateData()
               )
             }
-          >
-            update changes
-          </button>
+          />
         )}
       </div>
 

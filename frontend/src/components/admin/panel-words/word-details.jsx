@@ -2,6 +2,7 @@ import api from "../../../utils/api";
 import ConfirmWindow from "../../confirm/confirm";
 import { useState, useContext } from "react";
 import { PopupContext } from "../../popup/popupcontext";
+import MyButton from "../../button/button";
 
 export default function WordDetail({ word, setWord }) {
   // popup
@@ -106,30 +107,27 @@ export default function WordDetail({ word, setWord }) {
             <div className="buttons-reports">
               {word.translations && (
                 <>
-                  <button
-                    className="button"
-                    style={{ "--buttonColor": "var(--secondary)" }}
+                  <MyButton
+                    message="delete word"
+                    color="red"
                     onClick={() =>
                       showConfirm(
                         "Are you sure you want to delete that word?",
                         () => deleteWord()
                       )
                     }
-                  >
-                    delete word
-                  </button>
-                  <button
-                    className="button"
-                    style={{ "--buttonColor": "var(--highlight)" }}
+                  />
+
+                  <MyButton
+                    message="update changes"
+                    color="green"
                     onClick={() =>
                       showConfirm(
                         "Are you sure you want to update your word?",
                         () => updateData()
                       )
                     }
-                  >
-                    update changes
-                  </button>
+                  />
                 </>
               )}
             </div>

@@ -3,6 +3,7 @@ import api from "../../../utils/api";
 import "./panel-main.css";
 import ConfirmWindow from "../../confirm/confirm";
 import PinWindow from "../../pin/pin";
+import MyButton from "../../button/button";
 
 export default function MainPanel() {
   const [data, setData] = useState({});
@@ -71,14 +72,23 @@ export default function MainPanel() {
           // Wysyłamy żądanie do /admin/generatepatch z PIN-em w treści
           const response = await api.post("/admin/generatepatch", { pin });
           if (response.data.success) {
-            alert(response.data.message || "Patche zostały wygenerowane pomyślnie.");
+            alert(
+              response.data.message || "Patche zostały wygenerowane pomyślnie."
+            );
           } else {
-            alert(response.data.message || "Wystąpił problem podczas generowania patchy.");
+            alert(
+              response.data.message ||
+                "Wystąpił problem podczas generowania patchy."
+            );
           }
         } catch (error) {
           console.error("Błąd:", error);
           // Obsługa błędów z odpowiedzi backendu
-          if (error.response && error.response.data && error.response.data.message) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
             alert(error.response.data.message);
           } else {
             alert("Wystąpił błąd podczas generowania patchy.");
@@ -88,9 +98,6 @@ export default function MainPanel() {
     });
   }
 
-
-
-
   return (
     <>
       <div className="data-container">
@@ -99,13 +106,11 @@ export default function MainPanel() {
         <div>Words: {data.liczba_slowek}</div>
         <div>Reports: {data.liczba_raportow}</div>
 
-        <button
-          className="button"
-          style={{ "--buttonColor": "var(--secondary)" }}
+        <MyButton
+          message="patch"
+          color="red"
           onClick={() => handleGeneratePatches()}
-        >
-          patch
-        </button>
+        />
       </div>
 
       {confirmMessage && (
@@ -113,7 +118,6 @@ export default function MainPanel() {
       )}
 
       {isPinVisible && <PinWindow onClose={handlePinClose} />}
-
     </>
   );
 }
