@@ -1,10 +1,13 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import ConfirmWindow from "../../confirm/confirm";
 import api from "../../../utils/api";
 import { PopupContext } from "../../popup/popupcontext";
 import MyButton from "../../button/button";
 
 export default function AddWord() {
+  const selectRef = useRef(null);
+  const [level, setLevel] = useState("B2");
+
   // popup
   const { setPopup } = useContext(PopupContext);
 
@@ -24,7 +27,6 @@ export default function AddWord() {
     setConfirmMessage(text);
     setConfirmCallback(() => callback);
   }
-  ////
 
   const [word, setWord] = useState({
     translations: [
@@ -39,6 +41,7 @@ export default function AddWord() {
         description: "",
       },
     ],
+    level: level,
   });
 
   const handleInputChange = (index, field, value) => {
@@ -47,12 +50,16 @@ export default function AddWord() {
     setWord({ ...word, translations: newTranslations });
   };
 
+  const handleLevelChange = (e) => {
+    const newLevel = e.target.value;
+    setLevel(newLevel);
+    setWord({ ...word, level: newLevel });
+  };
+
   async function addWord() {
-    console.log("works");
     console.log(word);
     try {
-      const response = await api.post("/word/add", { word: word });
-
+      const response = await api.post("/word/add", word);
       setPopup({
         message: response.data,
         emotion: "positive",
@@ -66,12 +73,19 @@ export default function AddWord() {
     }
   }
 
+  const handleContainerClick = () => {
+    if (selectRef.current) {
+      selectRef.current.focus();
+      selectRef.current.click();
+    }
+  };
+
   return (
     <>
       <div className="word-details">
         <div className="translation-container">
           {word.translations.map((translation, index) => (
-            <div key={translation.id} className="translation-item-words">
+            <div key={index} className="translation-item-words">
               <div>
                 <div className="translation-header">
                   <span className="input-header">Word </span>
@@ -104,17 +118,36 @@ export default function AddWord() {
 
         <div className="buttons-reports">
           {word.translations && (
+            <>
+              <div className="level-container" onClick={handleContainerClick}>
+                <label htmlFor="level">Choose level</label>
+                <select
+                  id="level"
+                  name="level"
+                  ref={selectRef}
+                  value={level}
+                  onChange={handleLevelChange}
+                >
+                  <option value="B2">B2</option>
+                  <option value="C1">C1</option>
+                </select>
+              </div>
+
               <MyButton
-                message="confirm"
+                message="Confirm"
                 color="green"
-                onClick={() => showConfirm(
-                  "Are you sure you want to update your data?",
-                  () => addWord()
-                )}
+                onClick={() =>
+                  showConfirm(
+                    "Are you sure you want to update your data?",
+                    () => addWord()
+                  )
+                }
               />
+            </>
           )}
         </div>
       </div>
+
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}

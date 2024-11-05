@@ -107,6 +107,7 @@ export default function WordDetail({ word, setWord }) {
             <div className="buttons-reports">
               {word.translations && (
                 <>
+
                   <MyButton
                     message="delete word"
                     color="red"
@@ -129,6 +130,7 @@ export default function WordDetail({ word, setWord }) {
                     }
                   />
                 </>
+                
               )}
             </div>
           </div>

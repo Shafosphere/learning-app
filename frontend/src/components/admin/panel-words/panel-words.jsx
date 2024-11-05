@@ -157,7 +157,7 @@ export default function WordsPanel() {
       </div>
       <div className="empty-panel">
         <div onClick={() => setFocus("addword")} className="add-word button">
-          add word
+          new word
         </div>
         {focus === "addword" && <AddWord />}
         {focus === "detail" && <WordDetail word={word} setWord={setWord} />}

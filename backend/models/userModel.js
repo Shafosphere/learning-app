@@ -234,10 +234,10 @@ export const searchUserByUsername = async (username) => {
   return result.rows;
 };
 
-export const insertWord = async (word) => {
+export const insertWord = async (word, level) => {
   const result = await pool.query(
-    "INSERT INTO word (word) VALUES ($1) RETURNING id",
-    [word]
+    "INSERT INTO word (word, level) VALUES ($1, $2) RETURNING id",
+    [word, level]
   );
   return result.rows[0].id;
 };

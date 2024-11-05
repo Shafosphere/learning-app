@@ -91,7 +91,6 @@ export const getWordData = async (req, res) => {
   }
 };
 
-
 // Funkcja pomocnicza do formatowania wyników
 const formatWordResults = (results) => {
   return results.map((wordPair) => {
@@ -193,8 +192,8 @@ export const searchWords = async (req, res) => {
 
 export const addWord = async (req, res) => {
   // Wyciągnięcie 'word' z 'req.body'
-  const { word } = req.body;
-
+  const word = req.body;
+  console.log(word)
   // Sprawdź, czy 'word' jest zdefiniowane i ma 'translations'
   if (!word || !word.translations) {
     return res.status(400).send("Translations data is missing.");
@@ -211,9 +210,16 @@ export const addWord = async (req, res) => {
 
   const wordText = englishTranslation.translation;
 
+  //Sprawdzenie poziomu
+  if (word.level !== "B2" && word.level !== "C1") {
+    return res.status(400).send("Wrong level");
+  }
+
+  const wordLevel = word.level;
+
   try {
     // Wstawienie słowa i uzyskanie nowego ID słowa
-    const wordId = await insertWord(wordText);
+    const wordId = await insertWord(wordText, wordLevel);
 
     // Wstawienie tłumaczeń
     await insertTranslations(wordId, translations);
