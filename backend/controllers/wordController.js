@@ -200,8 +200,7 @@ export const addWord = async (req, res) => {
   }
 
   const { translations } = word; // Wyciągnięcie 'translations' z 'word'
-  console.log("Translations:", translations); // Logowanie danych, aby sprawdzić ich strukturę
-
+  
   // Znalezienie tłumaczenia angielskiego
   const englishTranslation = translations.find((t) => t.language === "en");
   if (!englishTranslation) {

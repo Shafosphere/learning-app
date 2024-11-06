@@ -9,8 +9,9 @@ export default function WordsPanel() {
   const [words, setWords] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [activeID, setActiveId] = useState(null);
+  // const [activeID, setActiveId] = useState(null);
   const [word, setWord] = useState("");
+  const [level, setLevel] = useState();
   const [searchTerm, setSearchTerm] = useState(""); // Dodanie searchTerm
   const [searchResults, setSearchResults] = useState([]);
   const [focus, setFocus] = useState("");
@@ -59,9 +60,10 @@ export default function WordsPanel() {
     }
   }
 
-  async function clickedWord(id) {
+  async function clickedWord(id, lvl) {
     setFocus("detail");
-    setActiveId(id);
+    setLevel(lvl);
+    // setActiveId(id);
     await wordData(id);
   }
 
@@ -104,14 +106,11 @@ export default function WordsPanel() {
                     key={result.id}
                     className={index % 2 === 0 ? "even" : "odd"}
                     onClick={() => {
-                      clickedWord(result.id);
+                      clickedWord(result.id ,result.level);
                     }}
                   >
                     <span className="id-span">{result.id}</span>
                     <span className="word-span">{result.word}</span>
-                    <span className="level-span">
-                      {result.id > 3264 ? "C2" : "B2"}
-                    </span>
                   </li>
                 ))}
               </ul>
@@ -137,6 +136,7 @@ export default function WordsPanel() {
                 <tr>
                   <th>id</th>
                   <th>word</th>
+                  <th>lvl</th>
                 </tr>
               </thead>
               <tbody>
@@ -144,10 +144,11 @@ export default function WordsPanel() {
                   <tr
                     key={word.id}
                     id={`word-${word.id}`}
-                    onClick={() => clickedWord(word.id)}
+                    onClick={() => clickedWord(word.id, word.level)}
                   >
                     <td>{word.id}</td>
                     <td>{word.word}</td>
+                    <td>{word.level}</td>
                   </tr>
                 ))}
               </tbody>
@@ -160,7 +161,14 @@ export default function WordsPanel() {
           new word
         </div>
         {focus === "addword" && <AddWord />}
-        {focus === "detail" && <WordDetail word={word} setWord={setWord} />}
+        {focus === "detail" && (
+          <WordDetail
+            word={word}
+            setWord={setWord}
+            level={level}
+            setLevel={setLevel}
+          />
+        )}
       </div>
     </>
   );

@@ -13,7 +13,7 @@ t "/pre-data" >>> "/word/information"
 t "/data" >>> "/word/data"
 t "/words" >>> "/word/list"
 t "/word-detail" >>> "/word/detail"
-t "/word-update" >>> "/word/update"
+t "/word-update" >>> "/word/update" >>> /word/update-translations"
 t "/search" >>> "/word/search"
 t "/add-word" >>> "/word/add"
 t /word-delete", >>> "/word/delete" ---- nie ma tego?
@@ -38,4 +38,5 @@ t "/search-user" >>> "/user/search" - wyszuwiarka w panelu admina
 t /user/delete
 
 do zrobienia,
-notes on google drive
+sprawdzic:
+czy w raportach w sekcji report words bedzie działało updatowanie słów?

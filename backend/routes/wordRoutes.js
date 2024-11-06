@@ -22,12 +22,9 @@ router.get("/list", authenticateToken, authorizeAdmin, getWordsList);
 
 router.post("/detail", authenticateToken, authorizeAdmin, getWordDetail);
 
-router.patch(
-  "/update",
-  authenticateToken,
-  authorizeAdmin,
-  updateWordTranslations
-);
+router.patch("/update-translations", authenticateToken, authorizeAdmin, updateWordTranslations);
+
+router.patch("/update-word", )
 
 router.get("/search", authenticateToken, authorizeAdmin, searchWords);
 

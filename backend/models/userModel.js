@@ -196,6 +196,15 @@ export const updateTranslation = async (translation) => {
      WHERE word_id = $3 AND language = $4`,
     [translationText, description, word_id, language]
   );
+
+  if (language === "en") {
+    await pool.query(
+      `UPDATE word
+       SET word = $1
+       WHERE id = $2`,
+      [translationText, word_id]
+    );
+  }
 };
 
 export const searchWordById = async (id) => {
