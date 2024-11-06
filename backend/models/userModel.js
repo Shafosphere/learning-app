@@ -365,6 +365,104 @@ export const generatePatchesBatch = async (patchSize) => {
   }
 };
 
+export const deleteOldNeWPatches = async () => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    // Usuwanie patchy z tabeli b2_patches
+    await client.query("DELETE FROM b2_patches");
+    console.log("Old B2 patches have been deleted.");
+
+    // Resetowanie sekwencji dla b2_patches
+    await client.query("ALTER SEQUENCE b2_patches_patch_id_seq RESTART WITH 1");
+    console.log("B2 Patch ID sequence has been reset.");
+
+    // Usuwanie patchy z tabeli c1_patches
+    await client.query("DELETE FROM c1_patches");
+    console.log("Old C1 patches have been deleted.");
+
+    // Resetowanie sekwencji dla c1_patches
+    await client.query("ALTER SEQUENCE c1_patches_patch_id_seq RESTART WITH 1");
+    console.log("C1 Patch ID sequence has been reset.");
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error(
+      "Error while deleting old patches and resetting sequences:",
+      error
+    );
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+
+export const getAvailableWords = async () => {
+  try {
+    const result = await pool.query("SELECT id, level FROM word");
+    return result.rows;
+  } catch (error) {
+    console.error("Error while fetching available word IDs:", error);
+    throw error;
+  }
+};
+
+export const generateNewPatchesBatch = async (patchSize) => {
+  const client = await pool.connect();
+  try {
+    const availableWords = await getAvailableWords(); // Zwraca { id, level }
+    
+    // Rozdzielenie słówek na B2 i C1
+    const b2Words = availableWords.filter(word => word.level === 'B2');
+    const c1Words = availableWords.filter(word => word.level === 'C1');
+    
+    // Funkcja do generowania patchy dla danego poziomu
+    const generatePatchesForLevel = async (wordsArray, tableName) => {
+      const remainingIds = [...wordsArray.map(word => word.id)];
+      
+      while (remainingIds.length >= patchSize) {
+        const patchIds = [];
+        for (let i = 0; i < patchSize; i++) {
+          const randomIndex = Math.floor(Math.random() * remainingIds.length);
+          patchIds.push(remainingIds[randomIndex]);
+          remainingIds.splice(randomIndex, 1);
+        }
+        
+        const patchIdsJson = JSON.stringify(patchIds);
+        await client.query(`INSERT INTO ${tableName} (word_ids) VALUES ($1)`, [
+          patchIdsJson,
+        ]);
+        console.log(`Patch created in ${tableName} with IDs: ${patchIds}`);
+      }
+      
+      // Dodanie pozostałych słów jako ostatniego patcha
+      if (remainingIds.length > 0) {
+        const remainingIdsJson = JSON.stringify(remainingIds);
+        await client.query(`INSERT INTO ${tableName} (word_ids) VALUES ($1)`, [
+          remainingIdsJson,
+        ]);
+        console.log(`Last patch created in ${tableName} with IDs: ${remainingIds}`);
+      }
+    };
+    
+    // Generowanie patchy dla B2
+    await generatePatchesForLevel(b2Words, 'b2_patches');
+    // Generowanie patchy dla C1
+    await generatePatchesForLevel(c1Words, 'c1_patches');
+    
+    console.log("All patches have been generated successfully.");
+  } catch (error) {
+    console.error("Error while generating patches:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+
 export const updateUserInDb = async ({ id, username, email, role }) => {
   try {
     const result = await pool.query(

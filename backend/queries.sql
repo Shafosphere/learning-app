@@ -42,3 +42,13 @@ CREATE TABLE word_patches (
 -- );3
 ALTER TABLE word ADD COLUMN level VARCHAR(2) NOT NULL DEFAULT 'B2';
 UPDATE word SET level = 'C1' WHERE id >= '3265';
+
+-- new patch system
+CREATE TABLE b2_patches(
+  patch_id SERIAL PRIMARY KEY,  
+  word_ids JSON    
+);
+CREATE TABLE c1_patches(
+  patch_id SERIAL PRIMARY KEY,  
+  word_ids JSON    
+);

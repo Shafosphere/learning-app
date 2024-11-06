@@ -40,3 +40,4 @@ t /user/delete
 do zrobienia,
 sprawdzic:
 czy w raportach w sekcji report words bedzie działało updatowanie słów?
+panel admina do zarzadzania patchami?

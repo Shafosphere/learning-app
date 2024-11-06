@@ -2,6 +2,8 @@ import {
   fetchGlobalData,
   deleteOldPatches,
   generatePatchesBatch,
+  generateNewPatchesBatch,
+  deleteOldNeWPatches,
 } from "../models/userModel.js";
 
 export const getGlobalData = async (req, res) => {
@@ -19,10 +21,10 @@ export const generatePatches = async (req, res) => {
     console.log("Start generating patches");
 
     // Usuń stare patche przed generowaniem nowych
-    await deleteOldPatches();
+    await deleteOldNeWPatches();
 
     // Generuj nowe patche
-    await generatePatchesBatch(30); // Rozmiar patcha można modyfikować
+    await generateNewPatchesBatch(30); // Rozmiar patcha można modyfikować
 
     res.status(200).send("Patches have been generated successfully.");
   } catch (error) {
