@@ -2,7 +2,7 @@ import boxImage from "../../../data/box.png";
 import "./box.css";
 import { FormattedMessage } from 'react-intl';
 
-export default function Boxes({ boxes, activeBox, handleSetBox, addWords, brunWords }) {
+export default function Boxes({ boxes, activeBox, handleSetBox, addWords, saveBoxes }) {
   return (
     <>
       <div className="container-boxes">
@@ -63,7 +63,7 @@ export default function Boxes({ boxes, activeBox, handleSetBox, addWords, brunWo
             <FormattedMessage id="addWords" />
           </button>
           <button
-            onClick={() => brunWords()}
+            onClick={() => saveBoxes()}
             className="button"
             type="button"
             style={{ "--buttonColor": "var(--tertiary)" }}

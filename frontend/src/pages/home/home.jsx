@@ -44,6 +44,28 @@ export default function Home() {
   //popup
   const { setPopup } = useContext(PopupContext);
 
+  //patch-system
+  const [patchNumberB2, setB2Patch] = useState(null);
+  const [patchNumberC1, setC1Patch] = useState(null);
+  const [nextPatchType, setPatchType] = useState(null);
+  const [totalB2Patches, setTotalB2] = useState(null);
+  const [totalC1Patches, setTotalC1] = useState(null);
+
+  useEffect(() => {
+    const currentB2Patch = localStorage.getItem("currentB2Patch-voca");
+    setB2Patch(currentB2Patch ? parseInt(currentB2Patch) : 1);
+  }, []);
+
+  useEffect(() => {
+    const currentC1Patch = localStorage.getItem("currentC1Patch-voca");
+    setC1Patch(currentC1Patch ? parseInt(currentC1Patch) : 1);
+  }, []);
+
+  useEffect(() => {
+    const nextPatchType = localStorage.getItem("nextPatchType-voca");
+    setPatchType(nextPatchType ? parseInt(nextPatchType) : 'B2');
+  }, []);
+
   //progressBar
   const {
     calculatePercent,
@@ -83,6 +105,47 @@ export default function Home() {
   const handleSetwordId = useCallback((item) => {
     idFlashcardRef.current = item;
   }, []);
+
+  async function getNextPatch() {
+    if (level && nextPatchType === "C1") {
+      if (patchNumberC1 <= totalC1Patches) {
+        await requestPatch("C1", patchNumberC1);
+        setC1Patch(patchNumberC1++);
+        setPatchType("B2");
+      } else if (patchNumberB2 <= totalB2Patches) {
+        await requestPatch("B2", patchNumberB2);
+        setB2Patch(patchNumberB2++);
+      } else {
+        //patche wyczerpane
+        console.log("koniec patchy C1");
+      }
+    } else {
+      if (patchNumberB2 <= totalB2Patches) {
+        await requestPatch("B2", patchNumberB2);
+        setB2Patch(patchNumberB2++);
+        if (level === "C1") setPatchType("C1");
+      } else if ((level = "C1")) {
+        if (patchNumberC1 <= totalC1Patches) {
+          await requestPatch("C1", patchNumberC1);
+          setC1Patch(patchNumberC1++);
+        }
+      } else {
+        //patche wyczerpane
+        console.log("koniec patchy B2");
+      }
+    }
+  }
+
+  async function requestPatch(lvl, patchNumber) {
+    try {
+      const response = await api.post("/word/patch-data", {
+        lvl: lvl,
+        patchNumber: patchNumber,
+      });
+    } catch (error) {
+      console.error(`Error fetching ${lvl} patch ${patchNumber}:`, error);
+    }
+  }
 
   function changeCorrectStatus() {
     setClass("");
@@ -244,9 +307,9 @@ export default function Home() {
   }
 
   //save progress
-  function brunWords() {
+  function saveBoxes() {
     let db;
-    const request = indexedDB.open("MyTestDatabase", 2);
+    const request = indexedDB.open("SavedBoxes", 1);
 
     request.onupgradeneeded = (event) => {
       db = event.target.result;
@@ -342,7 +405,7 @@ export default function Home() {
   useEffect(() => {
     function readAndDisplayAllData() {
       let db;
-      const request = indexedDB.open("MyTestDatabase", 2);
+      const request = indexedDB.open("SavedBoxes", 1);
 
       request.onupgradeneeded = (event) => {
         db = event.target.result;
@@ -419,7 +482,7 @@ export default function Home() {
           activeBox={activeBox}
           handleSetBox={handleSetBox}
           addWords={addWords}
-          brunWords={brunWords}
+          saveBoxes={saveBoxes}
         />
       </div>
       <div className="home-right">

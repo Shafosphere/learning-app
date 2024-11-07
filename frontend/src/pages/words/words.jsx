@@ -7,6 +7,7 @@ import Progressbar from "../../components/home/bar/bar";
 import Confetti from "../../components/words/confetti";
 import ResultsSummary from "../../components/words/summary/resultssummary";
 import { SettingsContext } from "../settings/properties";
+import MyButton from "../../components/button/button";
 
 export default function Words() {
   const [userWord, setWord] = useState("");
@@ -68,7 +69,6 @@ export default function Words() {
   }, [patchNumber, patchLength, data]);
 
   const [showPercent, setShowPercent] = useState(false);
-
   /////
 
   const [lastDataItemId, setLastDataItemId] = useState(() => {
@@ -377,22 +377,16 @@ export default function Words() {
                   />
                 ) : (
                   <div className="buttons-words">
-                    <button
+                    <MyButton
+                      message="znam"
+                      color="green"
                       onClick={handleClickKnow}
-                      className="button"
-                      type="button"
-                      style={{ "--buttonColor": "var(--tertiary)" }}
-                    >
-                      znam
-                    </button>
-                    <button
+                    />
+                    <MyButton
+                      message="nie znam"
+                      color="red"
                       onClick={handleClickDontKnow}
-                      className="button"
-                      type="button"
-                      style={{ "--buttonColor": "var(--tertiary)" }}
-                    >
-                      nie znam
-                    </button>
+                    />
                   </div>
                 )}
               </div>

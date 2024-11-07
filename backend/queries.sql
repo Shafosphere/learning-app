@@ -33,13 +33,7 @@ CREATE TABLE word_patches (
   patch_id SERIAL PRIMARY KEY,  
   word_ids JSON                
 );
--- CREATE TABLE user_activity_log (
---     id SERIAL PRIMARY KEY,
---     user_id INT NOT NULL,
---     activity_type VARCHAR(50) NOT NULL,
---     activity_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     FOREIGN KEY (user_id) REFERENCES users(id)
--- );3
+
 ALTER TABLE word ADD COLUMN level VARCHAR(2) NOT NULL DEFAULT 'B2';
 UPDATE word SET level = 'C1' WHERE id >= '3265';
 

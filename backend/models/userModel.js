@@ -97,7 +97,6 @@ export const getPatchWords = async (patchNumber) => {
   } else if (typeof wordIds === "object" && wordIds !== null) {
     wordIds = wordIds.map(Number);
   }
-
   return wordIds;
 };
 
@@ -116,6 +115,28 @@ export const getMaxPatchId = async () => {
     "SELECT MAX(patch_id) as max_patch_id FROM word_patches"
   );
   return result.rows[0].max_patch_id;
+};
+
+// Pobranie maksymalnego numeru patchy
+export const getAllMaxPatchId = async () => {
+  try {
+    const B2_result = await pool.query(
+      "SELECT MAX(patch_id) as max_B2_patch_id FROM b2_patches"
+    );
+    const C1_result = await pool.query(
+      "SELECT MAX(patch_id) as max_C1_patch_id FROM c1_patches"
+    );
+
+    const result = {
+      totalB2Patches: B2_result.rows[0].max_B2_patch_id || 0,
+      totalC1Patches: C1_result.rows[0].max_C1_patch_id || 0,
+    };
+
+    return result;
+  } catch (error) {
+    console.error("Error fetching max patch ids:", error);
+    throw error;
+  }
 };
 
 export const getUserByUserName = async (username) => {
@@ -399,7 +420,6 @@ export const deleteOldNeWPatches = async () => {
   }
 };
 
-
 export const getAvailableWords = async () => {
   try {
     const result = await pool.query("SELECT id, level FROM word");
@@ -414,15 +434,15 @@ export const generateNewPatchesBatch = async (patchSize) => {
   const client = await pool.connect();
   try {
     const availableWords = await getAvailableWords(); // Zwraca { id, level }
-    
+
     // Rozdzielenie słówek na B2 i C1
-    const b2Words = availableWords.filter(word => word.level === 'B2');
-    const c1Words = availableWords.filter(word => word.level === 'C1');
-    
+    const b2Words = availableWords.filter((word) => word.level === "B2");
+    const c1Words = availableWords.filter((word) => word.level === "C1");
+
     // Funkcja do generowania patchy dla danego poziomu
     const generatePatchesForLevel = async (wordsArray, tableName) => {
-      const remainingIds = [...wordsArray.map(word => word.id)];
-      
+      const remainingIds = [...wordsArray.map((word) => word.id)];
+
       while (remainingIds.length >= patchSize) {
         const patchIds = [];
         for (let i = 0; i < patchSize; i++) {
@@ -430,29 +450,31 @@ export const generateNewPatchesBatch = async (patchSize) => {
           patchIds.push(remainingIds[randomIndex]);
           remainingIds.splice(randomIndex, 1);
         }
-        
+
         const patchIdsJson = JSON.stringify(patchIds);
         await client.query(`INSERT INTO ${tableName} (word_ids) VALUES ($1)`, [
           patchIdsJson,
         ]);
         console.log(`Patch created in ${tableName} with IDs: ${patchIds}`);
       }
-      
+
       // Dodanie pozostałych słów jako ostatniego patcha
       if (remainingIds.length > 0) {
         const remainingIdsJson = JSON.stringify(remainingIds);
         await client.query(`INSERT INTO ${tableName} (word_ids) VALUES ($1)`, [
           remainingIdsJson,
         ]);
-        console.log(`Last patch created in ${tableName} with IDs: ${remainingIds}`);
+        console.log(
+          `Last patch created in ${tableName} with IDs: ${remainingIds}`
+        );
       }
     };
-    
+
     // Generowanie patchy dla B2
-    await generatePatchesForLevel(b2Words, 'b2_patches');
+    await generatePatchesForLevel(b2Words, "b2_patches");
     // Generowanie patchy dla C1
-    await generatePatchesForLevel(c1Words, 'c1_patches');
-    
+    await generatePatchesForLevel(c1Words, "c1_patches");
+
     console.log("All patches have been generated successfully.");
   } catch (error) {
     console.error("Error while generating patches:", error);
@@ -461,7 +483,6 @@ export const generateNewPatchesBatch = async (patchSize) => {
     client.release();
   }
 };
-
 
 export const updateUserInDb = async ({ id, username, email, role }) => {
   try {

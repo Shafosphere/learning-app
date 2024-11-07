@@ -12,6 +12,7 @@ import {
   insertTranslations,
   deleteWordById,
   patchLength,
+  getAllMaxPatchId,
 } from "../models/userModel.js";
 
 // B2 >= 3264 < C1
@@ -19,6 +20,7 @@ const maxWordId = 5260;
 const minWordId = 1;
 const b2 = 3264;
 
+//to jest do zmiany
 export const getInformation = (req, res) => {
   const data = {
     b2: b2,
@@ -27,6 +29,18 @@ export const getInformation = (req, res) => {
   };
   res.json(data);
 };
+
+//information about patch
+export const getPatchesInfo = async (req, res) => {
+  try {
+    const stats = await getAllMaxPatchId();
+    res.status(200).json(stats); // Zwracanie statystyk
+  } catch (error) {
+    console.error("Error getting information:", error);
+    res.status(500).send("Server Error");
+  }
+}
+
 
 export const getWordData = async (req, res) => {
   const { wordList, patchNumber } = req.body;
