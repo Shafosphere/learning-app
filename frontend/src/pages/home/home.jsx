@@ -1,5 +1,4 @@
 import "./home.css";
-import axios from "axios";
 import Flashcard from "../../components/home/card/flashcard";
 import EmptyFlashcard from "../../components/home/card/empty-flashcard";
 import Boxes from "../../components/home/box/box";
@@ -13,6 +12,9 @@ import { SettingsContext } from "../settings/properties";
 import { PopupContext } from "../../components/popup/popupcontext";
 import { useIntl } from "react-intl";
 import api from "../../utils/api";
+
+import usePersistedState from "../../components/settings/usePersistedState";
+
 
 export default function Home() {
   const intl = useIntl();
@@ -44,27 +46,13 @@ export default function Home() {
   //popup
   const { setPopup } = useContext(PopupContext);
 
-  //patch-system
-  const [patchNumberB2, setB2Patch] = useState(null);
-  const [patchNumberC1, setC1Patch] = useState(null);
-  const [nextPatchType, setPatchType] = useState(null);
+  //Paches
+  const [patchNumberB2, setB2Patch] = usePersistedState("patchNumberB2-home", 1)
+  const [patchNumberC1, setC1Patch] = usePersistedState("patchNumberC1-home", 1)
+  const [nextPatchType, setPatchType] = usePersistedState("nextPatchType-home", "B2")
+
   const [totalB2Patches, setTotalB2] = useState(null);
   const [totalC1Patches, setTotalC1] = useState(null);
-
-  useEffect(() => {
-    const currentB2Patch = localStorage.getItem("currentB2Patch-voca");
-    setB2Patch(currentB2Patch ? parseInt(currentB2Patch) : 1);
-  }, []);
-
-  useEffect(() => {
-    const currentC1Patch = localStorage.getItem("currentC1Patch-voca");
-    setC1Patch(currentC1Patch ? parseInt(currentC1Patch) : 1);
-  }, []);
-
-  useEffect(() => {
-    const nextPatchType = localStorage.getItem("nextPatchType-voca");
-    setPatchType(nextPatchType ? parseInt(nextPatchType) : 'B2');
-  }, []);
 
   //progressBar
   const {
@@ -105,47 +93,6 @@ export default function Home() {
   const handleSetwordId = useCallback((item) => {
     idFlashcardRef.current = item;
   }, []);
-
-  async function getNextPatch() {
-    if (level && nextPatchType === "C1") {
-      if (patchNumberC1 <= totalC1Patches) {
-        await requestPatch("C1", patchNumberC1);
-        setC1Patch(patchNumberC1++);
-        setPatchType("B2");
-      } else if (patchNumberB2 <= totalB2Patches) {
-        await requestPatch("B2", patchNumberB2);
-        setB2Patch(patchNumberB2++);
-      } else {
-        //patche wyczerpane
-        console.log("koniec patchy C1");
-      }
-    } else {
-      if (patchNumberB2 <= totalB2Patches) {
-        await requestPatch("B2", patchNumberB2);
-        setB2Patch(patchNumberB2++);
-        if (level === "C1") setPatchType("C1");
-      } else if ((level = "C1")) {
-        if (patchNumberC1 <= totalC1Patches) {
-          await requestPatch("C1", patchNumberC1);
-          setC1Patch(patchNumberC1++);
-        }
-      } else {
-        //patche wyczerpane
-        console.log("koniec patchy B2");
-      }
-    }
-  }
-
-  async function requestPatch(lvl, patchNumber) {
-    try {
-      const response = await api.post("/word/patch-data", {
-        lvl: lvl,
-        patchNumber: patchNumber,
-      });
-    } catch (error) {
-      console.error(`Error fetching ${lvl} patch ${patchNumber}:`, error);
-    }
-  }
 
   function changeCorrectStatus() {
     setClass("");
@@ -224,84 +171,76 @@ export default function Home() {
   }
 
   async function addWords() {
+    await getNextPatch();
+  }
+
+  async function getNextPatch() {
     try {
-      const response = await getData(); // Wait for the data to be fetched
-      const newData = response.data.data; // Assuming the data is in response.data.data
-      setBoxes((prevBoxes) => ({
-        ...prevBoxes,
-        boxOne: [...prevBoxes.boxOne, ...newData], // Spread the newData into the array
-      }));
-      if (activeBox === "boxOne") {
-        selectRandomWord(activeBox);
+      let levelToFetch = nextPatchType;
+      let patchNumber = levelToFetch === "B2" ? patchNumberB2 : patchNumberC1;
+      let totalPatches =
+        levelToFetch === "B2" ? totalB2Patches : totalC1Patches;
+
+      if (patchNumber > totalPatches) {
+        // Jeśli patche dla danego poziomu się skończyły
+        if (levelToFetch === "B2" && level === "C1") {
+          levelToFetch = "C1";
+          patchNumber = patchNumberC1;
+          totalPatches = totalC1Patches;
+        } else {
+          // Wszystkie patche wyczerpane
+          setPopup({
+            message: "Ukończyłeś wszystkie słowa!",
+            emotion: "positive",
+          });
+          return;
+        }
+      }
+
+      const response = await requestPatch(levelToFetch, patchNumber);
+
+      if (response && response.data && response.data.data) {
+        const newWords = response.data.data;
+
+        setBoxes((prevBoxes) => ({
+          ...prevBoxes,
+          boxOne: [...prevBoxes.boxOne, ...newWords],
+        }));
+
+        // Aktualizuj numery patchy i typ następnego patcha
+        if (levelToFetch === "B2") {
+          setB2Patch(patchNumber + 1);
+          localStorage.setItem("currentB2Patch-voca", patchNumber + 1);
+        } else {
+          setC1Patch(patchNumber + 1);
+          localStorage.setItem("currentC1Patch-voca", patchNumber + 1);
+        }
+
+        // Przełącz typ następnego patcha, jeśli poziom C1 jest włączony
+        if (level === "C1") {
+          const nextType = nextPatchType === "B2" ? "C1" : "B2";
+          setPatchType(nextType);
+          localStorage.setItem("nextPatchType-voca", nextType);
+        }
+
+        if (activeBox === "boxOne") {
+          selectRandomWord("boxOne");
+        }
       }
     } catch (error) {
-      console.error(intl.formatMessage({ id: "errorAddingWords" }), error);
+      console.error("Error fetching next patch:", error);
     }
   }
 
-  async function getData() {
-    const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
-    let words_used = [];
-    let maxWordId;
-    let minWordId;
-    let b2;
-    let maxRange;
-
+  async function requestPatch(level, patchNumber) {
     try {
-      const response = await api.get("/word/information");
-      minWordId = response.data.minWordId;
-      maxWordId = response.data.maxWordId;
-      b2 = response.data.b2;
-    } catch (error) {
-      console.log(error);
-    }
-
-    // Ustal zakres na podstawie poziomu trudności
-    if (level === "B2") {
-      maxRange = b2;
-    } else if (level === "C1") {
-      maxRange = maxWordId;
-    } else {
-      throw new Error("Nieznany poziom trudności");
-    }
-
-    // Pobieranie już użytych słów
-    const wordIds = new Set(await getAllWords());
-
-    // Zbieranie ID słów z boxów
-    boxOrder.forEach((item) => {
-      boxes[item].forEach((second_item) => {
-        words_used.push(second_item.id);
+      const response = await api.post("/word/patch-data", {
+        level: level,
+        patchNumber: patchNumber,
       });
-    });
-    words_used = new Set(words_used);
-
-    // Losowanie 20 unikalnych identyfikatorów z uwzględnieniem już użytych
-    let wordList = new Set();
-    while (wordList.size < 20) {
-      const randomWordId =
-        Math.floor(Math.random() * (maxRange - minWordId + 1)) + minWordId;
-
-      if (!wordIds.has(randomWordId) && !words_used.has(randomWordId)) {
-        wordList.add(randomWordId);
-      }
-    }
-
-    wordList = Array.from(wordList);
-
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/word/data",
-        {
-          wordIds: Array.from(wordIds),
-          words_used: Array.from(words_used),
-          wordList,
-        },
-        { withCredentials: true }
-      );
       return response;
     } catch (error) {
-      console.error("Data error:", error);
+      console.error(`Error fetching ${level} patch ${patchNumber}:`, error);
       throw error;
     }
   }
@@ -455,6 +394,19 @@ export default function Home() {
       };
     }
     readAndDisplayAllData();
+  }, []);
+
+  useEffect(() => {
+    async function fetchPatchInfo() {
+      try {
+        const response = await api.get("/word//patch-info");
+        setTotalB2(response.data.totalB2Patches);
+        setTotalC1(response.data.totalC1Patches);
+      } catch (error) {
+        console.error("Error fetching patch info:", error);
+      }
+    }
+    fetchPatchInfo();
   }, []);
 
   return (

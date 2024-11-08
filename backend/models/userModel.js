@@ -78,6 +78,29 @@ export const updateLastLogin = async (userId) => {
   );
 };
 
+export const getPatchWordsByLevel = async (patchNumber, level) => {
+  let table;
+  
+  table = level === "B2" ? "b2_patches" : "c1_patches";
+  const queryText = `SELECT word_ids FROM ${table} WHERE patch_id = $1`;
+
+  const result = await pool.query(queryText, [patchNumber]);
+  if (result.rows.length === 0) {
+    return null;
+  }
+
+  let wordIds = result.rows[0].word_ids;
+
+  // Jeśli dane są w formacie tekstowym, przekształć je do formatu JSON
+  if (typeof wordIds === "string") {
+    wordIds = `[${wordIds}]`;
+    wordIds = JSON.parse(wordIds);
+  } else if (typeof wordIds === "object" && wordIds !== null) {
+    wordIds = wordIds.map(Number);
+  }
+  return wordIds;
+};
+
 export const getPatchWords = async (patchNumber) => {
   const result = await pool.query(
     "SELECT word_ids FROM word_patches WHERE patch_id = $1",
@@ -123,13 +146,14 @@ export const getAllMaxPatchId = async () => {
     const B2_result = await pool.query(
       "SELECT MAX(patch_id) as max_B2_patch_id FROM b2_patches"
     );
+    console.log(B2_result.rows[0].max_b2_patch_id);
     const C1_result = await pool.query(
       "SELECT MAX(patch_id) as max_C1_patch_id FROM c1_patches"
     );
 
     const result = {
-      totalB2Patches: B2_result.rows[0].max_B2_patch_id || 0,
-      totalC1Patches: C1_result.rows[0].max_C1_patch_id || 0,
+      totalB2Patches: B2_result.rows[0].max_b2_patch_id || 0,
+      totalC1Patches: C1_result.rows[0].max_c1_patch_id || 0,
     };
 
     return result;

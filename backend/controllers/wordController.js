@@ -13,6 +13,7 @@ import {
   deleteWordById,
   patchLength,
   getAllMaxPatchId,
+  getPatchWordsByLevel,
 } from "../models/userModel.js";
 
 // B2 >= 3264 < C1
@@ -32,6 +33,7 @@ export const getInformation = (req, res) => {
 
 //information about patch
 export const getPatchesInfo = async (req, res) => {
+  console.log('info o patchach')
   try {
     const stats = await getAllMaxPatchId();
     res.status(200).json(stats); // Zwracanie statystyk
@@ -39,8 +41,43 @@ export const getPatchesInfo = async (req, res) => {
     console.error("Error getting information:", error);
     res.status(500).send("Server Error");
   }
-}
+};
 
+export const getWordsByPatchAndLevel = async (req, res) => {
+  const { level, patchNumber } = req.body;
+  if (patchNumber && patchNumber > 0) {
+    console.log(`Pobieranie danych dla patcha numer ${patchNumber}`);
+    console.log('poziomu: ' + level)
+    try {
+      // Pobranie listy słów na podstawie patcha
+      const wordIds = await getPatchWordsByLevel(patchNumber, level);
+
+      if (!wordIds) {
+        return res.status(404).json({ message: "Patch nie znaleziony" });
+      }
+
+      // Pobranie tłumaczeń dla każdego `wordId`
+      const results = await Promise.all(
+        wordIds.map(async (id) => {
+          return await getWordTranslations(id);
+        })
+      );
+
+      // Formatowanie wyników
+      const formattedResults = formatWordResults(results);
+
+      res.json({
+        message: "working",
+        data: formattedResults,
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      res
+        .status(500)
+        .json({ message: "Error fetching data", error: error.message });
+    }
+  }
+};
 
 export const getWordData = async (req, res) => {
   const { wordList, patchNumber } = req.body;
@@ -207,14 +244,14 @@ export const searchWords = async (req, res) => {
 export const addWord = async (req, res) => {
   // Wyciągnięcie 'word' z 'req.body'
   const word = req.body;
-  console.log(word)
+  console.log(word);
   // Sprawdź, czy 'word' jest zdefiniowane i ma 'translations'
   if (!word || !word.translations) {
     return res.status(400).send("Translations data is missing.");
   }
 
   const { translations } = word; // Wyciągnięcie 'translations' z 'word'
-  
+
   // Znalezienie tłumaczenia angielskiego
   const englishTranslation = translations.find((t) => t.language === "en");
   if (!englishTranslation) {
