@@ -42,5 +42,7 @@ sprawdzic:
 czy w raportach w sekcji report words bedzie działało updatowanie słów?
 panel admina do zarzadzania patchami?
 
-do zorbienia jutro:
-wywalic cłkowicie losowanie słów, i napisac od nową dodawanie, zapisywanie, odczytowanie etc.
+co zrobiłem wczoraj:
+dodałem auto zapis
+właczyłem opcje wyłaczenia znaków diaktrycznych 
+

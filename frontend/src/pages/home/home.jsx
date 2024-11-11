@@ -15,7 +15,6 @@ import api from "../../utils/api";
 
 import usePersistedState from "../../components/settings/usePersistedState";
 
-
 export default function Home() {
   const intl = useIntl();
   const [randomWord, setRandom] = useState(null); //selected word
@@ -47,9 +46,18 @@ export default function Home() {
   const { setPopup } = useContext(PopupContext);
 
   //Paches
-  const [patchNumberB2, setB2Patch] = usePersistedState("patchNumberB2-home", 1)
-  const [patchNumberC1, setC1Patch] = usePersistedState("patchNumberC1-home", 1)
-  const [nextPatchType, setPatchType] = usePersistedState("nextPatchType-home", "B2")
+  const [patchNumberB2, setB2Patch] = usePersistedState(
+    "patchNumberB2-home",
+    1
+  );
+  const [patchNumberC1, setC1Patch] = usePersistedState(
+    "patchNumberC1-home",
+    1
+  );
+  const [nextPatchType, setPatchType] = usePersistedState(
+    "nextPatchType-home",
+    "B2"
+  );
 
   const [totalB2Patches, setTotalB2] = useState(null);
   const [totalC1Patches, setTotalC1] = useState(null);
@@ -62,10 +70,14 @@ export default function Home() {
     totalPercent,
     isSoundEnabled,
     level,
+    diacritical,
   } = useContext(SettingsContext);
 
+  //autosave
+  const [autoSave, setAutoSave] = useState(false);
+
   function check(userWord, word, id) {
-    if (userWord === word) {
+    if (checkAnswer(userWord, word)) {
       setClass("correct");
       clearTimeout(timeoutRef.current);
       if (isSoundEnabled === "true") {
@@ -75,6 +87,7 @@ export default function Home() {
         setClass("");
         moveWord(id, word, false);
         selectRandomWord(activeBox);
+        setAutoSave(true);
       }, 1500);
     } else {
       setClass("notcorrect");
@@ -99,6 +112,7 @@ export default function Home() {
     moveWord(idFlashcardRef.current, wordFlashcardRef.current, true);
     selectRandomWord(activeBox);
     setShowWrongAnswer("not-visible");
+    setAutoSave(true);
     userWordRef.current.focus();
   }
 
@@ -207,6 +221,8 @@ export default function Home() {
           boxOne: [...prevBoxes.boxOne, ...newWords],
         }));
 
+        setAutoSave(true);
+
         // Aktualizuj numery patchy i typ następnego patcha
         if (levelToFetch === "B2") {
           setB2Patch(patchNumber + 1);
@@ -245,79 +261,6 @@ export default function Home() {
     }
   }
 
-  //save progress
-  function saveBoxes() {
-    let db;
-    const request = indexedDB.open("SavedBoxes", 1);
-
-    request.onupgradeneeded = (event) => {
-      db = event.target.result;
-      if (!db.objectStoreNames.contains("boxes")) {
-        db.createObjectStore("boxes", { keyPath: "id" });
-      } else {
-        console.log('Object store "boxes" already exists.');
-      }
-    };
-
-    request.onsuccess = (event) => {
-      db = event.target.result;
-      if (db.objectStoreNames.contains("boxes")) {
-        const transaction = db.transaction(["boxes"], "readwrite");
-        const store = transaction.objectStore("boxes");
-
-        const clearRequest = store.clear();
-
-        clearRequest.onsuccess = () => {
-          const addRequests = [];
-
-          for (const boxName in boxes) {
-            boxes[boxName].forEach((item) => {
-              const itemWithBox = { ...item, boxName };
-              const addRequest = new Promise((resolve, reject) => {
-                const request = store.add(itemWithBox);
-                request.onsuccess = () => {
-                  resolve();
-                };
-                request.onerror = () => {
-                  reject(
-                    `Error adding record from box '${boxName}' to the object store.`
-                  );
-                };
-              });
-              addRequests.push(addRequest);
-            });
-          }
-
-          // Wait for all add requests to complete
-          Promise.all(addRequests)
-            .then(() => {
-              setPopup({
-                message: intl.formatMessage({ id: "wordsSaved" }),
-                emotion: "positive",
-              });
-            })
-            .catch((error) => {
-              console.error("An error occurred:", error);
-              setPopup({
-                message: "An error occurred.",
-                emotion: "negative",
-              });
-            });
-        };
-
-        clearRequest.onerror = () => {
-          console.error(`Error clearing the object store 'boxes'.`);
-        };
-      } else {
-        console.error("Object store 'boxes' does not exist.");
-      }
-    };
-
-    request.onerror = (event) => {
-      console.error("IndexedDB error:", event.target.error);
-    };
-  }
-
   function selectRandomWord(item) {
     setBoxes((prevBoxes) => {
       const boxLength = prevBoxes[item].length;
@@ -333,6 +276,44 @@ export default function Home() {
       setRandom(newRandomWord);
       return prevBoxes;
     });
+  }
+
+  function normalizeText(text) {
+    return text
+      .replace(/ą/g, "a")
+      .replace(/ć/g, "c")
+      .replace(/ę/g, "e")
+      .replace(/ł/g, "l")
+      .replace(/ń/g, "n")
+      .replace(/ó/g, "o")
+      .replace(/ś/g, "s")
+      .replace(/ź/g, "z")
+      .replace(/ż/g, "z");
+  }
+
+  function checkAnswer(userWord, word) {
+    if (userWord && word) {
+      const correctAnswer = word || "";
+
+      // Jeśli `diacritical` jest false, normalizujemy odpowiedzi do porównania
+      const processedUserWord = diacritical
+        ? userWord
+        : normalizeText(userWord);
+      const processedCorrectAnswer = diacritical
+        ? correctAnswer
+        : normalizeText(correctAnswer);
+
+      if (
+        processedUserWord.trim().toLowerCase() ===
+        processedCorrectAnswer.toLowerCase()
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      console.log("Brak danych do porównania!");
+    }
   }
 
   useEffect(() => {
@@ -399,7 +380,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchPatchInfo() {
       try {
-        const response = await api.get("/word//patch-info");
+        const response = await api.get("/word/patch-info");
         setTotalB2(response.data.totalB2Patches);
         setTotalC1(response.data.totalC1Patches);
       } catch (error) {
@@ -408,6 +389,79 @@ export default function Home() {
     }
     fetchPatchInfo();
   }, []);
+
+  useEffect(() => {
+    //save progress
+    function saveBoxes() {
+      let db;
+      const request = indexedDB.open("SavedBoxes", 1);
+
+      request.onupgradeneeded = (event) => {
+        db = event.target.result;
+        if (!db.objectStoreNames.contains("boxes")) {
+          db.createObjectStore("boxes", { keyPath: "id" });
+        } else {
+          console.log('Object store "boxes" already exists.');
+        }
+      };
+
+      request.onsuccess = (event) => {
+        db = event.target.result;
+        if (db.objectStoreNames.contains("boxes")) {
+          const transaction = db.transaction(["boxes"], "readwrite");
+          const store = transaction.objectStore("boxes");
+
+          const clearRequest = store.clear();
+
+          clearRequest.onsuccess = () => {
+            const addRequests = [];
+
+            for (const boxName in boxes) {
+              boxes[boxName].forEach((item) => {
+                const itemWithBox = { ...item, boxName };
+                const addRequest = new Promise((resolve, reject) => {
+                  const request = store.add(itemWithBox);
+                  request.onsuccess = () => {
+                    resolve();
+                  };
+                  request.onerror = () => {
+                    reject(
+                      `Error adding record from box '${boxName}' to the object store.`
+                    );
+                  };
+                });
+                addRequests.push(addRequest);
+              });
+            }
+
+            // Wait for all add requests to complete
+            Promise.all(addRequests)
+              .then(() => {
+                setAutoSave(false);
+                console.log("Progress Saved");
+              })
+              .catch((error) => {
+                setAutoSave(false);
+                console.error("An error occurred:", error);
+              });
+          };
+
+          clearRequest.onerror = () => {
+            console.error(`Error clearing the object store 'boxes'.`);
+          };
+        } else {
+          console.error("Object store 'boxes' does not exist.");
+        }
+      };
+
+      request.onerror = (event) => {
+        console.error("IndexedDB error:", event.target.error);
+      };
+    }
+    if (autoSave) {
+      saveBoxes();
+    }
+  }, [autoSave, boxes]);
 
   return (
     <div className="container-home">
@@ -434,7 +488,6 @@ export default function Home() {
           activeBox={activeBox}
           handleSetBox={handleSetBox}
           addWords={addWords}
-          saveBoxes={saveBoxes}
         />
       </div>
       <div className="home-right">

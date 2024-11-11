@@ -1,77 +1,33 @@
 import boxImage from "../../../data/box.png";
 import "./box.css";
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage } from "react-intl";
+import MyButton from "../../button/button";
 
-export default function Boxes({ boxes, activeBox, handleSetBox, addWords, saveBoxes }) {
+export default function Boxes({ boxes, activeBox, handleSetBox, addWords }) {
+  const boxNames = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
+
   return (
-    <>
-      <div className="container-boxes">
-        <div className="boxes-top">
-          <div onClick={() => handleSetBox("boxOne")} className="box">
+    <div className="container-boxes">
+      <div className="boxes-top">
+        {boxNames.map((boxName) => (
+          <div key={boxName} onClick={() => handleSetBox(boxName)} className="box">
             <img
               alt="box"
-              className={`${activeBox === "boxOne" ? "active" : "notactive"}`}
+              className={activeBox === boxName ? "active" : "notactive"}
               src={boxImage}
             />
-            <div className="word-count">{(boxes.boxOne).length}</div>
+            <div className="word-count">{boxes[boxName].length}</div>
           </div>
-
-          <div onClick={() => handleSetBox("boxTwo")} className="box">
-            <img
-              alt="box"
-              className={`${activeBox === "boxTwo" ? "active" : "notactive"}`}
-              src={boxImage}
-            />
-            <div className="word-count">{(boxes.boxTwo).length}</div>
-          </div>
-
-          <div onClick={() => handleSetBox("boxThree")} className="box">
-            <img
-              alt="box"
-              className={`${activeBox === "boxThree" ? "active" : "notactive"}`}
-              src={boxImage}
-            />
-            <div className="word-count">{(boxes.boxThree).length}</div>
-          </div>
-
-          <div onClick={() => handleSetBox("boxFour")} className="box">
-            <img
-              alt="box"
-              className={`${activeBox === "boxFour" ? "active" : "notactive"}`}
-              src={boxImage}
-            />
-            <div className="word-count">{(boxes.boxFour).length}</div>
-          </div>
-
-          <div onClick={() => handleSetBox("boxFive")} className="box">
-            <img
-              alt="box"
-              className={`${activeBox === "boxFive" ? "active" : "notactive"}`}
-              src={boxImage}
-            />
-            <div className="word-count">{(boxes.boxFive).length}</div>
-          </div>
-        </div>
-
-        <div className="boxes-bot">
-          <button
-            onClick={() => addWords()}
-            className="button"
-            type="button"
-            style={{ "--buttonColor": "var(--tertiary)" }}
-          >
-            <FormattedMessage id="addWords" />
-          </button>
-          <button
-            onClick={() => saveBoxes()}
-            className="button"
-            type="button"
-            style={{ "--buttonColor": "var(--tertiary)" }}
-          >
-            <FormattedMessage id="saveProgress" />
-          </button>
-        </div>
+        ))}
       </div>
-    </>
+
+      <div className="boxes-bot">
+        <MyButton
+          message={<FormattedMessage id="addWords" />}
+          color="yellow"
+          onClick={addWords}
+        />
+      </div>
+    </div>
   );
 }

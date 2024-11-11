@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./flashcard.css";
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage } from "react-intl";
 
 export default function Flashcard({
   data,
@@ -51,7 +51,7 @@ export default function Flashcard({
   function handleInputChange(event) {
     setUserWord(event.target.value);
   }
-  
+
   function handleSubmit(event) {
     event.preventDefault();
     check(userWord, word);
@@ -141,7 +141,6 @@ export default function Flashcard({
         <form onSubmit={handleSubmit}>
           <div className="top-flashcard">
             <div className={`window-flashcard ${className}`}>
-              <div className="flashcard-level">B2</div>
               <div className={`learning ${showWrongAnswer}`}>
                 <div className="label-container">
                   <label>{word}</label>
