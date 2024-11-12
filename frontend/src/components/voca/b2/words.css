@@ -5,13 +5,6 @@
   justify-content: center;
   align-items: center;
 
-  /* background-color: var(--secondBackground);
-  background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-  background-size: 40px 40px; */
-
-  /* background: rgb(0,21,52);
-  background: linear-gradient(180deg, rgba(0,21,52,1) 0%, rgba(0,33,77,1) 100%); */
-
   background: linear-gradient(
     180deg,
     rgba(var(--background-rgba), 1) 0%,

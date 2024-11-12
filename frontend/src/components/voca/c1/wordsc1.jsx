@@ -1,15 +1,14 @@
-import "./words.css";
 import { useContext, useState, useEffect, useMemo } from "react";
-import api from "../../utils/api";
-import InputField from "../../components/words/wordInput";
-import { addNumberToGood, addNumberToWrong } from "../../utils/indexedDB";
-import Progressbar from "../../components/home/bar/bar";
-import Confetti from "../../components/words/confetti";
-import ResultsSummary from "../../components/words/summary/resultssummary";
-import { SettingsContext } from "../settings/properties";
-import MyButton from "../../components/button/button";
+import api from "../../../utils/api";
+import InputField from "../wordInput";
+import { addNumberToGood, addNumberToWrong } from "../../../utils/indexedDB";
+import Progressbar from "../../home/bar/bar";
+import Confetti from "../confetti";
+import ResultsSummary from "../summary/resultssummary";
+import { SettingsContext } from "../../../pages/settings/properties";
+import MyButton from "../../button/button";
 
-export default function Words() {
+export default function WordsC1() {
   const [userWord, setWord] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
   const [generateConfetti, setGenerateConfetti] = useState(false);
@@ -42,7 +41,6 @@ export default function Words() {
 
   // Stan karuzeli
   const [carouselItems, setCarouselItems] = useState(null);
-
   const [mode, setMode] = useState(false);
 
   // Licznik odpowiedzi użytkownika

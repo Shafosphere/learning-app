@@ -1,0 +1,75 @@
+.vocabulary-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    background: linear-gradient(
+      180deg,
+      rgba(var(--background-rgba), 1) 0%,
+      rgba(var(--border-rgba), 1) 100%
+    );
+  
+    position: relative;
+  }
+
+.vocabulary-window {
+    height: 100vh;
+    width: 70rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    position: relative;
+    gap: 3rem;
+  
+    border-right: 10px solid var(--border);
+    border-left: 10px solid var(--border);
+}
+
+.vocabulary-popup{
+    border: 5px solid var(--border);
+    padding: 3rem;
+}
+
+.vocabulary-popup h1{
+    color: var(--headline);
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.vocabulary-popup div{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.vocabulary-popup div div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.vocabulary-popup p{
+    color: var(--headline);
+}
+
+.return-btn-voca{
+    position: absolute;
+    color: var(--headline);
+    top: 10%;
+    left: 25%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+.return-btn-voca div{
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 0.3rem;
+    text-transform: uppercase;
+}
+.return-btn-voca:hover{
+    cursor: pointer;
+}

@@ -91,12 +91,12 @@ export default function Sidebar() {
               </span>
             </Link>
 
-            <Link className="link" to="/words">
+            <Link className="link" to="/vocabulary">
               <span className="sidebar-initial link-icon">
                 <FaScroll />
               </span>
               <span className="sidebar-full">
-                <div className="link-text">vocabulary test</div>
+                <div className="link-text">vocabulary tests</div>
               </span>
             </Link>
 

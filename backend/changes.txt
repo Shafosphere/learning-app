@@ -42,7 +42,5 @@ sprawdzic:
 czy w raportach w sekcji report words bedzie działało updatowanie słów?
 panel admina do zarzadzania patchami?
 
-co zrobiłem wczoraj:
-dodałem auto zapis
-właczyłem opcje wyłaczenia znaków diaktrycznych 
-
+do zrobienia
+rodzielic skecje word na dwa, jeden na B2 drugi na C1
