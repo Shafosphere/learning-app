@@ -39,7 +39,7 @@ const ReturnButton = ({ setDisplay, display }) => (
   <div className="return-btn-voca" onClick={() => setDisplay("default")}>
     <div>
       <IoIosArrowBack />
-      <text>back</text>
+      <p>back</p>
     </div>
     <h1>{display}</h1>
   </div>

@@ -1,4 +1,3 @@
-//custom hook
 import { useState, useEffect } from 'react';
 
 function usePersistedState(key, defaultValue) {
@@ -8,7 +7,9 @@ function usePersistedState(key, defaultValue) {
   });
 
   useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(state));
+    if (state !== undefined) {
+      localStorage.setItem(key, JSON.stringify(state));
+    }
   }, [key, state]);
 
   return [state, setState];

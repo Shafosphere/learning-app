@@ -28,34 +28,53 @@
     border-right: 10px solid var(--border);
     border-left: 10px solid var(--border);
 }
-
 .vocabulary-popup{
-    border: 5px solid var(--border);
-    padding: 3rem;
-}
-
-.vocabulary-popup h1{
-    color: var(--headline);
-    font-weight: 900;
-    text-transform: uppercase;
-}
-
-.vocabulary-popup div{
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    color: var(--headline);
+    gap: 1rem;
 }
-
-.vocabulary-popup div div{
+.vocabulary-popup h1{
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 40px;
+}
+.vocabulary-popup p{
+    text-transform: uppercase;
+    text-align: center;
+}
+.vocabulary-btn-container{
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    gap: 2rem;
+    justify-content: center;
 }
-
-.vocabulary-popup p{
+.display-voca {
+    font-size: 80px;
+    font-weight: 900;
     color: var(--headline);
+    border: solid 10px var(--border);
+    transition: padding 1s, border-color 1s;
 }
 
+.display-voca:nth-of-type(1) {
+    border-left: none;
+    padding: 2rem 2rem 2rem 15rem;
+    cursor: pointer;
+}
+.display-voca:nth-of-type(2) {
+    border-right: none;
+    padding: 2rem 15rem 2rem 2rem;
+    cursor: pointer;
+}
+.display-voca:nth-of-type(1):hover {
+    padding: 2rem 2rem 2rem 20rem; /* Zmniejsz padding po lewej */
+    border-color: var(--tertiary); /* Zmiana koloru obramowania na żółty */
+}
+.display-voca:nth-of-type(2):hover {
+    padding: 2rem 20rem 2rem 2rem; /* Zmniejsz padding po lewej */
+    border-color: var(--tertiary); /* Zmiana koloru obramowania na żółty */
+}
 .return-btn-voca{
     position: absolute;
     color: var(--headline);
