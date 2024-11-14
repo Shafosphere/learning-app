@@ -14,6 +14,7 @@ import {
   patchLength,
   getAllMaxPatchId,
   getPatchWordsByLevel,
+  getAllPatchLength,
 } from "../models/userModel.js";
 
 // B2 >= 3264 < C1
@@ -36,7 +37,16 @@ export const getPatchesInfo = async (req, res) => {
   console.log('info o patchach')
   try {
     const stats = await getAllMaxPatchId();
-    res.status(200).json(stats); // Zwracanie statystyk
+    const length = await getAllPatchLength();
+
+    const result = {
+      totalB2Patches: stats.totalB2Patches,
+      totalC1Patches: stats.totalC1Patches,
+      lengthB2patch: length.lengthB2patch,
+      lengthC1patch: length.lengthC1patch,
+    };
+    console.log('length b2: ' + result.lengthB2patch)
+    res.status(200).json(result); // Zwracanie statystyk
   } catch (error) {
     console.error("Error getting information:", error);
     res.status(500).send("Server Error");
@@ -103,9 +113,10 @@ export const getWordData = async (req, res) => {
       const formattedResults = formatWordResults(results);
 
       // Pobranie największego patch_id oraz całkowitej liczby patchy
+      
       const maxPatchId = await getMaxPatchId();
       const totalPatches = await patchLength(); // Zmieniono nazwę zmiennej na totalPatches
-
+      console.log(totalPatches)
       const isThisLastOne = patchNumber === maxPatchId;
 
       res.json({

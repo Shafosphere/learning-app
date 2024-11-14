@@ -146,7 +146,6 @@ export const getAllMaxPatchId = async () => {
     const B2_result = await pool.query(
       "SELECT MAX(patch_id) as max_B2_patch_id FROM b2_patches"
     );
-    console.log(B2_result.rows[0].max_b2_patch_id);
     const C1_result = await pool.query(
       "SELECT MAX(patch_id) as max_C1_patch_id FROM c1_patches"
     );
@@ -160,6 +159,28 @@ export const getAllMaxPatchId = async () => {
   } catch (error) {
     console.error("Error fetching max patch ids:", error);
     throw error;
+  }
+};
+
+export const getAllPatchLength = async () => {
+  try {
+    const B2_result = await pool.query(
+      "SELECT COUNT(*) as total_b2_patches FROM b2_patches"
+    );
+
+    const C1_result = await pool.query(
+      "SELECT COUNT(*) as total_c1_patches FROM c1_patches"
+    );
+
+    const result = {
+      lengthB2patch: parseInt(B2_result.rows[0].total_b2_patches, 10) || 0,
+      lengthC1patch: parseInt(C1_result.rows[0].total_c1_patches, 10) || 0,
+    };
+
+    return result;
+  } catch (error) {
+    console.error("Error in getAllPatchLength:", error);
+    throw error; // Przekazujemy błąd dalej, aby kontroler mógł go obsłużyć
   }
 };
 

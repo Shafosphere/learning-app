@@ -10,7 +10,7 @@ import { SettingsContext } from "../../../pages/settings/properties";
 import MyButton from "../../button/button";
 import usePersistedState from "../../settings/usePersistedState";
 
-export default function WordsB2() {
+export default function WordsB2({setDisplay}) {
   const [userWord, setWord] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
   const [generateConfetti, setGenerateConfetti] = useState(false);
@@ -37,7 +37,7 @@ export default function WordsB2() {
 
   // Stan karuzeli
   const [carouselItems, setCarouselItems] = useState(null);
-  const [mode, setMode] = useState(false);
+  const [mode, setMode] = useState(true);
 
   useEffect(() => {
     if (carouselItems !== null) {
@@ -78,20 +78,37 @@ export default function WordsB2() {
   });
 
   useEffect(() => {
+    async function fetchPatchInfo() {
+      try {
+        const response = await api.get("/word/patch-info");
+    
+        // Pobierz dane z odpowiedzi
+        const maxPatchId = response.data.totalB2Patches;
+        const lengthB2patch = response.data.lengthB2patch;
+    
+        // Ustaw stany
+        setLastOne(patchNumber === maxPatchId); // Sprawdza, czy bieżący numer to ostatni
+        setLength(lengthB2patch); // Ustawia długość
+      } catch (error) {
+        console.error("Error fetching patch info:", error);
+      }
+    }
+    
+
     async function startGame() {
       if (patchNumber !== null) {
-        const gameData = await getData(patchNumber);
+        const gameData = await requestPatch(patchNumber);
         if (gameData && gameData.data && gameData.data.length > 0) {
           setData(gameData.data);
-          setLastOne(gameData.isThisLastOne);
-          setLength(gameData.totalPatches);
         } else {
           console.log("Brak danych");
         }
       }
     }
 
+    fetchPatchInfo();
     startGame();
+
   }, [patchNumber, setLastOne, setLength]);
 
   function confettiShow() {
@@ -120,15 +137,20 @@ export default function WordsB2() {
     setPatch(nextPatchNumber);
   }
 
-  async function getData(patchNumber) {
+  async function requestPatch(patchNumber) {
+  let level;
     try {
-      const dataResponse = await api.post("/word/data", { patchNumber });
-      return dataResponse.data;
+      const response = await api.post("/word/patch-data", {
+        level: 'B2',
+        patchNumber: patchNumber,
+      });
+      return response.data;
     } catch (error) {
-      console.error("Błąd podczas pobierania danych:", error);
-      return null;
+      console.error(`Error fetching ${level} patch ${patchNumber}:`, error);
+      throw error;
     }
   }
+
 
   //carouselItems
   useEffect(() => {
@@ -320,6 +342,7 @@ export default function WordsB2() {
                 onChange={() => setMode(mode ? false : true)}
                 type="checkbox"
                 id="checkboxInput"
+                checked={mode} 
               />
               <label
                 htmlFor="checkboxInput"
@@ -341,9 +364,17 @@ export default function WordsB2() {
           </div>
 
           <div className="window-words">
+          <div
+              className="return-btn-voca"
+              onClick={() => setDisplay("default")}
+            >
+              <h1> B2 </h1>
+            </div>
+
+
             <div className="top-words">
               <div className="top-left-words">
-                {!mode ? (
+                {mode ? (
                   <InputField
                     userWord={userWord}
                     onChange={correctWordChange}

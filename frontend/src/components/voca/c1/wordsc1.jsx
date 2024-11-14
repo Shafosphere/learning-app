@@ -7,8 +7,9 @@ import Confetti from "../confetti";
 import ResultsSummary from "../summary/resultssummary";
 import { SettingsContext } from "../../../pages/settings/properties";
 import MyButton from "../../button/button";
+import usePersistedState from "../../settings/usePersistedState";
 
-export default function WordsC1() {
+export default function WordsC1({setDisplay}) {
   const [userWord, setWord] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
   const [generateConfetti, setGenerateConfetti] = useState(false);
@@ -18,36 +19,36 @@ export default function WordsC1() {
 
   // Dane z serwera
   const [data, setData] = useState([]);
-  const [patchNumber, setPatch] = useState(null);
-  const [patchLength, setLength] = useState(null);
+  const [patchNumber, setPatch] = usePersistedState("currentPatch-c1", 1);
+  const [patchLength, setLength] = usePersistedState("patchLength-c1", null);
 
   // Indeks danych dla bottom-bot
-  const [dataIndexForBottomDiv, setDataIndexForBottomDiv] = useState(() => {
-    const savedIndex = localStorage.getItem("dataIndexForBottomDiv");
-    return savedIndex ? parseInt(savedIndex) : 0;
-  });
+  const [dataIndexForBottomDiv, setDataIndexForBottomDiv] = usePersistedState(
+    "dataIndexForBottomDiv-c1",
+    0
+  );
 
   //iscontent Ended?
-  const [isThisLastOne, setLastOne] = useState(() => {
-    const savedValue = localStorage.getItem("end");
-    return savedValue === "true"; // Konwersja do wartości logicznej
-  });
+  const [isThisLastOne, setLastOne] = usePersistedState("end-c1", false);
 
   //showummary?
-  const [showSummary, setSummary] = useState(() => {
-    const savedValue = localStorage.getItem("summary");
-    return savedValue === "true"; // Konwersja do wartości logicznej
-  });
+  const [showSummary, setSummary] = usePersistedState("summary-c1", false);
 
   // Stan karuzeli
   const [carouselItems, setCarouselItems] = useState(null);
-  const [mode, setMode] = useState(false);
+  const [mode, setMode] = useState(true);
+
+  useEffect(() => {
+    if (carouselItems !== null) {
+      localStorage.setItem("carouselItems-c1", JSON.stringify(carouselItems));
+    }
+  }, [carouselItems]);
 
   // Licznik odpowiedzi użytkownika
-  const [wordsAnsweredCount, setWordsAnsweredCount] = useState(() => {
-    const savedCount = localStorage.getItem("wordsAnsweredCount");
-    return savedCount ? parseInt(savedCount) : 0;
-  });
+  const [wordsAnsweredCount, setWordsAnsweredCount] = usePersistedState(
+    "wordsAnsweredCount-c1",
+    0
+  );
 
   // Obliczanie procentu za pomocą useMemo
   const percent = useMemo(() => {
@@ -70,43 +71,41 @@ export default function WordsC1() {
   /////
 
   const [lastDataItemId, setLastDataItemId] = useState(() => {
-    const savedId = localStorage.getItem("lastDataItemId");
+    const savedId = localStorage.getItem("lastDataItemId-c1");
     return savedId ? parseInt(savedId) : null;
   });
 
   useEffect(() => {
-    localStorage.setItem("end", isThisLastOne);
-  }, [isThisLastOne]);
+    async function fetchPatchInfo() {
+      try {
+        const response = await api.get("/word/patch-info");
 
-  useEffect(() => {
-    localStorage.setItem("patchLength", patchLength);
-  }, [patchLength]);
+        // Pobierz dane z odpowiedzi
+        const maxPatchId = response.data.totalC1Patches;
+        const lengthC1patch = response.data.lengthC1patch;
 
-  useEffect(() => {
-    localStorage.setItem("summary", showSummary);
-  }, [showSummary]);
+        // Ustaw stany
+        setLastOne(patchNumber === maxPatchId); // Sprawdza, czy bieżący numer to ostatni
+        setLength(lengthC1patch); // Ustawia długość
+      } catch (error) {
+        console.error("Error fetching patch info:", error);
+      }
+    }
 
-  useEffect(() => {
-    const currentPatch = localStorage.getItem("currentPatch");
-    setPatch(currentPatch ? parseInt(currentPatch) : 1);
-  }, []);
-
-  useEffect(() => {
     async function startGame() {
       if (patchNumber !== null) {
-        const gameData = await getData(patchNumber);
+        const gameData = await requestPatch(patchNumber);
         if (gameData && gameData.data && gameData.data.length > 0) {
           setData(gameData.data);
-          setLastOne(gameData.isThisLastOne);
-          setLength(gameData.totalPatches);
         } else {
           console.log("Brak danych");
         }
       }
     }
 
+    fetchPatchInfo();
     startGame();
-  }, [patchNumber]);
+  }, [patchNumber, setLastOne, setLength]);
 
   function confettiShow() {
     setShowConfetti(true);
@@ -127,10 +126,31 @@ export default function WordsC1() {
     };
   }
 
-  // Inicjalizacja carouselItems po pobraniu danych
+  //data
+  function nextPatch() {
+    const nextPatchNumber = patchNumber + 1;
+    localStorage.setItem("currentPatch-c1", nextPatchNumber);
+    setPatch(nextPatchNumber);
+  }
+
+  async function requestPatch(patchNumber) {
+    let level;
+    try {
+      const response = await api.post("/word/patch-data", {
+        level: "C1",
+        patchNumber: patchNumber,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching ${level} patch ${patchNumber}:`, error);
+      throw error;
+    }
+  }
+
+  //carouselItems
   useEffect(() => {
     if (data.length > 0 && carouselItems === null) {
-      const savedCarouselItems = localStorage.getItem("carouselItems");
+      const savedCarouselItems = localStorage.getItem("carouselItems-c1");
       if (savedCarouselItems) {
         setCarouselItems(JSON.parse(savedCarouselItems));
       } else {
@@ -144,41 +164,11 @@ export default function WordsC1() {
         setDataIndexForBottomDiv(3);
 
         const lastId = data[data.length - 1].id;
-        localStorage.setItem("lastDataItemId", lastId);
+        localStorage.setItem("lastDataItemId-c1", lastId);
         setLastDataItemId(lastId);
       }
     }
-  }, [data, carouselItems]);
-
-  useEffect(() => {
-    if (carouselItems !== null) {
-      localStorage.setItem("carouselItems", JSON.stringify(carouselItems));
-    }
-  }, [carouselItems]);
-
-  useEffect(() => {
-    localStorage.setItem("dataIndexForBottomDiv", dataIndexForBottomDiv);
-  }, [dataIndexForBottomDiv]);
-
-  useEffect(() => {
-    localStorage.setItem("wordsAnsweredCount", wordsAnsweredCount);
-  }, [wordsAnsweredCount]);
-
-  function nextPatch() {
-    const nextPatchNumber = patchNumber + 1;
-    localStorage.setItem("currentPatch", nextPatchNumber);
-    setPatch(nextPatchNumber);
-  }
-
-  async function getData(patchNumber) {
-    try {
-      const dataResponse = await api.post("/word/data", { patchNumber });
-      return dataResponse.data;
-    } catch (error) {
-      console.error("Błąd podczas pobierania danych:", error);
-      return null;
-    }
-  }
+  }, [data, carouselItems, setDataIndexForBottomDiv, setCarouselItems]);
 
   function moveCarousel() {
     setCarouselItems((prevItems) => {
@@ -233,63 +223,7 @@ export default function WordsC1() {
     }
   }
 
-  function correctWordChange(event) {
-    setWord(event.target.value);
-  }
-
-  function handleKeyDown(event) {
-    if (event.key === "Enter") {
-      checkAnswer();
-    }
-  }
-
-  function handleAnswer(isCorrect) {
-    const currentItem = carouselItems.find(
-      (item) => item.className === "middle"
-    );
-
-    if (currentItem && currentItem.data) {
-      const idOfTheWord = currentItem.data.id || "";
-
-      if (isCorrect) {
-        addNumberToGood(idOfTheWord);
-        console.log("good");
-      } else {
-        addNumberToWrong(idOfTheWord);
-        console.log("wrong");
-      }
-
-      setWordsAnsweredCount((prevCount) => prevCount + 1);
-
-      if (currentItem.data.id === lastDataItemId) {
-        setWordsAnsweredCount(0);
-
-        const lastId = data[data.length - 1].id;
-        localStorage.setItem("lastDataItemId", lastId);
-        setLastDataItemId(lastId);
-        confettiShow();
-
-        if (isThisLastOne) {
-          setSummary(true);
-        }
-      }
-
-      setWord("");
-      moveCarousel();
-      carouselUpdate();
-    } else {
-      console.log("Brak danych do przetworzenia!");
-    }
-  }
-
-  function handleClickKnow() {
-    handleAnswer(true);
-  }
-
-  function handleClickDontKnow() {
-    handleAnswer(false);
-  }
-
+  //sprawdz odp
   function checkAnswer() {
     const currentItem = carouselItems.find(
       (item) => item.className === "middle"
@@ -319,6 +253,46 @@ export default function WordsC1() {
     }
   }
 
+  function handleAnswer(isCorrect) {
+    const currentItem = carouselItems.find(
+      (item) => item.className === "middle"
+    );
+
+    if (currentItem && currentItem.data) {
+      const idOfTheWord = currentItem.data.id || "";
+
+      if (isCorrect) {
+        addNumberToGood(idOfTheWord);
+        console.log("good");
+      } else {
+        addNumberToWrong(idOfTheWord);
+        console.log("wrong");
+      }
+
+      setWordsAnsweredCount((prevCount) => prevCount + 1);
+
+      if (currentItem.data.id === lastDataItemId) {
+        setWordsAnsweredCount(0);
+
+        const lastId = data[data.length - 1].id;
+        localStorage.setItem("lastDataItemId-c1", lastId);
+        setLastDataItemId(lastId);
+        confettiShow();
+
+        if (isThisLastOne) {
+          setSummary(true);
+        }
+      }
+
+      setWord("");
+      moveCarousel();
+      carouselUpdate();
+    } else {
+      console.log("Brak danych do przetworzenia!");
+    }
+  }
+
+  //polish diacritical
   function normalizeText(text) {
     return text
       .replace(/ą/g, "a")
@@ -330,6 +304,25 @@ export default function WordsC1() {
       .replace(/ś/g, "s")
       .replace(/ź/g, "z")
       .replace(/ż/g, "z");
+  }
+
+  //reaction
+  function handleClickKnow() {
+    handleAnswer(true);
+  }
+
+  function handleClickDontKnow() {
+    handleAnswer(false);
+  }
+
+  function correctWordChange(event) {
+    setWord(event.target.value);
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === "Enter") {
+      checkAnswer();
+    }
   }
 
   return (
@@ -344,10 +337,11 @@ export default function WordsC1() {
                 onChange={() => setMode(mode ? false : true)}
                 type="checkbox"
                 id="checkboxInput"
+                checked={mode} 
               />
               <label
                 htmlFor="checkboxInput"
-                class="toggleSwitch rounded-left"
+                className="toggleSwitch rounded-left"
               ></label>
             </div>
 
@@ -359,15 +353,22 @@ export default function WordsC1() {
               />
               <label
                 htmlFor="checkboxInputPercent"
-                class="toggleSwitch rounded-right"
+                className="toggleSwitch rounded-right"
               ></label>
             </div>
           </div>
 
           <div className="window-words">
+            <div
+              className="return-btn-voca"
+              onClick={() => setDisplay("default")}
+            >
+              <h1> C1 </h1>
+            </div>
+
             <div className="top-words">
               <div className="top-left-words">
-                {!mode ? (
+                {mode ? (
                   <InputField
                     userWord={userWord}
                     onChange={correctWordChange}
