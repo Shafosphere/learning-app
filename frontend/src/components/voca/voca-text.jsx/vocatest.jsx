@@ -1,4 +1,4 @@
-import "./words.css";
+import "./vocatest.css";
 import { useContext, useState, useEffect, useMemo } from "react";
 import api from "../../../utils/api";
 import InputField from "../wordInput";
@@ -10,7 +10,7 @@ import { SettingsContext } from "../../../pages/settings/properties";
 import MyButton from "../../button/button";
 import usePersistedState from "../../settings/usePersistedState";
 
-export default function WordsB2({setDisplay}) {
+export default function VocaTest({ setDisplay, lvl }) {
   const [userWord, setWord] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
   const [generateConfetti, setGenerateConfetti] = useState(false);
@@ -20,20 +20,23 @@ export default function WordsB2({setDisplay}) {
 
   // Dane z serwera
   const [data, setData] = useState([]);
-  const [patchNumber, setPatch] = usePersistedState("currentPatch-b2", 1);
-  const [patchLength, setLength] = usePersistedState("patchLength-b2", null);
+  const [patchNumber, setPatch] = usePersistedState(`currentPatch-${lvl}`, 1);
+  const [patchLength, setLength] = usePersistedState(
+    `patchLength-${lvl}`,
+    null
+  );
 
   // Indeks danych dla bottom-bot
   const [dataIndexForBottomDiv, setDataIndexForBottomDiv] = usePersistedState(
-    "dataIndexForBottomDiv-b2",
+    `dataIndexForBottomDiv-${lvl}`,
     0
   );
 
   //iscontent Ended?
-  const [isThisLastOne, setLastOne] = usePersistedState("end-b2", false);
+  const [isThisLastOne, setLastOne] = usePersistedState(`end-${lvl}`, false);
 
   //showummary?
-  const [showSummary, setSummary] = usePersistedState("summary-b2", false);
+  const [showSummary, setSummary] = usePersistedState(`summary-${lvl}`, false);
 
   // Stan karuzeli
   const [carouselItems, setCarouselItems] = useState(null);
@@ -41,13 +44,16 @@ export default function WordsB2({setDisplay}) {
 
   useEffect(() => {
     if (carouselItems !== null) {
-      localStorage.setItem("carouselItems-b2", JSON.stringify(carouselItems));
+      localStorage.setItem(
+        `carouselItems-${lvl}`,
+        JSON.stringify(carouselItems)
+      );
     }
-  }, [carouselItems]);
+  }, [carouselItems, lvl]);
 
   // Licznik odpowiedzi użytkownika
   const [wordsAnsweredCount, setWordsAnsweredCount] = usePersistedState(
-    "wordsAnsweredCount-b2",
+    `wordsAnsweredCount-${lvl}`,
     0
   );
 
@@ -71,9 +77,8 @@ export default function WordsB2({setDisplay}) {
   const [showPercent, setShowPercent] = useState(false);
   /////
 
-  
   const [lastDataItemId, setLastDataItemId] = useState(() => {
-    const savedId = localStorage.getItem("lastDataItemId-b2");
+    const savedId = localStorage.getItem(`lastDataItemId-${lvl}`);
     return savedId ? parseInt(savedId) : null;
   });
 
@@ -81,19 +86,31 @@ export default function WordsB2({setDisplay}) {
     async function fetchPatchInfo() {
       try {
         const response = await api.get("/word/patch-info");
-    
+
         // Pobierz dane z odpowiedzi
-        const maxPatchId = response.data.totalB2Patches;
-        const lengthB2patch = response.data.lengthB2patch;
-    
+        const maxPatchId = response.data[`total${lvl}Patches`];
+        const lengthPatch = response.data[`length${lvl}patch`];
+
         // Ustaw stany
         setLastOne(patchNumber === maxPatchId); // Sprawdza, czy bieżący numer to ostatni
-        setLength(lengthB2patch); // Ustawia długość
+        setLength(lengthPatch); // Ustawia długość
       } catch (error) {
         console.error("Error fetching patch info:", error);
       }
     }
-    
+
+    async function requestPatch(patchNumber) {
+      try {
+        const response = await api.post("/word/patch-data", {
+          level: lvl,
+          patchNumber: patchNumber,
+        });
+        return response.data;
+      } catch (error) {
+        console.error(`Error fetching ${lvl} patch ${patchNumber}:`, error);
+        throw error;
+      }
+    }
 
     async function startGame() {
       if (patchNumber !== null) {
@@ -108,8 +125,7 @@ export default function WordsB2({setDisplay}) {
 
     fetchPatchInfo();
     startGame();
-
-  }, [patchNumber, setLastOne, setLength]);
+  }, [patchNumber, setLastOne, setLength, lvl]);
 
   function confettiShow() {
     setShowConfetti(true);
@@ -133,29 +149,14 @@ export default function WordsB2({setDisplay}) {
   //data
   function nextPatch() {
     const nextPatchNumber = patchNumber + 1;
-    localStorage.setItem("currentPatch-b2", nextPatchNumber);
+    localStorage.setItem(`currentPatch-${lvl}`, nextPatchNumber);
     setPatch(nextPatchNumber);
   }
-
-  async function requestPatch(patchNumber) {
-  let level;
-    try {
-      const response = await api.post("/word/patch-data", {
-        level: 'B2',
-        patchNumber: patchNumber,
-      });
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching ${level} patch ${patchNumber}:`, error);
-      throw error;
-    }
-  }
-
 
   //carouselItems
   useEffect(() => {
     if (data.length > 0 && carouselItems === null) {
-      const savedCarouselItems = localStorage.getItem("carouselItems-b2");
+      const savedCarouselItems = localStorage.getItem(`carouselItems-${lvl}`);
       if (savedCarouselItems) {
         setCarouselItems(JSON.parse(savedCarouselItems));
       } else {
@@ -169,11 +170,11 @@ export default function WordsB2({setDisplay}) {
         setDataIndexForBottomDiv(3);
 
         const lastId = data[data.length - 1].id;
-        localStorage.setItem("lastDataItemId-b2", lastId);
+        localStorage.setItem(`lastDataItemId-${lvl}`, lastId);
         setLastDataItemId(lastId);
       }
     }
-  }, [data, carouselItems, setDataIndexForBottomDiv, setCarouselItems]);
+  }, [data, carouselItems, setDataIndexForBottomDiv, setCarouselItems, lvl]);
 
   function moveCarousel() {
     setCarouselItems((prevItems) => {
@@ -280,7 +281,7 @@ export default function WordsB2({setDisplay}) {
         setWordsAnsweredCount(0);
 
         const lastId = data[data.length - 1].id;
-        localStorage.setItem("lastDataItemId-b2", lastId);
+        localStorage.setItem(`lastDataItemId-${lvl}`, lastId);
         setLastDataItemId(lastId);
         confettiShow();
 
@@ -342,7 +343,7 @@ export default function WordsB2({setDisplay}) {
                 onChange={() => setMode(mode ? false : true)}
                 type="checkbox"
                 id="checkboxInput"
-                checked={mode} 
+                checked={mode}
               />
               <label
                 htmlFor="checkboxInput"
@@ -364,13 +365,12 @@ export default function WordsB2({setDisplay}) {
           </div>
 
           <div className="window-words">
-          <div
+            <div
               className="return-btn-voca"
               onClick={() => setDisplay("default")}
             >
-              <h1> B2 </h1>
+              <h1> {lvl} </h1>
             </div>
-
 
             <div className="top-words">
               <div className="top-left-words">
