@@ -334,7 +334,7 @@ export default function VocaTest({ setDisplay, lvl }) {
   return (
     <div className="container-words">
       {showSummary ? (
-        <ResultsSummary lvl={lvl}/>
+        <ResultsSummary lvl={lvl} setDisplay={setDisplay}/>
       ) : (
         <>
           <div className="switch-container-words">

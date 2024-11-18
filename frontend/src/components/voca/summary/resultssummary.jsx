@@ -8,8 +8,7 @@ import api from "../../../utils/api";
 
 import Loading from "../../loading/loading";
 
-
-export default function ResultsSummary({lvl}) {
+export default function ResultsSummary({ lvl, setDisplay }) {
   const messages = useMemo(
     () => ["Gratulacje!", "Ukończyłeś wszystkie części! :D", "wyniki"],
     []
@@ -17,12 +16,12 @@ export default function ResultsSummary({lvl}) {
 
   const [skipLoad, setSkipLoad] = useState(() => {
     const savedValue = localStorage.getItem("skipLoad-words");
-    return savedValue === "true"; 
-  })
- 
+    return savedValue === "true";
+  });
+
   useEffect(() => {
-    localStorage.setItem("skipLoad-words", skipLoad)
-  }, [skipLoad])
+    localStorage.setItem("skipLoad-words", skipLoad);
+  }, [skipLoad]);
 
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
@@ -36,7 +35,7 @@ export default function ResultsSummary({lvl}) {
   const [wrongWords, setWrongWords] = useState([]);
 
   const [loadingData, setLoadingData] = useState(true);
-    
+
   useEffect(() => {
     if (skipLoad) return;
 
@@ -83,43 +82,45 @@ export default function ResultsSummary({lvl}) {
       setShowResults(true);
     }
   }, [skipLoad]);
-  
 
   // Pobieranie danych z bazy i obliczanie procentu
   useEffect(() => {
     async function fetchData() {
-      console.log('pobieram dane')
+      console.log("pobieram dane");
       const ids = await getAllMinigameWords(lvl);
-      console.log(ids)
+      console.log(ids);
       if (ids && ids.good && ids.wrong) {
         console.log("ids:", ids);
         const correct = ids.good.length;
         const total = ids.good.length + ids.wrong.length;
         setPercent(((correct / total) * 100).toFixed(2));
-      
+
         // Fetch words data based on IDs
-        console.log('test');
+        console.log("test");
         const goodWordsData = await api.post("/word/data", {
           wordList: ids.good,
         });
         const wrongWordsData = await api.post("/word/data", {
           wordList: ids.wrong,
         });
-      
+
         console.log("good " + goodWordsData.data.data);
         setGoodWords(goodWordsData.data.data);
         setWrongWords(wrongWordsData.data.data);
       }
-      
+
       setLoadingData(false); // Set loadingData to false after fetching
     }
-  
+
     fetchData();
   }, [lvl]);
-  
 
   return (
     <div className="results-summary">
+      <div className="return-btn-voca" onClick={() => setDisplay("default")}>
+        <h1> {lvl} </h1>
+      </div>
+
       {loadingData ? (
         <Loading />
       ) : (
@@ -127,7 +128,7 @@ export default function ResultsSummary({lvl}) {
           {currentMessageIndex < 3 && !moveUp && (
             <div className="typing">{displayedText}</div>
           )}
-  
+
           {moveUp && (
             <div className="typing move-up">
               <div className="progressbar-words">
@@ -138,7 +139,7 @@ export default function ResultsSummary({lvl}) {
               </div>
             </div>
           )}
-  
+
           {showResults && (
             <>
               <TableResults goodWords={goodWords} wrongWords={wrongWords} />

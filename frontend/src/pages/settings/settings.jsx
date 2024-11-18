@@ -3,8 +3,6 @@ import React, { useContext, useState, useEffect } from "react";
 import { SettingsContext } from "./properties";
 import { PopupContext } from "../../components/popup/popupcontext";
 import ConfirmWindow from "../../components/confirm/confirm";
-// import polandFlag from "../../data/poland.png";
-// import usaFlag from "../../data/united-states.png";
 import { FormattedMessage } from "react-intl";
 import FirstBookMark from "../../components/settings/firstbookmark";
 import SecondBookMark from "../../components/settings/secondbookmark";
@@ -172,6 +170,7 @@ export default function Settings() {
               <SecondBookMark
                 diacritical={diacritical}
                 setDiacritical={setDiacritical}
+                setSpan={setSpan}
               />
             )}
           </div>
@@ -179,62 +178,44 @@ export default function Settings() {
           {/* descriptions */}
           <div className="settings-right">
             <div className="explanation">
-              <span
-                className={`${activeSpan === "Sounds" ? "" : "hide-span-sett"}`}
-              >
-                <FormattedMessage id="turnOffSoundEffects" />
-              </span>
+              {(() => {
+                const contentMap = {
+                  Sounds: <FormattedMessage id="turnOffSoundEffects" />,
+                  C1: <FormattedMessage id="addsC1WordPool" />,
+                  DailyGoal: <FormattedMessage id="changeDailyProgress" />,
+                  darkmode: <FormattedMessage id="mode" />,
+                  resetsbuttons: (
+                    <span>
+                      <p>
+                        <FormattedMessage id="resetButtons" />
+                      </p>
+                      <ul className="reset-list">
+                        <li>
+                          - <FormattedMessage id="resetBoxesDescription" />
+                        </li>
+                        <li>
+                          - <FormattedMessage id="resetProgressDescription" />
+                        </li>
+                        <li>
+                          - <FormattedMessage id="resetEverythingDescription" />
+                        </li>
+                      </ul>
+                    </span>
+                  ),
+                  language: <FormattedMessage id="changeLanguage" />,
+                  diacritical: (
+                    <p>
+                      przy sprawdzaniu wyników traktuje:
+                      <br /> "ą" jako "a"
+                      <br /> "ę" jako "e"
+                      <br /> "ź" jako "z"
+                      <br /> itd
+                    </p>
+                  ),
+                };
 
-              <span
-                className={`${activeSpan === "C1" ? "" : "hide-span-sett"}`}
-              >
-                <FormattedMessage id="addsC1WordPool" />
-              </span>
-
-              <span
-                className={`${
-                  activeSpan === "DailyGoal" ? "" : "hide-span-sett"
-                }`}
-              >
-                <FormattedMessage id="changeDailyProgress" />
-              </span>
-
-              <span
-                className={`${
-                  activeSpan === "darkmode" ? "" : "hide-span-sett"
-                }`}
-              >
-                <FormattedMessage id="mode" />
-              </span>
-
-              <span
-                className={`${
-                  activeSpan === "resetsbuttons" ? "" : "hide-span-sett"
-                }`}
-              >
-                <p>
-                  <FormattedMessage id="resetButtons" />
-                </p>
-                <ul className="reset-list">
-                  <li>
-                    - <FormattedMessage id="resetBoxesDescription" />
-                  </li>
-                  <li>
-                    - <FormattedMessage id="resetProgressDescription" />
-                  </li>
-                  <li>
-                    - <FormattedMessage id="resetEverythingDescription" />
-                  </li>
-                </ul>
-              </span>
-
-              <span
-                className={`${
-                  activeSpan === "language" ? "" : "hide-span-sett"
-                }`}
-              >
-                <FormattedMessage id="changeLanguage" />
-              </span>
+                return contentMap[activeSpan] || null;
+              })()}
             </div>
           </div>
         </div>
