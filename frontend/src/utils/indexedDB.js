@@ -3,7 +3,7 @@ import { openDB } from "idb";
 const DB_NAME = "myDatabase";
 const WORDS_STORE_NAME = "words";
 const STATS_STORE_NAME = "statistics";
-const MINIGAME_STORE_NAME = "minigame_words"; 
+const MINIGAME_STORE_NAME = "minigame_words";
 const B2 = 3264;
 
 // Inicjalizuje bazę danych IndexedDB
@@ -28,10 +28,17 @@ async function initDB() {
           keyPath: "id",
           autoIncrement: true,
         });
-        minigameStore.createIndex("good", "good", { unique: true });
-        minigameStore.createIndex("wrong", "wrong", { unique: true });
+        minigameStore.createIndex("goodB2", "goodB2", { unique: true });
+        minigameStore.createIndex("wrongB2", "wrongB2", { unique: true });
+        minigameStore.createIndex("goodC1", "goodC1", { unique: true });
+        minigameStore.createIndex("wrongC1", "wrongC1", { unique: true });
 
-        minigameStore.add({ good: [], wrong: [] });
+        minigameStore.add({
+          goodB2: [],
+          wrongB2: [],
+          goodC1: [],
+          wrongC1: [],
+        });
       }
     },
   });
@@ -58,7 +65,7 @@ async function updateStatistics(word) {
 export async function addWord(word) {
   const db = await initDB();
   let words = await getAllWords();
-  const wordExists = words.find(entry => entry.word === word);
+  const wordExists = words.find((entry) => entry.word === word);
   if (wordExists) {
     console.log(`Word "${word}" already exists in the database.`);
     return;
@@ -67,7 +74,6 @@ export async function addWord(word) {
   await updateStatistics(word);
 }
 
-
 // Pobiera wszystkie wpisy z bazy danych IndexedDB
 export async function getAllWords() {
   const db = await initDB();
@@ -75,9 +81,25 @@ export async function getAllWords() {
 }
 
 // Pobiera wszystkie wpisy z bazy danych minigame
-export async function getAllMinigameWords() {
+export async function getAllMinigameWords(lvl) {
+  if (!["B2", "C1"].includes(lvl)) {
+    throw new Error("Invalid level. Use 'B2' or 'C1'.");
+  }
+
   const db = await initDB();
-  return await db.getAll(MINIGAME_STORE_NAME);
+  const transaction = db.transaction(MINIGAME_STORE_NAME, "readonly");
+  const minigameStore = transaction.objectStore(MINIGAME_STORE_NAME);
+
+  const record = await minigameStore.get(1);
+  if (!record) {
+    console.error("Rekord nie został znaleziony.");
+    return null;
+  }
+
+  return {
+    good: record[`good${lvl}`],
+    wrong: record[`wrong${lvl}`],
+  };
 }
 
 // Usuwa wpis z bazy danych IndexedDB według identyfikatora
@@ -117,7 +139,11 @@ export async function getStatistics() {
 }
 
 //dodaj do good
-export async function addNumberToGood(number) {
+export async function addNumberToGood(number, lvl) {
+  if (!["B2", "C1"].includes(lvl)) {
+    throw new Error("Invalid level. Use 'B2' or 'C1'.");
+  }
+
   const db = await initDB();
   const transaction = db.transaction(MINIGAME_STORE_NAME, "readwrite");
   const minigameStore = transaction.objectStore(MINIGAME_STORE_NAME);
@@ -125,21 +151,29 @@ export async function addNumberToGood(number) {
   let record = await minigameStore.get(1);
 
   if (record) {
+    const goodKey = `good${lvl}`;
+    const wrongKey = `wrong${lvl}`;
+
     // Upewnij się, że liczba nie znajduje się już w wrong
-    if (!record.good.includes(number) && !record.wrong.includes(number)) {
-      record.good.push(number);
+    if (!record[goodKey].includes(number) && !record[wrongKey].includes(number)) {
+      record[goodKey].push(number);
       await minigameStore.put(record);
-      console.log(`Liczba ${number} została dodana do good.`);
+      console.log(`Liczba ${number} została dodana do ${goodKey}.`);
     } else {
-      console.log(`Liczba ${number} już istnieje w good lub wrong.`);
+      console.log(`Liczba ${number} już istnieje w ${goodKey} lub ${wrongKey}.`);
     }
   } else {
     console.error("Rekord nie został znaleziony.");
   }
 }
 
+
 //dodaj do wrong
-export async function addNumberToWrong(number) {
+export async function addNumberToWrong(number, lvl) {
+  if (!["B2", "C1"].includes(lvl)) {
+    throw new Error("Invalid level. Use 'B2' or 'C1'.");
+  }
+
   const db = await initDB();
   const transaction = db.transaction(MINIGAME_STORE_NAME, "readwrite");
   const minigameStore = transaction.objectStore(MINIGAME_STORE_NAME);
@@ -147,13 +181,16 @@ export async function addNumberToWrong(number) {
   let record = await minigameStore.get(1);
 
   if (record) {
+    const goodKey = `good${lvl}`;
+    const wrongKey = `wrong${lvl}`;
+
     // Upewnij się, że liczba nie znajduje się już w good
-    if (!record.wrong.includes(number) && !record.good.includes(number)) {
-      record.wrong.push(number);
+    if (!record[wrongKey].includes(number) && !record[goodKey].includes(number)) {
+      record[wrongKey].push(number);
       await minigameStore.put(record);
-      console.log(`Liczba ${number} została dodana do wrong.`);
+      console.log(`Liczba ${number} została dodana do ${wrongKey}.`);
     } else {
-      console.log(`Liczba ${number} już istnieje w good lub wrong.`);
+      console.log(`Liczba ${number} już istnieje w ${goodKey} lub ${wrongKey}.`);
     }
   } else {
     console.error("Rekord nie został znaleziony.");

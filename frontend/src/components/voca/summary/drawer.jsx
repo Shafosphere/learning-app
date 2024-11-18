@@ -36,38 +36,13 @@ export default function Drawer() {
             style={{ "--buttonColor": "var(--tertiary)" }}
             className="button"
           >
-            import
+            zresetuj progess
           </button>
           <p>
-            - zimportuje to twoje dobre wyniki do głównej gry, słowa te będą
-            uznane jako 'znane' i pomijane przy dobieraniu nowych słówek
+            jezeli chcesz zacząc od nowa kliknji przycisk 
           </p>
         </div>
       )}
     </>
   );
 }
-
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-//////////
-
-//////////
-//////////
-//////////
-//////////
-
-// do zrobienia polskie znaki i import, narpawic home / napisac na nowo

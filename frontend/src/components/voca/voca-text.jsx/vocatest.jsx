@@ -268,10 +268,10 @@ export default function VocaTest({ setDisplay, lvl }) {
       const idOfTheWord = currentItem.data.id || "";
 
       if (isCorrect) {
-        addNumberToGood(idOfTheWord);
+        addNumberToGood(idOfTheWord, lvl);
         console.log("good");
       } else {
-        addNumberToWrong(idOfTheWord);
+        addNumberToWrong(idOfTheWord, lvl);
         console.log("wrong");
       }
 
@@ -334,7 +334,7 @@ export default function VocaTest({ setDisplay, lvl }) {
   return (
     <div className="container-words">
       {showSummary ? (
-        <ResultsSummary />
+        <ResultsSummary lvl={lvl}/>
       ) : (
         <>
           <div className="switch-container-words">

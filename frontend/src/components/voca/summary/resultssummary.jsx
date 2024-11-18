@@ -9,7 +9,7 @@ import api from "../../../utils/api";
 import Loading from "../../loading/loading";
 
 
-export default function ResultsSummary() {
+export default function ResultsSummary({lvl}) {
   const messages = useMemo(
     () => ["Gratulacje!", "Ukończyłeś wszystkie części! :D", "wyniki"],
     []
@@ -88,28 +88,34 @@ export default function ResultsSummary() {
   // Pobieranie danych z bazy i obliczanie procentu
   useEffect(() => {
     async function fetchData() {
-      const ids = await getAllMinigameWords();
-      if (ids && ids.length > 0) {
-        const correct = ids[0].good.length;
-        const total = ids[0].good.length + ids[0].wrong.length;
+      console.log('pobieram dane')
+      const ids = await getAllMinigameWords(lvl);
+      console.log(ids)
+      if (ids && ids.good && ids.wrong) {
+        console.log("ids:", ids);
+        const correct = ids.good.length;
+        const total = ids.good.length + ids.wrong.length;
         setPercent(((correct / total) * 100).toFixed(2));
-  
+      
         // Fetch words data based on IDs
+        console.log('test');
         const goodWordsData = await api.post("/word/data", {
-          wordList: ids[0].good,
+          wordList: ids.good,
         });
         const wrongWordsData = await api.post("/word/data", {
-          wordList: ids[0].wrong,
+          wordList: ids.wrong,
         });
-  
+      
+        console.log("good " + goodWordsData.data.data);
         setGoodWords(goodWordsData.data.data);
         setWrongWords(wrongWordsData.data.data);
       }
+      
       setLoadingData(false); // Set loadingData to false after fetching
     }
   
     fetchData();
-  }, []);
+  }, [lvl]);
   
 
   return (
