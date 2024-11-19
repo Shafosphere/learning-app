@@ -5,6 +5,7 @@ import Boxes from "../../components/home/box/box";
 import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
 import Progressbar from "../../components/home/bar/bar";
+import Confetti from "../../components/voca/confetti";
 
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
 import { addWord, getAllWords } from "../../utils/indexedDB";
@@ -14,6 +15,8 @@ import { useIntl } from "react-intl";
 import api from "../../utils/api";
 
 import usePersistedState from "../../components/settings/usePersistedState";
+import useSpellchecking from "../../components/spellchecking/spellchecking";
+
 
 export default function Home() {
   const intl = useIntl();
@@ -32,6 +35,12 @@ export default function Home() {
   });
   const wordFlashcardRef = useRef(null);
   const idFlashcardRef = useRef(null);
+
+  const checkSpelling = useSpellchecking();
+
+  //Confetti
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [generateConfetti, setGenerateConfetti] = useState(false);
 
   //focus management
   const userWordRef = useRef(null);
@@ -70,7 +79,6 @@ export default function Home() {
     totalPercent,
     isSoundEnabled,
     level,
-    diacritical,
   } = useContext(SettingsContext);
 
   //autosave
@@ -139,6 +147,7 @@ export default function Home() {
         await addWord(newid);
         calculatePercent();
         calculateTotalPercent();
+        confettiShow();
       }
 
       setBoxes((prevBoxes) => {
@@ -278,43 +287,18 @@ export default function Home() {
     });
   }
 
-  function normalizeText(text) {
-    return text
-      .replace(/ą/g, "a")
-      .replace(/ć/g, "c")
-      .replace(/ę/g, "e")
-      .replace(/ł/g, "l")
-      .replace(/ń/g, "n")
-      .replace(/ó/g, "o")
-      .replace(/ś/g, "s")
-      .replace(/ź/g, "z")
-      .replace(/ż/g, "z");
-  }
-
   function checkAnswer(userWord, word) {
     if (userWord && word) {
-      const correctAnswer = word || "";
-
-      // Jeśli `diacritical` jest false, normalizujemy odpowiedzi do porównania
-      const processedUserWord = diacritical
-        ? userWord
-        : normalizeText(userWord);
-      const processedCorrectAnswer = diacritical
-        ? correctAnswer
-        : normalizeText(correctAnswer);
-
-      if (
-        processedUserWord.trim().toLowerCase() ===
-        processedCorrectAnswer.toLowerCase()
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+      // Użycie funkcji `checkSpelling` z hooka `useSpellchecking`
+      const isCorrect = checkSpelling(userWord, word);
+  
+      return isCorrect;
     } else {
       console.log("Brak danych do porównania!");
+      return false;
     }
   }
+  
 
   useEffect(() => {
     return () => {
@@ -463,6 +447,25 @@ export default function Home() {
     }
   }, [autoSave, boxes]);
 
+  function confettiShow() {
+    setShowConfetti(true);
+    setGenerateConfetti(true);
+
+    const generateTimer = setTimeout(() => {
+      setGenerateConfetti(false);
+    }, 2000);
+
+    // Usuwamy komponent Confetti po dodatkowych 3 sekundach
+    const hideTimer = setTimeout(() => {
+      setShowConfetti(false);
+    }, 4000);
+
+    return () => {
+      clearTimeout(generateTimer);
+      clearTimeout(hideTimer);
+    };
+  }
+
   return (
     <div className="container-home">
       <div className="home-left">
@@ -500,6 +503,7 @@ export default function Home() {
           text={intl.formatMessage({ id: "totalProgress" })}
         />
       </div>
+      {showConfetti && <Confetti generateConfetti={generateConfetti} />}
     </div>
   );
 }

@@ -22,6 +22,8 @@ export default function Settings() {
     toggleLevel,
     diacritical,
     setDiacritical,
+    spellChecking,
+    setSpellChecking
   } = useContext(SettingsContext);
 
   //popup
@@ -171,6 +173,8 @@ export default function Settings() {
                 diacritical={diacritical}
                 setDiacritical={setDiacritical}
                 setSpan={setSpan}
+                spellChecking={spellChecking}
+                setSpellChecking={setSpellChecking}
               />
             )}
           </div>
@@ -204,7 +208,10 @@ export default function Settings() {
                   ),
                   language: <FormattedMessage id="changeLanguage" />,
                   diacritical: (
+                    
                     <p>
+                      <h2>działa na voca test i fiszki!</h2>
+                      <br /> 
                       przy sprawdzaniu wyników traktuje:
                       <br /> "ą" jako "a"
                       <br /> "ę" jako "e"
@@ -212,6 +219,13 @@ export default function Settings() {
                       <br /> itd
                     </p>
                   ),
+                  spellChecking: (
+                    <p>
+                      <h2>działa na voca test i fiszki!</h2>
+                      <br /> 
+                      bedziesz mógł pomylić sie o 1 literke
+                    </p>
+                  )
                 };
 
                 return contentMap[activeSpan] || null;

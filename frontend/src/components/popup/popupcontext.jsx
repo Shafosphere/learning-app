@@ -1,5 +1,5 @@
-import React, { createContext, useState } from 'react';
-import NewPopup from './newpopup';
+import React, { createContext, useState } from "react";
+import NewPopup from "./newpopup";
 
 export const PopupContext = createContext();
 
@@ -20,7 +20,6 @@ export const PopupProvider = ({ children }) => {
     </PopupContext.Provider>
   );
 };
-
 
 //instalacja -->
 

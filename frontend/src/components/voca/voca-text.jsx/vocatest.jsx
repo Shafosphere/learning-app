@@ -1,22 +1,22 @@
 import "./vocatest.css";
-import { useContext, useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import api from "../../../utils/api";
 import InputField from "../wordInput";
 import { addNumberToGood, addNumberToWrong } from "../../../utils/indexedDB";
 import Progressbar from "../../home/bar/bar";
 import Confetti from "../confetti";
 import ResultsSummary from "../summary/resultssummary";
-import { SettingsContext } from "../../../pages/settings/properties";
 import MyButton from "../../button/button";
+
 import usePersistedState from "../../settings/usePersistedState";
+import useSpellchecking from "../../spellchecking/spellchecking";
 
 export default function VocaTest({ setDisplay, lvl }) {
   const [userWord, setWord] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
   const [generateConfetti, setGenerateConfetti] = useState(false);
 
-  //ustawienia
-  const { diacritical } = useContext(SettingsContext);
+  const checkSpelling = useSpellchecking();
 
   // Dane z serwera
   const [data, setData] = useState([]);
@@ -238,18 +238,9 @@ export default function VocaTest({ setDisplay, lvl }) {
     if (currentItem && currentItem.data && currentItem.data.wordPl) {
       const correctAnswer = currentItem.data.wordPl.word || "";
 
-      // Jeśli `diacritical` jest false, normalizujemy odpowiedzi do porównania
-      const processedUserWord = diacritical
-        ? userWord
-        : normalizeText(userWord);
-      const processedCorrectAnswer = diacritical
-        ? correctAnswer
-        : normalizeText(correctAnswer);
+      const isCorrect = checkSpelling(userWord, correctAnswer);
 
-      if (
-        processedUserWord.trim().toLowerCase() ===
-        processedCorrectAnswer.toLowerCase()
-      ) {
+      if (isCorrect) {
         handleAnswer(true);
       } else {
         handleAnswer(false);
@@ -298,20 +289,6 @@ export default function VocaTest({ setDisplay, lvl }) {
     }
   }
 
-  //polish diacritical
-  function normalizeText(text) {
-    return text
-      .replace(/ą/g, "a")
-      .replace(/ć/g, "c")
-      .replace(/ę/g, "e")
-      .replace(/ł/g, "l")
-      .replace(/ń/g, "n")
-      .replace(/ó/g, "o")
-      .replace(/ś/g, "s")
-      .replace(/ź/g, "z")
-      .replace(/ż/g, "z");
-  }
-
   //reaction
   function handleClickKnow() {
     handleAnswer(true);
@@ -334,7 +311,7 @@ export default function VocaTest({ setDisplay, lvl }) {
   return (
     <div className="container-words">
       {showSummary ? (
-        <ResultsSummary lvl={lvl} setDisplay={setDisplay}/>
+        <ResultsSummary lvl={lvl} setDisplay={setDisplay} />
       ) : (
         <>
           <div className="switch-container-words">

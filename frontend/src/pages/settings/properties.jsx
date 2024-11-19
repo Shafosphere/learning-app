@@ -18,6 +18,7 @@ export const SettingsProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = usePersistedState("isLoggedIn", false);
   const [user, setUser] = usePersistedState("user", null);
   const [diacritical, setDiacritical] = usePersistedState("diacritical", true);
+  const [spellChecking, setSpellChecking] = usePersistedState("spellChecking", false);
 
   const [lastResetDate, setLastResetDate] = useState(() => {
     const savedDate = localStorage.getItem("lastResetDate");
@@ -187,6 +188,8 @@ export const SettingsProvider = ({ children }) => {
         toggleLevel,
         diacritical,
         setDiacritical,
+        spellChecking,
+        setSpellChecking,
       }}
     >
       {children}
