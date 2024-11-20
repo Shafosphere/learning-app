@@ -2,6 +2,7 @@ import React from "react";
 import { FormattedMessage } from "react-intl";
 import polandFlag from "../../data/poland.png";
 import usaFlag from "../../data/united-states.png";
+import MyButton from "../button/button";
 
 export default function FirstBookMark({
   activeSpan,
@@ -15,8 +16,6 @@ export default function FirstBookMark({
   language,
   setLanguage,
   showConfirm,
-  clearBoxes,
-  clearProgress,
   clearEverything,
   handleDailyGoalChange,
   newDailyGoal,
@@ -110,41 +109,16 @@ export default function FirstBookMark({
           <FormattedMessage id="resetButtons" />
         </span>
         <div className="resets-buttons">
-          <button
-            style={{ "--buttonColor": "var(--tertiary)" }}
-            className="button"
-            onClick={() =>
-              showConfirm(<FormattedMessage id="areYouSureResetBoxes" />, () =>
-                clearBoxes()
-              )
-            }
-          >
-            <FormattedMessage id="resetBoxes" />
-          </button>
-          <button
-            style={{ "--buttonColor": "var(--tertiary)" }}
-            className="button"
-            onClick={() =>
-              showConfirm(
-                <FormattedMessage id="areYouSureResetProgress" />,
-                () => clearProgress()
-              )
-            }
-          >
-            <FormattedMessage id="resetProgress" />
-          </button>
-          <button
-            style={{ "--buttonColor": "var(--tertiary)" }}
-            className="button"
+          <MyButton
+            message="wszystko"
+            color="red"
             onClick={() =>
               showConfirm(
                 <FormattedMessage id="areYouSureResetEverything" />,
                 () => clearEverything()
               )
             }
-          >
-            <FormattedMessage id="resetEverything" />
-          </button>
+          />
         </div>
       </div>
 

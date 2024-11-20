@@ -69,70 +69,81 @@ export default function Settings() {
     setConfirmCallback(null);
   };
 
-  function clearBoxes() {
-    return new Promise((resolve, reject) => {
-      let db;
-      const request = indexedDB.open("MyTestDatabase", 2);
+  // function clearBoxes() {
+  //   return new Promise((resolve, reject) => {
+  //     let db;
+  //     const request = indexedDB.open("MyTestDatabase", 2);
 
-      request.onupgradeneeded = (event) => {
-        console.log("onupgradeneeded event fired");
-        db = event.target.result;
-        console.log("Upgrading database to version", db.version);
-        if (!db.objectStoreNames.contains("boxes")) {
-          db.createObjectStore("boxes", { keyPath: "id" });
-          console.log('Object store "boxes" created.');
-        } else {
-          console.log('Object store "boxes" already exists.');
-        }
-      };
+  //     request.onupgradeneeded = (event) => {
+  //       console.log("onupgradeneeded event fired");
+  //       db = event.target.result;
+  //       console.log("Upgrading database to version", db.version);
+  //       if (!db.objectStoreNames.contains("boxes")) {
+  //         db.createObjectStore("boxes", { keyPath: "id" });
+  //         console.log('Object store "boxes" created.');
+  //       } else {
+  //         console.log('Object store "boxes" already exists.');
+  //       }
+  //     };
 
-      request.onsuccess = (event) => {
-        console.log("onsuccess event fired");
-        db = event.target.result;
-        console.log("Database opened successfully");
-        if (db.objectStoreNames.contains("boxes")) {
-          const transaction = db.transaction(["boxes"], "readwrite");
-          const store = transaction.objectStore("boxes");
+  //     request.onsuccess = (event) => {
+  //       console.log("onsuccess event fired");
+  //       db = event.target.result;
+  //       console.log("Database opened successfully");
+  //       if (db.objectStoreNames.contains("boxes")) {
+  //         const transaction = db.transaction(["boxes"], "readwrite");
+  //         const store = transaction.objectStore("boxes");
 
-          const clearRequest = store.clear();
+  //         const clearRequest = store.clear();
 
-          clearRequest.onsuccess = () => {
-            console.log('Object store "boxes" has been cleared.');
-            resolve(); // Zakończ Promise po pomyślnym wyczyszczeniu
-          };
+  //         clearRequest.onsuccess = () => {
+  //           console.log('Object store "boxes" has been cleared.');
+  //           resolve(); // Zakończ Promise po pomyślnym wyczyszczeniu
+  //         };
 
-          clearRequest.onerror = () => {
-            console.error('Error clearing the object store "boxes".');
-            reject('Error clearing the object store "boxes".'); // Zakończ Promise z błędem
-          };
-        } else {
-          console.error("Object store 'boxes' does not exist.");
-          reject("Object store 'boxes' does not exist."); // Zakończ Promise z błędem
-        }
-      };
+  //         clearRequest.onerror = () => {
+  //           console.error('Error clearing the object store "boxes".');
+  //           reject('Error clearing the object store "boxes".'); // Zakończ Promise z błędem
+  //         };
+  //       } else {
+  //         console.error("Object store 'boxes' does not exist.");
+  //         reject("Object store 'boxes' does not exist."); // Zakończ Promise z błędem
+  //       }
+  //     };
 
-      request.onerror = (event) => {
-        console.error("IndexedDB error:", event.target.error);
-        reject("IndexedDB error: " + event.target.error); // Zakończ Promise z błędem
-      };
-    });
-  }
+  //     request.onerror = (event) => {
+  //       console.error("IndexedDB error:", event.target.error);
+  //       reject("IndexedDB error: " + event.target.error); // Zakończ Promise z błędem
+  //     };
+  //   });
+  // }
 
-  function clearProgress() {
-    let wordIds = [];
-    localStorage.setItem("wordIds", JSON.stringify(wordIds));
-    localStorage.setItem("totalPercent", JSON.stringify(0));
-    localStorage.setItem("lastID", JSON.stringify(null));
-    localStorage.setItem("dailyGoal", JSON.stringify("20"));
-  }
+  // function clearProgress() {
+  //   let wordIds = [];
+  //   localStorage.setItem("wordIds", JSON.stringify(wordIds));
+  //   localStorage.setItem("totalPercent", JSON.stringify(0));
+  //   localStorage.setItem("lastID", JSON.stringify(null));
+  //   localStorage.setItem("dailyGoal", JSON.stringify("20"));
+  // }
 
   async function clearEverything() {
     try {
-      clearProgress();
-      await clearBoxes(); // Poczekaj na zakończenie clearBoxes
-      localStorage.setItem("theme", "light");
-      localStorage.setItem("sound", "true"); // Zapisz jako string
-      window.location.reload(); // Odśwież stronę po zakończeniu wszystkich operacji
+      localStorage.clear();
+      const deleteIndexedDB = () => {
+        const dbs = indexedDB.databases ? indexedDB.databases() : Promise.resolve([]);
+        
+        dbs.then((databases) => {
+          databases.forEach((db) => {
+            indexedDB.deleteDatabase(db.name);
+            console.log(`Usunięto bazę danych: ${db.name}`);
+          });
+        });
+      };
+  
+      deleteIndexedDB();
+
+
+      window.location.reload();
     } catch (error) {
       console.error("An error occurred while clearing everything: ", error);
     }
@@ -161,8 +172,6 @@ export default function Settings() {
                 language={language}
                 setLanguage={setLanguage}
                 showConfirm={showConfirm}
-                clearBoxes={clearBoxes}
-                clearProgress={clearProgress}
                 clearEverything={clearEverything}
                 handleDailyGoalChange={handleDailyGoalChange}
                 newDailyGoal={newDailyGoal}
