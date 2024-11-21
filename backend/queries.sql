@@ -46,3 +46,10 @@ CREATE TABLE c1_patches(
   patch_id SERIAL PRIMARY KEY,  
   word_ids JSON    
 );
+CREATE TABLE page_visit_stats (
+  id SERIAL PRIMARY KEY,
+  page_name VARCHAR(100) NOT NULL,
+  stat_date DATE NOT NULL,
+  visit_count INT NOT NULL DEFAULT 0,
+  UNIQUE (page_name, stat_date)
+);
