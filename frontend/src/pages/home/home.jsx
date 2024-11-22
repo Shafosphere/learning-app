@@ -16,7 +16,7 @@ import api from "../../utils/api";
 
 import usePersistedState from "../../components/settings/usePersistedState";
 import useSpellchecking from "../../components/spellchecking/spellchecking";
-
+import usePageVisit from "../../components/activity/countingentries";
 
 export default function Home() {
   const intl = useIntl();
@@ -83,6 +83,8 @@ export default function Home() {
 
   //autosave
   const [autoSave, setAutoSave] = useState(false);
+
+  usePageVisit('flashcards');
 
   function check(userWord, word, id) {
     if (checkAnswer(userWord, word)) {

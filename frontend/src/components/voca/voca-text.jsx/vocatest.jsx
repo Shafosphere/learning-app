@@ -10,6 +10,7 @@ import MyButton from "../../button/button";
 
 import usePersistedState from "../../settings/usePersistedState";
 import useSpellchecking from "../../spellchecking/spellchecking";
+import usePageVisit from "../../activity/countingentries";
 
 export default function VocaTest({ setDisplay, lvl }) {
   const [userWord, setWord] = useState("");
@@ -17,6 +18,9 @@ export default function VocaTest({ setDisplay, lvl }) {
   const [generateConfetti, setGenerateConfetti] = useState(false);
 
   const checkSpelling = useSpellchecking();
+
+  const pageName = `vocabulary_${lvl}`;
+  usePageVisit(pageName);
 
   // Dane z serwera
   const [data, setData] = useState([]);

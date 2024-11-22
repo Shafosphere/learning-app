@@ -10,8 +10,6 @@ import {
 
 const router = express.Router();
 
-
-
 router.get("/list", authenticateToken, authorizeAdmin, getUsersList);
 
 router.patch("/update", authenticateToken, authorizeAdmin, updateUsers);

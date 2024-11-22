@@ -5,7 +5,7 @@ import wordRoutes from "./routes/wordRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import cookieParser from "cookie-parser"; 
-
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 import cors from "cors";
 
@@ -35,9 +35,11 @@ app.use("/auth", authRoutes);
 
 app.use("/word", wordRoutes);
 
-app.use("/admin", adminRoutes)
+app.use("/admin", adminRoutes);
 
-app.use("/user", userRoutes)
+app.use("/user", userRoutes);
+
+app.use("/analytics", analyticsRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

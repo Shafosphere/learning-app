@@ -80,7 +80,7 @@ export const updateLastLogin = async (userId) => {
 
 export const getPatchWordsByLevel = async (patchNumber, level) => {
   let table;
-  
+
   table = level === "B2" ? "b2_patches" : "c1_patches";
   const queryText = `SELECT word_ids FROM ${table} WHERE patch_id = $1`;
 
@@ -551,5 +551,20 @@ export const patchLength = async () => {
   } catch (error) {
     console.error("Error in patchLength:", error);
     throw error; // Przekazujemy błąd dalej, aby kontroler mógł go obsłużyć
+  }
+};
+
+export const increasingEntrances = async ({ page_name, today }) => {
+  try {
+    await pool.query(
+      `INSERT INTO page_visit_stats (page_name, stat_date, visit_count)
+       VALUES ($1, $2, 1)
+       ON CONFLICT (page_name, stat_date)
+       DO UPDATE SET visit_count = page_visit_stats.visit_count + 1`,
+      [page_name, today]
+    );
+  } catch (error) {
+    console.error("Error in increasingEntrances:", error);
+    throw error;
   }
 };

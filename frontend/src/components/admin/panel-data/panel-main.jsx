@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/api";
 import "./panel-main.css";
+import Block from "./block";
 import ConfirmWindow from "../../confirm/confirm";
 import PinWindow from "../../pin/pin";
 import MyButton from "../../button/button";
@@ -101,16 +102,19 @@ export default function MainPanel() {
   return (
     <>
       <div className="data-container">
-        <div>Lang: {data.liczba_jezykow}</div>
-        <div>Users: {data.liczba_uzytkownikow}</div>
-        <div>Words: {data.liczba_slowek}</div>
-        <div>Reports: {data.liczba_raportow}</div>
-
-        <MyButton
+        <Block number={data.liczba_jezykow} title={"languages"} />
+        <Block number={data.liczba_uzytkownikow} title={"registered users"} />
+        <Block number={data.liczba_slowek} title={"number of words"} />
+        <Block number={data.liczba_raportow} title={"user reports"} />
+        <Block number={data.liczba_raportow} title={"zalogowani dzisiaj"} />
+        <Block number={"2323"} title={"words B2"} />
+        <Block number={"2313"} title={"words C1"} />
+        <Block number={data.liczba_raportow} title={"zalogowani dzisiaj"} />
+        {/* <MyButton
           message="patch"
           color="red"
           onClick={() => handleGeneratePatches()}
-        />
+        /> */}
       </div>
 
       {confirmMessage && (

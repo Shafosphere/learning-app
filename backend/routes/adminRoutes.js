@@ -20,5 +20,4 @@ router.post(
   generatePatches
 );
 
-
 export default router;
