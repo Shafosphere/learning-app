@@ -231,12 +231,34 @@ export const getUsersWithPagination = async (limit, offset) => {
 export const fetchGlobalData = async () => {
   const result = await pool.query(`
     SELECT 
-      (SELECT COUNT(DISTINCT language) FROM translation) AS liczba_jezykow,
-      (SELECT COUNT(*) FROM users) AS liczba_uzytkownikow,
-      (SELECT COUNT(*) FROM word) AS liczba_slowek,
-      (SELECT COUNT(*) FROM reports) AS liczba_raportow
+      (SELECT COUNT(DISTINCT language) FROM translation) AS total_languages,
+      (SELECT COUNT(*) FROM users) AS total_users,
+      (SELECT COUNT(*) FROM word) AS total_words,
+      (SELECT COUNT(*) FROM reports) AS total_reports,
+      (SELECT COUNT(*) FROM word WHERE level = 'B2') AS total_b2_words,
+      (SELECT COUNT(*) FROM word WHERE level = 'C1') AS total_c1_words,
+      (SELECT COUNT(*) FROM users WHERE DATE(last_login) = CURRENT_DATE) AS users_logged_in_today,
+      (SELECT visit_count FROM page_visit_stats WHERE page_name = 'flashcards' AND DATE(stat_date) = CURRENT_DATE) AS today_flashcard_visitors,
+      (SELECT visit_count FROM page_visit_stats WHERE page_name = 'vocabulary_C1' AND DATE(stat_date) = CURRENT_DATE) AS today_vocabulary_c1_visitors,
+      (SELECT visit_count FROM page_visit_stats WHERE page_name = 'vocabulary_B2' AND DATE(stat_date) = CURRENT_DATE) AS today_vocabulary_b2_visitors
   `);
   return result.rows[0];
+};
+
+export const fetchVisitsData = async () => {
+  const result = await pool.query(`
+    SELECT
+      stat_date,
+      page_name,
+      visit_count
+    FROM
+      page_visit_stats
+    WHERE
+      stat_date >= CURRENT_DATE - INTERVAL '6 days'
+    ORDER BY
+      stat_date ASC
+  `);
+  return result.rows;
 };
 
 export const getTranslationsByWordId = async (wordId) => {

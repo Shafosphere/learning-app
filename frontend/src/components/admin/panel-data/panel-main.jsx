@@ -5,6 +5,7 @@ import Block from "./block";
 import ConfirmWindow from "../../confirm/confirm";
 import PinWindow from "../../pin/pin";
 import MyButton from "../../button/button";
+import VisitChart from "./chart";
 
 export default function MainPanel() {
   const [data, setData] = useState({});
@@ -101,20 +102,71 @@ export default function MainPanel() {
 
   return (
     <>
-      <div className="data-container">
-        <Block number={data.liczba_jezykow} title={"languages"} />
-        <Block number={data.liczba_uzytkownikow} title={"registered users"} />
-        <Block number={data.liczba_slowek} title={"number of words"} />
-        <Block number={data.liczba_raportow} title={"user reports"} />
-        <Block number={data.liczba_raportow} title={"zalogowani dzisiaj"} />
-        <Block number={"2323"} title={"words B2"} />
-        <Block number={"2313"} title={"words C1"} />
-        <Block number={data.liczba_raportow} title={"zalogowani dzisiaj"} />
-        {/* <MyButton
-          message="patch"
-          color="red"
-          onClick={() => handleGeneratePatches()}
-        /> */}
+      <div className="data-container-adminpanel">
+        <div className="section">
+          <div className="section-title">users</div>
+          <div className="section-adminpanel">
+            <div className="blocks-container">
+              <div>
+                <Block number={data.total_users} title={"registered users"} />
+                <Block number={data.total_reports} title={"user reports"} />
+              </div>
+              <div>
+                <Block
+                  number={data.users_logged_in_today}
+                  title={"logged in today"}
+                />
+              </div>
+            </div>
+            <div className="chart-container">
+              <VisitChart />
+            </div>
+          </div>
+        </div>
+        <div className="section">
+          <div className="section-title">Visits</div>
+          <div className="section-adminpanel">
+            <div className="blocks-container">
+              <div>
+                <Block
+                  number={data.today_flashcard_visitors}
+                  title={"flashcard visits"}
+                />
+                <Block
+                  number={data.today_vocabulary_b2_visitors}
+                  title={"vocabulary B2 visits"}
+                />
+              </div>
+              <div>
+                <Block
+                  number={data.today_vocabulary_c1_visitors}
+                  title={"vocabulary C1 visits"}
+                />
+              </div>
+            </div>
+            <div className="chart-container">
+              <VisitChart />
+            </div>
+          </div>
+        </div>
+        <div className="section">
+          <div className="section-title">Language</div>
+          <div className="section-adminpanel">
+            <div className="blocks-container">
+              <div>
+                <Block number={data.total_languages} title={"languages"} />
+                <Block number={data.total_words} title={"number of words"} />
+              </div>
+              <div>
+                <Block number={data.total_b2_words} title={"words B2"} />
+                <Block number={data.total_c1_words} title={"words C1"} />
+              </div>
+            </div>
+            <div className="chart-container">
+              <VisitChart />
+            </div>
+          </div>
+        </div>
       </div>
 
       {confirmMessage && (
@@ -124,4 +176,12 @@ export default function MainPanel() {
       {isPinVisible && <PinWindow onClose={handlePinClose} />}
     </>
   );
+}
+
+{
+  /* <MyButton
+            message="re-draw patch system "
+            color="red"
+            onClick={() => handleGeneratePatches()}
+          /> */
 }

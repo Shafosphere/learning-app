@@ -1,10 +1,11 @@
 import {
   fetchGlobalData,
-  deleteOldPatches,
-  generatePatchesBatch,
+  fetchVisitsData,
   generateNewPatchesBatch,
   deleteOldNeWPatches,
 } from "../models/userModel.js";
+
+import { format, eachDayOfInterval } from 'date-fns';
 
 export const getGlobalData = async (req, res) => {
   try {
@@ -16,9 +17,70 @@ export const getGlobalData = async (req, res) => {
   }
 };
 
+function getColor(index) {
+  const colors = [
+    'rgba(255, 99, 132, 0.5)',    // Czerwony
+    'rgba(54, 162, 235, 0.5)',    // Niebieski
+    'rgba(75, 192, 192, 0.5)',    // Zielony
+    'rgba(153, 102, 255, 0.5)',   // Fioletowy
+    'rgba(255, 159, 64, 0.5)',    // Pomarańczowy
+  ];
+  return colors[index % colors.length];
+}
+
+export const getVisitsData = async (req, res) => {
+  try {
+    const rows = await fetchVisitsData();
+
+    const endDate = new Date();
+    endDate.setHours(0, 0, 0, 0); // Ustawienie godziny na początek dnia
+    const startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - 6); // 6 dni temu
+
+    const datesArray = eachDayOfInterval({ start: startDate, end: endDate }).map(date =>
+      format(date, 'yyyy-MM-dd')
+    );
+
+    // Sformatuj daty do etykiet wykresu
+    const formattedDates = datesArray.map(date => format(new Date(date), 'MMMM d'));
+
+    const pageNamesSet = new Set(rows.map(row => row.page_name));
+    const pageNamesArray = Array.from(pageNamesSet);
+
+    // Inicjalizuj datasets
+    const datasets = pageNamesArray.map((pageName, index) => ({
+      label: pageName,
+      data: [],
+      backgroundColor: getColor(index),
+    }));
+
+    // Wypełnij datasets liczbami wizyt
+    datesArray.forEach(date => {
+      pageNamesArray.forEach((pageName, index) => {
+        const row = rows.find(
+          r =>
+            format(r.stat_date, 'yyyy-MM-dd') === date &&
+            r.page_name === pageName
+        );
+        const visitCount = row ? row.visit_count : 0;
+        datasets[index].data.push(visitCount);
+      });
+    });
+
+    const chartData = {
+      labels: formattedDates,
+      datasets: datasets,
+    };
+
+    res.status(200).json(chartData);
+  } catch (error) {
+    console.error('Error fetching visits data:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
 export const generatePatches = async (req, res) => {
   try {
-    console.log("Start generating patches");
 
     // Usuń stare patche przed generowaniem nowych
     await deleteOldNeWPatches();
@@ -32,3 +94,4 @@ export const generatePatches = async (req, res) => {
     res.status(500).send("An error occurred while generating patches.");
   }
 };
+

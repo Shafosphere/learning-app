@@ -5,12 +5,16 @@ import verifyPin from "../middleware/verifyPin.js";
 import {
   getGlobalData,
   generatePatches,
+  getVisitsData,
 } from "../controllers/adminController.js";
 
 const router = express.Router();
 
 // Endpoint do pobierania globalnych danych (tylko dla administratorów)
 router.get("/global-data", authenticateToken, authorizeAdmin, getGlobalData);
+
+router.get("/visits-data", authenticateToken, authorizeAdmin, getVisitsData);
+
 
 router.post(
   "/generatepatch",
