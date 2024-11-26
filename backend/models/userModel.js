@@ -590,3 +590,24 @@ export const increasingEntrances = async ({ page_name, today }) => {
     throw error;
   }
 };
+
+export const incrementUserActivity = async (activity_type, activity_date) => {
+  const result = await pool.query(
+    `INSERT INTO user_activity_stats (activity_date, activity_type, activity_count)
+    VALUES ($1, $2, 1)
+    ON CONFLICT (activity_date, activity_type)
+    DO UPDATE SET activity_count = user_activity_stats.activity_count + 1
+    RETURNING *;`,
+    [activity_date, activity_type]
+  );
+  return result.rows[0];
+};
+
+export const fetchUserActivityData = async () => {
+  const query = `
+    SELECT activity_date, activity_type, activity_count
+    FROM user_activity_stats
+  `;
+  const { rows } = await pool.query(query);
+  return rows;
+};

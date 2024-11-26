@@ -10,6 +10,7 @@ import {
   getUserById,
   updateUserById,
   deleteUserByID,
+  incrementUserActivity
 } from "../models/userModel.js";
 
 const generateToken = (user) => {
@@ -37,6 +38,10 @@ export const registerUser = async (req, res) => {
 
     // Użycie funkcji modelu do tworzenia użytkownika
     const newUserId = await createUser(username, email, hashedPassword);
+
+    // Zwiększ licznik rejestracji
+    const today = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
+    await incrementUserActivity('registration', today);
 
     res.status(201).json({ success: true, userId: newUserId });
   } catch (error) {
@@ -92,6 +97,10 @@ export const loginUser = async (req, res) => {
 
     // Aktualizujemy czas ostatniego logowania
     await updateLastLogin(user.id);
+
+    // Zwiększ licznik logowań
+    const today = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
+    await incrementUserActivity('login', today);
 
     // Generujemy token JWT
     const token = generateToken(user);

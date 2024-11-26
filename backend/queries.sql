@@ -53,3 +53,10 @@ CREATE TABLE page_visit_stats (
   visit_count INT NOT NULL DEFAULT 0,
   UNIQUE (page_name, stat_date)
 );
+CREATE TABLE user_activity_stats (
+  id SERIAL PRIMARY KEY,
+  activity_date DATE NOT NULL,
+  activity_type VARCHAR(50) NOT NULL,  -- 'registration' lub 'login'
+  activity_count INT NOT NULL DEFAULT 0,
+  UNIQUE (activity_date, activity_type)
+);
