@@ -251,3 +251,39 @@ export const deleteUserAccount = async (req, res) => {
       .json({ success: false, message: "Failed to delete account." });
   }
 };
+
+export const resertUserPassword = async (req, res) => { 
+  const { email } = req.body;
+
+  // Sprawdź, czy użytkownik istnieje
+  const userQuery = 'SELECT id FROM users WHERE email = $1';
+  const user = await pool.query(userQuery, [email]);
+
+  if (user.rows.length === 0) {
+    return res.status(200).json({ message: 'Email wysłany, jeśli istnieje.' });
+  }
+
+  // Generuj token JWT
+  const token = jwt.sign({ userId: user.rows[0].id }, 'secret_key', {
+    expiresIn: '1h',
+  });
+
+  // Wyślij email z linkiem
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'twoj_email@gmail.com',
+      pass: 'twoje_haslo',
+    },
+  });
+
+  const resetLink = `http://localhost:3000/reset-password/${token}`;
+  await transporter.sendMail({
+    from: 'twoj_email@gmail.com',
+    to: email,
+    subject: 'Resetowanie hasła',
+    text: `Kliknij w link, aby zresetować hasło: ${resetLink}`,
+  });
+
+  res.status(200).json({ message: 'Email wysłany!' });
+};

@@ -2,13 +2,27 @@ import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import LoginForm from "../../components/login/loginForm";
 import RegiForm from "../../components/login/regiForm";
+import MyButton from "../../components/button/button";
+import ResetForm from "../../components/login/resetForm";
 import "./login.css";
 
 export default function Login() {
   const [display, setDisplay] = useState("login");
 
-
-
+  // Funkcja pomocnicza do renderowania przycisków
+  const renderButtons = (buttons) => (
+    <div className="bot-logg">
+      {buttons.map(({ id, defaultMessage, target }, index) => (
+        <MyButton
+          key={index}
+          message={<FormattedMessage id={id} defaultMessage={defaultMessage} />}
+          color="yellow"
+          width="20"
+          onClick={() => setDisplay(target)}
+        />
+      ))}
+    </div>
+  );
 
   return (
     <div className="container-logging">
@@ -16,25 +30,16 @@ export default function Login() {
         {display === "login" && (
           <>
             <div className="top-logg">
-              <LoginForm/>
+              <LoginForm />
             </div>
-            <div className="bot-logg">
-              <button
-                style={{ "--buttonColor": "var(--tertiary)", width: "50%" }}
-                onClick={() => setDisplay("register")}
-                className="button"
-                type="submit"
-              >
-                <FormattedMessage id="register" defaultMessage="Register" />
-              </button>
-              <button
-                style={{ "--buttonColor": "var(--tertiary)", width: "50%" }}
-                className="button"
-                type="submit"
-              >
-                <FormattedMessage id="reset" defaultMessage="Reset" />
-              </button>
-            </div>
+            {renderButtons([
+              {
+                id: "register",
+                defaultMessage: "Register",
+                target: "register",
+              },
+              { id: "reset", defaultMessage: "Reset", target: "reset" },
+            ])}
           </>
         )}
         {display === "register" && (
@@ -42,23 +47,25 @@ export default function Login() {
             <div className="top-logg">
               <RegiForm setDisplay={setDisplay} />
             </div>
-            <div className="bot-logg">
-              <button
-                onClick={() => setDisplay("login")}
-                className="button"
-                style={{ "--buttonColor": "var(--tertiary)", width: "50%" }}
-                type="submit"
-              >
-                <FormattedMessage id="login" defaultMessage="Log In" />
-              </button>
-              <button
-                style={{ "--buttonColor": "var(--tertiary)", width: "50%" }}
-                className="button"
-                type="submit"
-              >
-                <FormattedMessage id="reset" defaultMessage="Reset" />
-              </button>
+            {renderButtons([
+              { id: "login", defaultMessage: "Log In", target: "login" },
+              { id: "reset", defaultMessage: "Reset", target: "reset" },
+            ])}
+          </>
+        )}
+        {display === "reset" && (
+          <>
+            <div className="top-logg">
+              <ResetForm />
             </div>
+            {renderButtons([
+              { id: "login", defaultMessage: "Log In", target: "login" },
+              {
+                id: "register",
+                defaultMessage: "Register",
+                target: "register",
+              },
+            ])}
           </>
         )}
       </div>
