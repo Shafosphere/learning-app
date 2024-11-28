@@ -12,7 +12,7 @@ export default function ResetForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      await api.post("/auth/reset-password", {
+      await api.post("/auth/send-reset-link", {
         email,
       });
     } catch (error) {

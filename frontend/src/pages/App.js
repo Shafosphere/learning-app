@@ -13,6 +13,7 @@ import enMessages from "../locales/en.json";
 import plMessages from "../locales/pl.json";
 import { PopupProvider } from "../components/popup/popupcontext";
 import Vocabulary from "./voca/vocabulary";
+import ResetPassword from "./resetPassword/resetpassword";
 
 // Obiekt zawierający tłumaczenia dla różnych języków
 const messages = {
@@ -33,7 +34,7 @@ const AppWrapper = () => {
         <Route path="/settings" element={<Settings />} />
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={isLoggedIn ? <Account /> : <Login />} />
-        <Route path="/vocabulary" element={<Vocabulary/>}/>
+        <Route path="/vocabulary" element={<Vocabulary />} />
         <Route
           path="/admin"
           element={
@@ -42,6 +43,7 @@ const AppWrapper = () => {
             </PrivateRoute>
           }
         />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </IntlProvider>
   );

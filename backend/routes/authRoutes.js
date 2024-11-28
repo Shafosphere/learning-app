@@ -12,7 +12,8 @@ import {
   userInformation,
   updateUserAccount,
   deleteUserAccount,
-  resertUserPassword,
+  sendUserResetLink,
+  resetPassword,
 } from "../controllers/authController.js";
 
 import { accountUpdateValidationRules } from "../accountValidators.js";
@@ -43,7 +44,9 @@ router.patch("/update", authenticateToken, accountUpdateValidationRules, updateU
 
 router.delete("/delete", authenticateToken, deleteUserAccount);
 
-router.post("/reset-password", resertUserPassword)
+router.post("/send-reset-link", sendUserResetLink)
 
+router.post('/reset-password', resetPassword);
 
 export default router;
+// resertUserPassword

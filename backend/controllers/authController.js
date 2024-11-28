@@ -10,8 +10,11 @@ import {
   getUserById,
   updateUserById,
   deleteUserByID,
-  incrementUserActivity
+  incrementUserActivity,
+  getUserByEmail,
 } from "../models/userModel.js";
+import { sendEmail, generateResetPasswordEmail } from "../emailService.js";
+import { config } from "../config.js";
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -41,7 +44,7 @@ export const registerUser = async (req, res) => {
 
     // Zwiększ licznik rejestracji
     const today = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
-    await incrementUserActivity('registration', today);
+    await incrementUserActivity("registration", today);
 
     res.status(201).json({ success: true, userId: newUserId });
   } catch (error) {
@@ -100,7 +103,7 @@ export const loginUser = async (req, res) => {
 
     // Zwiększ licznik logowań
     const today = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
-    await incrementUserActivity('login', today);
+    await incrementUserActivity("login", today);
 
     // Generujemy token JWT
     const token = generateToken(user);
@@ -177,43 +180,43 @@ export const updateUserAccount = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    // Pobranie obecnych danych użytkownika
+    // Pobierz aktualne dane użytkownika
     const user = await getUserById(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Sprawdzenie starego hasła, jeśli zostało podane
+    // Jeśli podano stare hasło, sprawdź jego poprawność
     if (oldPass && !(await bcrypt.compare(oldPass, user.password))) {
       return res.status(400).json({ message: "Old password is incorrect" });
     }
 
-    // Hashowanie nowego hasła, jeśli zostało podane
-    let hashedPassword = user.password;
-    if (newPass) {
-      hashedPassword = await bcrypt.hash(newPass, 10);
-    }
+    // Jeśli podano nowe hasło, zahaszuj je
+    const hashedPassword = newPass ? await bcrypt.hash(newPass, 10) : undefined;
 
-    // Aktualizacja danych użytkownika
-    const updatedUser = {
-      username: username || user.username,
-      email: email || user.email,
+    // Zaktualizuj dane użytkownika
+    await updateUserById(userId, {
+      username: username || undefined,
+      email: email || undefined,
       password: hashedPassword,
-    };
-
-    await updateUserById(userId, updatedUser);
-
-    // Generowanie nowego tokenu JWT
-    const newToken = generateToken(updatedUser);
-
-    // Ustawienie nowego tokenu w ciasteczku
-    res.cookie("token", newToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 3600000, // 1 godzina
     });
+
+    // Generuj nowy token JWT (tylko jeśli zaktualizowano email lub hasło)
+    const newToken =
+      email || hashedPassword
+        ? generateToken({ id: userId, username, email })
+        : null;
+
+    // Jeśli generujesz nowy token, ustaw go w ciasteczku
+    if (newToken) {
+      res.cookie("token", newToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+        maxAge: 3600000, // 1 godzina
+      });
+    }
 
     res.status(200).json({
       success: true,
@@ -252,38 +255,50 @@ export const deleteUserAccount = async (req, res) => {
   }
 };
 
-export const resertUserPassword = async (req, res) => { 
+export const sendUserResetLink = async (req, res) => {
   const { email } = req.body;
 
-  // Sprawdź, czy użytkownik istnieje
-  const userQuery = 'SELECT id FROM users WHERE email = $1';
-  const user = await pool.query(userQuery, [email]);
+  const users = await getUserByEmail(email);
 
-  if (user.rows.length === 0) {
-    return res.status(200).json({ message: 'Email wysłany, jeśli istnieje.' });
+  if (users.length === 0) {
+    return res.status(200).json({ message: "Email wysłany, jeśli istnieje." });
   }
 
-  // Generuj token JWT
-  const token = jwt.sign({ userId: user.rows[0].id }, 'secret_key', {
-    expiresIn: '1h',
-  });
-
-  // Wyślij email z linkiem
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'twoj_email@gmail.com',
-      pass: 'twoje_haslo',
-    },
-  });
-
+  const user = users[0];
+  const token = generateToken(user);
   const resetLink = `http://localhost:3000/reset-password/${token}`;
-  await transporter.sendMail({
-    from: 'twoj_email@gmail.com',
-    to: email,
-    subject: 'Resetowanie hasła',
-    text: `Kliknij w link, aby zresetować hasło: ${resetLink}`,
-  });
 
-  res.status(200).json({ message: 'Email wysłany!' });
+  try {
+    const htmlContent = generateResetPasswordEmail(resetLink);
+
+    await sendEmail({
+      to: email,
+      subject: "Resetowanie hasła",
+      html: htmlContent, // Używamy HTML
+    });
+
+    res.status(200).json({ message: "Email wysłany, jeśli istnieje." });
+  } catch (error) {
+    console.error("Błąd podczas wysyłania e-maila:", error);
+    res.status(500).json({ message: "Nie udało się wysłać emaila." });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+  console.log(password);
+  try {
+    const decoded = jwt.verify(token, config.tokenKey);
+    const userId = decoded.id;
+    console.log(userId);
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await updateUserById(userId, { password: hashedPassword });
+
+    res.status(200).json({ message: "Hasło zostało zmienione." });
+  } catch (error) {
+    console.error("Błąd podczas resetowania hasła:", error);
+    res.status(400).json({ message: "Token wygasł lub jest nieprawidłowy." });
+  }
 };

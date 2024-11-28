@@ -200,13 +200,39 @@ export const getUserById = async (userId) => {
   return result.rows[0];
 };
 
-// Aktualizacja danych użytkownika
-export const updateUserById = async (userId, { username, email, password }) => {
-  await pool.query(
-    "UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4",
-    [username, email, password, userId]
-  );
+// Pobranie użytkownika na podstawie email
+export const getUserByEmail = async (email) => {
+  const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+    email,
+  ]);
+  return result.rows;
 };
+
+// Aktualizacja danych użytkownika
+export const updateUserById = async (userId, updates) => {
+  const fields = [];
+  const values = [];
+  let index = 1;
+
+  // Iteracja po polach, które mają zostać zaktualizowane
+  for (const [key, value] of Object.entries(updates)) {
+    if (value !== undefined) {
+      fields.push(`${key} = $${index}`);
+      values.push(value);
+      index++;
+    }
+  }
+
+  if (fields.length === 0) {
+    throw new Error("Brak danych do aktualizacji.");
+  }
+
+  const query = `UPDATE users SET ${fields.join(", ")} WHERE id = $${index}`;
+  values.push(userId);
+
+  await pool.query(query, values);
+};
+
 
 export const deleteUserByID = async (userId) => {
   await pool.query("DELETE FROM users WHERE id = $1", [userId]);
@@ -611,3 +637,4 @@ export const fetchUserActivityData = async () => {
   const { rows } = await pool.query(query);
   return rows;
 };
+
