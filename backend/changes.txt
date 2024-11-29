@@ -37,10 +37,5 @@ t "/users-update" >>> "/user/update - updatuje dane wybranego uzytkownika
 t "/search-user" >>> "/user/search" - wyszuwiarka w panelu admina
 t /user/delete
 
-do zrobienia,
-sprawdzic:
-czy w raportach w sekcji report words bedzie działało updatowanie słów?
-panel admina do zarzadzania patchami?
-
-do zrobienia
-rodzielic skecje word na dwa, jeden na B2 drugi na C1
+29/11/2024 - zrobienie podsumiwanie projektu w aplikacji obsydnia
+utworzenie notatek + wymyslenie nowych funkcji na kolejny tydzien
