@@ -84,7 +84,7 @@ export default function Home() {
   //autosave
   const [autoSave, setAutoSave] = useState(false);
 
-  usePageVisit('flashcards');
+  usePageVisit("flashcards");
 
   function check(userWord, word, id) {
     if (checkAnswer(userWord, word)) {
@@ -150,6 +150,7 @@ export default function Home() {
         calculatePercent();
         calculateTotalPercent();
         confettiShow();
+        await sendLearnedWordToServer(newid);
       }
 
       setBoxes((prevBoxes) => {
@@ -293,14 +294,13 @@ export default function Home() {
     if (userWord && word) {
       // Użycie funkcji `checkSpelling` z hooka `useSpellchecking`
       const isCorrect = checkSpelling(userWord, word);
-  
+
       return isCorrect;
     } else {
       console.log("Brak danych do porównania!");
       return false;
     }
   }
-  
 
   useEffect(() => {
     return () => {
@@ -466,6 +466,16 @@ export default function Home() {
       clearTimeout(generateTimer);
       clearTimeout(hideTimer);
     };
+  }
+
+  async function sendLearnedWordToServer(wordId) {
+    try {
+      const response = await api.post("/user/learn-word", { wordId });
+      console.log("Słówko zostało zgłoszone do serwera:", response.data);
+    } catch (error) {
+      console.error("Błąd podczas wysyłania słówka do serwera:", error);
+      // Możesz dodać obsługę błędów, np. wyświetlić użytkownikowi komunikat
+    }
   }
 
   return (

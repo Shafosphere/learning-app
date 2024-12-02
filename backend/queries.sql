@@ -60,3 +60,20 @@ CREATE TABLE user_activity_stats (
   activity_count INT NOT NULL DEFAULT 0,
   UNIQUE (activity_date, activity_type)
 );
+CREATE TABLE user_word_progress (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  word_id INT NOT NULL,
+  learned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (word_id) REFERENCES word(id)
+);
+CREATE TABLE ranking (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  username VARCHAR(100) NOT NULL,
+  weekly_points INT NOT NULL DEFAULT 0,
+  last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+CREATE UNIQUE INDEX idx_user_word_unique ON user_word_progress (user_id, word_id);

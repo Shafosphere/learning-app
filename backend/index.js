@@ -6,6 +6,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import cookieParser from "cookie-parser"; 
 import analyticsRoutes from "./routes/analyticsRoutes.js";
+import { initializeCronJobs } from "./cronJobs.js";
 
 import cors from "cors";
 
@@ -40,6 +41,8 @@ app.use("/admin", adminRoutes);
 app.use("/user", userRoutes);
 
 app.use("/analytics", analyticsRoutes);
+
+initializeCronJobs();
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

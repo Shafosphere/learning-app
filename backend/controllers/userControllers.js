@@ -5,7 +5,12 @@ import {
   getUsersWithPagination,
   updateUserInDb,
   deleteUserByID,
+  getUserIdFromProgress,
+  insertWordIntoUserProgress,
+  userRankingUpdate,
 } from "../models/userModel.js";
+
+import pool from "../dbClient.js";
 
 export const getUsersList = async (req, res) => {
   const { page = 1, limit = 50 } = req.query;
@@ -98,5 +103,40 @@ export const deleteUser = async (req, res) => {
       success: false,
       message: "An error occurred while deleting user.",
     });
+  }
+};
+
+export const learnWord = async (req, res) => {
+  const client = await pool.connect(); // Pobierz klienta z puli
+  const userId = req.user.id;
+  const username = req.user.username;
+  const wordId = req.body.wordId;
+
+  try {
+    await client.query('BEGIN'); // Rozpocznij transakcję
+
+    // Sprawdź, czy słówko już zostało nauczone przez użytkownika
+    const checkResult = await getUserIdFromProgress(client, userId, wordId);
+
+    if (checkResult.rows.length > 0) {
+      await client.query('ROLLBACK'); // Wycofaj transakcję w przypadku błędu
+      return res.status(400).send('Już nauczyłeś się tego słówka.');
+    }
+
+    // Wstawienie rekordu do `user_word_progress`
+    await insertWordIntoUserProgress(client, userId, wordId);
+
+    // Aktualizacja `ranking`
+    await userRankingUpdate(client, userId, username);
+
+    await client.query('COMMIT'); // Zatwierdź transakcję
+
+    res.status(200).send('Słówko dodane do progresu użytkownika i ranking zaktualizowany.');
+  } catch (err) {
+    await client.query('ROLLBACK'); // Wycofaj transakcję w przypadku błędu
+    console.error('Błąd podczas dodawania słówka:', err);
+    res.status(500).send('Błąd serwera.');
+  } finally {
+    client.release(); // Zwolnij klienta z puli
   }
 };

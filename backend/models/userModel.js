@@ -233,7 +233,6 @@ export const updateUserById = async (userId, updates) => {
   await pool.query(query, values);
 };
 
-
 export const deleteUserByID = async (userId) => {
   await pool.query("DELETE FROM users WHERE id = $1", [userId]);
 };
@@ -638,3 +637,30 @@ export const fetchUserActivityData = async () => {
   return rows;
 };
 
+export const getUserIdFromProgress = async (client, userId, wordId) => {
+  const result = await client.query(
+    "SELECT id FROM user_word_progress WHERE user_id = $1 AND word_id = $2",
+    [userId, wordId]
+  );
+  return result;
+};
+
+
+export const insertWordIntoUserProgress = async (client, userId, wordId) => {
+  await client.query(
+    "INSERT INTO user_word_progress (user_id, word_id) VALUES ($1, $2)",
+    [userId, wordId]
+  );
+};
+
+export const userRankingUpdate = async (client, userId, username) => {
+  await client.query(
+    `
+    INSERT INTO ranking (user_id, username, weekly_points)
+    VALUES ($1, $2, 1)
+    ON CONFLICT (user_id) DO UPDATE
+    SET weekly_points = ranking.weekly_points + 1, last_updated = NOW();
+    `,
+    [userId, username]
+  );
+};
