@@ -8,6 +8,7 @@ import {
   getUserIdFromProgress,
   insertWordIntoUserProgress,
   userRankingUpdate,
+  getTopRankingUsers,
 } from "../models/userModel.js";
 
 import pool from "../dbClient.js";
@@ -138,5 +139,17 @@ export const learnWord = async (req, res) => {
     res.status(500).send('Błąd serwera.');
   } finally {
     client.release(); // Zwolnij klienta z puli
+  }
+};
+
+export const getRanking = async (req, res) => {
+  try {
+    console.log('test')
+    const topUsers = await getTopRankingUsers(10);
+    console.log(topUsers)
+    res.status(200).json(topUsers);
+  } catch (error) {
+    console.error('Błąd podczas pobierania rankingu:', error);
+    res.status(500).json({ message: 'Błąd serwera podczas pobierania rankingu.' });
   }
 };

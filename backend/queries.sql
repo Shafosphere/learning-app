@@ -77,3 +77,16 @@ CREATE TABLE ranking (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 CREATE UNIQUE INDEX idx_user_word_unique ON user_word_progress (user_id, word_id);
+
+
+ALTER TABLE ranking
+ADD CONSTRAINT unique_user_id UNIQUE (user_id);
+
+CREATE TABLE ranking (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL UNIQUE,
+  username VARCHAR(100) NOT NULL,
+  weekly_points INT NOT NULL DEFAULT 0,
+  last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);

@@ -645,7 +645,6 @@ export const getUserIdFromProgress = async (client, userId, wordId) => {
   return result;
 };
 
-
 export const insertWordIntoUserProgress = async (client, userId, wordId) => {
   await client.query(
     "INSERT INTO user_word_progress (user_id, word_id) VALUES ($1, $2)",
@@ -663,4 +662,16 @@ export const userRankingUpdate = async (client, userId, username) => {
     `,
     [userId, username]
   );
+};
+
+export const getTopRankingUsers = async (limit) => {
+  const query = `
+    SELECT username, weekly_points
+    FROM ranking
+    ORDER BY weekly_points DESC
+    LIMIT $1;
+  `;
+  const values = [limit];
+  const result = await pool.query(query, values);
+  return result.rows;
 };

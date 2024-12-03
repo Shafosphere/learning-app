@@ -14,6 +14,7 @@ import { MdLogout, MdLogin } from "react-icons/md";
 import { FaBook } from "react-icons/fa";
 import { FaScroll } from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
+import { FaRankingStar } from "react-icons/fa6";
 
 export default function Sidebar() {
   const { isLoggedIn, setIsLoggedIn, setUser, themeMode, toggleTheme } =
@@ -115,6 +116,15 @@ export default function Sidebar() {
               </span>
               <span className="sidebar-full">
                 <div className="link-text">account</div>
+              </span>
+            </Link>
+
+            <Link className="link" to="/ranking">
+              <span className="sidebar-initial link-icon">
+                <FaRankingStar />
+              </span>
+              <span className="sidebar-full">
+                <div className="link-text">ranking</div>
               </span>
             </Link>
 

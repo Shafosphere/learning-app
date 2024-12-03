@@ -7,6 +7,7 @@ import Sidebar from "../components/sidebar/sidebar";
 import AdminPanel from "./admin/admin";
 import PrivateRoute from "../utils/privateroute";
 import Account from "./account/account";
+import Ranking from "./ranking/ranking";
 import { SettingsProvider, SettingsContext } from "./settings/properties";
 import { IntlProvider } from "react-intl";
 import enMessages from "../locales/en.json";
@@ -35,6 +36,7 @@ const AppWrapper = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={isLoggedIn ? <Account /> : <Login />} />
         <Route path="/vocabulary" element={<Vocabulary />} />
+        <Route path="/ranking" element={<Ranking />} />
         <Route
           path="/admin"
           element={
