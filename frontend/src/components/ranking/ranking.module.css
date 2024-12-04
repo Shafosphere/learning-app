@@ -1,48 +1,90 @@
-.container{
-    height: 100vh;
-    width: 100vw;
+.container {
+  height: 100vh;
+  width: 100vw;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    color: var(--headline);
+  color: var(--headline);
 
-    background-color: var(--f2f4f6);
-    background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-    background-size: 40px 40px;
-  
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
-}
-.window{
-    height: 100vh;
-    width: 70rem;
+  background-color: var(--f2f4f6);
+  background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
+  background-size: 40px 40px;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--background-rgba), 1) 0%,
+    rgba(var(--border-rgba), 1) 100%
+  );
+}
+.window {
+  height: 100vh;
+  width: 70rem;
 
-    border-right: 10px solid var(--border);
-    border-left: 10px solid var(--border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-right: 10px solid var(--border);
+  border-left: 10px solid var(--border);
 }
-/* .table{
-    width: 20rem;
-} */
-.thead{
-    text-transform: uppercase;
-    font-size: 20px;
+.tablehead {
+  font-size: 3em;
+  text-transform: uppercase;
 }
-.thead tr td{
-    padding: 0rem 1rem 0rem 1rem;
+
+.rowhead th:nth-child(2) {
+  padding: 1rem;
 }
-.row td{
-    font-size: 20px;
-    padding: 1rem 2rem 1rem 2rem;
+
+.firstrow {
+  font-size: 2em;
+  font-weight: 900;
 }
-.firstrow{
-    font-weight: 900;
+.firstrow td,
+.firstrow th {
+  border-bottom: 2px solid var(--headline);
+}
+.row td {
+  padding: 1.5rem 0rem 1rem 0rem;
+  text-align: center;
+  font-weight: 600;
+}
+.medal {
+  margin-left: 0.5rem;
+}
+.gold {
+  height: 2rem;
+}
+.silver {
+  height: 1.5rem;
+}
+.bronze {
+  height: 1rem;
+}
+.avatar {
+  margin-right: 1rem;
+  width: 2rem; /* Szerokość avatara */
+  height: 2rem; /* Wysokość avatara */
+}
+
+.userInfo {
+  padding: 0rem 1rem 0rem 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  width: 100%;
+}
+.userInfo div:nth-child(1) {
+  width: 30%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+.userInfo div:nth-child(2) {
+  display: flex;
+  width: 70%;
+  justify-content: left;
+  align-items: center;
 }
