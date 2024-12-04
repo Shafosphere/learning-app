@@ -652,26 +652,29 @@ export const insertWordIntoUserProgress = async (client, userId, wordId) => {
   );
 };
 
-export const userRankingUpdate = async (client, userId, username) => {
+export const userRankingUpdate = async (client, userId) => {
   await client.query(
     `
-    INSERT INTO ranking (user_id, username, weekly_points)
-    VALUES ($1, $2, 1)
+    INSERT INTO ranking (user_id, weekly_points)
+    VALUES ($1, 1)
     ON CONFLICT (user_id) DO UPDATE
     SET weekly_points = ranking.weekly_points + 1, last_updated = NOW();
     `,
-    [userId, username]
+    [userId]
   );
 };
 
+
 export const getTopRankingUsers = async (limit) => {
   const query = `
-    SELECT username, weekly_points
+    SELECT users.username, users.avatar, ranking.weekly_points
     FROM ranking
-    ORDER BY weekly_points DESC
+    JOIN users ON ranking.user_id = users.id
+    ORDER BY ranking.weekly_points DESC
     LIMIT $1;
   `;
   const values = [limit];
   const result = await pool.query(query, values);
   return result.rows;
 };
+

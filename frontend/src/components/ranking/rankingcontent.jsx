@@ -6,11 +6,23 @@ import Loading from "../../components/loading/loading";
 import gold from "../../data/medal/gold.png";
 import silver from "../../data/medal/silver.png";
 import bronze from "../../data/medal/bronze.png";
-import avatar from "../../data/avatars/man.png";
+
+import avatar1 from "../../data/avatars/man.png";
+import avatar2 from "../../data/avatars/man_1.png";
+import avatar3 from "../../data/avatars/woman.png";
+import avatar4 from "../../data/avatars/woman_1.png";
 
 export default function RankingContent() {
   const [data, setData] = useState(null);
   const [hasMore, setHasMore] = useState(true);
+
+  // Mapa awatarów
+  const avatarImages = {
+    1: avatar1,
+    2: avatar2,
+    3: avatar3,
+    4: avatar4,
+  };
 
   useEffect(() => {
     async function getData() {
@@ -43,8 +55,8 @@ export default function RankingContent() {
           <table>
             <thead className={styles.tablehead}>
               <tr className={styles.rowhead}>
-                <th>position</th>
-                <th>nickname</th>
+                <th>Position</th>
+                <th>Nickname</th>
                 <th>Points</th>
               </tr>
             </thead>
@@ -94,7 +106,7 @@ export default function RankingContent() {
                           <img
                             alt="avatar"
                             className={styles.avatar}
-                            src={avatar}
+                            src={avatarImages[item.avatar]}
                           />
                         </div>
                         <div>{item.username}</div>
