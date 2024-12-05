@@ -186,7 +186,7 @@ export const getAllPatchLength = async () => {
 
 export const getUserByUserName = async (username) => {
   const result = await pool.query(
-    "SELECT email FROM users WHERE username = $1",
+    "SELECT email, avatar FROM users WHERE username = $1",
     [username]
   );
   return result.rows[0];

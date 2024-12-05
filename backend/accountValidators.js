@@ -13,4 +13,8 @@ export const accountUpdateValidationRules = [
       }
       return true;
     }),
+  body("avatar")
+    .optional() // Avatar is optional, validate only if provided
+    .isInt({ min: 1, max: 4 }) // Check if it's an integer between 1 and 4
+    .withMessage("Avatar must be a number between 1 and 4"),
 ];

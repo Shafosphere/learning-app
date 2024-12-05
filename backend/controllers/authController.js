@@ -155,11 +155,14 @@ export const userInformation = async (req, res) => {
       });
     }
 
+    console.log(userResult);
+
     res.status(200).json({
       success: true,
       message: "Data received",
       username: req.user.username,
       email: userResult.email,
+      avatar: userResult.avatar,
     });
   } catch (error) {
     console.error("Error fetching user information:", error);
@@ -176,7 +179,7 @@ export const updateUserAccount = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { username, email, oldPass, newPass } = req.body;
+  const { username, email, oldPass, newPass, avatar} = req.body;
   const userId = req.user.id;
 
   try {
@@ -200,6 +203,7 @@ export const updateUserAccount = async (req, res) => {
       username: username || undefined,
       email: email || undefined,
       password: hashedPassword,
+      avatar: avatar || undefined,
     });
 
     // Generuj nowy token JWT (tylko jeśli zaktualizowano email lub hasło)

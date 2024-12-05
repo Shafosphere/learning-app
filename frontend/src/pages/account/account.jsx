@@ -1,36 +1,48 @@
 import "./account.css";
-import React, { useEffect, useRef, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import api from "../../utils/api";
 import ConfirmWindow from "../../components/confirm/confirm";
-import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
+import {
+  MdOutlineLock,
+  MdOutlineLockOpen,
+  MdArrowBack,
+  MdArrowForward,
+} from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { PopupContext } from "../../components/popup/popupcontext";
-
+import MyButton from "../../components/button/button";
+import avatar1 from "../../data/avatars/man.png";
+import avatar2 from "../../data/avatars/man_1.png";
+import avatar3 from "../../data/avatars/woman.png";
+import avatar4 from "../../data/avatars/woman_1.png";
 
 export default function Account() {
   const navigate = useNavigate();
 
-  const username = useRef(null);
-  const email = useRef(null);
-  const oldPass = useRef(null);
-  const newPass = useRef(null);
-  const confirmPass = useRef(null);
+  const [userData, setUserData] = useState({
+    username: "",
+    email: "",
+    oldPass: "",
+    newPass: "",
+    confirmPass: "",
+    avatar: null,
+  });
 
-  const [initialData, setInitialData] = useState({});
   const [editedData, setEditedData] = useState({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-
   const [showPassword, setShowPassword] = useState(false);
-
-  // popup
-  const { setPopup } = useContext(PopupContext);
-
-  // span management
   const [activeSpan, setSpan] = useState("");
-
-  // confirm
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState(null);
+
+  const { setPopup } = useContext(PopupContext);
+
+  const avatarImages = {
+    1: avatar1,
+    2: avatar2,
+    3: avatar3,
+    4: avatar4,
+  };
 
   const handleConfirmClose = (result) => {
     if (result && confirmCallback) {
@@ -76,9 +88,12 @@ export default function Account() {
       try {
         const response = await api.post("/auth/information");
         const data = response.data;
-        username.current.value = data.username;
-        email.current.value = data.email;
-        setInitialData(data);
+        setUserData((prevData) => ({
+          ...prevData,
+          username: data.username,
+          email: data.email,
+          avatar: data.avatar,
+        }));
       } catch (error) {
         console.error(error);
       }
@@ -87,10 +102,16 @@ export default function Account() {
   }, []);
 
   const handleChange = (field, value) => {
-    setEditedData((prev) => ({
-      ...prev,
+    setUserData((prevData) => ({
+      ...prevData,
       [field]: value,
     }));
+
+    setEditedData((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+
     setIsButtonDisabled(false);
   };
 
@@ -102,6 +123,8 @@ export default function Account() {
           message: "Changes saved successfully!",
           emotion: "positive",
         });
+        setEditedData({});
+        setIsButtonDisabled(true);
       } else {
         setPopup({
           message: "Failed to save changes.",
@@ -117,202 +140,201 @@ export default function Account() {
     }
   };
 
+  const inputFields = [
+    {
+      label: "Username",
+      field: "username",
+      type: "text",
+    },
+    {
+      label: "Email Address",
+      field: "email",
+      type: "email",
+    },
+    {
+      label: "Old Password",
+      field: "oldPass",
+      type: showPassword ? "text" : "password",
+      isPassword: true,
+    },
+    {
+      label: "New Password",
+      field: "newPass",
+      type: showPassword ? "text" : "password",
+      isPassword: true,
+    },
+    {
+      label: "Confirm New Password",
+      field: "confirmPass",
+      type: showPassword ? "text" : "password",
+      isPassword: true,
+    },
+  ];
+
+  const handleAvatarChange = (direction) => {
+    setUserData((prevData) => {
+      let newAvatar;
+      if (direction === "left") {
+        newAvatar = prevData.avatar === 1 ? 4 : prevData.avatar - 1;
+      } else if (direction === "right") {
+        newAvatar = prevData.avatar === 4 ? 1 : prevData.avatar + 1;
+      }
+      setEditedData((prevEditedData) => ({
+        ...prevEditedData,
+        avatar: newAvatar,
+      }));
+      setIsButtonDisabled(false);
+      return {
+        ...prevData,
+        avatar: newAvatar,
+      };
+    });
+  };
+
   return (
-    <div className="container-settings">
-      <div className="window-settings">
+    <div className="container-account">
+      <div className="window-account">
         <div className="settings-left">
           <div className="account-input-container">
-            <div className="input-group">
-              <span
-                onMouseEnter={() => setSpan("username")}
-                className="account-text"
-              >
-                Username
-              </span>
-              <input
-                onMouseEnter={() => setSpan("username")}
-                onChange={(e) => handleChange("username", e.target.value)}
-                className="account-input account-top-input"
-                type="text"
-                ref={username}
-              />
-            </div>
-
-            <div className="input-group">
-              <span
-                onMouseEnter={() => setSpan("email")}
-                className="account-text"
-              >
-                Email Address
-              </span>
-              <input
-                onMouseEnter={() => setSpan("email")}
-                onChange={(e) => handleChange("email", e.target.value)}
-                className="account-input account-top-input"
-                type="email"
-                ref={email}
-              />
-            </div>
-
-            <div className="input-group">
-              <span
-                onMouseEnter={() => setSpan("password")}
-                className="account-text"
-              >
-                Old Password
-              </span>
-              <div
-                className="custom_input-acc"
-                style={{ position: "relative" }}
-              >
-                <input
-                  onMouseEnter={() => setSpan("password")}
-                  autoComplete="current-password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  className="account-input"
-                  ref={oldPass}
-                  onChange={(e) => handleChange("oldPass", e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="btn-pass-acc"
-                  onClick={() => setShowPassword(!showPassword)}
+            {inputFields.map((input) => (
+              <div className="input-group" key={input.field}>
+                <span
+                  onMouseEnter={() => setSpan(input.field)}
+                  className="account-text"
                 >
-                  {showPassword ? (
-                    <MdOutlineLockOpen size={30} />
-                  ) : (
-                    <MdOutlineLock size={30} />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div className="input-group">
-              <span
-                onMouseEnter={() => setSpan("password")}
-                className="account-text"
-              >
-                New Password
-              </span>
-              <div
-                className="custom_input-acc"
-                style={{ position: "relative" }}
-              >
-                <input
-                  onMouseEnter={() => setSpan("password")}
-                  autoComplete="current-password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  className="account-input"
-                  ref={newPass}
-                  onChange={(e) => handleChange("newPass", e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="btn-pass-acc"
-                  onClick={() => setShowPassword(!showPassword)}
+                  {input.label}
+                </span>
+                <div
+                  className={input.isPassword ? "custom_input-acc" : undefined}
+                  style={{ position: "relative" }}
                 >
-                  {showPassword ? (
-                    <MdOutlineLockOpen size={30} />
-                  ) : (
-                    <MdOutlineLock size={30} />
+                  <input
+                    onMouseEnter={() => setSpan(input.field)}
+                    onChange={(e) => handleChange(input.field, e.target.value)}
+                    className="account-input"
+                    type={input.type}
+                    value={userData[input.field]}
+                  />
+                  {input.isPassword && (
+                    <button
+                      type="button"
+                      className="btn-pass-acc"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <MdOutlineLockOpen size={30} />
+                      ) : (
+                        <MdOutlineLock size={30} />
+                      )}
+                    </button>
                   )}
-                </button>
+                </div>
               </div>
-            </div>
-
-            <div className="input-group">
-              <span
-                onMouseEnter={() => setSpan("password")}
-                className="account-text"
-              >
-                Confirm New Password
-              </span>
-              <div
-                className="custom_input-acc"
-                style={{ position: "relative" }}
-              >
-                <input
-                  onMouseEnter={() => setSpan("password")}
-                  autoComplete="current-password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  className="account-input"
-                  ref={confirmPass}
-                  onChange={(e) => handleChange("confirmPass", e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="btn-pass-acc"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <MdOutlineLockOpen size={30} />
-                  ) : (
-                    <MdOutlineLock size={30} />
-                  )}
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
 
           <div
             onMouseEnter={() => setSpan("buttons")}
             className="account-buttons"
           >
-            <button
-              style={{ "--buttonColor": "var(--secondary)" }}
-              className="button"
+            <MyButton
+              message="DELETE ACCOUNT"
+              color="red"
               onClick={() =>
                 showConfirm(
                   "Are you sure you want to delete your account?",
                   deleteAccount
                 )
               }
-            >
-              DELETE ACCOUNT
-            </button>
+            />
 
-            <button
-              style={{ "--buttonColor": "var(--highlight)" }}
-              className="button"
+            <MyButton
+              message="SAVE CHANGES"
+              color="green"
               onClick={() =>
                 showConfirm(
-                  "Czy chcesz zaktualizowac swoje dane?",
+                  "Czy chcesz zaktualizować swoje dane?",
                   handleSubmit
                 )
               }
               disabled={isButtonDisabled}
-            >
-              SAVE CHANGES
-            </button>
+            />
           </div>
         </div>
 
-        {/* descriptions */}
-        <div className="settings-right">
-          <div className="explanation">
+        <div className="account-right">
+          <div className="avatar">
+            <div className="input-group">
+              <span
+                onMouseEnter={() => setSpan("avatar")}
+                className="account-text"
+              >
+                Avatar
+              </span>
+              <div
+                className="avatar-slider"
+                onMouseEnter={() => setSpan("avatar")}
+              >
+                <button
+                  className="avatar-arrow"
+                  onMouseEnter={() => setSpan("avatar")}
+                  onClick={() => handleAvatarChange("left")}
+                >
+                  <MdArrowBack size={30} />
+                </button>
+                <img
+                  alt="avatar"
+                  className="avatarIMG"
+                  src={avatarImages[userData.avatar]}
+                  onMouseEnter={() => setSpan("avatar")}
+                />
+                <button
+                  className="avatar-arrow"
+                  onMouseEnter={() => setSpan("avatar")}
+                  onClick={() => handleAvatarChange("right")}
+                >
+                  <MdArrowForward size={30} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="explanation-account">
             <span
-              className={`${activeSpan === "username" ? "" : "hide-span-sett"}`}
+              className={`${
+                activeSpan === "username" ? "" : "hide-span-account"
+              }`}
             >
-              zmień swój nickname
+              Zmień swój nickname
             </span>
             <span
-              className={`${activeSpan === "email" ? "" : "hide-span-sett"}`}
+              className={`${
+                activeSpan === "avatar" ? "" : "hide-span-account"
+              }`}
             >
-              zmien swój email
+              Zmień swój avatar
             </span>
             <span
-              className={`${activeSpan === "password" ? "" : "hide-span-sett"}`}
+              className={`${activeSpan === "email" ? "" : "hide-span-account"}`}
             >
-              zmień swoje hasło
+              Zmień swój email
             </span>
             <span
-              className={`${activeSpan === "buttons" ? "" : "hide-span-sett"}`}
+              className={`${
+                ["oldPass", "newPass", "confirmPass"].includes(activeSpan)
+                  ? ""
+                  : "hide-span-account"
+              }`}
             >
-              <p>delete account - usun konto</p>
-              save changes - zapisz zmiany
+              Zmień swoje hasło
+            </span>
+            <span
+              className={`${
+                activeSpan === "buttons" ? "" : "hide-span-account"
+              }`}
+            >
+              <p>Delete account - usuń konto</p>
+              Save changes - zapisz zmiany
             </span>
           </div>
         </div>
