@@ -247,7 +247,23 @@ export const getWordsWithPagination = async (limit, offset) => {
 
 export const getUsersWithPagination = async (limit, offset) => {
   const result = await pool.query(
-    "SELECT id, username, email, role, created_at, last_login FROM users ORDER BY id LIMIT $1 OFFSET $2",
+    `SELECT 
+       users.id, 
+       users.username, 
+       users.email, 
+       users.role, 
+       users.created_at, 
+       users.last_login, 
+       ranking.ban 
+     FROM 
+       users
+     LEFT JOIN 
+       ranking 
+     ON 
+       users.id = ranking.user_id
+     ORDER BY 
+       users.id 
+     LIMIT $1 OFFSET $2`,
     [limit, offset]
   );
   return result.rows;
@@ -576,18 +592,32 @@ export const generateNewPatchesBatch = async (patchSize) => {
   }
 };
 
-export const updateUserInDb = async ({ id, username, email, role }) => {
+export const updateUserInDb = async ({ id, username, email, role, ban }) => {
+  const client = await pool.connect();
   try {
-    const result = await pool.query(
+    await client.query("BEGIN");
+
+    const userResult = await client.query(
       "UPDATE users SET username = $1, email = $2, role = $3 WHERE id = $4",
       [username, email, role, id]
     );
-    return result;
+
+    const rankingResult = await client.query(
+      "UPDATE ranking SET ban = $1 WHERE user_id = $2",
+      [ban, id]
+    );
+
+    await client.query("COMMIT");
+    return { userResult, rankingResult };
   } catch (error) {
+    await client.query("ROLLBACK");
     console.error("Error updating user in database:", error);
-    throw error; // Przekazujemy błąd dalej, aby kontroler mógł go obsłużyć
+    throw error;
+  } finally {
+    client.release();
   }
 };
+
 
 export const patchLength = async () => {
   try {
@@ -664,12 +694,12 @@ export const userRankingUpdate = async (client, userId) => {
   );
 };
 
-
 export const getTopRankingUsers = async (limit) => {
   const query = `
     SELECT users.username, users.avatar, ranking.weekly_points
     FROM ranking
     JOIN users ON ranking.user_id = users.id
+    WHERE ranking.ban = false
     ORDER BY ranking.weekly_points DESC
     LIMIT $1;
   `;
@@ -677,4 +707,3 @@ export const getTopRankingUsers = async (limit) => {
   const result = await pool.query(query, values);
   return result.rows;
 };
-

@@ -79,6 +79,7 @@ export default function Home() {
     totalPercent,
     isSoundEnabled,
     level,
+    isLoggedIn,
   } = useContext(SettingsContext);
 
   //autosave
@@ -150,7 +151,9 @@ export default function Home() {
         calculatePercent();
         calculateTotalPercent();
         confettiShow();
-        await sendLearnedWordToServer(newid);
+        if(isLoggedIn){
+          await sendLearnedWordToServer(newid);
+        }
       }
 
       setBoxes((prevBoxes) => {

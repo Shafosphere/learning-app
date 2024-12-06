@@ -23,7 +23,7 @@ export const getUsersList = async (req, res) => {
     );
 
     const users = await getUsersWithPagination(parseInt(limit), offset);
-
+    console.log(users);
     res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -38,6 +38,7 @@ export const updateUsers = async (req, res) => {
     return res.status(400).send("No data to update");
   }
 
+  console.log(editedRows)
   try {
     // Iteracja po wszystkich użytkownikach i aktualizacja w bazie danych
     const updatePromises = Object.values(editedRows).map(async (user) => {

@@ -25,6 +25,7 @@ export default function UsersPanel() {
     username: "",
     email: "",
     role: "",
+    ban: "",
   });
 
   const userRef = useRef(null);
@@ -169,6 +170,7 @@ export default function UsersPanel() {
       username: user.username,
       email: user.email,
       role: user.role,
+      ban: user.ban,
     });
   }
 
@@ -304,6 +306,7 @@ export default function UsersPanel() {
                   <th>email</th>
                   <th>created time</th>
                   <th>last login</th>
+                  <th>ranking ban</th>
                   <th>role</th>
                   <th></th>
                 </tr>
@@ -343,6 +346,24 @@ export default function UsersPanel() {
                     </td>
                     <td>{user.created_at}</td>
                     <td>{user.last_login}</td>
+                    <td>
+                      {editingRowId === user.id ? (
+                        <select
+                          name="ban"
+                          value={editValues.ban}
+                          onChange={(e) => {
+                            const val = e.target.value === "true"; // Konwersja na boolean
+                            setEditValues((prev) => ({ ...prev, ban: val }));
+                          }}
+                        >
+                          <option value="true">true</option>
+                          <option value="false">false</option>
+                        </select>
+                      ) : (
+                        String(user.ban)
+                      )}
+                    </td>
+
                     <td className="role">
                       {editingRowId === user.id ? (
                         <select
