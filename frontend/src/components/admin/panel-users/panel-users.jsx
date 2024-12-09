@@ -9,6 +9,7 @@ import { FaUndoAlt } from "react-icons/fa";
 import { PopupContext } from "../../popup/popupcontext";
 
 import ConfirmWindow from "../../confirm/confirm";
+import MyButton from "../../button/button";
 
 export default function UsersPanel() {
   const [users, setUsers] = useState([]);
@@ -401,16 +402,15 @@ export default function UsersPanel() {
           </InfiniteScroll>
         </div>
         <div className="buttons-users-container">
-          <div
+          <MyButton
+            message="Confirm changes"
+            color="green"
             onClick={() =>
               showConfirm("Are you sure you want to add these changes?", () =>
                 sendData()
               )
             }
-            className="edit-user button"
-          >
-            send changes
-          </div>
+          />
 
           <div onClick={() => undo(editingRowId)} className="undo-user button">
             <FaUndoAlt />

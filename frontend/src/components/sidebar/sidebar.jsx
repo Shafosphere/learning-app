@@ -1,23 +1,20 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { IoMdSettings } from "react-icons/io";
-import { MdAccountBox, MdAdminPanelSettings } from "react-icons/md";
+import { MdAccountBox, MdAdminPanelSettings, MdLogout, MdLogin } from "react-icons/md";
+import { IoBug, IoLogoGithub } from "react-icons/io5";
+import { FaBook, FaScroll } from "react-icons/fa";
+import { MdDarkMode } from "react-icons/md";
+import { FaRankingStar } from "react-icons/fa6";
 import { useIntl } from "react-intl";
 import api from "../../utils/api";
 import ReportPopup from "../report/report-popup";
 import { PopupContext } from "../popup/popupcontext";
 import { SettingsContext } from "../../pages/settings/properties";
 import "./sidebar.css";
-import { IoBug } from "react-icons/io5";
-import { IoLogoGithub } from "react-icons/io5";
-import { MdLogout, MdLogin } from "react-icons/md";
-import { FaBook } from "react-icons/fa";
-import { FaScroll } from "react-icons/fa";
-import { MdDarkMode } from "react-icons/md";
-import { FaRankingStar } from "react-icons/fa6";
 
 export default function Sidebar() {
-  const { isLoggedIn, setIsLoggedIn, setUser, themeMode, toggleTheme } =
+  const { isLoggedIn, setIsLoggedIn, setUser, toggleTheme } =
     useContext(SettingsContext);
 
   const { setPopup } = useContext(PopupContext);
@@ -78,7 +75,7 @@ export default function Sidebar() {
       <div className="container-sidebar">
         <div className="sidebar-title">
           <span className="sidebar-initial">M</span>
-          <span className="sidebar-full">emolingo</span>
+          <span className="sidebar-full full-title">emolingo</span>
         </div>
 
         <div className="sidebar-content">
@@ -163,19 +160,12 @@ export default function Sidebar() {
               </div>
             )}
 
-            <div className="link">
+            <div className="link" onClick={() => toggleTheme()}>
               <span className="sidebar-initial link-icon">
                 <MdDarkMode />
               </span>
               <span className="sidebar-full">
-                <div className="link-text">
-                  <input
-                    type="checkbox"
-                    className="theme-checkbox"
-                    checked={themeMode === "dark"}
-                    onChange={() => toggleTheme()}
-                  />
-                </div>
+                <div className="link-text">dark mode</div>
               </span>
             </div>
 
