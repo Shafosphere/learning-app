@@ -15,6 +15,7 @@ import plMessages from "../locales/pl.json";
 import { PopupProvider } from "../components/popup/popupcontext";
 import Vocabulary from "./voca/vocabulary";
 import ResetPassword from "./resetPassword/resetpassword";
+import Empty from "./empty/empty";
 
 // Obiekt zawierający tłumaczenia dla różnych języków
 const messages = {
@@ -31,6 +32,7 @@ const AppWrapper = () => {
       <Sidebar />
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/empty" element={<Empty />} />
         <Route path="/home" element={<Home />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/login" element={<Login />} />

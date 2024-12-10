@@ -16,7 +16,6 @@
 
 .vocabulary-window {
     height: 100vh;
-    width: 70rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -95,4 +94,18 @@
 }
 .return-btn-voca:hover {
     border-color: var(--tertiary); /* Zmiana koloru obramowania na żółty */
+}
+
+/* Dla małych ekranów (max 950px) */
+@media (max-width: 950px) {
+    .vocabulary-window {
+        width: 100%;
+    }
+}
+
+/* Średnie ekrany (951px - 1450px) */
+@media (min-width: 951px) {
+    .vocabulary-window {
+        width: 70rem;
+    }
 }
