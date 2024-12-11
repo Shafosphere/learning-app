@@ -1,21 +1,46 @@
-.vocabulary-container {
+@media (max-width: 480px) {
+  /* Styl dla urządzeń mobilnych */
+  .vocabulary-container {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 768px) {
+  .vocabulary-container {
+    background-color: blue;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1450px) {
+  .vocabulary-container {
+    background-color: pink;
+  }
+}
+
+@media (min-width: 1450px) {
+  .vocabulary-container {
     width: 100%;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-  
+
     background: linear-gradient(
       180deg,
       rgba(var(--background-rgba), 1) 0%,
       rgba(var(--border-rgba), 1) 100%
     );
-  
     position: relative;
   }
 
-.vocabulary-window {
+  .vocabulary-window {
     height: 100vh;
+    width: 70rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -23,60 +48,60 @@
     color: black;
     position: relative;
     gap: 3rem;
-  
+
     border-right: 10px solid var(--border);
     border-left: 10px solid var(--border);
-}
-.vocabulary-popup{
+  }
+  .vocabulary-popup {
     display: flex;
     flex-direction: column;
     color: var(--headline);
     gap: 1rem;
-}
-.vocabulary-popup h1{
+  }
+  .vocabulary-popup h1 {
     text-transform: uppercase;
     text-align: center;
     font-size: 40px;
-}
-.vocabulary-popup p{
+  }
+  .vocabulary-popup p {
     text-transform: uppercase;
     text-align: center;
-}
-.vocabulary-btn-container{
+  }
+  .vocabulary-btn-container {
     display: flex;
     flex-direction: row;
     gap: 2rem;
     justify-content: center;
-}
+  }
 
-.display-voca {
+  .display-voca {
     font-size: 80px;
     font-weight: 900;
     color: var(--headline);
     border: solid 10px var(--border);
     transition: padding 1s, border-color 1s;
-}
+  }
 
-.display-voca:nth-of-type(1) {
+  .display-voca:nth-of-type(1) {
     border-left: none;
     padding: 2rem 2rem 2rem 15rem;
     cursor: pointer;
-}
-.display-voca:nth-of-type(2) {
+  }
+  .display-voca:nth-of-type(2) {
     border-right: none;
     padding: 2rem 15rem 2rem 2rem;
     cursor: pointer;
-}
-.display-voca:nth-of-type(1):hover {
-    padding: 2rem 2rem 2rem 20rem; /* Zmniejsz padding po lewej */
-    border-color: var(--tertiary); /* Zmiana koloru obramowania na żółty */
-}
-.display-voca:nth-of-type(2):hover {
-    padding: 2rem 20rem 2rem 2rem; /* Zmniejsz padding po lewej */
-    border-color: var(--tertiary); /* Zmiana koloru obramowania na żółty */
-}
+  }
+  .display-voca:nth-of-type(1):hover {
+    padding: 2rem 2rem 2rem 20rem;
+    border-color: var(--tertiary);
+  }
+  .display-voca:nth-of-type(2):hover {
+    padding: 2rem 20rem 2rem 2rem;
+    border-color: var(--tertiary);
+  }
 
-.return-btn-voca{
+  .return-btn-voca {
     position: absolute;
     top: 10%;
     left: 10%;
@@ -91,21 +116,8 @@
     padding: 1rem;
     border-right: none;
     cursor: pointer;
-}
-.return-btn-voca:hover {
-    border-color: var(--tertiary); /* Zmiana koloru obramowania na żółty */
-}
-
-/* Dla małych ekranów (max 950px) */
-@media (max-width: 950px) {
-    .vocabulary-window {
-        width: 100%;
-    }
-}
-
-/* Średnie ekrany (951px - 1450px) */
-@media (min-width: 951px) {
-    .vocabulary-window {
-        width: 70rem;
-    }
+  }
+  .return-btn-voca:hover {
+    border-color: var(--tertiary);
+  }
 }

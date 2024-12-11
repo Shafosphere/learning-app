@@ -6,9 +6,23 @@ export default function VocaDefault({ setDisplay }) {
           <h1>Choose level</h1>
 
           <div className="vocabulary-btn-container">
-            <div onClick={()=>{setDisplay('B2')}} className="display-voca">B2</div>
+            <div
+              onClick={() => {
+                setDisplay("B2");
+              }}
+              className="display-voca"
+            >
+              B2
+            </div>
 
-            <div onClick={()=>{setDisplay('C1')}} className="display-voca">C1</div>
+            <div
+              onClick={() => {
+                setDisplay("C1");
+              }}
+              className="display-voca"
+            >
+              C1
+            </div>
           </div>
 
           <p>
