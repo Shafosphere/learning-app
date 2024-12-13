@@ -318,41 +318,14 @@ export default function VocaTest({ setDisplay, lvl }) {
         <ResultsSummary lvl={lvl} setDisplay={setDisplay} />
       ) : (
         <>
-          <div className="switch-container-words">
-            <div>
-              <input
-                onChange={() => setMode(mode ? false : true)}
-                type="checkbox"
-                id="checkboxInput"
-                checked={mode}
-              />
-              <label
-                htmlFor="checkboxInput"
-                className="toggleSwitch rounded-left"
-              ></label>
-            </div>
-
-            <div>
-              <input
-                onChange={() => setShowPercent(showPercent ? false : true)}
-                type="checkbox"
-                id="checkboxInputPercent"
-              />
-              <label
-                htmlFor="checkboxInputPercent"
-                className="toggleSwitch rounded-right"
-              ></label>
-            </div>
+          <div
+            className="return-btn-voca"
+            onClick={() => setDisplay("default")}
+          >
+            <h1> {lvl} </h1>
           </div>
 
           <div className="window-words">
-            <div
-              className="return-btn-voca"
-              onClick={() => setDisplay("default")}
-            >
-              <h1> {lvl} </h1>
-            </div>
-
             <div className="top-words">
               <div className="top-left-words">
                 {mode ? (
@@ -407,6 +380,33 @@ export default function VocaTest({ setDisplay, lvl }) {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          <div className="switch-container-words">
+            <div>
+              <input
+                onChange={() => setMode(mode ? false : true)}
+                type="checkbox"
+                id="checkboxInput"
+                checked={mode}
+              />
+              <label
+                htmlFor="checkboxInput"
+                className="toggleSwitch rounded-left"
+              ></label>
+            </div>
+
+            <div>
+              <input
+                onChange={() => setShowPercent(showPercent ? false : true)}
+                type="checkbox"
+                id="checkboxInputPercent"
+              />
+              <label
+                htmlFor="checkboxInputPercent"
+                className="toggleSwitch rounded-right"
+              ></label>
             </div>
           </div>
         </>
