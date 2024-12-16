@@ -349,6 +349,22 @@ export default function VocaTest({ setDisplay, lvl }) {
                   </div>
                 )}
               </div>
+
+            {/* <div className="bot-words-mobile">
+              {!showPercent ? (
+                <div className="progressbar-words">
+                  <div className="progressbar-words-containter">
+                    <Progressbar procent={percent} barHeight="15rem" />
+                  </div>
+                </div>
+              ) : (
+                <div className="progressbar-words">
+                  <div className="progressbar-words-containter">
+                    <Progressbar procent={totalpercent} barHeight="15rem" />
+                  </div>
+                </div>
+              )}
+            </div> */}
               <div className="top-right-words">
                 {carouselItems ? (
                   carouselItems.map((item) => (
@@ -364,6 +380,7 @@ export default function VocaTest({ setDisplay, lvl }) {
                 )}
               </div>
             </div>
+
             <div className="bot-words">
               {!showPercent ? (
                 <div className="progressbar-words">

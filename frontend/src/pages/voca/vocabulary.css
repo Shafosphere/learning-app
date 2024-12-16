@@ -7,7 +7,8 @@
     align-items: center;
     height: 100%;
     width: 100%;
-  
+    padding-top: 5rem;
+
     background: linear-gradient(
       180deg,
       rgba(var(--background-rgba), 1) 0%,
@@ -53,7 +54,7 @@
   }
 
   .display-voca {
-    font-size: 80px;
+    font-size: 5rem;
     font-weight: 900;
     color: var(--headline);
     border: solid 10px var(--border);
@@ -63,12 +64,12 @@
   .display-voca:nth-of-type(1) {
     border-left: none;
     cursor: pointer;
-    padding: 1rem;
+    padding: 0.5rem;
   }
   .display-voca:nth-of-type(2) {
     border-right: none;
     cursor: pointer;
-    padding: 1rem;
+    padding: 0.5rem;
   }
   .display-voca:nth-of-type(1):active {
     border-color: var(--tertiary);

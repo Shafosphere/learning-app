@@ -9,7 +9,7 @@ export default function Progressbar({ procent, text, barHeight = "500px" }) {
             className="progressbar"
             style={{
               "--barGradient": `var(--secondary) 0%, var(--secondary) ${newpercent}%, var(--highlight) ${newpercent}%, var(--highlight) 100%`,
-              height: barHeight, // Dynamiczna wysokość
+              height: barHeight, 
             }}
           >
             <div className="stylization"></div>

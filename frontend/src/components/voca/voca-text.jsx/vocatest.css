@@ -57,24 +57,23 @@
   transition-duration: 0.2s;
 }
 
-
 @media (max-width: 480px) {
   .container-words {
     width: 100%;
     height: 100%;
+    padding-top: 5rem;
 
     display: flex;
     justify-content: center;
     align-items: center;
-  
+
     background: linear-gradient(
       180deg,
       rgba(var(--background-rgba), 1) 0%,
       rgba(var(--border-rgba), 1) 100%
     );
-  
-    position: relative;
 
+    position: relative;
   }
   .window-words {
     height: 100%;
@@ -84,7 +83,7 @@
     justify-content: center;
     color: black;
     position: relative;
-  
+
     border-right: 10px solid var(--border);
     border-left: 10px solid var(--border);
   }
@@ -92,17 +91,29 @@
     position: absolute;
     bottom: 2%;
     z-index: 10;
-  
     display: flex;
+    justify-content: center;
     flex-direction: row;
     gap: 0.1rem;
+  }
+  .progressbar-words-mobile{
+    position: absolute;
+
+    display: flex;
+    justify-content: center;
+    top: 7rem;
+    left: 1rem;
+
+    width: 15rem;
+    height: 4rem;
+    background-color: rebeccapurple;
   }
 
   .return-btn-voca {
     position: absolute;
 
-    top: 150px;
-    left: 75px;
+    top: 8rem;
+    left: 4rem;
 
     transform: translate(-50%, -50%);
     z-index: 99;
@@ -110,9 +121,9 @@
     font-size: 1rem;
     font-weight: 900;
     color: var(--headline);
-    border: solid 10px var(--border);
+    border-left: solid 10px var(--tertiary);
     transition: padding 1s, border-color 1s;
-    padding: 1rem;
+    padding: 0.5rem;
 
     border-right: none;
     cursor: pointer;
@@ -122,15 +133,14 @@
   }
   .top-words {
     display: flex;
-    justify-content: center;
+    gap: 1rem;
     align-items: center;
+    justify-content: space-around;
     width: 100%;
-    height: 80%;
-    gap: 2rem;
+    height: 100%;
+    padding-top: 8rem;
+    padding-bottom: 4rem;
     flex-direction: column-reverse;
-    height: auto;
-    margin-top: 0px;
-  
   }
   .bot-words {
     width: 100%;
@@ -161,23 +171,27 @@
   }
 
   .buttons-words {
+    height: 5rem;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    gap: 2rem;
+    flex-direction: row;
+    gap: 1rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 
   .top-right-words {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 90%;
     height: 50%;
     position: relative;
+    margin-bottom: 4rem;
   }
-  
+
   .wrapper {
     display: flex;
     flex-direction: column;
@@ -185,13 +199,13 @@
     justify-content: center;
     height: 100%;
   }
-  
+
   .card-stop {
     animation-play-state: paused;
   }
-  
+
   .box-words {
-    width: 20em;
+    width: 100%;
     height: 5rem;
     padding: 0rem 0rem 0rem 1rem;
     background-color: var(--lightbg);
@@ -203,11 +217,12 @@
     position: absolute;
     font-size: 20px;
   }
-  
+
   .top {
     opacity: 0.8;
-    transform: translateY(-7rem);
+    transform: translateY(-6rem);
     scale: 0.8;
+    height: 4rem;
     font-weight: 400;
     z-index: 9;
   }
@@ -220,10 +235,11 @@
   }
   .bottom {
     opacity: 0.8;
-    transform: translateY(7rem);
+    transform: translateY(6rem);
     scale: 0.8;
     font-weight: 400;
     z-index: 9;
+    height: 4rem;
   }
   .bottom-bot {
     opacity: 0;
@@ -245,7 +261,7 @@
     opacity: 0;
     pointer-events: none;
   }
-  
+
   .progressbar-words {
     display: flex;
     align-items: center;
@@ -257,14 +273,36 @@
   .progressbar-words-containter {
     transform: rotate(-270deg);
   }
+
+  .toggleSwitch {
+    width: 9rem;
+  }
+
+  #checkboxInput:checked + .toggleSwitch::after {
+    transform: translateX(360%);
+    transition-duration: 0.2s;
+    background-color: white;
+  }
+
+  #checkboxInputPercent:checked + .toggleSwitch::after {
+    transform: translateX(360%);
+    transition-duration: 0.2s;
+    background-color: white;
+  }
+  .bot-words {
+    display: none;
+  }
+  .bot-words-mobile{
+    display: flex;
+    height: 2rem;
+    color: var(--headlineyy);
+  }
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
-
 }
 
 @media (min-width: 768px) and (max-width: 1450px) {
-
 }
 
 @media (min-width: 1450px) {
@@ -274,13 +312,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-  
+
     background: linear-gradient(
       180deg,
       rgba(var(--background-rgba), 1) 0%,
       rgba(var(--border-rgba), 1) 100%
     );
-  
+
     position: relative;
   }
   .window-words {
@@ -292,21 +330,21 @@
     color: black;
     position: relative;
     gap: 6rem;
-  
+
     border-right: 10px solid var(--border);
     border-left: 10px solid var(--border);
   }
-  
+
   .top-words {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
+    height: 90%;
     gap: 2rem;
     flex-direction: row;
     height: auto;
     margin-top: 0px;
-  
   }
   .top-left-words {
     display: flex;
@@ -332,7 +370,7 @@
     height: 200px;
     position: relative;
   }
-  
+
   .wrapper {
     display: flex;
     flex-direction: column;
@@ -340,11 +378,11 @@
     justify-content: center;
     height: 100%;
   }
-  
+
   .card-stop {
     animation-play-state: paused;
   }
-  
+
   .box-words {
     width: 20em;
     height: 5rem;
@@ -358,7 +396,7 @@
     position: absolute;
     font-size: 20px;
   }
-  
+
   .top {
     opacity: 0.8;
     transform: translateY(-7rem);
@@ -400,7 +438,7 @@
     opacity: 0;
     pointer-events: none;
   }
-  
+
   .bot-words {
     width: 100%;
     display: flex;
@@ -409,7 +447,7 @@
     flex-direction: column;
     gap: 5rem;
   }
-  
+
   .buttons-words {
     width: 100%;
     display: flex;
@@ -418,7 +456,7 @@
     flex-direction: column;
     gap: 2rem;
   }
-  
+
   .progressbar-words {
     display: flex;
     align-items: center;
@@ -437,15 +475,17 @@
     color: var(--headline);
     font-size: 25px;
     width: 100%;
-
   }
   .switch-container-words {
     position: absolute;
     bottom: 2%;
     z-index: 10;
-  
+
     display: flex;
     flex-direction: row;
     gap: 0.1rem;
+  }
+  .bot-words-mobile{
+    display: none;
   }
 }
