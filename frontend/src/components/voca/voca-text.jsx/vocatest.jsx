@@ -313,122 +313,129 @@ export default function VocaTest({ setDisplay, lvl }) {
   }
 
   return (
-    <div className="container-words">
-      {showSummary ? (
-        <ResultsSummary lvl={lvl} setDisplay={setDisplay} />
-      ) : (
-        <>
-          <div
-            className="return-btn-voca"
-            onClick={() => setDisplay("default")}
-          >
-            <h1> {lvl} </h1>
-          </div>
+    <>
+      <div className="container-words">
+        {showSummary ? (
+          <ResultsSummary lvl={lvl} setDisplay={setDisplay} />
+        ) : (
+          <>
+            <div
+              className="return-btn-voca"
+              onClick={() => setDisplay("default")}
+            >
+              <h1> {lvl} </h1>
+            </div>
 
-          <div className="window-words">
-            <div className="top-words">
-              <div className="top-left-words">
-                {mode ? (
-                  <InputField
-                    userWord={userWord}
-                    onChange={correctWordChange}
-                    onKeyDown={handleKeyDown}
-                  />
-                ) : (
-                  <div className="buttons-words">
-                    <MyButton
-                      message="znam"
-                      color="green"
-                      onClick={handleClickKnow}
-                    />
-                    <MyButton
-                      message="nie znam"
-                      color="red"
-                      onClick={handleClickDontKnow}
-                    />
+            <div className="window-words">
+              <div className="top-words">
+                <div className="top-left-words">
+                  <div className="bot-words-mobile">
+                    {!showPercent ? (
+                      <div className="progressbar-words">
+                        <label>{totalpercent} % ukończone tej częśći </label>
+                        <div className="progressbar-words-containter">
+                          <Progressbar procent={percent} barHeight="75vw" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="progressbar-words">
+                        <label>{totalpercent} % ukończone ogólnie </label>
+                        <div className="progressbar-words-containter">
+                          <Progressbar
+                            procent={totalpercent}
+                            barHeight="75vw"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-            {/* <div className="bot-words-mobile">
-              {!showPercent ? (
-                <div className="progressbar-words">
-                  <div className="progressbar-words-containter">
-                    <Progressbar procent={percent} barHeight="15rem" />
-                  </div>
-                </div>
-              ) : (
-                <div className="progressbar-words">
-                  <div className="progressbar-words-containter">
-                    <Progressbar procent={totalpercent} barHeight="15rem" />
-                  </div>
-                </div>
-              )}
-            </div> */}
-              <div className="top-right-words">
-                {carouselItems ? (
-                  carouselItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className={`box-words ${item.className}`}
-                    >
-                      {item.data ? item.data.wordEng.word : ""}
+                  {mode ? (
+                    <InputField
+                      userWord={userWord}
+                      onChange={correctWordChange}
+                      onKeyDown={handleKeyDown}
+                    />
+                  ) : (
+                    <div className="buttons-words">
+                      <MyButton
+                        message="znam"
+                        color="green"
+                        onClick={handleClickKnow}
+                      />
+                      <MyButton
+                        message="nie znam"
+                        color="red"
+                        onClick={handleClickDontKnow}
+                      />
                     </div>
-                  ))
+                  )}
+                </div>
+                <div className="top-right-words">
+                  {carouselItems ? (
+                    carouselItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className={`box-words ${item.className}`}
+                      >
+                        {item.data ? item.data.wordEng.word : ""}
+                      </div>
+                    ))
+                  ) : (
+                    <div>Ładowanie...</div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bot-words">
+                {!showPercent ? (
+                  <div className="progressbar-words">
+                    <label>{percent} % poznane słówka z tej częśći</label>
+                    <div className="progressbar-words-containter">
+                      <Progressbar procent={percent} barHeight="60rem" />
+                    </div>
+                  </div>
                 ) : (
-                  <div>Ładowanie...</div>
+                  <div className="progressbar-words">
+                    <label>{totalpercent} % ukończone częśći </label>
+                    <div className="progressbar-words-containter">
+                      <Progressbar procent={totalpercent} barHeight="60rem" />
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="bot-words">
-              {!showPercent ? (
-                <div className="progressbar-words">
-                  <label>{percent} % poznane słówka z tej częśći</label>
-                  <div className="progressbar-words-containter">
-                    <Progressbar procent={percent} barHeight="60rem" />
-                  </div>
-                </div>
-              ) : (
-                <div className="progressbar-words">
-                  <label>{totalpercent} % ukończone częśći </label>
-                  <div className="progressbar-words-containter">
-                    <Progressbar procent={totalpercent} barHeight="60rem" />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+            <div className="switch-container-words">
+              <div>
+                <input
+                  onChange={() => setMode(mode ? false : true)}
+                  type="checkbox"
+                  id="checkboxInput"
+                  checked={mode}
+                />
+                <label
+                  htmlFor="checkboxInput"
+                  className="toggleSwitch rounded-left"
+                ></label>
+              </div>
 
-          <div className="switch-container-words">
-            <div>
-              <input
-                onChange={() => setMode(mode ? false : true)}
-                type="checkbox"
-                id="checkboxInput"
-                checked={mode}
-              />
-              <label
-                htmlFor="checkboxInput"
-                className="toggleSwitch rounded-left"
-              ></label>
+              <div>
+                <input
+                  onChange={() => setShowPercent(showPercent ? false : true)}
+                  type="checkbox"
+                  id="checkboxInputPercent"
+                />
+                <label
+                  htmlFor="checkboxInputPercent"
+                  className="toggleSwitch rounded-right"
+                ></label>
+              </div>
             </div>
-
-            <div>
-              <input
-                onChange={() => setShowPercent(showPercent ? false : true)}
-                type="checkbox"
-                id="checkboxInputPercent"
-              />
-              <label
-                htmlFor="checkboxInputPercent"
-                className="toggleSwitch rounded-right"
-              ></label>
-            </div>
-          </div>
-        </>
-      )}
-      {showConfetti && <Confetti generateConfetti={generateConfetti} />}
-    </div>
+          </>
+        )}
+        {showConfetti && <Confetti generateConfetti={generateConfetti} />}
+      </div>
+    </>
   );
 }

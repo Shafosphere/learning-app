@@ -1,10 +1,14 @@
 .container-confetti {
-  position: absolute;
-  margin-bottom: 10dvh;
-  width: 100%;
-  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
   pointer-events: none;
+  z-index: 2; /* Zapewnia, że konfetti jest widoczne nad innymi elementami */
 }
+
 
 .confetti {
   --random: 0.5;
@@ -43,13 +47,6 @@
   height: 6px;
 
   background-color: hsl(var(--color));
-  /* 
-  animation: confetti 2s cubic-bezier(0.5, 0, 0.5, 1) both infinite,
-    confetti-opacity 2s cubic-bezier(0.5, 0, 0.5, 1) both infinite;
-
-  animation-duration: calc(1.4s + (var(--random) * 0.5s));
-  animation-delay: calc(0.6s * var(--random-sine)); */
-
   animation: confetti 2s cubic-bezier(0.5, 0, 0.5, 1) both,
     confetti-opacity 2s cubic-bezier(0.5, 0, 0.5, 1) both;
   animation-duration: calc(1.4s + (var(--random) * 0.5s));
