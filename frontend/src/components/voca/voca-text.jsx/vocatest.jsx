@@ -7,6 +7,7 @@ import Progressbar from "../../home/bar/bar";
 import Confetti from "../confetti";
 import ResultsSummary from "../summary/resultssummary";
 import MyButton from "../../button/button";
+import NewProgressBar from "../../progress_bar/progressbar";
 
 import usePersistedState from "../../settings/usePersistedState";
 import useSpellchecking from "../../spellchecking/spellchecking";
@@ -329,47 +330,50 @@ export default function VocaTest({ setDisplay, lvl }) {
             <div className="window-words">
               <div className="top-words">
                 <div className="top-left-words">
-                  <div className="bot-words-mobile">
-                    {!showPercent ? (
-                      <div className="progressbar-words">
-                        <label>{totalpercent} % ukończone tej częśći </label>
-                        <div className="progressbar-words-containter">
-                          <Progressbar procent={percent} barHeight="75vw" />
+                  <div className="bar-and-inputs">
+                    <div className="bot-words-mobile">
+                      {!showPercent ? (
+                        <div className="progressbar-words">
+                          <div className="progressbar-words-containter">
+                            <NewProgressBar
+                              percent={percent}
+                              text="% tej cześci"
+                            />
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="progressbar-words">
+                          <div className="progressbar-words-containter">
+                            <NewProgressBar
+                              percent={totalpercent}
+                              text="% overall"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {mode ? (
+                      <InputField
+                        userWord={userWord}
+                        onChange={correctWordChange}
+                        onKeyDown={handleKeyDown}
+                      />
                     ) : (
-                      <div className="progressbar-words">
-                        <label>{totalpercent} % ukończone ogólnie </label>
-                        <div className="progressbar-words-containter">
-                          <Progressbar
-                            procent={totalpercent}
-                            barHeight="75vw"
-                          />
-                        </div>
+                      <div className="buttons-words">
+                        <MyButton
+                          message="znam"
+                          color="green"
+                          onClick={handleClickKnow}
+                        />
+                        <MyButton
+                          message="nie znam"
+                          color="red"
+                          onClick={handleClickDontKnow}
+                        />
                       </div>
                     )}
                   </div>
-
-                  {mode ? (
-                    <InputField
-                      userWord={userWord}
-                      onChange={correctWordChange}
-                      onKeyDown={handleKeyDown}
-                    />
-                  ) : (
-                    <div className="buttons-words">
-                      <MyButton
-                        message="znam"
-                        color="green"
-                        onClick={handleClickKnow}
-                      />
-                      <MyButton
-                        message="nie znam"
-                        color="red"
-                        onClick={handleClickDontKnow}
-                      />
-                    </div>
-                  )}
                 </div>
                 <div className="top-right-words">
                   {carouselItems ? (
