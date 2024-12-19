@@ -394,16 +394,15 @@ export default function VocaTest({ setDisplay, lvl }) {
               <div className="bot-words">
                 {!showPercent ? (
                   <div className="progressbar-words">
-                    <label>{percent} % poznane słówka z tej częśći</label>
                     <div className="progressbar-words-containter">
-                      <Progressbar procent={percent} barHeight="60rem" />
+                      <NewProgressBar percent={percent} text="% poznane słówka z tej częśći" />
                     </div>
                   </div>
                 ) : (
                   <div className="progressbar-words">
-                    <label>{totalpercent} % ukończone częśći </label>
+
                     <div className="progressbar-words-containter">
-                      <Progressbar procent={totalpercent} barHeight="60rem" />
+                      <NewProgressBar percent={totalpercent} text="% ukonczonych ogólnie" />
                     </div>
                   </div>
                 )}

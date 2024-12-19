@@ -133,6 +133,10 @@
     flex-direction: row;
   }
 
+  .sidebar-title {
+    height: 100%;
+  }
+
   .full-title, .sidebar-full {
     display: none;
   }
@@ -141,6 +145,7 @@
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: row;
     align-items: center;
     padding-left: 1rem;
     justify-content: space-around;
@@ -149,16 +154,15 @@
   .sidebar-content div {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 0.5rem;
   }
 
   .link {
     height: 100%;
-    padding: 1rem;
+    padding: 0.2rem;
   }
-
   .link-icon {
-    font-size: 40px;
+    font-size: 30px;
   }
 }
 
@@ -167,6 +171,7 @@
   .container-sidebar {
     height: 100%;
     width: 5rem;
+    max-width: 5rem;
     background-color: var(--secondBackground);
     padding: 2rem 1rem 5rem;
     flex-direction: column;
@@ -176,6 +181,7 @@
 
   .container-sidebar:hover {
     width: 20rem;
+    max-width: 20rem;
     background-color: var(--background);
   }
 

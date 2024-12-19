@@ -127,6 +127,7 @@
     text-transform: uppercase;
     text-align: center;
     max-width: 25rem;
+    padding: 0.25rem;
   }
 
   .vocabulary-btn-container {
@@ -165,7 +166,82 @@
 
 @media (min-width: 768px) and (max-width: 1450px) {
   .vocabulary-container {
-    background-color: pink;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(
+      180deg,
+      rgba(var(--background-rgba), 1) 0%,
+      rgba(var(--border-rgba), 1) 100%
+    );
+    position: relative;
+  }
+
+  .vocabulary-window {
+    height: 100vh;
+    width: 100%;
+    max-width: 70rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    position: relative;
+    gap: 3rem;
+
+    border-right: 10px solid var(--border);
+    border-left: 10px solid var(--border);
+  }
+  .vocabulary-popup {
+    display: flex;
+    flex-direction: column;
+    color: var(--headline);
+    gap: 1rem;
+  }
+  .vocabulary-popup h1 {
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 40px;
+  }
+  .vocabulary-popup p {
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .vocabulary-btn-container {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: center;
+  }
+
+  .display-voca {
+    font-size: 80px;
+    font-weight: 900;
+    color: var(--headline);
+    border: solid 10px var(--border);
+    transition: padding 1s, border-color 1s;
+  }
+
+  .display-voca:nth-of-type(1) {
+    border-left: none;
+    padding: 2rem 2rem 2rem 13rem;
+    cursor: pointer;
+  }
+  .display-voca:nth-of-type(2) {
+    border-right: none;
+    padding: 2rem 13rem 2rem 2rem;
+    cursor: pointer;
+  }
+  .display-voca:nth-of-type(1):hover {
+    padding: 2rem 2rem 2rem 13rem;
+    border-color: var(--tertiary);
+  }
+  .display-voca:nth-of-type(2):hover {
+    padding: 2rem 13rem 2rem 2rem;
+    border-color: var(--tertiary);
   }
 }
 
@@ -247,24 +323,4 @@
     padding: 2rem 20rem 2rem 2rem;
     border-color: var(--tertiary);
   }
-
-  /* .return-btn-voca {
-    position: absolute;
-    top: 10%;
-    left: 10%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-
-    font-size: 20px;
-    font-weight: 900;
-    color: var(--headline);
-    border: solid 10px var(--border);
-    transition: padding 1s, border-color 1s;
-    padding: 1rem;
-    border-right: none;
-    cursor: pointer;
-  }
-  .return-btn-voca:hover {
-    border-color: var(--tertiary);
-  } */
 }
