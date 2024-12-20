@@ -38,9 +38,7 @@ export default function Drawer() {
           >
             zresetuj progess
           </button>
-          <p>
-            jezeli chcesz zacząc od nowa kliknji przycisk 
-          </p>
+          <p>jezeli chcesz zacząc od nowa kliknji przycisk</p>
         </div>
       )}
     </>

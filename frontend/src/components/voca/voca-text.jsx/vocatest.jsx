@@ -3,7 +3,6 @@ import { useState, useEffect, useMemo } from "react";
 import api from "../../../utils/api";
 import InputField from "../wordInput";
 import { addNumberToGood, addNumberToWrong } from "../../../utils/indexedDB";
-import Progressbar from "../../home/bar/bar";
 import Confetti from "../confetti";
 import ResultsSummary from "../summary/resultssummary";
 import MyButton from "../../button/button";
@@ -400,7 +399,6 @@ export default function VocaTest({ setDisplay, lvl }) {
                   </div>
                 ) : (
                   <div className="progressbar-words">
-
                     <div className="progressbar-words-containter">
                       <NewProgressBar percent={totalpercent} text="% ukonczonych ogólnie" />
                     </div>

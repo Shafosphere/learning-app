@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import "./summary.css";
 import TableResults from "./tables";
 import Drawer from "./drawer";
+import NewProgressBar from "../../progress_bar/progressbar";
 import Progressbar from "../../home/bar/bar";
 import { getAllMinigameWords } from "../../../utils/indexedDB";
 import api from "../../../utils/api";
@@ -70,7 +71,7 @@ export default function ResultsSummary({ lvl, setDisplay }) {
     if (moveUp) {
       const timeout = setTimeout(() => {
         setShowResults(true);
-        setSkipLoad(true);
+        setSkipLoad(false);
       }, 1000);
       return () => clearTimeout(timeout);
     }
@@ -116,38 +117,41 @@ export default function ResultsSummary({ lvl, setDisplay }) {
   }, [lvl]);
 
   return (
-    <div className="results-summary">
+    <>
       <div className="return-btn-voca" onClick={() => setDisplay("default")}>
         <h1> {lvl} </h1>
       </div>
+      <div className="results-summary">
+        {loadingData ? (
+          <Loading />
+        ) : (
+          <>
+            {currentMessageIndex < 3 && !moveUp && (
+              <div className="typing">{displayedText}</div>
+            )}
 
-      {loadingData ? (
-        <Loading />
-      ) : (
-        <>
-          {currentMessageIndex < 3 && !moveUp && (
-            <div className="typing">{displayedText}</div>
-          )}
-
-          {moveUp && (
-            <div className="typing move-up">
-              <div className="progressbar-words">
-                <label>{percent} %</label>
+            {moveUp && (
+              <div className="move-up">
+                {/* <label>{percent} %</label>
                 <div className="progressbar-summary">
                   <Progressbar procent={percent} barHeight="45rem" />
+                </div> */}
+
+                <div className="progressbar-summary">
+                  <NewProgressBar percent={percent} text={`${percent} %`} />
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {showResults && (
-            <>
-              <TableResults goodWords={goodWords} wrongWords={wrongWords} />
-              <Drawer />
-            </>
-          )}
-        </>
-      )}
-    </div>
+            {showResults && (
+              <>
+                <TableResults goodWords={goodWords} wrongWords={wrongWords} />
+                {/* <Drawer /> */}
+              </>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }

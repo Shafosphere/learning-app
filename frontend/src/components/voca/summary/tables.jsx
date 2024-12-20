@@ -2,7 +2,6 @@ import "./summary.css";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-
 export default function TableResults({ goodWords, wrongWords }) {
   return (
     <div className="results">
@@ -34,7 +33,7 @@ export default function TableResults({ goodWords, wrongWords }) {
         </InfiniteScroll>
       </div>
 
-      <div className="wrong-results">
+      {/* <div className="wrong-results">
         <span className="results-title">wrong</span>
         <InfiniteScroll
           dataLength={wrongWords.length}
@@ -60,7 +59,7 @@ export default function TableResults({ goodWords, wrongWords }) {
             </tbody>
           </table>
         </InfiniteScroll>
-      </div>
+      </div> */}
     </div>
   );
 }
