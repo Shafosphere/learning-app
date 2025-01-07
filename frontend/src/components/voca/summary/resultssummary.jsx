@@ -3,10 +3,10 @@ import "./summary.css";
 import TableResults from "./tables";
 import Drawer from "./drawer";
 import NewProgressBar from "../../progress_bar/progressbar";
-import Progressbar from "../../home/bar/bar";
+// import Progressbar from "../../home/bar/bar";
 import { getAllMinigameWords } from "../../../utils/indexedDB";
 import api from "../../../utils/api";
-
+import SmallButtons from "./smallbuttons";
 import Loading from "../../loading/loading";
 
 export default function ResultsSummary({ lvl, setDisplay }) {
@@ -30,6 +30,7 @@ export default function ResultsSummary({ lvl, setDisplay }) {
   const [moveUp, setMoveUp] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [percent, setPercent] = useState(0);
+  const [displayedResults, setResults] = useState("good");
 
   // Stany przechowujące dane wyników
   const [goodWords, setGoodWords] = useState([]);
@@ -118,7 +119,10 @@ export default function ResultsSummary({ lvl, setDisplay }) {
 
   return (
     <>
-      <div className="return-btn-voca" onClick={() => setDisplay("default")}>
+      <div
+        className="return-btn-voca summary-return-btn"
+        onClick={() => setDisplay("default")}
+      >
         <h1> {lvl} </h1>
       </div>
       <div className="results-summary">
@@ -145,8 +149,20 @@ export default function ResultsSummary({ lvl, setDisplay }) {
 
             {showResults && (
               <>
-                <TableResults goodWords={goodWords} wrongWords={wrongWords} />
+                {displayedResults === "good" && (
+                  <TableResults goodWords={goodWords} wrongWords={[]} />
+                )}
+
+                {displayedResults === "wrong" && (
+                  <TableResults goodWords={[]} wrongWords={wrongWords} />
+                )}
+
+                {displayedResults === "percent" && (
+                  <NewProgressBar percent={percent} text={`${percent} %`} />
+                )}
+
                 {/* <Drawer /> */}
+                <SmallButtons setResults={setResults} />
               </>
             )}
           </>

@@ -10,6 +10,9 @@
     border-right: 10px solid var(--border);
     border-left: 10px solid var(--border);
   }
+  .summary-return-btn{
+    display: none;
+  }
   .typing {
     /* position: absolute; */
     font-size: 2rem;
@@ -28,18 +31,14 @@
     animation: fadeIn 1s forwards;
   }
   .move-up {
-    animation: moveUp 1s forwards;
-    position: absolute;
-    width: 80%;
+    display: none;
   }
 
   .results {
     opacity: 0;
     padding-top: 1rem;
     animation: fadeIn 1s forwards;
-    animation-delay: 1s; /* Czekamy na zakończenie animacji przesuwania w górę */
     padding: 1rem;
-    margin-top: 3rem;
   }
 
   .table-results {
@@ -50,7 +49,6 @@
   .good-results {
     border: solid 2px var(--highlight);
     border-radius: 10px;
-
   }
 
   .good-results .table-results::-webkit-scrollbar {
@@ -74,6 +72,34 @@
     width: 100%;
     background-color: var(--highlight);
   }
+
+  .wrong-results {
+    border: solid 2px var(--secondary);
+    border-radius: 10px;
+  }
+
+  .wrong-results .table-results::-webkit-scrollbar {
+    width: 1rem;
+  }
+
+  .wrong-results .table-results::-webkit-scrollbar-track {
+    background: var(--background);
+    border-radius: 10px;
+  }
+
+  .wrong-results .table-results::-webkit-scrollbar-thumb {
+    background-color: var(--paragraph);
+    border-radius: 10px;
+    border: 2px solid var(--secondary);
+    height: 2rem;
+  }
+
+  .wrong-results .endMessage {
+    height: 1rem;
+    width: 100%;
+    background-color: var(--secondary);
+  }
+
 
   .results-title {
     width: 100%;
@@ -144,6 +170,99 @@
       opacity: 1;
     }
   }
+
+
+  .drawer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 100%); /* Początkowa pozycja poza ekranem */
+
+    display: flex;
+    flex-direction: column;
+    padding: 3rem 1rem 3rem 1rem;
+    gap: 1rem;
+    justify-content: space-around;
+
+    border: 2px solid var(--tertiary);
+    border-radius: 1rem;
+    color: var(--paragraph);
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 1.1rem;
+    background-color: var(--secondBackground);
+
+    z-index: 100;
+    /* Ukrywamy element początkowo */
+  }
+
+  .drawer p {
+    width: 70%;
+  }
+
+  /* Klasa aktywująca animację wejścia */
+  .drawer.visible-drawer {
+    visibility: visible;
+    animation: slideIn 0.5s forwards;
+  }
+
+  /* Klasa aktywująca animację wyjścia */
+  .drawer.hidden-drawer {
+    animation: slideOut 0.5s forwards;
+  }
+
+  .sign {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--tertiary);
+    width: 4rem;
+    height: 2rem;
+    border-top-left-radius: 3rem;
+    border-top-right-radius: 3rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+
+    font-weight: 800;
+    font-size: 2rem;
+
+    cursor: pointer;
+  }
+  .sign:active {
+    scale: 97%;
+  }
+
+  /* Definicje animacji */
+  @keyframes slideIn {
+    from {
+      transform: translate(-50%, 100%); /* Początek poza ekranem */
+    }
+    85% {
+      transform: translate(-50%, -110%); /* Docelowa pozycja na ekranie */
+    }
+    to {
+      transform: translate(-50%, -100%); /* Docelowa pozycja na ekranie */
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      transform: translate(-50%, -100%); /* Aktualna pozycja na ekranie */
+    }
+    85% {
+      transform: translate(-50%, -110%); /* Docelowa pozycja na ekranie */
+    }
+    to {
+      transform: translate(-50%, 100%); /* Powrót poza ekran */
+    }
+  }
+
 }
 @media (min-width: 480px) and (max-width: 768px) {
 }

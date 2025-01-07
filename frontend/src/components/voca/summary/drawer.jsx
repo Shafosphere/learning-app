@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./summary.css";
 import { RiArrowUpDoubleFill } from "react-icons/ri";
+import MyButton from "../../button/button";
 
 export default function Drawer() {
   const [isVisible, setIsVisible] = useState(false);
@@ -31,15 +32,15 @@ export default function Drawer() {
 
       {/* Drawer z animacją */}
       {(isVisible || animateClass === "hidden-drawer") && (
-        <div className={`drawer ${animateClass}`}>
-          <button
-            style={{ "--buttonColor": "var(--tertiary)" }}
-            className="button"
-          >
-            zresetuj progess
-          </button>
-          <p>jezeli chcesz zacząc od nowa kliknji przycisk</p>
-        </div>
+        <>
+          <div className={`drawer ${animateClass}`}>
+            <MyButton
+              message="zresetuj progess"
+              color="yellow"
+              // onClick={null}
+            />
+          </div>
+        </>
       )}
     </>
   );

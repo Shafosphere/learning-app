@@ -1,0 +1,57 @@
+/* Stylizacja całego kontenera */
+@media (max-width: 480px) {
+  .container {
+    padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 0.5rem;
+    animation: fadeIn 1s forwards;
+  }
+
+  /* Uniwersalny styl dla przycisków */
+  .button {
+    flex: 1;
+    height: 1.5rem;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--headline);
+    font-weight: bold;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .button:hover {
+    transform: scale(1.1);
+  }
+
+  /* Konkretne kolory */
+  .turquoise {
+    background-color: var(--highlight);
+  }
+
+  .yellow {
+    background-color: var(--tertiary);
+  }
+
+  .pink {
+    background-color: var(--secondary);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
