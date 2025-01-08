@@ -12,7 +12,6 @@ export default function SmallButtons({ setResults }) {
       <button className={`${styles.button} ${styles.yellow}`}>
         <MdOutlineRestartAlt />
       </button>
-      <button onClick={() => setResults("percent")}  className={`${styles.button} ${styles.yellow}`}>%</button>
       <button onClick={() => setResults("wrong")} className={`${styles.button} ${styles.pink}`}></button>
     </div>
   );

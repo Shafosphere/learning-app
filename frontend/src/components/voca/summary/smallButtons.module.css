@@ -10,8 +10,8 @@
     width: 100%;
     gap: 0.5rem;
     animation: fadeIn 1s forwards;
+    max-width: 22rem;
   }
-
   /* Uniwersalny styl dla przycisków */
   .button {
     flex: 1;

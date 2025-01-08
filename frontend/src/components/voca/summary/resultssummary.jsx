@@ -1,15 +1,23 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./summary.css";
 import TableResults from "./tables";
-import Drawer from "./drawer";
 import NewProgressBar from "../../progress_bar/progressbar";
 // import Progressbar from "../../home/bar/bar";
 import { getAllMinigameWords } from "../../../utils/indexedDB";
 import api from "../../../utils/api";
 import SmallButtons from "./smallbuttons";
 import Loading from "../../loading/loading";
+import { useWindowWidth } from "../../window_width/windowWidth";
+import Drawer from "./drawer";
 
 export default function ResultsSummary({ lvl, setDisplay }) {
+  const windowWidth = useWindowWidth();
+
+  const isMobileRange = windowWidth < 480;
+  const isTabletRange = windowWidth >= 480 && windowWidth <= 768;
+  const isSmallScreen = windowWidth >= 768 && windowWidth <= 1450;
+  const isBigScreen = windowWidth >= 1450;
+
   const messages = useMemo(
     () => ["Gratulacje!", "Ukończyłeś wszystkie części! :D", "wyniki"],
     []
@@ -27,7 +35,6 @@ export default function ResultsSummary({ lvl, setDisplay }) {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [charIndex, setCharIndex] = useState(0);
-  const [moveUp, setMoveUp] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [percent, setPercent] = useState(0);
   const [displayedResults, setResults] = useState("good");
@@ -51,36 +58,22 @@ export default function ResultsSummary({ lvl, setDisplay }) {
         }, 100);
         return () => clearTimeout(timeout);
       } else {
-        if (currentMessageIndex === 2) {
-          const timeout = setTimeout(() => {
-            setMoveUp(true);
-          }, 1000);
-          return () => clearTimeout(timeout);
-        } else {
-          const timeout = setTimeout(() => {
-            setDisplayedText("");
-            setCharIndex(0);
-            setCurrentMessageIndex((prev) => prev + 1);
-          }, 1000);
-          return () => clearTimeout(timeout);
-        }
+        const timeout = setTimeout(() => {
+          setDisplayedText("");
+          setCharIndex(0);
+          setCurrentMessageIndex((prev) => prev + 1);
+          if (currentMessageIndex === 2) {
+            setShowResults(true);
+            setSkipLoad(false);
+          }
+        }, 1000);
+        return () => clearTimeout(timeout);
       }
     }
   }, [charIndex, currentMessageIndex, messages, skipLoad]);
 
   useEffect(() => {
-    if (moveUp) {
-      const timeout = setTimeout(() => {
-        setShowResults(true);
-        setSkipLoad(false);
-      }, 1000);
-      return () => clearTimeout(timeout);
-    }
-  }, [moveUp]);
-
-  useEffect(() => {
     if (skipLoad) {
-      setMoveUp(true);
       setShowResults(true);
     }
   }, [skipLoad]);
@@ -88,17 +81,13 @@ export default function ResultsSummary({ lvl, setDisplay }) {
   // Pobieranie danych z bazy i obliczanie procentu
   useEffect(() => {
     async function fetchData() {
-      console.log("pobieram dane");
       const ids = await getAllMinigameWords(lvl);
-      console.log(ids);
+
       if (ids && ids.good && ids.wrong) {
-        console.log("ids:", ids);
         const correct = ids.good.length;
         const total = ids.good.length + ids.wrong.length;
         setPercent(((correct / total) * 100).toFixed(2));
 
-        // Fetch words data based on IDs
-        console.log("test");
         const goodWordsData = await api.post("/word/data", {
           wordList: ids.good,
         });
@@ -106,7 +95,6 @@ export default function ResultsSummary({ lvl, setDisplay }) {
           wordList: ids.wrong,
         });
 
-        console.log("good " + goodWordsData.data.data);
         setGoodWords(goodWordsData.data.data);
         setWrongWords(wrongWordsData.data.data);
       }
@@ -130,39 +118,49 @@ export default function ResultsSummary({ lvl, setDisplay }) {
           <Loading />
         ) : (
           <>
-            {currentMessageIndex < 3 && !moveUp && (
+            {currentMessageIndex < 3 && (
               <div className="typing">{displayedText}</div>
-            )}
-
-            {moveUp && (
-              <div className="move-up">
-                {/* <label>{percent} %</label>
-                <div className="progressbar-summary">
-                  <Progressbar procent={percent} barHeight="45rem" />
-                </div> */}
-
-                <div className="progressbar-summary">
-                  <NewProgressBar percent={percent} text={`${percent} %`} />
-                </div>
-              </div>
             )}
 
             {showResults && (
               <>
-                {displayedResults === "good" && (
-                  <TableResults goodWords={goodWords} wrongWords={[]} />
-                )}
+                {isMobileRange && (
+                  <>
+                    {displayedResults === "good" && (
+                      <TableResults goodWords={goodWords} wrongWords={[]} />
+                    )}
 
-                {displayedResults === "wrong" && (
-                  <TableResults goodWords={[]} wrongWords={wrongWords} />
-                )}
+                    {displayedResults === "wrong" && (
+                      <TableResults goodWords={[]} wrongWords={wrongWords} />
+                    )}
 
-                {displayedResults === "percent" && (
+                    {/* {displayedResults === "percent" && (
                   <NewProgressBar percent={percent} text={`${percent} %`} />
+                )} */}
+
+                    {/* <Drawer /> */}
+                    <SmallButtons setResults={setResults} />
+                  </>
                 )}
 
-                {/* <Drawer /> */}
-                <SmallButtons setResults={setResults} />
+                {isTabletRange && (
+                  <>
+                    <div className="summaryProgressbar">
+                      <NewProgressBar percent={percent} text={`${percent} %`} />
+                    </div>
+                    <TableResults
+                      goodWords={goodWords}
+                      wrongWords={wrongWords}
+                    />
+                    <Drawer />
+                  </>
+                )}
+
+                {isSmallScreen && (
+                  <>
+                  
+                  </>
+                )}
               </>
             )}
           </>
