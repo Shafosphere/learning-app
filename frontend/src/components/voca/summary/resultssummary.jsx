@@ -13,10 +13,10 @@ import Drawer from "./drawer";
 export default function ResultsSummary({ lvl, setDisplay }) {
   const windowWidth = useWindowWidth();
 
-  const isMobileRange = windowWidth < 480;
-  const isTabletRange = windowWidth >= 480 && windowWidth <= 768;
-  const isSmallScreen = windowWidth >= 768 && windowWidth <= 1450;
-  const isBigScreen = windowWidth >= 1450;
+  const isMobileRange = windowWidth <= 479; // poniżej 480
+  const isTabletRange = windowWidth >= 480 && windowWidth <= 768; // od 480 do 768
+  const isSmallScreen = windowWidth >= 769 && windowWidth <= 1450; // od 769 do 1450
+  const isBigScreen = windowWidth > 1450; // powyżej 1450
 
   const messages = useMemo(
     () => ["Gratulacje!", "Ukończyłeś wszystkie części! :D", "wyniki"],
@@ -148,17 +148,39 @@ export default function ResultsSummary({ lvl, setDisplay }) {
                     <div className="summaryProgressbar">
                       <NewProgressBar percent={percent} text={`${percent} %`} />
                     </div>
-                    <TableResults
-                      goodWords={goodWords}
-                      wrongWords={wrongWords}
-                    />
-                    <Drawer />
+                    {displayedResults === "good" && (
+                      <TableResults goodWords={goodWords} wrongWords={[]} />
+                    )}
+
+                    {displayedResults === "wrong" && (
+                      <TableResults goodWords={[]} wrongWords={wrongWords} />
+                    )}
+                    <SmallButtons setResults={setResults} />
+                    {/* <Drawer /> */}
                   </>
                 )}
 
                 {isSmallScreen && (
                   <>
-                  
+                    <div className="summaryProgressbar">
+                      <NewProgressBar percent={percent} text={`${percent} %`} />
+                    </div>
+                    <TableResults
+                      goodWords={goodWords}
+                      wrongWords={wrongWords}
+                    />
+                  </>
+                )}
+
+                {isBigScreen && (
+                  <>
+                    <div className="summaryProgressbar">
+                      <NewProgressBar percent={percent} text={`${percent} %`} />
+                    </div>
+                    <TableResults
+                      goodWords={goodWords}
+                      wrongWords={wrongWords}
+                    />
                   </>
                 )}
               </>

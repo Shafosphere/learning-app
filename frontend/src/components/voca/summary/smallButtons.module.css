@@ -1,5 +1,5 @@
 /* Stylizacja całego kontenera */
-@media (max-width: 480px) {
+
   .container {
     padding-bottom: 0.5rem;
     padding-left: 0.75rem;
@@ -54,4 +54,4 @@
       opacity: 1;
     }
   }
-}
+
