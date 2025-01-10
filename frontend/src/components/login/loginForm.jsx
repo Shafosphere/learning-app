@@ -111,9 +111,9 @@ export default function LoginForm() {
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <MdOutlineLockOpen size={35} />
+                <MdOutlineLockOpen className="icon-lock" />
               ) : (
-                <MdOutlineLock size={35} />
+                <MdOutlineLock className="icon-lock" />
               )}
             </button>
           </div>

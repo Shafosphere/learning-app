@@ -117,9 +117,9 @@ export default function RegiForm({ setDisplay }) {
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <MdOutlineLockOpen size={35} />
+                <MdOutlineLockOpen className="icon-lock" />
               ) : (
-                <MdOutlineLock size={35} />
+                <MdOutlineLock className="icon-lock" />
               )}
             </button>
           </div>
@@ -142,9 +142,9 @@ export default function RegiForm({ setDisplay }) {
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
               {showConfirmPassword ? (
-                <MdOutlineLockOpen size={35} />
+                <MdOutlineLockOpen className="icon-lock" />
               ) : (
-                <MdOutlineLock size={35} />
+                <MdOutlineLock className="icon-lock" />
               )}
             </button>
           </div>

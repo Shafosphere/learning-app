@@ -8,7 +8,7 @@ import api from "../../../utils/api";
 import SmallButtons from "./smallbuttons";
 import Loading from "../../loading/loading";
 import { useWindowWidth } from "../../window_width/windowWidth";
-import Drawer from "./drawer";
+// import Drawer from "./drawer";
 
 export default function ResultsSummary({ lvl, setDisplay }) {
   const windowWidth = useWindowWidth();
@@ -25,7 +25,7 @@ export default function ResultsSummary({ lvl, setDisplay }) {
 
   const [skipLoad, setSkipLoad] = useState(() => {
     const savedValue = localStorage.getItem("skipLoad-words");
-    return savedValue === "true";
+    return savedValue === "false"; //change to true if you want to skip
   });
 
   useEffect(() => {
@@ -134,11 +134,6 @@ export default function ResultsSummary({ lvl, setDisplay }) {
                       <TableResults goodWords={[]} wrongWords={wrongWords} />
                     )}
 
-                    {/* {displayedResults === "percent" && (
-                  <NewProgressBar percent={percent} text={`${percent} %`} />
-                )} */}
-
-                    {/* <Drawer /> */}
                     <SmallButtons setResults={setResults} />
                   </>
                 )}
