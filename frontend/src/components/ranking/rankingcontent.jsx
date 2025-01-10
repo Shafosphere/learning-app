@@ -45,7 +45,7 @@ export default function RankingContent() {
     <div className={styles.container}>
       <div className={styles.window}>
         <InfiniteScroll
-          className={styles.table}
+          // className={styles.table}
           dataLength={data.length}
           hasMore={hasMore}
           loader={<Loading />}
