@@ -138,7 +138,7 @@ export default function Flashcard({
         <div className={`wrong-answer ${showWrongAnswer}`}>
           <span style={{ color: "red" }}>{word}&#8203;</span>
         </div>
-        <form onSubmit={handleSubmit}>
+        <form className="form-flashcard" onSubmit={handleSubmit}>
           <div className="top-flashcard">
             <div className={`window-flashcard ${className}`}>
               <div className={`learning ${showWrongAnswer}`}>
@@ -202,7 +202,7 @@ export default function Flashcard({
           </div>
         </form>
         <div className="flashcard-description">{data.wordPl.description}</div>
-        {hint && <div className="flashcard-description">{word[0]}</div>}
+        {hint && <div className="hint">{word[0]}</div>}
       </div>
     </>
   );

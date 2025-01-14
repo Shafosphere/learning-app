@@ -5,11 +5,13 @@ export default function EmptyFlashcard() {
   return (
     <>
       <div className="container-flashcard">
+        
         <div className={`wrong-answer`} style={{ visibility: "hidden" }}>
           <span><FormattedMessage id="answerIs" />_</span>
           <span style={{ color: "red" }}></span>
         </div>
-        <form>
+        <form className="form-flashcard">
+
           <div className="top-flashcard">
             <div className={`window-flashcard`}>
               <div className="hidden-message">

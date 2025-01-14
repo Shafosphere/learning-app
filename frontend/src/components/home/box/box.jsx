@@ -10,7 +10,11 @@ export default function Boxes({ boxes, activeBox, handleSetBox, addWords }) {
     <div className="container-boxes">
       <div className="boxes-top">
         {boxNames.map((boxName) => (
-          <div key={boxName} onClick={() => handleSetBox(boxName)} className="box">
+          <div
+            key={boxName}
+            onClick={() => handleSetBox(boxName)}
+            className="box"
+          >
             <img
               alt="box"
               className={activeBox === boxName ? "active" : "notactive"}
@@ -19,6 +23,13 @@ export default function Boxes({ boxes, activeBox, handleSetBox, addWords }) {
             <div className="word-count">{boxes[boxName].length}</div>
           </div>
         ))}
+        <div className="smallscreenbutton">
+          <MyButton
+            message="add"
+            color="yellow"
+            onClick={addWords}
+          />
+        </div>
       </div>
 
       <div className="boxes-bot">
