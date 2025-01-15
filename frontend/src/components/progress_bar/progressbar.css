@@ -72,3 +72,82 @@
   height: 4px;
   border-radius: 2px;
 }
+
+/* --- Nowe style dla wersji pionowej --- */
+.progress-container-vertical {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+}
+
+.progress-text-vertical {
+  display: flex;
+  justify-content: end;
+  margin-left: 0.5rem;
+  margin-bottom: 3rem;
+  z-index: 1;
+  text-transform: uppercase;
+  font-weight: 900;
+  color: var(--headline);
+  font-size: 25px;
+  writing-mode: vertical-rl; /* pionowe pisanie od dołu do góry */
+  text-orientation: sideways;
+}
+
+.progress-container-vertical {
+  position: relative;
+  width: 30px;
+  height: 100%;
+  margin-top: 0.5rem;
+}
+
+.progress-wrapper-vertical::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--progress-gradient);
+  filter: blur(15px);
+  border-radius: 20px;
+  z-index: 0;
+}
+
+.progress-bar-vertical {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  width: 30px;
+  border-radius: 20px;
+  background: var(--progress-gradient);
+}
+
+.progress-bar-stylization-vertical {
+  position: absolute;
+  z-index: 999;
+  height: 95%;
+  width: 100%;
+  top: 5%;
+  left: 6px;
+  opacity: 0.3;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  padding: 0.25rem;
+  gap: 0.25rem;
+}
+.short-belt-vertical {
+  background-color: #fff;
+  height: 1%;
+  width: 4px;
+  border-radius: 2px;
+}
+.long-belt-vertical {
+  background-color: #fff;
+  height: 80%;
+  width: 4px;
+  border-radius: 2px;
+}

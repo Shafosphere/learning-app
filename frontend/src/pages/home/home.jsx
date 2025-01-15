@@ -5,6 +5,8 @@ import Boxes from "../../components/home/box/box";
 import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
 import Progressbar from "../../components/home/bar/bar";
+import NewProgressBar from "../../components/progress_bar/progressbar";
+
 import Confetti from "../../components/voca/confetti";
 
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
@@ -509,14 +511,16 @@ export default function Home() {
         />
       </div>
       <div className="home-right">
-        <Progressbar
+        {/* <Progressbar
           procent={procent}
           text={intl.formatMessage({ id: "dailyProgress" })}
-        />
-        <Progressbar
+        /> */}
+        <NewProgressBar vertical={true} percent={procent} text={intl.formatMessage({ id: "dailyProgress" })} />
+        <NewProgressBar vertical={true} percent={totalPercent} text={intl.formatMessage({ id: "totalProgress" })} />
+        {/* <Progressbar
           procent={totalPercent}
           text={intl.formatMessage({ id: "totalProgress" })}
-        />
+        /> */}
       </div>
       {showConfetti && <Confetti generateConfetti={generateConfetti} />}
     </div>
