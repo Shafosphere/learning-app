@@ -16,7 +16,10 @@ import avatar2 from "../../data/avatars/man_1.png";
 import avatar3 from "../../data/avatars/woman.png";
 import avatar4 from "../../data/avatars/woman_1.png";
 
+import { useWindowWidth } from "../../components/window_width/windowWidth";
+
 export default function Account() {
+  const windowWidth = useWindowWidth();
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState({
@@ -28,10 +31,11 @@ export default function Account() {
     avatar: null,
   });
 
+  const [activePage, setPage] = useState("1");
   const [editedData, setEditedData] = useState({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [activeSpan, setSpan] = useState("");
+  // const [activeSpan, setSpan] = useState("");
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState(null);
 
@@ -194,150 +198,152 @@ export default function Account() {
   return (
     <div className="container-account">
       <div className="window-account">
-        <div className="settings-left">
-          <div className="account-input-container">
-            {inputFields.map((input) => (
-              <div className="input-group" key={input.field}>
-                <span
-                  onMouseEnter={() => setSpan(input.field)}
-                  className="account-text"
-                >
-                  {input.label}
-                </span>
-                <div
-                  className={input.isPassword ? "custom_input-acc" : undefined}
-                  style={{ position: "relative" }}
-                >
-                  <input
-                    onMouseEnter={() => setSpan(input.field)}
-                    onChange={(e) => handleChange(input.field, e.target.value)}
-                    className="account-input"
-                    type={input.type}
-                    value={userData[input.field]}
-                  />
-                  {input.isPassword && (
-                    <button
-                      type="button"
-                      className="btn-pass-acc"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <MdOutlineLockOpen size={30} />
-                      ) : (
-                        <MdOutlineLock size={30} />
-                      )}
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
+        <div className="pageNumbers-account">
           <div
-            onMouseEnter={() => setSpan("buttons")}
-            className="account-buttons"
+            onClick={() => setPage("1")}
+            className={
+              activePage === "1" ? "tab-account-active" : "tab-account"
+            }
           >
-            <MyButton
-              message="DELETE ACCOUNT"
-              color="red"
-              onClick={() =>
-                showConfirm(
-                  "Are you sure you want to delete your account?",
-                  deleteAccount
-                )
-              }
-            />
-
-            <MyButton
-              message="SAVE CHANGES"
-              color="green"
-              onClick={() =>
-                showConfirm(
-                  "Czy chcesz zaktualizować swoje dane?",
-                  handleSubmit
-                )
-              }
-              disabled={isButtonDisabled}
-            />
+            1
+          </div>
+          <div
+            onClick={() => setPage("2")}
+            className={
+              activePage === "2" ? "tab-account-active" : "tab-account"
+            }
+          >
+            2
           </div>
         </div>
 
-        <div className="account-right">
-          <div className="avatar">
-            <div className="input-group">
+        {(activePage === "1" || windowWidth >= 769) && (
+          <div className="account-left">
+            <div className="account-input-container">
+              {inputFields.map((input) => (
+                <div className="input-group" key={input.field}>
+                  <span
+                    // onMouseEnter={() => setSpan(input.field)}
+                    className="account-text"
+                  >
+                    {input.label}
+                  </span>
+                  <div
+                    className={
+                      input.isPassword ? "custom_input-acc" : undefined
+                    }
+                    style={{ position: "relative" }}
+                  >
+                    <input
+                      // onMouseEnter={() => setSpan(input.field)}
+                      onChange={(e) =>
+                        handleChange(input.field, e.target.value)
+                      }
+                      className={
+                        input.isPassword
+                          ? "account-input"
+                          : "account-input-fullborder"
+                      }
+                      type={input.type}
+                      value={userData[input.field]}
+                    />
+                    {input.isPassword && (
+                      <button
+                        type="button"
+                        className="btn-pass-acc"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <MdOutlineLockOpen className="icon-lock-account" />
+                        ) : (
+                          <MdOutlineLock className="icon-lock-account" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div
+              // onMouseEnter={() => setSpan("buttons")}
+              className="account-buttons"
+            >
+              <MyButton
+                message="DELETE ACCOUNT"
+                color="red"
+                onClick={() =>
+                  showConfirm(
+                    "Are you sure you want to delete your account?",
+                    deleteAccount
+                  )
+                }
+              />
+
+              <MyButton
+                message="SAVE CHANGES"
+                color="green"
+                onClick={() =>
+                  showConfirm(
+                    "Czy chcesz zaktualizować swoje dane?",
+                    handleSubmit
+                  )
+                }
+                disabled={isButtonDisabled}
+              />
+            </div>
+          </div>
+        )}
+
+        {(activePage === "2" || windowWidth >= 769) && (
+          <div className="account-right">
+            <div className="avatar-container">
               <span
-                onMouseEnter={() => setSpan("avatar")}
+                // onMouseEnter={() => setSpan("avatar")}
                 className="account-text"
               >
                 Avatar
               </span>
               <div
                 className="avatar-slider"
-                onMouseEnter={() => setSpan("avatar")}
+                // onMouseEnter={() => setSpan("avatar")}
               >
-                <button
-                  className="avatar-arrow"
-                  onMouseEnter={() => setSpan("avatar")}
-                  onClick={() => handleAvatarChange("left")}
-                >
-                  <MdArrowBack size={30} />
-                </button>
                 <img
                   alt="avatar"
                   className="avatarIMG"
                   src={avatarImages[userData.avatar]}
-                  onMouseEnter={() => setSpan("avatar")}
+                  // onMouseEnter={() => setSpan("avatar")}
                 />
-                <button
-                  className="avatar-arrow"
-                  onMouseEnter={() => setSpan("avatar")}
-                  onClick={() => handleAvatarChange("right")}
-                >
-                  <MdArrowForward size={30} />
-                </button>
+                <div className="arrows-container-account">
+                  <button
+                    className="avatar-arrow"
+                    // onMouseEnter={() => setSpan("avatar")}
+                    onClick={() => handleAvatarChange("left")}
+                  >
+                    <MdArrowBack size={30} />
+                  </button>
+                  <button
+                    className="avatar-arrow"
+                    // onMouseEnter={() => setSpan("avatar")}
+                    onClick={() => handleAvatarChange("right")}
+                  >
+                    <MdArrowForward size={30} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="explanation-account">
-            <span
-              className={`${
-                activeSpan === "username" ? "" : "hide-span-account"
-              }`}
-            >
-              Zmień swój nickname
-            </span>
-            <span
-              className={`${
-                activeSpan === "avatar" ? "" : "hide-span-account"
-              }`}
-            >
-              Zmień swój avatar
-            </span>
-            <span
-              className={`${activeSpan === "email" ? "" : "hide-span-account"}`}
-            >
-              Zmień swój email
-            </span>
-            <span
-              className={`${
-                ["oldPass", "newPass", "confirmPass"].includes(activeSpan)
-                  ? ""
-                  : "hide-span-account"
-              }`}
-            >
-              Zmień swoje hasło
-            </span>
-            <span
-              className={`${
-                activeSpan === "buttons" ? "" : "hide-span-account"
-              }`}
-            >
-              <p>Delete account - usuń konto</p>
-              Save changes - zapisz zmiany
-            </span>
+            {/* <div className="explanation-account">
+              <span
+                className={`${
+                  activeSpan === "avatar" ? "" : "hide-span-account"
+                }`}
+              >
+                Zmień swój avatar
+              </span>
+            </div> */}
           </div>
-        </div>
+        )}
       </div>
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
