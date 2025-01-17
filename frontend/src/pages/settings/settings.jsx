@@ -28,7 +28,7 @@ export default function Settings() {
 
   //popup
   const { setPopup } = useContext(PopupContext);
-  const [bookMark, setBookMark] = useState(1);
+  const [activePage, setPage] = useState("1");
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
 
   // confirm
@@ -93,21 +93,28 @@ export default function Settings() {
 
   return (
     <div className="container-settings1">
-      {/* <div>
-        <div className="bookmarks-sett">
-          <div onClick={() => setBookMark(1)}>1</div>
-          <div onClick={() => setBookMark(2)}>2</div>
-        </div> */}
-
       <div className="window-settings">
-
-        <div className="bookmarks-sett">
-          <div onClick={() => setBookMark(1)}>1</div>
-          <div onClick={() => setBookMark(2)}>2</div>
+        <div className="pageNumbers-settings">
+          <div
+            onClick={() => setPage("1")}
+            className={
+              activePage === "1" ? "tab-settings-active" : "tab-settings"
+            }
+          >
+            1
+          </div>
+          <div
+            onClick={() => setPage("2")}
+            className={
+              activePage === "2" ? "tab-settings-active" : "tab-settings"
+            }
+          >
+            2
+          </div>
         </div>
 
         <div className="settings-left">
-          {bookMark === 1 ? (
+          {activePage === "1" && (
             <FirstBookMark
               activeSpan={activeSpan}
               setSpan={setSpan}
@@ -125,7 +132,8 @@ export default function Settings() {
               newDailyGoal={newDailyGoal}
               saveSettings={saveSettings}
             />
-          ) : (
+          )}
+          {activePage === "2" && (
             <SecondBookMark
               diacritical={diacritical}
               setDiacritical={setDiacritical}
@@ -152,16 +160,8 @@ export default function Settings() {
                   </span>
                 ),
                 language: <FormattedMessage id="changeLanguage" />,
-                diacritical: (
-                  <p>
-                    ignoruje znaki diakrytyczne w polskim
-                  </p>
-                ),
-                spellChecking: (
-                  <p>
-                    bedziesz mógł pomylić sie o 1 literke
-                  </p>
-                ),
+                diacritical: <p>ignoruje znaki diakrytyczne w polskim</p>,
+                spellChecking: <p>bedziesz mógł pomylić sie o 1 literke</p>,
               };
 
               return contentMap[activeSpan] || null;
