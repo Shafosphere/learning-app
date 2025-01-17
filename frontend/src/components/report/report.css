@@ -1,105 +1,113 @@
-.draggable {
-    position: absolute;
-    font-size: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--secondBackground);
-    padding: 1rem 1rem 1rem 1rem;
-    border: 5px solid var(--border);
-    color: var(--headline);
-    border-radius: 20px;
-  }
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.form-container {
+  transition: all 0.1s ease-in-out 0s;
+  background-color: var(--background);
+  padding: 2rem 1.5rem 0.5rem 1.5rem;
+  border-radius: 10px;
+  position: relative;
+  color: var(--paragraph);
+  border-width: 1rem 0.6rem; 
+  border-style: solid; 
+  border-color: var(--border);  
+  max-width: 30rem;
+  max-height: 40rem;
+}
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 0.5rem 0rem 0rem;
+}
+.close-button:hover{
+  scale: 105%;
+}
+.report-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
   
-  .form-container {
-    transition: all 0.1s ease-in-out 0s;
+.report-form div {
+  margin-bottom: 1.25rem;
+}
 
-    background-color: var(--background);
-    padding: 2rem 1.5rem 0.5rem 1.5rem;
-    border-radius: 10px;
-    position: relative;
-    color: var(--paragraph);
-    border-width: 1rem 0.6rem; /* Ustal grubość ramki: góra/dół 0.5rem, boki 1rem */
-    border-style: solid; /* Ustal styl ramki */
-    border-color: var(--border); /* Ustal kolor ramki */
+.report-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.report-form input,
+.report-form select,
+.report-form textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--headline);
+  background-color: var(--secondBackground);
+}
+.report-form textarea{
+  min-height: 10%;
+}
+
+.language-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.question-icon {
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.question-form {
+  display: flex;
+  flex-direction: row;
+  gap: 0.05rem;
+}
+@media (max-width: 480px){
+  .form-container {
+    height: 90vh;
+    width: 80vw;
   }
-  
-  
-  
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: var(--secondary);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0.5rem 0.5rem 0rem 0rem;
+}
+@media (min-width: 480px) and (max-width: 768px) {
+  .form-container {
+    height: 90vh;
+    width: 80vw;
   }
-  
-  .close-button:hover{
-    scale: 105%;
+}
+@media (min-width: 769px) and (max-width: 1450px){
+  .form-container {
+    height: 90vh;
+    width: 90vw;
   }
-  .report-form {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30rem;
-    min-height: 30rem;
-    margin: 0 auto;
+}
+@media (min-width: 1450px){
+  .form-container {
+    height: 90vh;
+    width: 60vw;
   }
-  
-  .report-form div {
-    margin-bottom: 1.25rem;
-  }
-  
-  .report-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-  
-  .report-form input,
-  .report-form select,
-  .report-form textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    color: var(--headline);
-    background-color: var(--secondBackground);
-  }
-  .report-form textarea{
-    min-height: 10rem;
-  }
-  
-  .language-field {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .question-icon {
-    margin-left: 8px;
-    cursor: pointer;
-  }
-  
-  .question-form {
-    display: flex;
-    flex-direction: row;
-    gap: 0.05rem;
-  }
+}
