@@ -4,7 +4,6 @@ import EmptyFlashcard from "../../components/home/card/empty-flashcard";
 import Boxes from "../../components/home/box/box";
 import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
-import Progressbar from "../../components/home/bar/bar";
 import NewProgressBar from "../../components/progress_bar/progressbar";
 
 import Confetti from "../../components/voca/confetti";
@@ -16,9 +15,9 @@ import { PopupContext } from "../../components/popup/popupcontext";
 import { useIntl } from "react-intl";
 import api from "../../utils/api";
 
-import usePersistedState from "../../components/settings/usePersistedState";
-import useSpellchecking from "../../components/spellchecking/spellchecking";
-import usePageVisit from "../../components/activity/countingentries";
+import usePersistedState from "../../hooks/localstorage/usePersistedState";
+import useSpellchecking from "../../hooks/spellchecking/spellchecking";
+import usePageVisit from "../../hooks/activity/countingentries";
 
 export default function Home() {
   const intl = useIntl();

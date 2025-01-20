@@ -521,4 +521,7 @@
   .btn-pass:active {
     background: var(--border);
   }
+  .icon-lock{
+    font-size: 35px;
+  }
 }

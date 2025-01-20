@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { SettingsContext } from "../../pages/settings/properties";
-import { PopupContext } from "../popup/popupcontext";
+import { PopupContext } from "../../components/popup/popupcontext";
 
 export default function useSpellchecking() {
     const { diacritical, spellChecking } = useContext(SettingsContext);

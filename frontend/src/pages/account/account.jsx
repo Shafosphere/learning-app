@@ -16,7 +16,7 @@ import avatar2 from "../../data/avatars/man_1.png";
 import avatar3 from "../../data/avatars/woman.png";
 import avatar4 from "../../data/avatars/woman_1.png";
 
-import { useWindowWidth } from "../../components/window_width/windowWidth";
+import { useWindowWidth } from "../../hooks/window_width/windowWidth";
 
 export default function Account() {
   const windowWidth = useWindowWidth();

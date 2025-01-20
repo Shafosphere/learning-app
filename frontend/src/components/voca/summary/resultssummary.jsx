@@ -2,12 +2,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import "./summary.css";
 import TableResults from "./tables";
 import NewProgressBar from "../../progress_bar/progressbar";
-// import Progressbar from "../../home/bar/bar";
 import { getAllMinigameWords } from "../../../utils/indexedDB";
 import api from "../../../utils/api";
 import SmallButtons from "./smallbuttons";
 import Loading from "../../loading/loading";
-import { useWindowWidth } from "../../window_width/windowWidth";
+import { useWindowWidth } from "../../../hooks/window_width/windowWidth";
 // import Drawer from "./drawer";
 
 export default function ResultsSummary({ lvl, setDisplay }) {

@@ -8,10 +8,9 @@ import ResultsSummary from "../summary/resultssummary";
 import MyButton from "../../button/button";
 import NewProgressBar from "../../progress_bar/progressbar";
 
-import usePersistedState from "../../settings/usePersistedState";
-import useSpellchecking from "../../spellchecking/spellchecking";
-import usePageVisit from "../../activity/countingentries";
-
+import usePersistedState from "../../../hooks/localstorage/usePersistedState";
+import useSpellchecking from "../../../hooks/spellchecking/spellchecking";
+import usePageVisit from "../../../hooks/activity/countingentries";
 export default function VocaTest({ setDisplay, lvl }) {
   const [userWord, setWord] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);

@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import api from "../../utils/api"; // Importuj api do wykonywania zapytań do serwera
 import { getAllWords, getStatistics } from "../../utils/indexedDB";
-import usePersistedState from "../../components/settings/usePersistedState";
+import usePersistedState from "../../hooks/localstorage/usePersistedState";
 
 
 export const SettingsContext = createContext();
