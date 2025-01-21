@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useIntl } from "react-intl"; // Importujemy hook
 import "./summary.css";
 import TableResults from "./tables";
 import NewProgressBar from "../../progress_bar/progressbar";
@@ -7,9 +8,9 @@ import api from "../../../utils/api";
 import SmallButtons from "./smallbuttons";
 import Loading from "../../loading/loading";
 import { useWindowWidth } from "../../../hooks/window_width/windowWidth";
-// import Drawer from "./drawer";
 
 export default function ResultsSummary({ lvl, setDisplay }) {
+  const intl = useIntl();
   const windowWidth = useWindowWidth();
 
   const isMobileRange = windowWidth <= 479; // poniżej 480
@@ -17,14 +18,25 @@ export default function ResultsSummary({ lvl, setDisplay }) {
   const isSmallScreen = windowWidth >= 769 && windowWidth <= 1450; // od 769 do 1450
   const isBigScreen = windowWidth > 1450; // powyżej 1450
 
+  // Zamiast stałej tablicy – wywołujemy `intl.formatMessage`:
   const messages = useMemo(
-    () => ["Gratulacje!", "Ukończyłeś wszystkie części! :D", "wyniki"],
-    []
+    () => [
+      intl.formatMessage({
+        id: "summary.congrats",
+        defaultMessage: "Gratulacje!",
+      }),
+      intl.formatMessage({
+        id: "summary.finishedAllParts",
+        defaultMessage: "Ukończyłeś wszystkie części! :D",
+      }),
+      intl.formatMessage({ id: "summary.results", defaultMessage: "wyniki" }),
+    ],
+    [intl]
   );
 
   const [skipLoad, setSkipLoad] = useState(() => {
     const savedValue = localStorage.getItem("skipLoad-words");
-    return savedValue === "false"; //change to true if you want to skip
+    return savedValue === "false"; //zmień na true, jeśli chcesz pominąć
   });
 
   useEffect(() => {
@@ -41,26 +53,29 @@ export default function ResultsSummary({ lvl, setDisplay }) {
   // Stany przechowujące dane wyników
   const [goodWords, setGoodWords] = useState([]);
   const [wrongWords, setWrongWords] = useState([]);
-
   const [loadingData, setLoadingData] = useState(true);
 
+  // Efekt pisania tekstu
   useEffect(() => {
     if (skipLoad) return;
 
     if (currentMessageIndex < messages.length) {
-      if (charIndex < messages[currentMessageIndex].length) {
+      const currentString = messages[currentMessageIndex];
+      if (charIndex < currentString.length) {
         const timeout = setTimeout(() => {
-          setDisplayedText(
-            (prev) => prev + messages[currentMessageIndex][charIndex]
-          );
+          setDisplayedText((prev) => prev + currentString[charIndex]);
           setCharIndex((prev) => prev + 1);
         }, 100);
         return () => clearTimeout(timeout);
       } else {
+        // Po zakończeniu pisania danego stringa
         const timeout = setTimeout(() => {
           setDisplayedText("");
           setCharIndex(0);
           setCurrentMessageIndex((prev) => prev + 1);
+
+          // Jeśli wyświetliliśmy już trzecią wiadomość (index = 2),
+          // to pokazujemy wyniki i wyłączamy tryb pisania
           if (currentMessageIndex === 2) {
             setShowResults(true);
             setSkipLoad(false);
@@ -71,6 +86,7 @@ export default function ResultsSummary({ lvl, setDisplay }) {
     }
   }, [charIndex, currentMessageIndex, messages, skipLoad]);
 
+  // Jeżeli pominęliśmy typing:
   useEffect(() => {
     if (skipLoad) {
       setShowResults(true);
@@ -98,7 +114,7 @@ export default function ResultsSummary({ lvl, setDisplay }) {
         setWrongWords(wrongWordsData.data.data);
       }
 
-      setLoadingData(false); // Set loadingData to false after fetching
+      setLoadingData(false);
     }
 
     fetchData();
@@ -110,7 +126,7 @@ export default function ResultsSummary({ lvl, setDisplay }) {
         className="return-btn-voca summary-return-btn"
         onClick={() => setDisplay("default")}
       >
-        <h1> {lvl} </h1>
+        <h1>{lvl}</h1>
       </div>
       <div className="results-summary">
         {loadingData ? (

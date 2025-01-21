@@ -10,29 +10,29 @@ export default function TableResults({ goodWords, wrongWords }) {
         <div className="good-results">
           <span className="results-title">good</span>
           <InfiniteScroll
-          className="table-results"
-          dataLength={goodWords.length}
-          loader={<h4>Loading...</h4>}
-          endMessage={<div className="endMessage"></div>}
-          scrollableTarget="scrollableDiv"
-        >
-          <table>
-            <thead className="good-thead">
-              <tr>
-                <th>PL</th>
-                <th>ENG</th>
-              </tr>
-            </thead>
-            <tbody>
-              {goodWords.map((goodWord) => (
-                <tr key={goodWord.id} id={`word-${goodWord.id}`}>
-                  <td>{goodWord.wordPl.word}</td>
-                  <td>{goodWord.wordEng.word}</td>
+            className="table-results"
+            dataLength={goodWords.length}
+            loader={<h4>Loading...</h4>}
+            endMessage={<div className="endMessage"></div>}
+            scrollableTarget="scrollableDiv"
+          >
+            <table>
+              <thead className="good-thead">
+                <tr>
+                  <th>PL</th>
+                  <th>ENG</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </InfiniteScroll>
+              </thead>
+              <tbody>
+                {goodWords.map((goodWord) => (
+                  <tr key={goodWord.id} id={`word-${goodWord.id}`}>
+                    <td>{goodWord.wordPl.word}</td>
+                    <td>{goodWord.wordEng.word}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </InfiniteScroll>
         </div>
       )}
 
@@ -41,29 +41,29 @@ export default function TableResults({ goodWords, wrongWords }) {
         <div className="wrong-results">
           <span className="results-title">wrong</span>
           <InfiniteScroll
-          dataLength={wrongWords.length}
-          loader={<h4>Loading...</h4>}
-          className="table-results"
-          endMessage={<div className="endMessage"></div>}
-          scrollableTarget="scrollableDiv"
-        >
-          <table>
-            <thead className="wrong-thead">
-              <tr>
-                <th>PL</th>
-                <th>ENG</th>
-              </tr>
-            </thead>
-            <tbody>
-              {wrongWords.map((wrongWord) => (
-                <tr key={wrongWord.id} id={`word-${wrongWord.id}`}>
-                  <td>{wrongWord.wordPl.word}</td>
-                  <td>{wrongWord.wordEng.word}</td>
+            dataLength={wrongWords.length}
+            loader={<h4>Loading...</h4>}
+            className="table-results"
+            endMessage={<div className="endMessage"></div>}
+            scrollableTarget="scrollableDiv"
+          >
+            <table>
+              <thead className="wrong-thead">
+                <tr>
+                  <th>PL</th>
+                  <th>ENG</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </InfiniteScroll>
+              </thead>
+              <tbody>
+                {wrongWords.map((wrongWord) => (
+                  <tr key={wrongWord.id} id={`word-${wrongWord.id}`}>
+                    <td>{wrongWord.wordPl.word}</td>
+                    <td>{wrongWord.wordEng.word}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </InfiniteScroll>
         </div>
       )}
     </div>

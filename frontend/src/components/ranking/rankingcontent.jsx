@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
 import styles from "./ranking.module.css";
 import api from "../../utils/api";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -16,6 +17,8 @@ export default function RankingContent() {
   const [data, setData] = useState(null);
   const [hasMore, setHasMore] = useState(true);
 
+  const intl = useIntl();
+
   // Mapa awatarów
   const avatarImages = {
     1: avatar1,
@@ -31,11 +34,17 @@ export default function RankingContent() {
         setData(newData.data);
         setHasMore(false);
       } catch (error) {
-        console.error("Error fetching ranking data:", error);
+        console.error(
+          intl.formatMessage({
+            id: "ranking.error",
+            defaultMessage: "Error fetching ranking data:",
+          }),
+          error
+        );
       }
     }
     getData();
-  }, []);
+  }, [intl]);
 
   if (!data) {
     return <Loading />;
@@ -45,7 +54,6 @@ export default function RankingContent() {
     <div className={styles.container}>
       <div className={styles.window}>
         <InfiniteScroll
-          // className={styles.table}
           dataLength={data.length}
           hasMore={hasMore}
           loader={<Loading />}
@@ -55,9 +63,24 @@ export default function RankingContent() {
           <table>
             <thead className={styles.tablehead}>
               <tr className={styles.rowhead}>
-                <th>Position</th>
-                <th>Nickname</th>
-                <th>Points</th>
+                <th>
+                  <FormattedMessage
+                    id="ranking.position"
+                    defaultMessage="Position"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="ranking.nickname"
+                    defaultMessage="Nickname"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="ranking.points"
+                    defaultMessage="Points"
+                  />
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -67,7 +90,10 @@ export default function RankingContent() {
                 if (index === 0) {
                   medal = (
                     <img
-                      alt="gold_medal"
+                      alt={intl.formatMessage({
+                        id: "ranking.medal.gold",
+                        defaultMessage: "Gold medal",
+                      })}
                       className={`${styles.gold} ${styles.medal}`}
                       src={gold}
                     />
@@ -75,7 +101,10 @@ export default function RankingContent() {
                 } else if (index === 1) {
                   medal = (
                     <img
-                      alt="silver_medal"
+                      alt={intl.formatMessage({
+                        id: "ranking.medal.silver",
+                        defaultMessage: "Silver medal",
+                      })}
                       className={`${styles.silver} ${styles.medal}`}
                       src={silver}
                     />
@@ -83,7 +112,10 @@ export default function RankingContent() {
                 } else if (index === 2) {
                   medal = (
                     <img
-                      alt="bronze_medal"
+                      alt={intl.formatMessage({
+                        id: "ranking.medal.bronze",
+                        defaultMessage: "Bronze medal",
+                      })}
                       className={`${styles.bronze} ${styles.medal}`}
                       src={bronze}
                     />
@@ -104,7 +136,10 @@ export default function RankingContent() {
                       <div className={styles.userInfo}>
                         <div>
                           <img
-                            alt="avatar"
+                            alt={intl.formatMessage({
+                              id: "ranking.user.avatar",
+                              defaultMessage: "Avatar",
+                            })}
                             className={styles.avatar}
                             src={avatarImages[item.avatar]}
                           />
@@ -112,7 +147,6 @@ export default function RankingContent() {
                         <div>{item.username}</div>
                       </div>
                     </td>
-
                     <td>{item.weekly_points}</td>
                   </tr>
                 );

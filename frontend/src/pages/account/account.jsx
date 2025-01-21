@@ -1,5 +1,6 @@
 import "./account.css";
 import React, { useEffect, useState, useContext } from "react";
+import { useIntl, FormattedMessage } from "react-intl";
 import api from "../../utils/api";
 import ConfirmWindow from "../../components/confirm/confirm";
 import {
@@ -21,6 +22,7 @@ import { useWindowWidth } from "../../hooks/window_width/windowWidth";
 export default function Account() {
   const windowWidth = useWindowWidth();
   const navigate = useNavigate();
+  const intl = useIntl(); // Hook do obsługi tłumaczeń
 
   const [userData, setUserData] = useState({
     username: "",
@@ -35,7 +37,7 @@ export default function Account() {
   const [editedData, setEditedData] = useState({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  // const [activeSpan, setSpan] = useState("");
+
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState(null);
 
@@ -66,7 +68,10 @@ export default function Account() {
       const response = await api.delete("/auth/delete");
       if (response.data.success) {
         setPopup({
-          message: "Account has been deleted :(",
+          message: intl.formatMessage({
+            id: "account.delete.success",
+            defaultMessage: "Account has been deleted :(",
+          }),
           emotion: "positive",
         });
         setTimeout(() => {
@@ -74,14 +79,20 @@ export default function Account() {
         }, 2000);
       } else {
         setPopup({
-          message: "Failed to delete account.",
+          message: intl.formatMessage({
+            id: "account.delete.failure",
+            defaultMessage: "Failed to delete account.",
+          }),
           emotion: "warning",
         });
       }
     } catch (error) {
       console.error(error);
       setPopup({
-        message: "An error occurred.",
+        message: intl.formatMessage({
+          id: "account.generalError",
+          defaultMessage: "An error occurred.",
+        }),
         emotion: "negative",
       });
     }
@@ -124,51 +135,68 @@ export default function Account() {
       const response = await api.patch("/auth/update", editedData);
       if (response.data.success) {
         setPopup({
-          message: "Changes saved successfully!",
+          message: intl.formatMessage({
+            id: "account.save.success",
+            defaultMessage: "Changes saved successfully!",
+          }),
           emotion: "positive",
         });
         setEditedData({});
         setIsButtonDisabled(true);
       } else {
         setPopup({
-          message: "Failed to save changes.",
+          message: intl.formatMessage({
+            id: "account.save.failure",
+            defaultMessage: "Failed to save changes.",
+          }),
           emotion: "warning",
         });
       }
     } catch (error) {
       console.log(error);
       setPopup({
-        message: "An error occurred.",
+        message: intl.formatMessage({
+          id: "account.generalError",
+          defaultMessage: "An error occurred.",
+        }),
         emotion: "negative",
       });
     }
   };
 
+  // Definicja pól input
   const inputFields = [
     {
-      label: "Username",
+      labelId: "account.field.username",
+      defaultMessage: "Username",
       field: "username",
       type: "text",
+      isPassword: false,
     },
     {
-      label: "Email Address",
+      labelId: "account.field.email",
+      defaultMessage: "Email Address",
       field: "email",
       type: "email",
+      isPassword: false,
     },
     {
-      label: "Old Password",
+      labelId: "account.field.oldPass",
+      defaultMessage: "Old Password",
       field: "oldPass",
       type: showPassword ? "text" : "password",
       isPassword: true,
     },
     {
-      label: "New Password",
+      labelId: "account.field.newPass",
+      defaultMessage: "New Password",
       field: "newPass",
       type: showPassword ? "text" : "password",
       isPassword: true,
     },
     {
-      label: "Confirm New Password",
+      labelId: "account.field.confirmPass",
+      defaultMessage: "Confirm New Password",
       field: "confirmPass",
       type: showPassword ? "text" : "password",
       isPassword: true,
@@ -201,17 +229,13 @@ export default function Account() {
         <div className="pageNumbers-account">
           <div
             onClick={() => setPage("1")}
-            className={
-              activePage === "1" ? "tab-account-active" : "tab-account"
-            }
+            className={activePage === "1" ? "tab-account-active" : "tab-account"}
           >
             1
           </div>
           <div
             onClick={() => setPage("2")}
-            className={
-              activePage === "2" ? "tab-account-active" : "tab-account"
-            }
+            className={activePage === "2" ? "tab-account-active" : "tab-account"}
           >
             2
           </div>
@@ -222,23 +246,18 @@ export default function Account() {
             <div className="account-input-container">
               {inputFields.map((input) => (
                 <div className="input-group" key={input.field}>
-                  <span
-                    // onMouseEnter={() => setSpan(input.field)}
-                    className="account-text"
-                  >
-                    {input.label}
+                  <span className="account-text">
+                    <FormattedMessage
+                      id={input.labelId}
+                      defaultMessage={input.defaultMessage}
+                    />
                   </span>
                   <div
-                    className={
-                      input.isPassword ? "custom_input-acc" : undefined
-                    }
+                    className={input.isPassword ? "custom_input-acc" : undefined}
                     style={{ position: "relative" }}
                   >
                     <input
-                      // onMouseEnter={() => setSpan(input.field)}
-                      onChange={(e) =>
-                        handleChange(input.field, e.target.value)
-                      }
+                      onChange={(e) => handleChange(input.field, e.target.value)}
                       className={
                         input.isPassword
                           ? "account-input"
@@ -265,27 +284,38 @@ export default function Account() {
               ))}
             </div>
 
-            <div
-              // onMouseEnter={() => setSpan("buttons")}
-              className="account-buttons"
-            >
+            <div className="account-buttons">
               <MyButton
-                message="DELETE ACCOUNT"
+                // Tekst w przycisku z tłumaczeniami
+                message={intl.formatMessage({
+                  id: "account.button.delete",
+                  defaultMessage: "DELETE ACCOUNT",
+                })}
                 color="red"
                 onClick={() =>
                   showConfirm(
-                    "Are you sure you want to delete your account?",
+                    intl.formatMessage({
+                      id: "account.confirm.delete",
+                      defaultMessage: "Are you sure you want to delete your account?",
+                    }),
                     deleteAccount
                   )
                 }
               />
 
               <MyButton
-                message="SAVE CHANGES"
+                // Tekst w przycisku z tłumaczeniami
+                message={intl.formatMessage({
+                  id: "account.button.save",
+                  defaultMessage: "SAVE CHANGES",
+                })}
                 color="green"
                 onClick={() =>
                   showConfirm(
-                    "Czy chcesz zaktualizować swoje dane?",
+                    intl.formatMessage({
+                      id: "account.confirm.update",
+                      defaultMessage: "Do you want to update your data?",
+                    }),
                     handleSubmit
                   )
                 }
@@ -298,33 +328,24 @@ export default function Account() {
         {(activePage === "2" || windowWidth >= 769) && (
           <div className="account-right">
             <div className="avatar-container">
-              <span
-                // onMouseEnter={() => setSpan("avatar")}
-                className="account-text"
-              >
-                Avatar
+              <span className="account-text">
+                <FormattedMessage id="account.field.avatar" defaultMessage="Avatar" />
               </span>
-              <div
-                className="avatar-slider"
-                // onMouseEnter={() => setSpan("avatar")}
-              >
+              <div className="avatar-slider">
                 <img
                   alt="avatar"
                   className="avatarIMG"
                   src={avatarImages[userData.avatar]}
-                  // onMouseEnter={() => setSpan("avatar")}
                 />
                 <div className="arrows-container-account">
                   <button
                     className="avatar-arrow"
-                    // onMouseEnter={() => setSpan("avatar")}
                     onClick={() => handleAvatarChange("left")}
                   >
                     <MdArrowBack size={30} />
                   </button>
                   <button
                     className="avatar-arrow"
-                    // onMouseEnter={() => setSpan("avatar")}
                     onClick={() => handleAvatarChange("right")}
                   >
                     <MdArrowForward size={30} />
@@ -332,19 +353,10 @@ export default function Account() {
                 </div>
               </div>
             </div>
-
-            {/* <div className="explanation-account">
-              <span
-                className={`${
-                  activeSpan === "avatar" ? "" : "hide-span-account"
-                }`}
-              >
-                Zmień swój avatar
-              </span>
-            </div> */}
           </div>
         )}
       </div>
+
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}

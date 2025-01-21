@@ -3,6 +3,7 @@ import { FaRegQuestionCircle } from "react-icons/fa";
 import "./report.css";
 import api from "../../utils/api";
 import { PopupContext } from "../popup/popupcontext";
+import { useIntl, FormattedMessage } from "react-intl";
 
 export default function ReportForm() {
   const [reportType, setReportType] = useState("other");
@@ -10,8 +11,8 @@ export default function ReportForm() {
   const [description, setDescription] = useState("");
   const [language, setLanguage] = useState("");
 
-  // popup
   const { setPopup } = useContext(PopupContext);
+  const intl = useIntl();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -32,13 +33,19 @@ export default function ReportForm() {
       );
       if (response.data.success) {
         setPopup({
-          message: "report recived",
+          message: intl.formatMessage({
+            id: "reportForm.success",
+            defaultMessage: "Report received",
+          }),
           emotion: "positive",
         });
       }
     } catch (error) {
       setPopup({
-        message: "An error occurred",
+        message: intl.formatMessage({
+          id: "reportForm.error",
+          defaultMessage: "An error occurred",
+        }),
         emotion: "negative",
       });
 
@@ -51,19 +58,36 @@ export default function ReportForm() {
       <form className="report-form" onSubmit={handleSubmit}>
         <div className="report-top">
           <div>
-            <label htmlFor="reportType">Report Type:</label>
+            <label htmlFor="reportType">
+              <FormattedMessage
+                id="reportForm.reportType"
+                defaultMessage="Report Type:"
+              />
+            </label>
             <select
               id="reportType"
               value={reportType}
               onChange={(e) => setReportType(e.target.value)}
             >
-              <option value="other">Other</option>
-              <option value="word_issue">Word Issue</option>
+              <option value="other">
+                {intl.formatMessage({
+                  id: "reportForm.typeOther",
+                  defaultMessage: "Other",
+                })}
+              </option>
+              <option value="word_issue">
+                {intl.formatMessage({
+                  id: "reportForm.typeWordIssue",
+                  defaultMessage: "Word Issue",
+                })}
+              </option>
             </select>
           </div>
           {reportType === "word_issue" && (
             <div>
-              <label htmlFor="word">Word:</label>
+              <label htmlFor="word">
+                <FormattedMessage id="reportForm.word" defaultMessage="Word:" />
+              </label>
               <input
                 id="word"
                 value={word}
@@ -74,10 +98,18 @@ export default function ReportForm() {
           {reportType === "word_issue" && (
             <div className="language-field">
               <span className="question-form">
-                <label htmlFor="language">Language:</label>
+                <label htmlFor="language">
+                  <FormattedMessage
+                    id="reportForm.language"
+                    defaultMessage="Language:"
+                  />
+                </label>
                 <FaRegQuestionCircle
                   className="question-icon"
-                  title="w jakim języku wpisałeś słowo wyżej?"
+                  title={intl.formatMessage({
+                    id: "reportForm.languageHint",
+                    defaultMessage: "What language is the word in?",
+                  })}
                 />
               </span>
               <select
@@ -86,13 +118,28 @@ export default function ReportForm() {
                 onChange={(e) => setLanguage(e.target.value)}
               >
                 <option value=""></option>
-                <option value="pl">Polish</option>
-                <option value="en">English</option>
+                <option value="pl">
+                  {intl.formatMessage({
+                    id: "reportForm.languagePolish",
+                    defaultMessage: "Polish",
+                  })}
+                </option>
+                <option value="en">
+                  {intl.formatMessage({
+                    id: "reportForm.languageEnglish",
+                    defaultMessage: "English",
+                  })}
+                </option>
               </select>
             </div>
           )}
           <div>
-            <label htmlFor="description">Description:</label>
+            <label htmlFor="description">
+              <FormattedMessage
+                id="reportForm.description"
+                defaultMessage="Description:"
+              />
+            </label>
             <textarea
               id="description"
               value={description}
@@ -105,9 +152,12 @@ export default function ReportForm() {
           <button
             style={{ "--buttonColor": "var(--highlight)", width: "100%" }}
             className="button report-btn"
-            type="submit" // Dodano atrybut type="submit"
+            type="submit"
           >
-            Submit Report
+            <FormattedMessage
+              id="reportForm.submitButton"
+              defaultMessage="Submit Report"
+            />
           </button>
         </div>
       </form>

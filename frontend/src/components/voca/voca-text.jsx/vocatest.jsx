@@ -1,5 +1,7 @@
 import "./vocatest.css";
 import { useState, useEffect, useMemo } from "react";
+import { useIntl, FormattedMessage } from "react-intl";
+
 import api from "../../../utils/api";
 import InputField from "../wordInput";
 import { addNumberToGood, addNumberToWrong } from "../../../utils/indexedDB";
@@ -11,7 +13,10 @@ import NewProgressBar from "../../progress_bar/progressbar";
 import usePersistedState from "../../../hooks/localstorage/usePersistedState";
 import useSpellchecking from "../../../hooks/spellchecking/spellchecking";
 import usePageVisit from "../../../hooks/activity/countingentries";
+
 export default function VocaTest({ setDisplay, lvl }) {
+  const intl = useIntl();
+
   const [userWord, setWord] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
   const [generateConfetti, setGenerateConfetti] = useState(false);
@@ -21,46 +26,50 @@ export default function VocaTest({ setDisplay, lvl }) {
   const pageName = `vocabulary_${lvl}`;
   usePageVisit(pageName);
 
-  // Dane z serwera
+  // Data from the server
   const [data, setData] = useState([]);
+
+  // Patch data
   const [patchNumber, setPatch] = usePersistedState(`currentPatch-${lvl}`, 1);
   const [patchLength, setLength] = usePersistedState(
     `patchLength-${lvl}`,
     null
   );
 
-  // Indeks danych dla bottom-bot
+  // Index for the "bottom-bot" item in the carousel
   const [dataIndexForBottomDiv, setDataIndexForBottomDiv] = usePersistedState(
     `dataIndexForBottomDiv-${lvl}`,
     0
   );
 
-  //iscontent Ended?
+  // Is this the last patch?
   const [isThisLastOne, setLastOne] = usePersistedState(`end-${lvl}`, false);
 
-  //showummary?
+  // Show summary?
   const [showSummary, setSummary] = usePersistedState(`summary-${lvl}`, false);
 
-  // Stan karuzeli
+  // Carousel state
   const [carouselItems, setCarouselItems] = useState(null);
+
+  // Switch between text-input mode and "know/don't know" button mode
   const [mode, setMode] = useState(true);
 
-  useEffect(() => {
-    if (carouselItems !== null) {
-      localStorage.setItem(
-        `carouselItems-${lvl}`,
-        JSON.stringify(carouselItems)
-      );
-    }
-  }, [carouselItems, lvl]);
-
-  // Licznik odpowiedzi użytkownika
+  // Count how many words user has already answered in this patch
   const [wordsAnsweredCount, setWordsAnsweredCount] = usePersistedState(
     `wordsAnsweredCount-${lvl}`,
     0
   );
 
-  // Obliczanie procentu za pomocą useMemo
+  // ID of the last item in the patch data
+  const [lastDataItemId, setLastDataItemId] = useState(() => {
+    const savedId = localStorage.getItem(`lastDataItemId-${lvl}`);
+    return savedId ? parseInt(savedId) : null;
+  });
+
+  // Show local progress or total progress
+  const [showPercent, setShowPercent] = useState(false);
+
+  // Calculate percentage of answered words in the current patch
   const percent = useMemo(() => {
     if (data.length > 0) {
       return ((wordsAnsweredCount / data.length) * 100).toFixed(2);
@@ -69,6 +78,7 @@ export default function VocaTest({ setDisplay, lvl }) {
     }
   }, [wordsAnsweredCount, data]);
 
+  // Calculate overall percentage of finished patches
   const totalpercent = useMemo(() => {
     if (data.length > 0) {
       return ((patchNumber / patchLength) * 100).toFixed(2);
@@ -77,28 +87,27 @@ export default function VocaTest({ setDisplay, lvl }) {
     }
   }, [patchNumber, patchLength, data]);
 
-  const [showPercent, setShowPercent] = useState(false);
-  /////
-
-  const [lastDataItemId, setLastDataItemId] = useState(() => {
-    const savedId = localStorage.getItem(`lastDataItemId-${lvl}`);
-    return savedId ? parseInt(savedId) : null;
-  });
-
+  // Fetch patch data from the server
   useEffect(() => {
     async function fetchPatchInfo() {
       try {
         const response = await api.get("/word/patch-info");
-
-        // Pobierz dane z odpowiedzi
+        // maxPatchId – how many patches total for this level
         const maxPatchId = response.data[`total${lvl}Patches`];
         const lengthPatch = response.data[`length${lvl}patch`];
 
-        // Ustaw stany
-        setLastOne(patchNumber === maxPatchId); // Sprawdza, czy bieżący numer to ostatni
-        setLength(lengthPatch); // Ustawia długość
+        // Check if this is the last patch
+        setLastOne(patchNumber === maxPatchId);
+        // Set patch length
+        setLength(lengthPatch);
       } catch (error) {
-        console.error("Error fetching patch info:", error);
+        console.error(
+          intl.formatMessage({
+            id: "vocaTest.errorFetchingPatchInfo",
+            defaultMessage: "Error fetching patch info:",
+          }),
+          error
+        );
       }
     }
 
@@ -110,7 +119,13 @@ export default function VocaTest({ setDisplay, lvl }) {
         });
         return response.data;
       } catch (error) {
-        console.error(`Error fetching ${lvl} patch ${patchNumber}:`, error);
+        console.error(
+          intl.formatMessage({
+            id: "vocaTest.errorFetchingPatch",
+            defaultMessage: "Error fetching patch:",
+          }),
+          error
+        );
         throw error;
       }
     }
@@ -121,15 +136,21 @@ export default function VocaTest({ setDisplay, lvl }) {
         if (gameData && gameData.data && gameData.data.length > 0) {
           setData(gameData.data);
         } else {
-          console.log("Brak danych");
+          console.log(
+            intl.formatMessage({
+              id: "vocaTest.noData",
+              defaultMessage: "No data.",
+            })
+          );
         }
       }
     }
 
     fetchPatchInfo();
     startGame();
-  }, [patchNumber, setLastOne, setLength, lvl]);
+  }, [patchNumber, setLastOne, setLength, lvl, intl]);
 
+  // Show confetti animation
   function confettiShow() {
     setShowConfetti(true);
     setGenerateConfetti(true);
@@ -138,7 +159,7 @@ export default function VocaTest({ setDisplay, lvl }) {
       setGenerateConfetti(false);
     }, 2000);
 
-    // Usuwamy komponent Confetti po dodatkowych 3 sekundach
+    // Remove the Confetti component after 3 additional seconds
     const hideTimer = setTimeout(() => {
       setShowConfetti(false);
     }, 4000);
@@ -149,14 +170,13 @@ export default function VocaTest({ setDisplay, lvl }) {
     };
   }
 
-  //data
   function nextPatch() {
     const nextPatchNumber = patchNumber + 1;
     localStorage.setItem(`currentPatch-${lvl}`, nextPatchNumber);
     setPatch(nextPatchNumber);
   }
 
-  //carouselItems
+  // Initialize the carousel with data
   useEffect(() => {
     if (data.length > 0 && carouselItems === null) {
       const savedCarouselItems = localStorage.getItem(`carouselItems-${lvl}`);
@@ -177,21 +197,28 @@ export default function VocaTest({ setDisplay, lvl }) {
         setLastDataItemId(lastId);
       }
     }
-  }, [data, carouselItems, setDataIndexForBottomDiv, setCarouselItems, lvl]);
+  }, [
+    data,
+    carouselItems,
+    lvl,
+    setDataIndexForBottomDiv,
+    setCarouselItems,
+    setLastDataItemId,
+  ]);
 
   function moveCarousel() {
     setCarouselItems((prevItems) => {
-      // Pobieramy klasy CSS
+      // get classNames
       const classNames = prevItems.map((item) => item.className);
 
-      // Rotujemy klasy CSS
+      // rotate classNames
       const lastClassName = classNames[classNames.length - 1];
       const newClassNames = [
         lastClassName,
         ...classNames.slice(0, classNames.length - 1),
       ];
 
-      // Aktualizujemy klasy CSS w divach
+      // update classes
       const newItems = prevItems.map((item, index) => ({
         ...item,
         className: newClassNames[index],
@@ -201,6 +228,7 @@ export default function VocaTest({ setDisplay, lvl }) {
     });
   }
 
+  // Update the data in the "bottom-bot" item after carousel moves
   function carouselUpdate() {
     if (data.length > 0) {
       setCarouselItems((prevItems) => {
@@ -222,6 +250,7 @@ export default function VocaTest({ setDisplay, lvl }) {
       });
 
       setDataIndexForBottomDiv((prevIndex) => {
+        // if we are at the end of the patch data, go to the next patch
         if (prevIndex === data.length - 1) {
           nextPatch();
           return 0;
@@ -232,29 +261,30 @@ export default function VocaTest({ setDisplay, lvl }) {
     }
   }
 
-  //sprawdz odp
+  // Check the user's answer (text input mode)
   function checkAnswer() {
-    const currentItem = carouselItems.find(
+    const currentItem = carouselItems?.find(
       (item) => item.className === "middle"
     );
 
     if (currentItem && currentItem.data && currentItem.data.wordPl) {
       const correctAnswer = currentItem.data.wordPl.word || "";
-
       const isCorrect = checkSpelling(userWord, correctAnswer);
 
-      if (isCorrect) {
-        handleAnswer(true);
-      } else {
-        handleAnswer(false);
-      }
+      handleAnswer(isCorrect);
     } else {
-      console.log("Brak danych do porównania!");
+      console.log(
+        intl.formatMessage({
+          id: "vocaTest.noDataToCompare",
+          defaultMessage: "No data to compare!",
+        })
+      );
     }
   }
 
+  // Handle the user’s answer (common for both modes)
   function handleAnswer(isCorrect) {
-    const currentItem = carouselItems.find(
+    const currentItem = carouselItems?.find(
       (item) => item.className === "middle"
     );
 
@@ -263,20 +293,28 @@ export default function VocaTest({ setDisplay, lvl }) {
 
       if (isCorrect) {
         addNumberToGood(idOfTheWord, lvl);
-        console.log("good");
+        console.log(
+          intl.formatMessage({ id: "vocaTest.logGood", defaultMessage: "good" })
+        );
       } else {
         addNumberToWrong(idOfTheWord, lvl);
-        console.log("wrong");
+        console.log(
+          intl.formatMessage({
+            id: "vocaTest.logWrong",
+            defaultMessage: "wrong",
+          })
+        );
       }
 
       setWordsAnsweredCount((prevCount) => prevCount + 1);
 
+      // check if user reached the last item
       if (currentItem.data.id === lastDataItemId) {
         setWordsAnsweredCount(0);
-
         const lastId = data[data.length - 1].id;
         localStorage.setItem(`lastDataItemId-${lvl}`, lastId);
         setLastDataItemId(lastId);
+
         confettiShow();
 
         if (isThisLastOne) {
@@ -288,19 +326,26 @@ export default function VocaTest({ setDisplay, lvl }) {
       moveCarousel();
       carouselUpdate();
     } else {
-      console.log("Brak danych do przetworzenia!");
+      console.log(
+        intl.formatMessage({
+          id: "vocaTest.noDataToProcess",
+          defaultMessage: "No data to process!",
+        })
+      );
     }
   }
 
-  //reaction
+  // Button mode: user "knows" the word
   function handleClickKnow() {
     handleAnswer(true);
   }
 
+  // Button mode: user "doesn't know" the word
   function handleClickDontKnow() {
     handleAnswer(false);
   }
 
+  // Controlled input for text answer
   function correctWordChange(event) {
     setWord(event.target.value);
   }
@@ -322,7 +367,7 @@ export default function VocaTest({ setDisplay, lvl }) {
               className="return-btn-voca"
               onClick={() => setDisplay("default")}
             >
-              <h1> {lvl} </h1>
+              <h1>{lvl}</h1>
             </div>
 
             <div className="window-words">
@@ -335,7 +380,10 @@ export default function VocaTest({ setDisplay, lvl }) {
                           <div className="progressbar-words-containter">
                             <NewProgressBar
                               percent={percent}
-                              text="% tej cześci"
+                              text={intl.formatMessage({
+                                id: "vocaTest.localPercent",
+                                defaultMessage: "% of this part",
+                              })}
                             />
                           </div>
                         </div>
@@ -344,7 +392,10 @@ export default function VocaTest({ setDisplay, lvl }) {
                           <div className="progressbar-words-containter">
                             <NewProgressBar
                               percent={totalpercent}
-                              text="% overall"
+                              text={intl.formatMessage({
+                                id: "vocaTest.overallPercent",
+                                defaultMessage: "% overall",
+                              })}
                             />
                           </div>
                         </div>
@@ -360,12 +411,18 @@ export default function VocaTest({ setDisplay, lvl }) {
                     ) : (
                       <div className="buttons-words">
                         <MyButton
-                          message="znam"
+                          message={intl.formatMessage({
+                            id: "vocaTest.know",
+                            defaultMessage: "I know it",
+                          })}
                           color="green"
                           onClick={handleClickKnow}
                         />
                         <MyButton
-                          message="nie znam"
+                          message={intl.formatMessage({
+                            id: "vocaTest.dontKnow",
+                            defaultMessage: "I don't know it",
+                          })}
                           color="red"
                           onClick={handleClickDontKnow}
                         />
@@ -373,6 +430,7 @@ export default function VocaTest({ setDisplay, lvl }) {
                     )}
                   </div>
                 </div>
+
                 <div className="top-right-words">
                   {carouselItems ? (
                     carouselItems.map((item) => (
@@ -384,7 +442,12 @@ export default function VocaTest({ setDisplay, lvl }) {
                       </div>
                     ))
                   ) : (
-                    <div>Ładowanie...</div>
+                    <div>
+                      <FormattedMessage
+                        id="vocaTest.loading"
+                        defaultMessage="Loading..."
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -393,23 +456,36 @@ export default function VocaTest({ setDisplay, lvl }) {
                 {!showPercent ? (
                   <div className="progressbar-words">
                     <div className="progressbar-words-containter">
-                      <NewProgressBar percent={percent} text="% poznane słówka z tej częśći" />
+                      <NewProgressBar
+                        percent={percent}
+                        text={intl.formatMessage({
+                          id: "vocaTest.localPercentFull",
+                          defaultMessage: "% known words from this part",
+                        })}
+                      />
                     </div>
                   </div>
                 ) : (
                   <div className="progressbar-words">
                     <div className="progressbar-words-containter">
-                      <NewProgressBar percent={totalpercent} text="% ukonczonych ogólnie" />
+                      <NewProgressBar
+                        percent={totalpercent}
+                        text={intl.formatMessage({
+                          id: "vocaTest.overallPercentFull",
+                          defaultMessage: "% overall completed",
+                        })}
+                      />
                     </div>
                   </div>
                 )}
               </div>
             </div>
 
+            {/* Switches for 'mode' and 'showPercent' */}
             <div className="switch-container-words">
               <div>
                 <input
-                  onChange={() => setMode(mode ? false : true)}
+                  onChange={() => setMode(!mode)}
                   type="checkbox"
                   id="checkboxInput"
                   checked={mode}
@@ -422,7 +498,7 @@ export default function VocaTest({ setDisplay, lvl }) {
 
               <div>
                 <input
-                  onChange={() => setShowPercent(showPercent ? false : true)}
+                  onChange={() => setShowPercent(!showPercent)}
                   type="checkbox"
                   id="checkboxInputPercent"
                 />
@@ -434,6 +510,7 @@ export default function VocaTest({ setDisplay, lvl }) {
             </div>
           </>
         )}
+
         {showConfetti && <Confetti generateConfetti={generateConfetti} />}
       </div>
     </>

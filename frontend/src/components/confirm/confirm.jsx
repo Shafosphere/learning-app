@@ -1,8 +1,10 @@
 import styles from "./confirm.module.css";
 import React, { useRef, useEffect } from "react";
+import { useIntl } from "react-intl";
 
 export default function ConfirmWindow({ message, onClose }) {
   const confirmRef = useRef(null);
+  const intl = useIntl();
 
   useEffect(() => {
     const dialogElement = confirmRef.current;
@@ -11,13 +13,13 @@ export default function ConfirmWindow({ message, onClose }) {
     }
   }, []);
 
-const handleClose = (result) => {
-  const dialogElement = confirmRef.current;
-  if (dialogElement) {
-    dialogElement.close();
-  }
-  onClose(result); // Przekazywanie wyniku
-};
+  const handleClose = (result) => {
+    const dialogElement = confirmRef.current;
+    if (dialogElement) {
+      dialogElement.close();
+    }
+    onClose(result);
+  };
 
   return (
     <dialog ref={confirmRef} className={styles.confirm}>
@@ -28,14 +30,14 @@ const handleClose = (result) => {
           className="button"
           onClick={() => handleClose(false)}
         >
-          No
+          {intl.formatMessage({ id: "confirm.no", defaultMessage: "No" })}
         </button>
         <button
           style={{ "--buttonColor": "var(--highlight)" }}
           className="button"
           onClick={() => handleClose(true)}
         >
-          Yes
+          {intl.formatMessage({ id: "confirm.yes", defaultMessage: "Yes" })}
         </button>
       </div>
     </dialog>

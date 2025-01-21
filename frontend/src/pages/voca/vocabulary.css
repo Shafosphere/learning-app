@@ -14,7 +14,6 @@
       rgba(var(--background-rgba), 1) 0%,
       rgba(var(--border-rgba), 1) 100%
     );
-
   }
   .vocabulary-window {
     height: 100%;
@@ -78,7 +77,6 @@
   .display-voca:nth-of-type(2):active {
     border-color: var(--tertiary);
   }
-
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
@@ -96,7 +94,6 @@
       rgba(var(--background-rgba), 1) 0%,
       rgba(var(--border-rgba), 1) 100%
     );
-
   }
   .vocabulary-window {
     height: 100%;
@@ -161,7 +158,6 @@
   .display-voca:nth-of-type(2):active {
     border-color: var(--tertiary);
   }
-
 }
 
 @media (min-width: 768px) and (max-width: 1450px) {

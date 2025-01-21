@@ -11,7 +11,8 @@ import { IoBug, IoLogoGithub } from "react-icons/io5";
 import { FaBook, FaScroll } from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
 import { FaRankingStar } from "react-icons/fa6";
-import { useIntl } from "react-intl";
+import { useIntl, FormattedMessage } from "react-intl";
+
 import api from "../../utils/api";
 import ReportPopup from "../report/report-popup";
 import { PopupContext } from "../popup/popupcontext";
@@ -21,12 +22,11 @@ import "./sidebar.css";
 export default function Sidebar() {
   const { isLoggedIn, setIsLoggedIn, setUser, toggleTheme } =
     useContext(SettingsContext);
-
   const { setPopup } = useContext(PopupContext);
 
   const [isAdmin, setIsAdmin] = useState(false);
-
   const [isFormVisible, setFormVisible] = useState(false);
+
   const intl = useIntl();
 
   const handleFormVisibleChange = (visible) => {
@@ -78,9 +78,10 @@ export default function Sidebar() {
   return (
     <>
       <div className="container-sidebar">
+        {/* Brand name */}
         <div className="sidebar-title">
           <span className="sidebar-initial">M</span>
-          <span className="sidebar-full full-title">emolingo</span>
+          <span className="sidebar-full full-title">Memolingo</span>
         </div>
 
         <div className="sidebar-content">
@@ -90,7 +91,9 @@ export default function Sidebar() {
                 <FaBook />
               </span>
               <span className="sidebar-full">
-                <div className="link-text">Ucz sie</div>
+                <div className="link-text">
+                  <FormattedMessage id="sidebar.learn" defaultMessage="Learn" />
+                </div>
               </span>
             </Link>
 
@@ -99,7 +102,12 @@ export default function Sidebar() {
                 <FaScroll />
               </span>
               <span className="sidebar-full">
-                <div className="link-text">vocabulary tests</div>
+                <div className="link-text">
+                  <FormattedMessage
+                    id="sidebar.vocabularyTests"
+                    defaultMessage="Vocabulary Tests"
+                  />
+                </div>
               </span>
             </Link>
 
@@ -108,7 +116,12 @@ export default function Sidebar() {
                 <IoMdSettings />
               </span>
               <span className="sidebar-full">
-                <div className="link-text">settings</div>
+                <div className="link-text">
+                  <FormattedMessage
+                    id="sidebar.settings"
+                    defaultMessage="Settings"
+                  />
+                </div>
               </span>
             </Link>
 
@@ -117,7 +130,12 @@ export default function Sidebar() {
                 <MdAccountBox />
               </span>
               <span className="sidebar-full">
-                <div className="link-text">account</div>
+                <div className="link-text">
+                  <FormattedMessage
+                    id="sidebar.account"
+                    defaultMessage="Account"
+                  />
+                </div>
               </span>
             </Link>
 
@@ -126,7 +144,12 @@ export default function Sidebar() {
                 <FaRankingStar />
               </span>
               <span className="sidebar-full">
-                <div className="link-text">ranking</div>
+                <div className="link-text">
+                  <FormattedMessage
+                    id="sidebar.ranking"
+                    defaultMessage="Ranking"
+                  />
+                </div>
               </span>
             </Link>
 
@@ -136,7 +159,12 @@ export default function Sidebar() {
                   <MdAdminPanelSettings />
                 </span>
                 <span className="sidebar-full">
-                  <div className="link-text">admin_panel</div>
+                  <div className="link-text">
+                    <FormattedMessage
+                      id="sidebar.adminPanel"
+                      defaultMessage="Admin Panel"
+                    />
+                  </div>
                 </span>
               </Link>
             )}
@@ -149,7 +177,12 @@ export default function Sidebar() {
                   <IoBug />
                 </span>
                 <span className="sidebar-full">
-                  <div className="link-text">report_a_bug</div>
+                  <div className="link-text">
+                    <FormattedMessage
+                      id="sidebar.reportBug"
+                      defaultMessage="Report a bug"
+                    />
+                  </div>
                 </span>
               </div>
             )}
@@ -160,7 +193,12 @@ export default function Sidebar() {
                   <MdLogout />
                 </span>
                 <span className="sidebar-full">
-                  <div className="link-text">Logout</div>
+                  <div className="link-text">
+                    <FormattedMessage
+                      id="sidebar.logout"
+                      defaultMessage="Logout"
+                    />
+                  </div>
                 </span>
               </div>
             )}
@@ -170,7 +208,12 @@ export default function Sidebar() {
                 <MdDarkMode />
               </span>
               <span className="sidebar-full">
-                <div className="link-text">dark mode</div>
+                <div className="link-text">
+                  <FormattedMessage
+                    id="sidebar.darkMode"
+                    defaultMessage="Dark Mode"
+                  />
+                </div>
               </span>
             </div>
 
@@ -180,7 +223,12 @@ export default function Sidebar() {
                   <MdLogin />
                 </span>
                 <span className="sidebar-full">
-                  <div className="link-text">Login</div>
+                  <div className="link-text">
+                    <FormattedMessage
+                      id="sidebar.login"
+                      defaultMessage="Login"
+                    />
+                  </div>
                 </span>
               </Link>
             )}
@@ -195,13 +243,19 @@ export default function Sidebar() {
                   <IoLogoGithub />
                 </span>
                 <span className="sidebar-full">
-                  <div className="link-text">github</div>
+                  <div className="link-text">
+                    <FormattedMessage
+                      id="sidebar.github"
+                      defaultMessage="GitHub"
+                    />
+                  </div>
                 </span>
               </div>
             </a>
           </div>
         </div>
       </div>
+
       <ReportPopup
         isFormVisible={isFormVisible}
         onFormVisibleChange={handleFormVisibleChange}

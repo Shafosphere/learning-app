@@ -7,7 +7,6 @@ import usaFlag from "../../data/united-states-small.png";
 import MyButton from "../button/button";
 
 export default function FirstBookMark({
-  activeSpan,
   setSpan,
   toggleSound,
   isSoundEnabled,
@@ -26,12 +25,13 @@ export default function FirstBookMark({
   return (
     <>
       <div className="switches">
+        {/* Sounds */}
         <div
           className="switch-container onMouse"
           onMouseEnter={() => setSpan("Sounds")}
         >
           <span className="switch-text">
-            <FormattedMessage id="sounds" />
+            <FormattedMessage id="sounds" defaultMessage="Sounds" />
           </span>
           <label className="switch">
             <input
@@ -43,12 +43,13 @@ export default function FirstBookMark({
           </label>
         </div>
 
+        {/* Dark Mode */}
         <div
           className="switch-container onMouse"
           onMouseEnter={() => setSpan("darkmode")}
         >
           <span className="switch-text">
-            <FormattedMessage id="darkMode" />
+            <FormattedMessage id="darkMode" defaultMessage="Dark Mode" />
           </span>
           <label className="switch">
             <input
@@ -60,12 +61,13 @@ export default function FirstBookMark({
           </label>
         </div>
 
+        {/* C1 Level */}
         <div
           className="switch-container onMouse"
           onMouseEnter={() => setSpan("C1")}
         >
           <span className="switch-text">
-            <FormattedMessage id="c1" />
+            <FormattedMessage id="c1" defaultMessage="C1 Level" />
           </span>
           <label className="switch">
             <input
@@ -78,13 +80,13 @@ export default function FirstBookMark({
         </div>
       </div>
 
-      {/* language */}
+      {/* Language */}
       <div
         className="container-language onMouse"
         onMouseEnter={() => setSpan("language")}
       >
         <span className="switch-text">
-          <FormattedMessage id="language" />
+          <FormattedMessage id="language" defaultMessage="Language" />
         </span>
         <div className="flags">
           <img
@@ -102,21 +104,24 @@ export default function FirstBookMark({
         </div>
       </div>
 
-      {/* reset */}
+      {/* Reset */}
       <div
         className="container-resets onMouse"
         onMouseEnter={() => setSpan("resetsbuttons")}
       >
         <span className="switch-text">
-          <FormattedMessage id="resetButtons" />
+          <FormattedMessage id="resetButtons" defaultMessage="Reset Buttons" />
         </span>
         <div className="resets-buttons">
           <MyButton
-            message="wszystko"
+            message={<FormattedMessage id="resetAll" defaultMessage="All" />}
             color="red"
             onClick={() =>
               showConfirm(
-                <FormattedMessage id="areYouSureResetEverything" />,
+                <FormattedMessage
+                  id="areYouSureResetEverything"
+                  defaultMessage="Are you sure you want to reset everything?"
+                />,
                 () => clearEverything()
               )
             }
@@ -124,13 +129,16 @@ export default function FirstBookMark({
         </div>
       </div>
 
-      {/* dailygoal */}
+      {/* Daily Goal */}
       <div
         className="dailyGoal onMouse"
         onMouseEnter={() => setSpan("DailyGoal")}
       >
         <span className="switch-text">
-          <FormattedMessage id="dailyProgress" />
+          <FormattedMessage
+            id="dailyProgress"
+            defaultMessage="Daily Progress"
+          />
         </span>
         <input
           type="number"
@@ -139,14 +147,14 @@ export default function FirstBookMark({
         />
       </div>
 
-      {/* save button */}
+      {/* Save Button */}
       <div className="button-container-save">
         <button
           style={{ "--buttonColor": "var(--secondary)" }}
           className="button"
           onClick={saveSettings}
         >
-          <FormattedMessage id="saveSettings" />
+          <FormattedMessage id="saveSettings" defaultMessage="Save Settings" />
         </button>
       </div>
     </>

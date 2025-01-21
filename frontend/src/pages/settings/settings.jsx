@@ -3,11 +3,12 @@ import React, { useContext, useState, useEffect } from "react";
 import { SettingsContext } from "./properties";
 import { PopupContext } from "../../components/popup/popupcontext";
 import ConfirmWindow from "../../components/confirm/confirm";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl"; // używamy także useIntl
 import FirstBookMark from "../../components/settings/firstbookmark";
 import SecondBookMark from "../../components/settings/secondbookmark";
 
 export default function Settings() {
+  const intl = useIntl();
   const {
     dailyGoal,
     setDailyGoal,
@@ -26,7 +27,7 @@ export default function Settings() {
     setSpellChecking,
   } = useContext(SettingsContext);
 
-  //popup
+  // popup
   const { setPopup } = useContext(PopupContext);
   const [activePage, setPage] = useState("1");
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
@@ -45,7 +46,11 @@ export default function Settings() {
   function saveSettings() {
     setDailyGoal(newDailyGoal);
     setPopup({
-      message: "Settings saved",
+      // Zamiast tekstu wprost używamy tłumaczenia
+      message: intl.formatMessage({
+        id: "settings.saved",
+        defaultMessage: "Settings saved",
+      }),
       emotion: "positive",
     });
   }
@@ -71,6 +76,7 @@ export default function Settings() {
     try {
       localStorage.clear();
       const deleteIndexedDB = () => {
+        // Niektóre przeglądarki nie wspierają indexedDB.databases()
         const dbs = indexedDB.databases
           ? indexedDB.databases()
           : Promise.resolve([]);
@@ -78,16 +84,26 @@ export default function Settings() {
         dbs.then((databases) => {
           databases.forEach((db) => {
             indexedDB.deleteDatabase(db.name);
-            console.log(`Usunięto bazę danych: ${db.name}`);
+            console.log(
+              intl.formatMessage({
+                id: "settings.dbDeleted",
+                defaultMessage: "Deleted database",
+              }) + `: ${db.name}`
+            );
           });
         });
       };
 
       deleteIndexedDB();
-
       window.location.reload();
     } catch (error) {
-      console.error("An error occurred while clearing everything: ", error);
+      console.error(
+        intl.formatMessage({
+          id: "settings.clearError",
+          defaultMessage: "An error occurred while clearing everything:",
+        }),
+        error
+      );
     }
   }
 
@@ -143,25 +159,64 @@ export default function Settings() {
             />
           )}
         </div>
+
         {/* descriptions */}
         <div className="settings-right">
           <div className="explanation">
             {(() => {
               const contentMap = {
-                Sounds: <FormattedMessage id="turnOffSoundEffects" />,
-                C1: <FormattedMessage id="addsC1WordPool" />,
-                DailyGoal: <FormattedMessage id="changeDailyProgress" />,
-                darkmode: <FormattedMessage id="mode" />,
+                Sounds: (
+                  <FormattedMessage
+                    id="turnOffSoundEffects"
+                    defaultMessage="Disable or enable sound effects"
+                  />
+                ),
+                C1: (
+                  <FormattedMessage
+                    id="addsC1WordPool"
+                    defaultMessage="Adds C1 level words to your practice pool"
+                  />
+                ),
+                DailyGoal: (
+                  <FormattedMessage
+                    id="changeDailyProgress"
+                    defaultMessage="Change your daily progress goal"
+                  />
+                ),
+                darkmode: (
+                  <FormattedMessage
+                    id="mode"
+                    defaultMessage="Switch between dark and light mode"
+                  />
+                ),
                 resetsbuttons: (
                   <span>
                     <p>
-                      <FormattedMessage id="resetButtons" />
+                      <FormattedMessage
+                        id="resetButtons"
+                        defaultMessage="Reset buttons"
+                      />
                     </p>
                   </span>
                 ),
-                language: <FormattedMessage id="changeLanguage" />,
-                diacritical: <p>ignoruje znaki diakrytyczne w polskim</p>,
-                spellChecking: <p>bedziesz mógł pomylić sie o 1 literke</p>,
+                language: (
+                  <FormattedMessage
+                    id="changeLanguage"
+                    defaultMessage="Select application language"
+                  />
+                ),
+                diacritical: (
+                  <FormattedMessage
+                    id="explanation.diacritical"
+                    defaultMessage="Ignores diacritical marks in Polish words."
+                  />
+                ),
+                spellChecking: (
+                  <FormattedMessage
+                    id="explanation.spellChecking"
+                    defaultMessage="You can be off by one letter."
+                  />
+                ),
               };
 
               return contentMap[activeSpan] || null;
@@ -169,7 +224,6 @@ export default function Settings() {
           </div>
         </div>
       </div>
-      {/* </div> */}
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}

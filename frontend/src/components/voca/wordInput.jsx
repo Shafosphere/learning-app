@@ -1,6 +1,9 @@
 import React from "react";
+import { useIntl } from "react-intl";
 
 export default function InputField({ userWord, onChange, onKeyDown }) {
+  const intl = useIntl();
+
   return (
     <input
       className="voca_input"
@@ -8,7 +11,10 @@ export default function InputField({ userWord, onChange, onKeyDown }) {
       value={userWord}
       onChange={onChange}
       onKeyDown={onKeyDown}
-      placeholder="translate the word"
+      placeholder={intl.formatMessage({
+        id: "vocaTest.translateTheWord",
+        defaultMessage: "Translate the word"
+      })}
     />
   );
 }

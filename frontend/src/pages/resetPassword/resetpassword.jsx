@@ -5,29 +5,32 @@ import "./resetpassword.css";
 import MyButton from "../../components/button/button";
 import api from "../../utils/api";
 import { PopupContext } from "../../components/popup/popupcontext";
+import { useIntl } from "react-intl";
 
 export default function ResetPassword() {
+  const intl = useIntl();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
 
   const { token } = useParams();
-
   const { setPopup } = useContext(PopupContext);
 
-  async function handleSubmit(e) {
+  async function handleSubmit() {
     // Sprawdzenie zgodności haseł
     if (password !== confirmPassword) {
       setPopup({
-        message: "Passwords do not match. Please try again.",
+        message: intl.formatMessage({
+          id: "resetpassword.passwordMismatch",
+          defaultMessage: "Passwords do not match. Please try again.",
+        }),
         emotion: "warning",
       });
       return;
     }
 
     try {
-      // Wyślij żądanie POST do backendu
+      // Wysyłanie żądania POST do backendu
       const response = await api.post("/auth/reset-password", {
         token,
         password,
@@ -35,19 +38,30 @@ export default function ResetPassword() {
 
       if (response.status === 200) {
         setPopup({
-          message: "Password has been reset successfully!",
+          message: intl.formatMessage({
+            id: "resetpassword.success",
+            defaultMessage: "Password has been reset successfully!",
+          }),
           emotion: "positive",
         });
       }
     } catch (error) {
       if (error.response) {
         setPopup({
-          message: error.response.data.message || "An error occurred",
+          message:
+            error.response.data.message ||
+            intl.formatMessage({
+              id: "resetpassword.error.generic",
+              defaultMessage: "An error occurred",
+            }),
           emotion: "negative",
         });
       } else {
         setPopup({
-          message: "An error occurred. Please try again later.,",
+          message: intl.formatMessage({
+            id: "resetpassword.error.tryLater",
+            defaultMessage: "An error occurred. Please try again later.",
+          }),
           emotion: "negative",
         });
       }
@@ -66,7 +80,10 @@ export default function ResetPassword() {
               value={password}
               autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
-              placeholder={"New Password"}
+              placeholder={intl.formatMessage({
+                id: "resetpassword.placeholder.new",
+                defaultMessage: "New Password",
+              })}
               required
             />
             <button
@@ -81,6 +98,7 @@ export default function ResetPassword() {
               )}
             </button>
           </div>
+
           <div className="custom-input-reset" style={{ position: "relative" }}>
             <input
               className="input-login"
@@ -88,7 +106,10 @@ export default function ResetPassword() {
               value={confirmPassword}
               autoComplete="new-password"
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder={"Confirm New Password"}
+              placeholder={intl.formatMessage({
+                id: "resetpassword.placeholder.confirm",
+                defaultMessage: "Confirm New Password",
+              })}
               required
             />
             <button
@@ -107,9 +128,12 @@ export default function ResetPassword() {
 
         <MyButton
           width="30"
-          message="reset password"
+          message={intl.formatMessage({
+            id: "resetpassword.button",
+            defaultMessage: "Reset Password",
+          })}
           color="green"
-          onClick={() => handleSubmit()}
+          onClick={handleSubmit}
         />
       </div>
     </div>
