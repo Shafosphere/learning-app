@@ -142,5 +142,6 @@
   "reportForm.languagePolish": "Polski",
   "reportForm.languageEnglish": "Angielski",
   "reportForm.description": "Opis:",
-  "reportForm.submitButton": "Wyślij zgłoszenie"
+  "reportForm.submitButton": "Wyślij zgłoszenie",
+  "resetAll": "Wszystko"
 }
