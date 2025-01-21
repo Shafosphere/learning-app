@@ -152,7 +152,7 @@ export default function Home() {
         calculatePercent();
         calculateTotalPercent();
         confettiShow();
-        if(isLoggedIn){
+        if (isLoggedIn) {
           await sendLearnedWordToServer(newid);
         }
       }
@@ -510,16 +510,16 @@ export default function Home() {
         />
       </div>
       <div className="home-right">
-        {/* <Progressbar
-          procent={procent}
+        <NewProgressBar
+          vertical={true}
+          percent={procent}
           text={intl.formatMessage({ id: "dailyProgress" })}
-        /> */}
-        <NewProgressBar vertical={true} percent={procent} text={intl.formatMessage({ id: "dailyProgress" })} />
-        <NewProgressBar vertical={true} percent={totalPercent} text={intl.formatMessage({ id: "totalProgress" })} />
-        {/* <Progressbar
-          procent={totalPercent}
+        />
+        <NewProgressBar
+          vertical={true}
+          percent={totalPercent}
           text={intl.formatMessage({ id: "totalProgress" })}
-        /> */}
+        />
       </div>
       {showConfetti && <Confetti generateConfetti={generateConfetti} />}
     </div>

@@ -1,7 +1,9 @@
 import React from "react";
 import { FormattedMessage } from "react-intl";
-import polandFlag from "../../data/poland.png";
-import usaFlag from "../../data/united-states.png";
+
+import polandFlag from "../../data/poland-small.png";
+import usaFlag from "../../data/united-states-small.png";
+
 import MyButton from "../button/button";
 
 export default function FirstBookMark({
