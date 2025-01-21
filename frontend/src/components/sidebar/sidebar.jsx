@@ -85,7 +85,7 @@ export default function Sidebar() {
 
         <div className="sidebar-content">
           <div>
-            <Link className="link" to="/home">
+            <Link className="link" to="/maingame">
               <span className="sidebar-initial link-icon">
                 <FaBook />
               </span>

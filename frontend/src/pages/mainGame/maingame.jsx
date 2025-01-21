@@ -1,7 +1,7 @@
-import "./home.css";
-import Flashcard from "../../components/home/card/flashcard";
-import EmptyFlashcard from "../../components/home/card/empty-flashcard";
-import Boxes from "../../components/home/box/box";
+import "./maingame.css";
+import Flashcard from "../../components/maingame/card/flashcard";
+import EmptyFlashcard from "../../components/maingame/card/empty-flashcard";
+import Boxes from "../../components/maingame/box/box";
 import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
 import NewProgressBar from "../../components/progress_bar/progressbar";
@@ -19,7 +19,7 @@ import usePersistedState from "../../hooks/localstorage/usePersistedState";
 import useSpellchecking from "../../hooks/spellchecking/spellchecking";
 import usePageVisit from "../../hooks/activity/countingentries";
 
-export default function Home() {
+export default function MainGame() {
   const intl = useIntl();
   const [randomWord, setRandom] = useState(null); //selected word
   const [className, setClass] = useState(""); //class display
@@ -220,7 +220,7 @@ export default function Home() {
         } else {
           // Wszystkie patche wyczerpane
           setPopup({
-            message: "Ukończyłeś wszystkie słowa!",
+            message: "Pobrales wszystkie słowa z tego poziomu!",
             emotion: "positive",
           });
           return;

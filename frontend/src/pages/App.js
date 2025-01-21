@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Home from "./home/home";
+import MainGame from "./mainGame/maingame";
 import Settings from "./settings/settings";
 import Login from "./login/login";
 import Sidebar from "../components/sidebar/sidebar";
@@ -31,9 +31,9 @@ const AppWrapper = () => {
     <IntlProvider locale={language} messages={messages[language]}>
       <Sidebar />
       <Routes>
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/" element={<Navigate to="/maingame" replace />} />
         <Route path="/empty" element={<Empty />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/maingame" element={<MainGame />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={isLoggedIn ? <Account /> : <Login />} />
