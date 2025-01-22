@@ -1,5 +1,5 @@
 import React from "react";
-// import { FormattedMessage } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import "./notfound.css";
 
 export default function NotFound() {
@@ -8,9 +8,19 @@ export default function NotFound() {
       <div className="window-notfound">
         <h1>
           <span className="number-notfound">404 </span>
-          <span>Page Not Found</span>
+          <span>
+            <FormattedMessage
+              id="notFound.pageTitle"
+              defaultMessage="Page Not Found"
+            />
+          </span>
         </h1>
-        <p>Oops! The page you're looking for doesn't exist.</p>
+        <p>
+          <FormattedMessage
+            id="notFound.message"
+            defaultMessage="Oops! The page you're looking for doesn't exist."
+          />
+        </p>
       </div>
     </div>
   );

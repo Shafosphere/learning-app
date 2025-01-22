@@ -143,19 +143,17 @@
   "resetAll": "All",
   "about.welcomeTitle": "Welcome to Memolingo!",
   "about.welcomeContent": "In Memolingo, we redefine language learning by combining proven teaching methods with modern technology. Whether you're just starting your journey or improving your skills, Memolingo makes learning intuitive, personalized, and effective.",
-
   "about.whatIsMemolingoTitle": "What is Memolingo?",
   "about.whatIsMemolingoContent": "Memolingo is a modern vocabulary learning platform based on the Leitner system, a scientifically proven method of effective memorization. By integrating this system with our interactive tools, we ensure that your learning will be both efficient and engaging.",
-
   "about.leitnerSystemTitle": "How does the Leitner system work?",
   "about.leitnerSystemContent": "The Leitner system is a spaced repetition method that helps in memorizing vocabulary by showing words at different intervals depending on your knowledge. In Memolingo:",
   "about.leitnerPoint1": "Words that are difficult will appear more frequently.",
   "about.leitnerPoint2": "Well-known words are shown less often, allowing you to focus on areas that need improvement.",
   "about.leitnerPoint3": "This adaptive approach maximizes learning efficiency and saves time.",
-
   "about.ourMissionTitle": "Our Mission",
   "about.ourMissionContent": "At Memolingo, we aim to make language learning accessible, effective, and enjoyable for everyone. By combining traditional methods such as the Leitner system with modern technology, we help you build strong language skills with confidence.",
-
   "about.joinCommunityTitle": "Join the Memolingo Community",
-  "about.joinCommunityContent": "Start your journey today with Memolingo. Together, we will open doors to new languages, cultures, and opportunities through a smarter, more engaging approach to learning."
+  "about.joinCommunityContent": "Start your journey today with Memolingo. Together, we will open doors to new languages, cultures, and opportunities through a smarter, more engaging approach to learning.",
+  "notFound.pageTitle": "Page Not Found",
+  "notFound.message": "Oops! The page you're looking for doesn't exist."
 }
