@@ -1,0 +1,35 @@
+.container-notfound {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    color: var(--headline);
+    background-color: var(--background);
+    overflow: hidden;
+
+    background-color: var(--f2f4f6);
+    background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
+    background-size: 40px 40px;
+
+    background: linear-gradient(
+      180deg,
+      rgba(var(--background-rgba), 1) 0%,
+      rgba(var(--border-rgba), 1) 100%
+    );
+  }
+
+.window-notfound{
+    border: 10px solid var(--border);
+    padding: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-sizing: border-box;
+    text-align: center;
+    margin: 1rem;
+}
+.number-notfound{
+    font-size: 70px;
+}

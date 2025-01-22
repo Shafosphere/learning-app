@@ -9,6 +9,7 @@ import PrivateRoute from "../utils/privateroute";
 import Account from "./account/account";
 import Ranking from "./ranking/ranking";
 import About from "./about/about";
+import NotFound from "./notfound/notfound";
 import { SettingsProvider, SettingsContext } from "./settings/properties";
 import { IntlProvider } from "react-intl";
 import enMessages from "../locales/en.json";
@@ -47,6 +48,7 @@ const AppWrapper = () => {
           }
         />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </IntlProvider>
   );
