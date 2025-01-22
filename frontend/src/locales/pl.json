@@ -124,6 +124,7 @@
   "sidebar.darkMode": "Tryb ciemny",
   "sidebar.login": "Zaloguj",
   "sidebar.github": "GitHub",
+  "sidebar.about": "O nas",
   "confirm.no": "Nie",
   "confirm.yes": "Tak",
   "resetForm.title": "ZRESETUJ HASŁO",
@@ -143,5 +144,18 @@
   "reportForm.languageEnglish": "Angielski",
   "reportForm.description": "Opis:",
   "reportForm.submitButton": "Wyślij zgłoszenie",
-  "resetAll": "Wszystko"
+  "resetAll": "Wszystko",
+  "about.welcomeTitle": "Witaj w Memolingo!",
+  "about.welcomeContent": "W Memolingo redefiniujemy naukę języków, łącząc sprawdzone metody nauczania z nowoczesną technologią. Niezależnie od tego, czy dopiero zaczynasz swoją przygodę, czy doskonalisz umiejętności, Memolingo sprawia, że nauka staje się intuicyjna, spersonalizowana i skuteczna.",
+  "about.whatIsMemolingoTitle": "Czym jest Memolingo?",
+  "about.whatIsMemolingoContent": "Memolingo to nowoczesna platforma do nauki słownictwa oparta na systemie Leitnera, naukowo potwierdzonej metodzie efektywnego zapamiętywania. Dzięki integracji tego systemu z naszymi interaktywnymi narzędziami zapewniamy, że Twoja nauka będzie jednocześnie wydajna i angażująca.",
+  "about.leitnerSystemTitle": "Jak działa system Leitnera?",
+  "about.leitnerSystemContent": "System Leitnera to metoda powtórek rozłożonych w czasie, która pomaga w zapamiętywaniu słownictwa, pokazując słowa w różnych odstępach czasowych w zależności od Twojej znajomości. W Memolingo:",
+  "about.leitnerPoint1": "Słowa, które sprawiają trudność, pojawiają się częściej.",
+  "about.leitnerPoint2": "Słowa dobrze znane wyświetlane są rzadziej, pozwalając skupić się na tym, co wymaga poprawy.",
+  "about.leitnerPoint3": "To adaptacyjne podejście maksymalizuje efektywność nauki i oszczędza czas.",
+  "about.ourMissionTitle": "Nasza misja",
+  "about.ourMissionContent": "W Memolingo dążymy do tego, aby nauka języków była dostępna, skuteczna i przyjemna dla każdego. Łącząc tradycyjne metody, takie jak system Leitnera, z nowoczesną technologią, pomagamy Ci budować solidne umiejętności językowe z pewnością siebie.",
+  "about.joinCommunityTitle": "Dołącz do społeczności Memolingo",
+  "about.joinCommunityContent": "Rozpocznij swoją podróż już dziś z Memolingo. Razem otworzymy drzwi do nowych języków, kultur i możliwości dzięki sprytniejszemu, bardziej angażującemu podejściu do nauki."
 }

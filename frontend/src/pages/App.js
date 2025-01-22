@@ -8,6 +8,7 @@ import AdminPanel from "./admin/admin";
 import PrivateRoute from "../utils/privateroute";
 import Account from "./account/account";
 import Ranking from "./ranking/ranking";
+import About from "./about/about";
 import { SettingsProvider, SettingsContext } from "./settings/properties";
 import { IntlProvider } from "react-intl";
 import enMessages from "../locales/en.json";
@@ -15,7 +16,6 @@ import plMessages from "../locales/pl.json";
 import { PopupProvider } from "../components/popup/popupcontext";
 import Vocabulary from "./voca/vocabulary";
 import ResetPassword from "./resetPassword/resetpassword";
-
 // Obiekt zawierający tłumaczenia dla różnych języków
 const messages = {
   en: enMessages,
@@ -37,6 +37,7 @@ const AppWrapper = () => {
         <Route path="/account" element={isLoggedIn ? <Account /> : <Login />} />
         <Route path="/vocabulary" element={<Vocabulary />} />
         <Route path="/ranking" element={<Ranking />} />
+        <Route path="/about" element={<About />} />
         <Route
           path="/admin"
           element={

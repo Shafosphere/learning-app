@@ -12,6 +12,7 @@ import { FaBook, FaScroll } from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
 import { FaRankingStar } from "react-icons/fa6";
 import { useIntl, FormattedMessage } from "react-intl";
+import { IoIosHeartHalf } from "react-icons/io";
 
 import api from "../../utils/api";
 import ReportPopup from "../report/report-popup";
@@ -81,7 +82,7 @@ export default function Sidebar() {
         {/* Brand name */}
         <div className="sidebar-title">
           <span className="sidebar-initial">M</span>
-          <span className="sidebar-full full-title">Memolingo</span>
+          <span className="sidebar-full full-title">emolingo</span>
         </div>
 
         <div className="sidebar-content">
@@ -121,6 +122,17 @@ export default function Sidebar() {
                     id="sidebar.settings"
                     defaultMessage="Settings"
                   />
+                </div>
+              </span>
+            </Link>
+
+            <Link className="link" to="/about">
+              <span className="sidebar-initial link-icon">
+                <IoIosHeartHalf />
+              </span>
+              <span className="sidebar-full">
+                <div className="link-text">
+                  <FormattedMessage id="sidebar.about" defaultMessage="About" />
                 </div>
               </span>
             </Link>
