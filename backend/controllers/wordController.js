@@ -15,6 +15,7 @@ import {
   getAllMaxPatchId,
   getPatchWordsByLevel,
   getAllPatchLength,
+  getNumberOfWords,
 } from "../models/userModel.js";
 
 // B2 >= 3264 < C1
@@ -34,18 +35,24 @@ export const getInformation = (req, res) => {
 
 //information about patch
 export const getPatchesInfo = async (req, res) => {
-  console.log('info o patchach')
+  console.log("info o patchach");
   try {
     const stats = await getAllMaxPatchId();
     const length = await getAllPatchLength();
+    const number_words_B2 = await getNumberOfWords("B2");
+    const number_words_C1 = await getNumberOfWords("C1");
+    console.log(number_words_B2);
+    console.log(number_words_C1);
 
     const result = {
       totalB2Patches: stats.totalB2Patches,
       totalC1Patches: stats.totalC1Patches,
       lengthB2patch: length.lengthB2patch,
       lengthC1patch: length.lengthC1patch,
+      numberWordsB2: number_words_B2,
+      numberWordsC1: number_words_C1,
     };
-    console.log('length b2: ' + result.lengthB2patch)
+    console.log("length b2: " + result.lengthB2patch);
     res.status(200).json(result); // Zwracanie statystyk
   } catch (error) {
     console.error("Error getting information:", error);
@@ -57,7 +64,7 @@ export const getWordsByPatchAndLevel = async (req, res) => {
   const { level, patchNumber } = req.body;
   if (patchNumber && patchNumber > 0) {
     console.log(`Pobieranie danych dla patcha numer ${patchNumber}`);
-    console.log('poziomu: ' + level)
+    console.log("poziomu: " + level);
     try {
       // Pobranie listy słów na podstawie patcha
       const wordIds = await getPatchWordsByLevel(patchNumber, level);
@@ -113,10 +120,10 @@ export const getWordData = async (req, res) => {
       const formattedResults = formatWordResults(results);
 
       // Pobranie największego patch_id oraz całkowitej liczby patchy
-      
+
       const maxPatchId = await getMaxPatchId();
       const totalPatches = await patchLength(); // Zmieniono nazwę zmiennej na totalPatches
-      console.log(totalPatches)
+      console.log(totalPatches);
       const isThisLastOne = patchNumber === maxPatchId;
 
       res.json({

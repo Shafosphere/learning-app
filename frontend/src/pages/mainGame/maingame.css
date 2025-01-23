@@ -1,3 +1,12 @@
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5%;
+  width: 100%;
+  color: var(--secondary);
+  font-weight: 700;
+}
 @media (max-width: 480px) {
   .container-home {
     display: flex;

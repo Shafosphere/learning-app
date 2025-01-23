@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import MainGame from "./mainGame/maingame";
+// import MainGame from "./mainGame/maingame";
+import MainGameSelect from "./mainGame/maingameselect";
 import Settings from "./settings/settings";
 import Login from "./login/login";
 import Sidebar from "../components/sidebar/sidebar";
@@ -32,7 +33,7 @@ const AppWrapper = () => {
       <Sidebar />
       <Routes>
         <Route path="/" element={<Navigate to="/maingame" replace />} />
-        <Route path="/maingame" element={<MainGame />} />
+        <Route path="/maingame" element={<MainGameSelect />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={isLoggedIn ? <Account /> : <Login />} />

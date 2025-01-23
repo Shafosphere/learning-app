@@ -155,5 +155,9 @@
   "about.joinCommunityTitle": "Join the Memolingo Community",
   "about.joinCommunityContent": "Start your journey today with Memolingo. Together, we will open doors to new languages, cultures, and opportunities through a smarter, more engaging approach to learning.",
   "notFound.pageTitle": "Page Not Found",
-  "notFound.message": "Oops! The page you're looking for doesn't exist."
+  "notFound.message": "Oops! The page you're looking for doesn't exist.",
+  "select.chooseLevel": "Choose level",
+  "select.levelB2": "B2",
+  "select.levelC1": "C1",
+  "select.chooseTest": "What level of flashcards are you choosing?"
 }

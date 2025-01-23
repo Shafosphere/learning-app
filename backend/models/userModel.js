@@ -184,6 +184,22 @@ export const getAllPatchLength = async () => {
   }
 };
 
+export const getNumberOfWords = async (lvl) => {
+  try {
+    const query = "SELECT COUNT(*) AS count FROM word WHERE level = $1";
+    const values = [lvl];
+
+    // Wykonanie zapytania
+    const { rows } = await pool.query(query, values);
+
+    // Zwrócenie wyniku
+    return parseInt(rows[0].count, 10);
+  } catch (error) {
+    console.error("Error in getNumberOfWords:", error);
+    throw error; // Przekazujemy błąd dalej, aby kontroler mógł go obsłużyć
+  }
+};
+
 export const getUserByUserName = async (username) => {
   const result = await pool.query(
     "SELECT email, avatar FROM users WHERE username = $1",
@@ -617,7 +633,6 @@ export const updateUserInDb = async ({ id, username, email, role, ban }) => {
     client.release();
   }
 };
-
 
 export const patchLength = async () => {
   try {

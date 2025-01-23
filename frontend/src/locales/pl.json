@@ -159,5 +159,9 @@
   "about.joinCommunityTitle": "Dołącz do społeczności Memolingo",
   "about.joinCommunityContent": "Rozpocznij swoją podróż już dziś z Memolingo. Razem otworzymy drzwi do nowych języków, kultur i możliwości dzięki sprytniejszemu, bardziej angażującemu podejściu do nauki.",
   "notFound.pageTitle": "Strona nie znaleziona",
-  "notFound.message": "Ups! Strona, której szukasz, nie istnieje."
+  "notFound.message": "Ups! Strona, której szukasz, nie istnieje.",
+  "select.chooseLevel": "Wybierz poziom",
+  "select.levelB2": "B2",
+  "select.levelC1": "C1",
+  "select.chooseTest": "Jaki poziom wybierasz fiszek wybierasz?"
 }

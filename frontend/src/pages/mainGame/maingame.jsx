@@ -19,7 +19,7 @@ import usePersistedState from "../../hooks/localstorage/usePersistedState";
 import useSpellchecking from "../../hooks/spellchecking/spellchecking";
 import usePageVisit from "../../hooks/activity/countingentries";
 
-export default function MainGame() {
+export default function MainGame({ setDisplay, lvl }) {
   const intl = useIntl();
   const [randomWord, setRandom] = useState(null); //selected word
   const [className, setClass] = useState(""); //class display
@@ -64,10 +64,10 @@ export default function MainGame() {
     "patchNumberC1-home",
     1
   );
-  const [nextPatchType, setPatchType] = usePersistedState(
-    "nextPatchType-home",
-    "B2"
-  );
+  // const [nextPatchType, setPatchType] = usePersistedState(
+  //   "nextPatchType-home",
+  //   "B2"
+  // );
 
   const [totalB2Patches, setTotalB2] = useState(null);
   const [totalC1Patches, setTotalC1] = useState(null);
@@ -79,7 +79,11 @@ export default function MainGame() {
     procent,
     totalPercent,
     isSoundEnabled,
-    level,
+    // level,
+    totalPercentB2,
+    totalPercentC1,
+    procentC1,
+    procentB2,
     isLoggedIn,
   } = useContext(SettingsContext);
 
@@ -146,11 +150,11 @@ export default function MainGame() {
     }
     if (activeBox === "boxFive" && !moveToFirst) {
       const newid = randomWord.id;
-      const wordIds = await getAllWords();
+      const wordIds = await getAllWords(lvl);
       if (!wordIds.some((word) => word.id === newid)) {
-        await addWord(newid);
-        calculatePercent();
-        calculateTotalPercent();
+        await addWord(newid, lvl);
+        calculatePercent(lvl);
+        calculateTotalPercent(lvl);
         confettiShow();
         if (isLoggedIn) {
           await sendLearnedWordToServer(newid);
@@ -206,25 +210,26 @@ export default function MainGame() {
 
   async function getNextPatch() {
     try {
-      let levelToFetch = nextPatchType;
+      let levelToFetch = lvl;
+
       let patchNumber = levelToFetch === "B2" ? patchNumberB2 : patchNumberC1;
       let totalPatches =
         levelToFetch === "B2" ? totalB2Patches : totalC1Patches;
 
       if (patchNumber > totalPatches) {
         // Jeśli patche dla danego poziomu się skończyły
-        if (levelToFetch === "B2" && level === "C1") {
-          levelToFetch = "C1";
-          patchNumber = patchNumberC1;
-          totalPatches = totalC1Patches;
-        } else {
-          // Wszystkie patche wyczerpane
-          setPopup({
-            message: "Pobrales wszystkie słowa z tego poziomu!",
-            emotion: "positive",
-          });
-          return;
-        }
+        // if (levelToFetch === "B2" && level === "C1") {
+        //   levelToFetch = "C1";
+        //   patchNumber = patchNumberC1;
+        //   totalPatches = totalC1Patches;
+        // } else {
+        // Wszystkie patche wyczerpane
+        setPopup({
+          message: "Pobrales wszystkie słowa z tego poziomu!",
+          emotion: "positive",
+        });
+        return;
+        // }
       }
 
       const response = await requestPatch(levelToFetch, patchNumber);
@@ -249,11 +254,11 @@ export default function MainGame() {
         }
 
         // Przełącz typ następnego patcha, jeśli poziom C1 jest włączony
-        if (level === "C1") {
-          const nextType = nextPatchType === "B2" ? "C1" : "B2";
-          setPatchType(nextType);
-          localStorage.setItem("nextPatchType-voca", nextType);
-        }
+        // if (level === "C1") {
+        //   const nextType = nextPatchType === "B2" ? "C1" : "B2";
+        //   setPatchType(nextType);
+        //   localStorage.setItem("nextPatchType-voca", nextType);
+        // }
 
         if (activeBox === "boxOne") {
           selectRandomWord("boxOne");
@@ -319,18 +324,19 @@ export default function MainGame() {
 
       request.onupgradeneeded = (event) => {
         db = event.target.result;
-        if (!db.objectStoreNames.contains("boxes")) {
-          db.createObjectStore("boxes", { keyPath: "id" });
-        } else {
-          console.log('Object store "boxes" already exists.');
+        if (!db.objectStoreNames.contains("boxesB2")) {
+          db.createObjectStore("boxesB2", { keyPath: "id" });
+        }
+        if (!db.objectStoreNames.contains("boxesC1")) {
+          db.createObjectStore("boxesC1", { keyPath: "id" });
         }
       };
 
       request.onsuccess = (event) => {
         const db = event.target.result;
-        if (db.objectStoreNames.contains("boxes")) {
-          const transaction = db.transaction(["boxes"], "readonly");
-          const store = transaction.objectStore("boxes");
+        if (db.objectStoreNames.contains(`boxes${lvl}`)) {
+          const transaction = db.transaction([`boxes${lvl}`], "readonly");
+          const store = transaction.objectStore(`boxes${lvl}`);
           const getAllRequest = store.getAll();
 
           getAllRequest.onsuccess = () => {
@@ -365,7 +371,7 @@ export default function MainGame() {
       };
     }
     readAndDisplayAllData();
-  }, []);
+  }, [lvl]);
 
   useEffect(() => {
     async function fetchPatchInfo() {
@@ -388,18 +394,19 @@ export default function MainGame() {
 
       request.onupgradeneeded = (event) => {
         db = event.target.result;
-        if (!db.objectStoreNames.contains("boxes")) {
-          db.createObjectStore("boxes", { keyPath: "id" });
-        } else {
-          console.log('Object store "boxes" already exists.');
+        if (!db.objectStoreNames.contains("boxesB2")) {
+          db.createObjectStore("boxesB2", { keyPath: "id" });
+        }
+        if (!db.objectStoreNames.contains("boxesC1")) {
+          db.createObjectStore("boxesC1", { keyPath: "id" });
         }
       };
 
       request.onsuccess = (event) => {
         db = event.target.result;
-        if (db.objectStoreNames.contains("boxes")) {
-          const transaction = db.transaction(["boxes"], "readwrite");
-          const store = transaction.objectStore("boxes");
+        if (db.objectStoreNames.contains(`boxes${lvl}`)) {
+          const transaction = db.transaction([`boxes${lvl}`], "readwrite");
+          const store = transaction.objectStore(`boxes${lvl}`);
 
           const clearRequest = store.clear();
 
@@ -451,7 +458,7 @@ export default function MainGame() {
     if (autoSave) {
       saveBoxes();
     }
-  }, [autoSave, boxes]);
+  }, [autoSave, boxes, lvl]);
 
   function confettiShow() {
     setShowConfetti(true);
@@ -484,6 +491,9 @@ export default function MainGame() {
 
   return (
     <div className="container-home">
+      <div className="return-btn-voca" onClick={() => setDisplay("default")}>
+        <h1>{lvl}</h1>
+      </div>
       <div className="home-left">
         {randomWord ? (
           <Flashcard
@@ -510,17 +520,36 @@ export default function MainGame() {
         />
       </div>
       <div className="home-right">
-        <NewProgressBar
-          vertical={true}
-          percent={procent}
-          text={intl.formatMessage({ id: "dailyProgress" })}
-        />
-        <NewProgressBar
-          vertical={true}
-          percent={totalPercent}
-          text={intl.formatMessage({ id: "totalProgress" })}
-        />
+        {lvl === "B2" && (
+          <>
+            <NewProgressBar
+              vertical={true}
+              percent={procentB2}
+              text={intl.formatMessage({ id: "dailyProgress" })}
+            />
+            <NewProgressBar
+              vertical={true}
+              percent={totalPercentB2}
+              text={intl.formatMessage({ id: "totalProgress" })}
+            />
+          </>
+        )}
+        {lvl === "C1" && (
+          <>
+            <NewProgressBar
+              vertical={true}
+              percent={procentC1}
+              text={intl.formatMessage({ id: "dailyProgress" })}
+            />
+            <NewProgressBar
+              vertical={true}
+              percent={totalPercentC1}
+              text={intl.formatMessage({ id: "totalProgress" })}
+            />
+          </>
+        )}
       </div>
+
       {showConfetti && <Confetti generateConfetti={generateConfetti} />}
     </div>
   );
