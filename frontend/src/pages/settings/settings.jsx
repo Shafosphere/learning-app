@@ -19,12 +19,12 @@ export default function Settings() {
     toggleSound,
     language,
     setLanguage,
-    level,
     toggleLevel,
     diacritical,
     setDiacritical,
     spellChecking,
     setSpellChecking,
+    calculatePercent,
   } = useContext(SettingsContext);
 
   // popup
@@ -45,6 +45,7 @@ export default function Settings() {
 
   function saveSettings() {
     setDailyGoal(newDailyGoal);
+
     setPopup({
       // Zamiast tekstu wprost używamy tłumaczenia
       message: intl.formatMessage({
@@ -59,6 +60,10 @@ export default function Settings() {
     setConfirmMessage(text);
     setConfirmCallback(() => callback);
   }
+
+  useEffect(() => {
+    ["B2", "C1"].forEach((level) => calculatePercent(level));
+  }, [dailyGoal, calculatePercent]);
 
   useEffect(() => {
     resetDateIfNeeded();
@@ -139,7 +144,7 @@ export default function Settings() {
               toggleTheme={toggleTheme}
               themeMode={themeMode}
               toggleLevel={toggleLevel}
-              level={level}
+              // level={level}
               language={language}
               setLanguage={setLanguage}
               showConfirm={showConfirm}

@@ -6,9 +6,7 @@ const WORDS_STORE_NAME = "words";
 const WORDS_MAINGAME_B2 = "words_b2";
 const WORDS_MAINGAME_C1 = "words_c1";
 
-const STATS_STORE_NAME = "statistics";
 const MINIGAME_STORE_NAME = "minigame_words";
-const B2 = 3264;
 
 // Inicjalizuje bazę danych IndexedDB
 async function initDB() {
@@ -32,13 +30,6 @@ async function initDB() {
           autoIncrement: true,
         });
       }
-      if (!db.objectStoreNames.contains(STATS_STORE_NAME)) {
-        const statsStore = db.createObjectStore(STATS_STORE_NAME, {
-          keyPath: "category",
-        });
-        statsStore.add({ category: "B2", count: 0 });
-        statsStore.add({ category: "C1", count: 0 });
-      }
       if (!db.objectStoreNames.contains(MINIGAME_STORE_NAME)) {
         const minigameStore = db.createObjectStore(MINIGAME_STORE_NAME, {
           keyPath: "id",
@@ -60,23 +51,6 @@ async function initDB() {
   });
 }
 
-// Aktualizuje statystyki
-async function updateStatistics(word) {
-  const db = await initDB();
-  const transaction = db.transaction(STATS_STORE_NAME, "readwrite");
-  const statsStore = transaction.objectStore(STATS_STORE_NAME);
-
-  if (word <= B2) {
-    const stat = await statsStore.get("B2");
-    stat.count += 1;
-    await statsStore.put(stat);
-  } else {
-    const stat = await statsStore.get("C1");
-    stat.count += 1;
-    await statsStore.put(stat);
-  }
-}
-
 // Dodaje nowy wpis do bazy danych IndexedDB, jeśli słowo nie istnieje
 export async function addWord(word, lvl) {
   const db = await initDB();
@@ -93,7 +67,7 @@ export async function addWord(word, lvl) {
   } else {
     await db.add(WORDS_STORE_NAME, { word });
   }
-  await updateStatistics(word);
+  // await updateStatistics(word);
 }
 
 // Pobiera wszystkie wpisy z bazy danych IndexedDB
@@ -130,42 +104,6 @@ export async function getAllMinigameWords(lvl) {
     good: record[`good${lvl}`],
     wrong: record[`wrong${lvl}`],
   };
-}
-
-// Usuwa wpis z bazy danych IndexedDB według identyfikatora
-export async function deleteWord(id) {
-  const db = await initDB();
-  return await db.delete(WORDS_STORE_NAME, id);
-}
-
-// Aktualizuje istniejący wpis w bazie danych IndexedDB
-export async function updateWord(id, newWord) {
-  const db = await initDB();
-  await db.put(WORDS_STORE_NAME, { id, word: newWord });
-  await updateStatistics(newWord);
-}
-
-// Pobiera wpisy z bazy danych IndexedDB według słowa
-export async function getWordsByIds(ids) {
-  const db = await initDB();
-  const transaction = db.transaction(WORDS_STORE_NAME, "readonly");
-  const objectStore = transaction.objectStore(WORDS_STORE_NAME);
-  const words = [];
-
-  for (const id of ids) {
-    const word = await objectStore.get(id);
-    if (word) {
-      words.push(word);
-    }
-  }
-
-  return words;
-}
-
-// Pobiera statystyki z bazy danych IndexedDB
-export async function getStatistics() {
-  const db = await initDB();
-  return await db.getAll(STATS_STORE_NAME);
 }
 
 //dodaj do good

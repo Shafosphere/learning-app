@@ -2,8 +2,7 @@ import "./selectlvl.css"
 import React from "react";
 import { FormattedMessage } from "react-intl";
 
-
-export default function SelectLvl({ setDisplay }) {
+export default function SelectLvl({ setDisplay, gametype }) {
   return (
     <div className="select-container">
       <div className="select-window">

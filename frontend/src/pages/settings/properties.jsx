@@ -9,8 +9,6 @@ export const SettingsProvider = ({ children }) => {
   const [procentC1, setProcentC1] = usePersistedState("ProcentC1MainGame", 0);
   const [procentB2, setProcentB2] = usePersistedState("ProcentB2MainGame", 0);
 
-  const [totalPercent, setTotalPercent] = usePersistedState("totalPercent", 0);
-
   const [totalPercentC1, setTotalPercentC1] = usePersistedState(
     "totalPercentC1MainGame",
     0
@@ -110,29 +108,14 @@ export const SettingsProvider = ({ children }) => {
     localStorage.setItem("lastResetDate", JSON.stringify(lastResetDate));
   }, [lastResetDate]);
 
-  useEffect(() => {
-    calculateTotalPercent();
-  }, [level]);
-
   const calculatePercent = async (lvl) => {
-    console.log("calculatePercent");
     const wordIds = await getAllWords(lvl);
-    console.log("wordIds:", wordIds);
-    console.log("lastID:", lastID);
-
     let startIndex = wordIds.findIndex((word) => word.id === lastID);
-    console.log("startIndex:", startIndex);
 
     if (lastID === 0 || startIndex !== -1) {
       const newArray = lastID === 0 ? wordIds : wordIds.slice(startIndex + 1);
-      console.log("newArray:", newArray);
-
       const percentComplete = (newArray.length * 100) / dailyGoal;
-      console.log("percentComplete:", percentComplete);
-
       const roundedPercentComplete = parseFloat(percentComplete.toFixed(2));
-      console.log("roundedPercentComplete:", roundedPercentComplete);
-
       if (lvl === "B2") {
         setProcentB2(roundedPercentComplete);
       } else if (lvl === "C1") {
@@ -190,8 +173,6 @@ export const SettingsProvider = ({ children }) => {
         setLastID,
         calculatePercent,
         calculateTotalPercent,
-        totalPercent,
-        setTotalPercent,
         lastResetDate,
         setLastResetDate,
         resetDateIfNeeded,

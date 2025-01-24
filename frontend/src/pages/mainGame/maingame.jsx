@@ -64,10 +64,6 @@ export default function MainGame({ setDisplay, lvl }) {
     "patchNumberC1-home",
     1
   );
-  // const [nextPatchType, setPatchType] = usePersistedState(
-  //   "nextPatchType-home",
-  //   "B2"
-  // );
 
   const [totalB2Patches, setTotalB2] = useState(null);
   const [totalC1Patches, setTotalC1] = useState(null);
@@ -76,10 +72,7 @@ export default function MainGame({ setDisplay, lvl }) {
   const {
     calculatePercent,
     calculateTotalPercent,
-    procent,
-    totalPercent,
     isSoundEnabled,
-    // level,
     totalPercentB2,
     totalPercentC1,
     procentC1,
@@ -202,6 +195,7 @@ export default function MainGame({ setDisplay, lvl }) {
         };
       });
     }
+    setAutoSave(true);
   }
 
   async function addWords() {
@@ -217,19 +211,11 @@ export default function MainGame({ setDisplay, lvl }) {
         levelToFetch === "B2" ? totalB2Patches : totalC1Patches;
 
       if (patchNumber > totalPatches) {
-        // Jeśli patche dla danego poziomu się skończyły
-        // if (levelToFetch === "B2" && level === "C1") {
-        //   levelToFetch = "C1";
-        //   patchNumber = patchNumberC1;
-        //   totalPatches = totalC1Patches;
-        // } else {
-        // Wszystkie patche wyczerpane
         setPopup({
           message: "Pobrales wszystkie słowa z tego poziomu!",
           emotion: "positive",
         });
         return;
-        // }
       }
 
       const response = await requestPatch(levelToFetch, patchNumber);
@@ -252,14 +238,6 @@ export default function MainGame({ setDisplay, lvl }) {
           setC1Patch(patchNumber + 1);
           localStorage.setItem("currentC1Patch-voca", patchNumber + 1);
         }
-
-        // Przełącz typ następnego patcha, jeśli poziom C1 jest włączony
-        // if (level === "C1") {
-        //   const nextType = nextPatchType === "B2" ? "C1" : "B2";
-        //   setPatchType(nextType);
-        //   localStorage.setItem("nextPatchType-voca", nextType);
-        // }
-
         if (activeBox === "boxOne") {
           selectRandomWord("boxOne");
         }
@@ -302,8 +280,9 @@ export default function MainGame({ setDisplay, lvl }) {
   function checkAnswer(userWord, word) {
     if (userWord && word) {
       // Użycie funkcji `checkSpelling` z hooka `useSpellchecking`
+      console.log("sprawdzam " + userWord + " i " + word)
       const isCorrect = checkSpelling(userWord, word);
-
+      console.log("słówka sprawdzone: " + isCorrect)
       return isCorrect;
     } else {
       console.log("Brak danych do porównania!");
@@ -530,7 +509,7 @@ export default function MainGame({ setDisplay, lvl }) {
             <NewProgressBar
               vertical={true}
               percent={totalPercentB2}
-              text={intl.formatMessage({ id: "totalProgress" })}
+              text={intl.formatMessage({ id: "totalProgress" }) + " B2"}
             />
           </>
         )}
@@ -544,7 +523,7 @@ export default function MainGame({ setDisplay, lvl }) {
             <NewProgressBar
               vertical={true}
               percent={totalPercentC1}
-              text={intl.formatMessage({ id: "totalProgress" })}
+              text={intl.formatMessage({ id: "totalProgress" }) + " C1"}
             />
           </>
         )}

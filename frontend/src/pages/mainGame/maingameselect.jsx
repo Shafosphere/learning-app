@@ -1,9 +1,6 @@
 import "./maingame.css";
 import { useState } from "react";
 
-// import VocaDefault from "../../components/voca/default/voca-default";
-// import VocaTest from "../../components/voca/voca-text.jsx/vocatest";
-
 import SelectLvl from "../../components/selectlvl/selectlvl";
 import MainGame from "./maingame";
 

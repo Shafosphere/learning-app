@@ -23,7 +23,7 @@ export default function SecondBookMark({
         <label className="switch">
           <input
             onClick={() => setDiacritical(!diacritical)}
-            defaultChecked={diacritical === true}
+            defaultChecked={diacritical === false}
             type="checkbox"
           />
           <span className="slider round"></span>

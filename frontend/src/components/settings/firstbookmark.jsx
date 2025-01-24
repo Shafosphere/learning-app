@@ -12,8 +12,6 @@ export default function FirstBookMark({
   isSoundEnabled,
   toggleTheme,
   themeMode,
-  toggleLevel,
-  level,
   language,
   setLanguage,
   showConfirm,
@@ -56,24 +54,6 @@ export default function FirstBookMark({
               type="checkbox"
               checked={themeMode === "dark"}
               onChange={() => toggleTheme()}
-            />
-            <span className="slider round"></span>
-          </label>
-        </div>
-
-        {/* C1 Level */}
-        <div
-          className="switch-container onMouse"
-          onMouseEnter={() => setSpan("C1")}
-        >
-          <span className="switch-text">
-            <FormattedMessage id="c1" defaultMessage="C1 Level" />
-          </span>
-          <label className="switch">
-            <input
-              onChange={() => toggleLevel()}
-              type="checkbox"
-              checked={level === "C1"}
             />
             <span className="slider round"></span>
           </label>
