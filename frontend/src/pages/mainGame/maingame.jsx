@@ -6,7 +6,7 @@ import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
 import NewProgressBar from "../../components/progress_bar/progressbar";
 
-import Confetti from "../../components/voca/confetti";
+import Confetti from "../../components/confetti/confetti";
 
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
 import { addWord, getAllWords } from "../../utils/indexedDB";

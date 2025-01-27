@@ -1,6 +1,7 @@
 import "./summary.css";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { FormattedMessage } from "react-intl";
 
 export default function TableResults({ goodWords, wrongWords }) {
   return (
@@ -8,19 +9,38 @@ export default function TableResults({ goodWords, wrongWords }) {
       {/* Warunkowe renderowanie dla goodWords */}
       {goodWords.length > 0 && (
         <div className="good-results">
-          <span className="results-title">good</span>
+          <span className="results-title">
+            <FormattedMessage id="tableResults.good" defaultMessage="Good" />
+          </span>
           <InfiniteScroll
             className="table-results"
             dataLength={goodWords.length}
-            loader={<h4>Loading...</h4>}
+            loader={
+              <h4>
+                <FormattedMessage
+                  id="tableResults.loading"
+                  defaultMessage="Loading..."
+                />
+              </h4>
+            }
             endMessage={<div className="endMessage"></div>}
             scrollableTarget="scrollableDiv"
           >
             <table>
               <thead className="good-thead">
                 <tr>
-                  <th>PL</th>
-                  <th>ENG</th>
+                  <th>
+                    <FormattedMessage
+                      id="tableResults.pl"
+                      defaultMessage="PL"
+                    />
+                  </th>
+                  <th>
+                    <FormattedMessage
+                      id="tableResults.eng"
+                      defaultMessage="ENG"
+                    />
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -39,10 +59,19 @@ export default function TableResults({ goodWords, wrongWords }) {
       {/* Warunkowe renderowanie dla wrongWords */}
       {wrongWords.length > 0 && (
         <div className="wrong-results">
-          <span className="results-title">wrong</span>
+          <span className="results-title">
+            <FormattedMessage id="tableResults.wrong" defaultMessage="Wrong" />
+          </span>
           <InfiniteScroll
             dataLength={wrongWords.length}
-            loader={<h4>Loading...</h4>}
+            loader={
+              <h4>
+                <FormattedMessage
+                  id="tableResults.loading"
+                  defaultMessage="Loading..."
+                />
+              </h4>
+            }
             className="table-results"
             endMessage={<div className="endMessage"></div>}
             scrollableTarget="scrollableDiv"
@@ -50,8 +79,18 @@ export default function TableResults({ goodWords, wrongWords }) {
             <table>
               <thead className="wrong-thead">
                 <tr>
-                  <th>PL</th>
-                  <th>ENG</th>
+                  <th>
+                    <FormattedMessage
+                      id="tableResults.pl"
+                      defaultMessage="PL"
+                    />
+                  </th>
+                  <th>
+                    <FormattedMessage
+                      id="tableResults.eng"
+                      defaultMessage="ENG"
+                    />
+                  </th>
                 </tr>
               </thead>
               <tbody>

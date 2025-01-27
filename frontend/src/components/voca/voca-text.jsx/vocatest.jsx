@@ -5,7 +5,7 @@ import { useIntl, FormattedMessage } from "react-intl";
 import api from "../../../utils/api";
 import InputField from "../wordInput";
 import { addNumberToGood, addNumberToWrong } from "../../../utils/indexedDB";
-import Confetti from "../confetti";
+import Confetti from "../../confetti/confetti";
 import ResultsSummary from "../summary/resultssummary";
 import MyButton from "../../button/button";
 import NewProgressBar from "../../progress_bar/progressbar";

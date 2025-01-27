@@ -1,7 +1,6 @@
 import "./vocabulary.css";
 import { useState } from "react";
 import VocaTest from "../../components/voca/voca-text.jsx/vocatest";
-// Zamiast voca-default.jsx używajmy:
 import SelectLvl from "../../components/selectlvl/selectlvl";
 
 export default function Vocabulary() {

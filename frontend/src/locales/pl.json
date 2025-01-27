@@ -173,5 +173,10 @@
   "select.chooseTest": "Jaki poziom wybierasz fiszek wybierasz?",
   "select.gametype": "fiszek",
   "vocabulary.gametype": "słownictwa",
-  "areYouSureResetProgressVoca": "To zresetuje cały Twój postęp na poziomie {lvl}. Czy na pewno chcesz to zrobić?"
+  "areYouSureResetProgressVoca": "To zresetuje cały Twój postęp na poziomie {lvl}. Czy na pewno chcesz to zrobić?",
+  "tableResults.good": "Dobrze",
+  "tableResults.wrong": "Źle",
+  "tableResults.pl": "PL",
+  "tableResults.eng": "ANG",
+  "tableResults.loading": "Ładowanie..."
 }

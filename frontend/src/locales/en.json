@@ -169,5 +169,10 @@
   "select.chooseTest": "What level of flashcards are you choosing?",
   "select.gametype": "flashcards",
   "vocabulary.gametype": "vocabulary",
-  "areYouSureResetProgressVoca": "This will delete all your progress on level {lvl}. Are you sure?"
+  "areYouSureResetProgressVoca": "This will delete all your progress on level {lvl}. Are you sure?",
+  "tableResults.good": "Good",
+  "tableResults.wrong": "Wrong",
+  "tableResults.pl": "PL",
+  "tableResults.eng": "ENG",
+  "tableResults.loading": "Loading..."
 }
