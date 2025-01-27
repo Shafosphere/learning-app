@@ -16,6 +16,12 @@ export default function SelectLvl({ setDisplay, gametype }) {
             />
           </h1>
 
+          <div className="select-gametype">
+            <FormattedMessage
+              id={`${intlPrefix}.gametype`}
+              defaultMessage=" "
+            />
+          </div>
           <div className="select-btn-container">
             <div onClick={() => setDisplay("B2")} className="display-select">
               <FormattedMessage

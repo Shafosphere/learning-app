@@ -163,5 +163,7 @@
   "select.chooseLevel": "Wybierz poziom",
   "select.levelB2": "B2",
   "select.levelC1": "C1",
-  "select.chooseTest": "Jaki poziom wybierasz fiszek wybierasz?"
+  "select.chooseTest": "Jaki poziom wybierasz fiszek wybierasz?",
+  "select.gametype": "fiszek",
+  "vocabulary.gametype": "słownictwa"
 }

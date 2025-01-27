@@ -159,5 +159,7 @@
   "select.chooseLevel": "Choose level",
   "select.levelB2": "B2",
   "select.levelC1": "C1",
-  "select.chooseTest": "What level of flashcards are you choosing?"
+  "select.chooseTest": "What level of flashcards are you choosing?",
+  "select.gametype": "flashcards",
+  "vocabulary.gametype": "vocabulary"
 }
