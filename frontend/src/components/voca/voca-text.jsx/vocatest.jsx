@@ -150,6 +150,22 @@ export default function VocaTest({ setDisplay, lvl }) {
     startGame();
   }, [patchNumber, setLastOne, setLength, lvl, intl]);
 
+  function resetProgress(lvl) {
+    localStorage.removeItem(`carouselItems-${lvl}`);
+    localStorage.removeItem(`lastDataItemId-${lvl}`);
+    localStorage.removeItem(`currentPatch-${lvl}`);
+    localStorage.removeItem(`patchLength-${lvl}`);
+    localStorage.removeItem(`dataIndexForBottomDiv-${lvl}`);
+    localStorage.removeItem(`end-${lvl}`);
+    localStorage.removeItem(`summary-${lvl}`);
+    localStorage.removeItem(`wordsAnsweredCount-${lvl}`);
+  
+    // Po 2 sekundach odśwież stronę
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+  }
+
   // Show confetti animation
   function confettiShow() {
     setShowConfetti(true);
@@ -360,7 +376,7 @@ export default function VocaTest({ setDisplay, lvl }) {
     <>
       <div className="container-words">
         {showSummary ? (
-          <ResultsSummary lvl={lvl} setDisplay={setDisplay} />
+          <ResultsSummary lvl={lvl} setDisplay={setDisplay} resetProgress={resetProgress}/>
         ) : (
           <>
             <div

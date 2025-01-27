@@ -9,7 +9,7 @@ import SmallButtons from "./smallbuttons";
 import Loading from "../../loading/loading";
 import { useWindowWidth } from "../../../hooks/window_width/windowWidth";
 
-export default function ResultsSummary({ lvl, setDisplay }) {
+export default function ResultsSummary({ lvl, setDisplay, resetProgress }) {
   const intl = useIntl();
   const windowWidth = useWindowWidth();
 
@@ -165,8 +165,11 @@ export default function ResultsSummary({ lvl, setDisplay }) {
                     {displayedResults === "wrong" && (
                       <TableResults goodWords={[]} wrongWords={wrongWords} />
                     )}
-                    <SmallButtons setResults={setResults} />
-                    {/* <Drawer /> */}
+                    <SmallButtons
+                      setResults={setResults}
+                      resetProgress={resetProgress}
+                      lvl={lvl}
+                    />
                   </>
                 )}
 

@@ -73,11 +73,18 @@
   "account.field.avatar": "Avatar",
   "switches.diacritical": "Diacritical marks",
   "switches.spellChecking": "Margin of error",
+  "switches.resetB2": "Reset vocabulary B2",
+  "switches.resetC1": "Reset vocabulary C1",
+  "switches.buttonB2": "B2",
+  "switches.buttonC1": "C1",
+  "switches.confirmResetB2": "Are you sure you want to reset level B2?",
+  "switches.confirmResetC1": "Are you sure you want to reset level C1?",
   "settings.saved": "Settings saved",
   "settings.dbDeleted": "Deleted database",
   "settings.clearError": "An error occurred while clearing everything:",
   "explanation.diacritical": "Ignores diacritical marks in Polish words.",
   "explanation.spellChecking": "You can be off by one letter.",
+  "explanation.resetsvocabulary": "This will reset the progress at the specified level in the vocabulary tab.",
   "resetpassword.passwordMismatch": "Passwords do not match. Please try again.",
   "resetpassword.success": "Password has been reset successfully!",
   "resetpassword.error.generic": "An error occurred",
@@ -161,5 +168,6 @@
   "select.levelC1": "C1",
   "select.chooseTest": "What level of flashcards are you choosing?",
   "select.gametype": "flashcards",
-  "vocabulary.gametype": "vocabulary"
+  "vocabulary.gametype": "vocabulary",
+  "areYouSureResetProgressVoca": "This will delete all your progress on level {lvl}. Are you sure?"
 }

@@ -161,6 +161,7 @@ export default function Settings() {
               setSpan={setSpan}
               spellChecking={spellChecking}
               setSpellChecking={setSpellChecking}
+              showConfirm={showConfirm}
             />
           )}
         </div>
@@ -220,6 +221,12 @@ export default function Settings() {
                   <FormattedMessage
                     id="explanation.spellChecking"
                     defaultMessage="You can be off by one letter."
+                  />
+                ),
+                resetsvocabulary: (
+                  <FormattedMessage
+                    id="explanation.resetsvocabulary"
+                    defaultMessage="This will reset the progress at the specified level in the vocabulary tab."
                   />
                 ),
               };

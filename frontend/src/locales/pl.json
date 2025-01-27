@@ -73,11 +73,18 @@
   "account.field.avatar": "Awatar",
   "switches.diacritical": "Znaki diakrytyczne",
   "switches.spellChecking": "Zakres błędu",
+  "switches.resetB2": "Zresetuj słownictwo B2",
+  "switches.resetC1": "Zresetuj słownictwo C1",
+  "switches.buttonB2": "B2",
+  "switches.buttonC1": "C1",
+  "switches.confirmResetB2": "Czy na pewno chcesz zresetować poziom B2?",
+  "switches.confirmResetC1": "Czy na pewno chcesz zresetować poziom C1?",
   "settings.saved": "Ustawienia zapisane",
   "settings.dbDeleted": "Usunięto bazę danych",
   "settings.clearError": "Wystąpił błąd podczas czyszczenia zasobów:",
   "explanation.diacritical": "Ignoruje znaki diakrytyczne w polskich słowach.",
   "explanation.spellChecking": "Możesz pomylić się o jedną literę.",
+  "explanation.resetsvocabulary": "Zresetuje to postęp na podanym poziomie w zakładce vocabulary.",
   "resetpassword.passwordMismatch": "Hasła nie są takie same. Spróbuj ponownie.",
   "resetpassword.success": "Hasło zostało zresetowane pomyślnie!",
   "resetpassword.error.generic": "Wystąpił błąd",
@@ -165,5 +172,6 @@
   "select.levelC1": "C1",
   "select.chooseTest": "Jaki poziom wybierasz fiszek wybierasz?",
   "select.gametype": "fiszek",
-  "vocabulary.gametype": "słownictwa"
+  "vocabulary.gametype": "słownictwa",
+  "areYouSureResetProgressVoca": "To zresetuje cały Twój postęp na poziomie {lvl}. Czy na pewno chcesz to zrobić?"
 }
