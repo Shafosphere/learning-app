@@ -10,12 +10,34 @@ const transporter = nodemailer.createTransport({
 });
 
 // Funkcja generująca HTML dla resetowania hasła
-export const generateResetPasswordEmail = (resetLink) => {
+export const generateResetPasswordEmail = (resetLink, language = "en") => {
+  const translations = {
+    en: {
+      title: "Password Reset",
+      greeting: "Hello,",
+      content: "We received a request to reset your password.",
+      button: "Reset Password",
+      note: "If this wasn't you, please ignore this email.",
+      warning: "Note: Link expires in 1 hour.",
+    },
+    pl: {
+      title: "Resetowanie hasła",
+      greeting: "Cześć,",
+      content: "Otrzymaliśmy prośbę o zresetowanie Twojego hasła.",
+      button: "Resetuj hasło",
+      note: "Jeśli to nie Ty, po prostu zignoruj tę wiadomość.",
+      warning: "Uwaga: link wygaśnie za 1 godzinę.",
+    },
+  };
+
+  const { title, greeting, content, button, note, warning } =
+    translations[language];
+
   return `
     <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
-      <h1 style="color: #4CAF50;">Resetowanie hasła</h1>
-      <p>Cześć,</p>
-      <p>Otrzymaliśmy prośbę o zresetowanie Twojego hasła.</p>
+      <h1 style="color: #4CAF50;">${title}</h1>
+      <p>${greeting}</p>
+      <p>${content}</p>
       <p>Kliknij w poniższy przycisk, aby ustawić nowe hasło:</p>
       <a 
         href="${resetLink}" 
@@ -29,12 +51,10 @@ export const generateResetPasswordEmail = (resetLink) => {
           border-radius: 5px;
         "
       >
-        Resetuj hasło
+        ${button}
       </a>
-      <p>Jeśli to nie Ty, po prostu zignoruj tę wiadomość.</p>
-      <p style="font-size: 12px; color: #555;">
-        Uwaga: link wygaśnie za 1 godzinę.
-      </p>
+      <p>${note}</p>
+      <p style="font-size: 12px; color: #555;">${warning}</p>
     </div>
   `;
 };

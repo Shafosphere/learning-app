@@ -6,6 +6,8 @@ import MyButton from "../../components/button/button";
 import api from "../../utils/api";
 import { PopupContext } from "../../components/popup/popupcontext";
 import { useIntl } from "react-intl";
+import { SettingsContext } from "../settings/properties";
+
 
 export default function ResetPassword() {
   const intl = useIntl();
@@ -15,6 +17,7 @@ export default function ResetPassword() {
 
   const { token } = useParams();
   const { setPopup } = useContext(PopupContext);
+  const { language } = useContext(SettingsContext);
 
   async function handleSubmit() {
     // Sprawdzenie zgodności haseł
@@ -34,6 +37,7 @@ export default function ResetPassword() {
       const response = await api.post("/auth/reset-password", {
         token,
         password,
+        language,
       });
 
       if (response.status === 200) {

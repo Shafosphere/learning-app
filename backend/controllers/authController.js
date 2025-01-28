@@ -260,8 +260,7 @@ export const deleteUserAccount = async (req, res) => {
 };
 
 export const sendUserResetLink = async (req, res) => {
-  const { email } = req.body;
-
+  const { email, language = 'en' } = req.body; 
   const users = await getUserByEmail(email);
 
   if (users.length === 0) {
@@ -273,11 +272,14 @@ export const sendUserResetLink = async (req, res) => {
   const resetLink = `http://localhost:3000/reset-password/${token}`;
 
   try {
-    const htmlContent = generateResetPasswordEmail(resetLink);
+    const htmlContent = generateResetPasswordEmail(resetLink, language);
+    const subject = language === 'pl' 
+      ? "Resetowanie hasła" 
+      : "Password Reset";
 
     await sendEmail({
       to: email,
-      subject: "Resetowanie hasła",
+      subject,
       html: htmlContent, // Używamy HTML
     });
 
