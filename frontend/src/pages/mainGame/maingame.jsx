@@ -15,25 +15,20 @@ import { PopupContext } from "../../components/popup/popupcontext";
 import { useIntl } from "react-intl";
 import api from "../../utils/api";
 
+import useBoxesDB from "../../hooks/boxes/useBoxesDB";
 import usePersistedState from "../../hooks/localstorage/usePersistedState";
 import useSpellchecking from "../../hooks/spellchecking/spellchecking";
 import usePageVisit from "../../hooks/activity/countingentries";
 
 export default function MainGame({ setDisplay, lvl }) {
+  const { boxes, setBoxes, setAutoSave } = useBoxesDB(lvl);
+
   const intl = useIntl();
   const [randomWord, setRandom] = useState(null); //selected word
   const [className, setClass] = useState(""); //class display
   const [showWrongAnswer, setShowWrongAnswer] = useState("not-visible");
   const [activeBox, setActiveBox] = useState("boxOne"); //clicked box
   const timeoutRef = useRef(null);
-  const [boxes, setBoxes] = useState({
-    //boxes
-    boxOne: [],
-    boxTwo: [],
-    boxThree: [],
-    boxFour: [],
-    boxFive: [],
-  });
   const wordFlashcardRef = useRef(null);
   const idFlashcardRef = useRef(null);
 
@@ -79,9 +74,6 @@ export default function MainGame({ setDisplay, lvl }) {
     procentB2,
     isLoggedIn,
   } = useContext(SettingsContext);
-
-  //autosave
-  const [autoSave, setAutoSave] = useState(false);
 
   usePageVisit("flashcards");
 
@@ -280,9 +272,9 @@ export default function MainGame({ setDisplay, lvl }) {
   function checkAnswer(userWord, word) {
     if (userWord && word) {
       // Użycie funkcji `checkSpelling` z hooka `useSpellchecking`
-      console.log("sprawdzam " + userWord + " i " + word)
+      console.log("sprawdzam " + userWord + " i " + word);
       const isCorrect = checkSpelling(userWord, word);
-      console.log("słówka sprawdzone: " + isCorrect)
+      console.log("słówka sprawdzone: " + isCorrect);
       return isCorrect;
     } else {
       console.log("Brak danych do porównania!");
@@ -297,62 +289,6 @@ export default function MainGame({ setDisplay, lvl }) {
   }, []);
 
   useEffect(() => {
-    function readAndDisplayAllData() {
-      let db;
-      const request = indexedDB.open("SavedBoxes", 1);
-
-      request.onupgradeneeded = (event) => {
-        db = event.target.result;
-        if (!db.objectStoreNames.contains("boxesB2")) {
-          db.createObjectStore("boxesB2", { keyPath: "id" });
-        }
-        if (!db.objectStoreNames.contains("boxesC1")) {
-          db.createObjectStore("boxesC1", { keyPath: "id" });
-        }
-      };
-
-      request.onsuccess = (event) => {
-        const db = event.target.result;
-        if (db.objectStoreNames.contains(`boxes${lvl}`)) {
-          const transaction = db.transaction([`boxes${lvl}`], "readonly");
-          const store = transaction.objectStore(`boxes${lvl}`);
-          const getAllRequest = store.getAll();
-
-          getAllRequest.onsuccess = () => {
-            const allData = getAllRequest.result;
-            const newBoxesState = {
-              boxOne: [],
-              boxTwo: [],
-              boxThree: [],
-              boxFour: [],
-              boxFive: [],
-            };
-
-            allData.forEach((item) => {
-              const { boxName, ...rest } = item;
-              if (newBoxesState[boxName]) {
-                newBoxesState[boxName].push(rest);
-              }
-            });
-
-            setBoxes(newBoxesState);
-          };
-          getAllRequest.onerror = () => {
-            console.error("Error reading data from the object store `boxes`.");
-          };
-        } else {
-          console.error("Object store 'boxes' does not exist.");
-        }
-      };
-
-      request.onerror = (event) => {
-        console.error("IndexedDB error:", event.target.error);
-      };
-    }
-    readAndDisplayAllData();
-  }, [lvl]);
-
-  useEffect(() => {
     async function fetchPatchInfo() {
       try {
         const response = await api.get("/word/patch-info");
@@ -364,80 +300,6 @@ export default function MainGame({ setDisplay, lvl }) {
     }
     fetchPatchInfo();
   }, []);
-
-  useEffect(() => {
-    //save progress
-    function saveBoxes() {
-      let db;
-      const request = indexedDB.open("SavedBoxes", 1);
-
-      request.onupgradeneeded = (event) => {
-        db = event.target.result;
-        if (!db.objectStoreNames.contains("boxesB2")) {
-          db.createObjectStore("boxesB2", { keyPath: "id" });
-        }
-        if (!db.objectStoreNames.contains("boxesC1")) {
-          db.createObjectStore("boxesC1", { keyPath: "id" });
-        }
-      };
-
-      request.onsuccess = (event) => {
-        db = event.target.result;
-        if (db.objectStoreNames.contains(`boxes${lvl}`)) {
-          const transaction = db.transaction([`boxes${lvl}`], "readwrite");
-          const store = transaction.objectStore(`boxes${lvl}`);
-
-          const clearRequest = store.clear();
-
-          clearRequest.onsuccess = () => {
-            const addRequests = [];
-
-            for (const boxName in boxes) {
-              boxes[boxName].forEach((item) => {
-                const itemWithBox = { ...item, boxName };
-                const addRequest = new Promise((resolve, reject) => {
-                  const request = store.add(itemWithBox);
-                  request.onsuccess = () => {
-                    resolve();
-                  };
-                  request.onerror = () => {
-                    reject(
-                      `Error adding record from box '${boxName}' to the object store.`
-                    );
-                  };
-                });
-                addRequests.push(addRequest);
-              });
-            }
-
-            // Wait for all add requests to complete
-            Promise.all(addRequests)
-              .then(() => {
-                setAutoSave(false);
-                console.log("Progress Saved");
-              })
-              .catch((error) => {
-                setAutoSave(false);
-                console.error("An error occurred:", error);
-              });
-          };
-
-          clearRequest.onerror = () => {
-            console.error(`Error clearing the object store 'boxes'.`);
-          };
-        } else {
-          console.error("Object store 'boxes' does not exist.");
-        }
-      };
-
-      request.onerror = (event) => {
-        console.error("IndexedDB error:", event.target.error);
-      };
-    }
-    if (autoSave) {
-      saveBoxes();
-    }
-  }, [autoSave, boxes, lvl]);
 
   function confettiShow() {
     setShowConfetti(true);
@@ -464,7 +326,6 @@ export default function MainGame({ setDisplay, lvl }) {
       console.log("Słówko zostało zgłoszone do serwera:", response.data);
     } catch (error) {
       console.error("Błąd podczas wysyłania słówka do serwera:", error);
-      // Możesz dodać obsługę błędów, np. wyświetlić użytkownikowi komunikat
     }
   }
 

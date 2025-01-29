@@ -16,6 +16,7 @@ export const generateResetPasswordEmail = (resetLink, language = "en") => {
       title: "Password Reset",
       greeting: "Hello,",
       content: "We received a request to reset your password.",
+      reset: "Click on the button below to set a new password: ",
       button: "Reset Password",
       note: "If this wasn't you, please ignore this email.",
       warning: "Note: Link expires in 1 hour.",
@@ -24,13 +25,14 @@ export const generateResetPasswordEmail = (resetLink, language = "en") => {
       title: "Resetowanie hasła",
       greeting: "Cześć,",
       content: "Otrzymaliśmy prośbę o zresetowanie Twojego hasła.",
+      reset: "Kliknij w poniższy przycisk, aby ustawić nowe hasło: ",
       button: "Resetuj hasło",
       note: "Jeśli to nie Ty, po prostu zignoruj tę wiadomość.",
       warning: "Uwaga: link wygaśnie za 1 godzinę.",
     },
   };
 
-  const { title, greeting, content, button, note, warning } =
+  const { title, greeting, content, reset, button, note, warning } =
     translations[language];
 
   return `
@@ -38,7 +40,7 @@ export const generateResetPasswordEmail = (resetLink, language = "en") => {
       <h1 style="color: #4CAF50;">${title}</h1>
       <p>${greeting}</p>
       <p>${content}</p>
-      <p>Kliknij w poniższy przycisk, aby ustawić nowe hasło:</p>
+      <p>${reset}</p>
       <a 
         href="${resetLink}" 
         style="
@@ -65,7 +67,7 @@ export const sendEmail = async ({ to, subject, text, html }) => {
     from: process.env.REACT_APP_EMAIL_USER,
     to,
     subject,
-    text, // Opcjonalne: treść w formacie zwykłego tekstu
+    text,
     html, // Treść w formacie HTML
   };
 
