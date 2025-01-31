@@ -1,4 +1,3 @@
-import "./flashcard.css";
 import { FormattedMessage } from 'react-intl';
 
 export default function EmptyFlashcard() {

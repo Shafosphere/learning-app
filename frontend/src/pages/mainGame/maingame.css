@@ -1,3 +1,18 @@
+.container-home {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--f2f4f6);
+  background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
+  background-size: 40px 40px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(var(--background-rgba), 1) 0%,
+    rgba(var(--border-rgba), 1) 100%
+  );
+}
 .hint {
   display: flex;
   align-items: center;
@@ -7,28 +22,109 @@
   color: var(--secondary);
   font-weight: 700;
 }
+
+.box {
+  display: flex;
+  flex-direction: column;
+  transition: all 0.1s ease-in-out;
+}
+
+.box:active {
+  transform: scale(1.01);
+  -webkit-transform: scale(1.01);
+  -moz-transform: scale(1.01);
+  -ms-transform: scale(1.01);
+  -o-transform: scale(1.01);
+}
+
+.word-count {
+  text-align: center;
+  font-weight: 800;
+  font-size: 25px;
+  color: var(--headline);
+}
+
+.box img {
+  cursor: pointer;
+  padding-bottom: 0.5rem;
+}
+
+.flashcard-description,
+.window-flashcard {
+  display: flex;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--headline);
+}
+
+.window-flashcard {
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  font-size: 25px;
+}
+
+.flashcard-description {
+  text-transform: uppercase;
+  max-width: 100%;
+  text-align: justify;
+}
+
+.button-container {
+  align-items: center;
+  justify-content: center;
+}
+
+.flashcard-input {
+  border: 0;
+  color: var(--paragraph);
+  text-align: center;
+}
+
+.flashcard-input:focus {
+  outline: 0;
+  color: var(--paragraph);
+}
+
+.notcorrect {
+  background-color: var(--secondary);
+}
+
+.wrong-answer {
+  justify-content: center;
+  font-size: 20px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.not-visible {
+  visibility: hidden;
+}
+
+.learning {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary);
+}
+
+.label-container {
+  position: relative;
+}
+
+.label-container label {
+  position: absolute;
+  pointer-events: none;
+}
+
 @media (max-width: 480px) {
   .container-home {
-    display: flex;
     flex-direction: column;
-    width: 100%;
     height: 100%;
-
-    align-items: center;
-    justify-content: center;
-    padding: 6rem 1rem 1rem 1rem;
-
-    background-color: var(--f2f4f6);
-    background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-    background-size: 40px 40px;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
+    padding: 6rem 1rem 1rem;
   }
-
   .home-right {
     display: none;
   }
@@ -40,15 +136,15 @@
     max-width: 20rem;
     max-height: 30rem;
   }
-  /* boxes */
+  .boxes-top,
   .container-boxes {
     display: flex;
     flex-direction: row;
+  }
+  .container-boxes {
     height: 50%;
   }
   .boxes-top {
-    display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
   }
   .smallscreenbutton {
@@ -68,29 +164,11 @@
   }
   .box {
     flex: 0 0 33%;
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    transition: all 0.1s ease-in-out;
-  }
-  .box:active {
-    transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    -o-transform: scale(1.01);
-  }
-  .word-count {
-    text-align: center;
-    font-weight: 800;
-    font-size: 25px;
-    color: var(--headline);
   }
   .box img {
     height: 5.5rem;
     width: 4.5rem;
-    cursor: pointer;
-    padding-bottom: 0.5rem;
   }
   .active {
     border-bottom: 0.2rem solid;
@@ -100,46 +178,26 @@
     border-bottom: 0.2rem solid;
     border-color: transparent;
   }
-  /* flashcard */
-  .container-flashcard {
+  .container-flashcard,
+  .form-flashcard {
     width: 100%;
-    height: 50%;
     display: flex;
     flex-direction: column;
+  }
+  .container-flashcard {
+    height: 50%;
     justify-content: space-between;
     align-items: center;
   }
   .form-flashcard {
     height: 70%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
   }
   .window-flashcard {
-    position: relative;
-
     width: 100%;
     height: 50%;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    font-size: 25px;
-    color: var(--headline);
-    font-weight: 600;
   }
-
   .flashcard-description {
-    display: flex;
-    justify-content: center;
     font-size: 10px;
-    text-transform: uppercase;
-    font-weight: 600;
-    max-width: 100%;
-    text-align: justify;
-    color: var(--headline);
     height: 25%;
   }
   .top-flashcard {
@@ -152,8 +210,6 @@
     display: flex;
     flex-direction: row;
     gap: 1rem;
-    align-items: center;
-    justify-content: center;
   }
   .button-container button {
     width: 40%;
@@ -161,9 +217,7 @@
     height: 3rem;
   }
   .flashcard-input {
-    border: none;
     width: clamp(5ch, calc(1ch * var(--wordLength)), 50ch);
-
     background: repeating-linear-gradient(
         90deg,
         var(--headline),
@@ -171,52 +225,23 @@
       )
       0 100%/100% 2px no-repeat;
     font-size: clamp(1rem, 5vw, 3rem);
-    color: var(--paragraph);
-    text-align: center;
   }
-  .flashcard-input:focus {
-    outline: none;
-    color: var(--paragraph);
-  }
-
-  .correct {
-    background-color: var(--highlight);
-    border-radius: 1rem;
-  }
+  .correct,
   .notcorrect {
-    background-color: var(--secondary);
+    background-color: var(--highlight);
     border-radius: 1rem;
   }
   .wrong-answer {
     display: none;
-    justify-content: center;
-    font-size: 20px;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-  .not-visible {
-    visibility: hidden;
   }
   .learning {
-    position: absolute;
     height: 100%;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--secondary);
     border-radius: 1rem;
   }
-  .label-container {
-    position: relative;
-  }
-
   .label-container label {
-    position: absolute;
     font-size: clamp(1rem, 5vw, 3rem);
     color: rgba(0, 0, 0, 0.2);
-    pointer-events: none;
     bottom: 2px;
     padding-left: 3px;
   }
@@ -224,39 +249,14 @@
     text-align: left;
     padding-left: 0.2rem;
   }
-  .hidden-message {
-    text-align: center;
-  }
-  .hint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 5%;
-    width: 100%;
-  }
 }
+
 @media (min-width: 480px) and (max-width: 768px) {
   .container-home {
-    display: flex;
     flex-direction: column;
-    width: 100%;
     height: 100%;
-
-    align-items: center;
-    justify-content: center;
-    padding: 6rem 1rem 1rem 1rem;
-
-    background-color: var(--f2f4f6);
-    background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-    background-size: 40px 40px;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
+    padding: 6rem 1rem 1rem;
   }
-
   .home-right {
     display: none;
   }
@@ -268,19 +268,18 @@
     max-width: 30rem;
     max-height: 40rem;
   }
-  /* boxes */
+  .boxes-top,
   .container-boxes {
     display: flex;
     flex-direction: row;
-    height: 50%;
     width: 100%;
   }
+  .container-boxes {
+    height: 50%;
+  }
   .boxes-top {
-    display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    width: 100%;
   }
   .smallscreenbutton {
     display: flex;
@@ -299,78 +298,39 @@
   }
   .box {
     flex: 0 0 33.33%;
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    transition: all 0.1s ease-in-out;
-  }
-  .box:active {
-    transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    -o-transform: scale(1.01);
-  }
-  .word-count {
-    text-align: center;
-    font-weight: 800;
-    font-size: 25px;
-    color: var(--headline);
   }
   .box img {
     height: 6.5rem;
     width: 5.5rem;
-    cursor: pointer;
-    padding-bottom: 0.5rem;
   }
-  .active {
-    border-bottom: 0.2rem solid;
-    border-color: var(--highlight);
+  .active,
+  .notactive {
+    border-bottom: 0.2rem solid var(--highlight);
   }
   .notactive {
-    border-bottom: 0.2rem solid;
     border-color: transparent;
   }
-  /* flashcard */
-  .container-flashcard {
+  .container-flashcard,
+  .form-flashcard {
     width: 100%;
-    height: 50%;
     display: flex;
     flex-direction: column;
+  }
+  .container-flashcard {
+    height: 50%;
     justify-content: space-between;
     align-items: center;
   }
   .form-flashcard {
     height: 70%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
   }
   .window-flashcard {
-    position: relative;
-
     width: 100%;
     height: 50%;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    font-size: 25px;
-    color: var(--headline);
-    font-weight: 600;
   }
-
   .flashcard-description {
-    display: flex;
-    justify-content: center;
     font-size: 15px;
-    text-transform: uppercase;
-    font-weight: 600;
-    max-width: 100%;
-    text-align: justify;
-    color: var(--headline);
     height: 25%;
   }
   .top-flashcard {
@@ -383,8 +343,6 @@
     display: flex;
     flex-direction: row;
     gap: 1rem;
-    align-items: center;
-    justify-content: center;
   }
   .button-container button {
     width: 40%;
@@ -392,9 +350,7 @@
     height: 3.5rem;
   }
   .flashcard-input {
-    border: none;
     width: clamp(5ch, calc(1ch * var(--wordLength)), 50ch);
-
     background: repeating-linear-gradient(
         90deg,
         var(--headline),
@@ -402,52 +358,23 @@
       )
       0 100%/100% 2px no-repeat;
     font-size: clamp(1rem, 5vw, 3rem);
-    color: var(--paragraph);
-    text-align: center;
   }
-  .flashcard-input:focus {
-    outline: none;
-    color: var(--paragraph);
-  }
-
-  .correct {
-    background-color: var(--highlight);
-    border-radius: 1rem;
-  }
+  .correct,
   .notcorrect {
-    background-color: var(--secondary);
+    background-color: var(--highlight);
     border-radius: 1rem;
   }
   .wrong-answer {
     display: none;
-    justify-content: center;
-    font-size: 20px;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-  .not-visible {
-    visibility: hidden;
   }
   .learning {
-    position: absolute;
     height: 100%;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--secondary);
     border-radius: 1rem;
   }
-  .label-container {
-    position: relative;
-  }
-
   .label-container label {
-    position: absolute;
     font-size: clamp(1rem, 5vw, 3rem);
     color: rgba(0, 0, 0, 0.2);
-    pointer-events: none;
     bottom: 2px;
     padding-left: 3px;
   }
@@ -455,101 +382,52 @@
     text-align: left;
     padding-left: 0.2rem;
   }
-  .hidden-message {
-    text-align: center;
-  }
-  .hint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 5%;
-    width: 100%;
-  }
 }
+
 @media (min-width: 769px) and (max-width: 1450px) {
   .container-home {
-    display: flex;
     flex-direction: row;
-    width: 100%;
     height: 100%;
-
-    align-items: center;
-    justify-content: center;
-    padding: 6rem 1rem 1rem 1rem;
-
+    padding: 6rem 1rem 1rem;
     gap: 5rem;
-    background-color: var(--f2f4f6);
-    background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-    background-size: 40px 40px;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
   }
-  .home-left {
+  .home-left,
+  .home-right {
     display: flex;
     flex-direction: column;
   }
   .home-right {
-    display: flex;
     flex-direction: row;
     gap: 5rem;
     height: 60%;
   }
-  /* flashcard */
   .container-flashcard {
     width: 50rem;
     height: 25rem;
   }
   .window-flashcard {
-    position: relative;
-
     height: 14rem;
     width: 35rem;
-
     background-color: var(--secondBackground);
     border-radius: 2rem 2rem 2rem 2rem;
     border: solid 3px var(--headline);
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     gap: 2rem;
-
-    font-size: 25px;
-    color: var(--headline);
-    font-weight: 600;
   }
-
   .flashcard-description {
-    display: flex;
-    justify-content: center;
     margin-top: 1rem;
     font-size: 20px;
-    text-transform: uppercase;
-    font-weight: 600;
-    max-width: 100%;
-    text-align: justify;
-    color: var(--headline);
   }
+  .button-container,
   .top-flashcard {
     display: flex;
     flex-direction: row;
     gap: 1rem;
   }
   .button-container {
-    display: flex;
     flex-direction: column;
-    gap: 1rem;
     height: 14rem;
-    align-items: center;
-    justify-content: center;
   }
   .flashcard-input {
-    border: none;
     width: calc(1ch * var(--wordLength));
     background: repeating-linear-gradient(
         90deg,
@@ -558,59 +436,29 @@
       )
       0 100%/100% 5px no-repeat;
     font-size: 4ch;
-    color: var(--paragraph);
-    text-align: center;
   }
-  .flashcard-input:focus {
-    outline: none;
-    color: var(--paragraph);
-  }
-
   .correct {
     background-color: var(--highlight);
   }
-  .notcorrect {
-    background-color: var(--secondary);
-  }
   .wrong-answer {
     display: flex;
-    justify-content: center;
     margin-top: 1rem;
-    font-size: 20px;
-    text-transform: uppercase;
-    font-weight: 600;
     max-width: 35rem;
     margin-bottom: 1rem;
   }
-  .not-visible {
-    visibility: hidden;
-  }
   .learning {
-    position: absolute;
     height: 90%;
     width: 90%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--secondary);
   }
-  .label-container {
-    position: relative;
-  }
-
   .label-container label {
-    position: absolute;
     font-size: 4ch;
     color: rgba(0, 0, 0, 0.1);
-    pointer-events: none;
     padding-left: 0.3rem;
   }
   .label-container input {
     text-align: left;
     padding-left: 0.3rem;
   }
-  /* boxes */
   .container-boxes {
     display: flex;
     flex-direction: column;
@@ -618,83 +466,49 @@
   .smallscreenbutton {
     display: none;
   }
+  .boxes-bot,
   .boxes-top {
     display: flex;
     flex-direction: row;
   }
   .boxes-bot {
-    display: flex;
-    flex-direction: row;
     justify-content: center;
     width: 100%;
     gap: 1rem;
     margin-top: 1rem;
   }
-  .box {
-    display: flex;
-    flex-direction: column;
-    transition: all 0.1s ease-in-out;
-  }
-  .box:active {
-    transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    -o-transform: scale(1.01);
-  }
   .word-count {
-    text-align: center;
-    font-weight: 800;
-    font-size: 25px;
-    margin: 2rem 0rem 1rem 0rem;
-    color: var(--headline);
+    margin: 2rem 0 1rem;
   }
   .box img {
     height: 11rem;
     width: 10rem;
-    cursor: pointer;
-    padding-bottom: 0.5rem;
   }
-  .active {
-    border-bottom: 0.5rem solid;
-    border-color: var(--highlight);
+  .active,
+  .notactive {
+    border-bottom: 0.5rem solid var(--highlight);
   }
   .notactive {
-    border-bottom: 0.5rem solid;
     border-color: transparent;
   }
 }
+
 @media (min-width: 1450px) {
   .container-home {
-    display: flex;
     flex-direction: row;
-    width: 100%;
     height: 100vh;
-    align-items: center;
-    justify-content: center;
     gap: 6rem;
-
-    background-color: var(--f2f4f6);
-    background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-    background-size: 40px 40px;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
   }
-  .home-left {
+  .home-left,
+  .home-right {
     display: flex;
     flex-direction: column;
   }
   .home-right {
-    display: flex;
     flex-direction: row;
     gap: 5rem;
     height: 60%;
   }
-  /* boxes */
   .container-boxes {
     display: flex;
     flex-direction: column;
@@ -702,103 +516,58 @@
   .smallscreenbutton {
     display: none;
   }
+  .boxes-bot,
   .boxes-top {
     display: flex;
     flex-direction: row;
   }
   .boxes-bot {
-    display: flex;
-    flex-direction: row;
     justify-content: center;
     width: 100%;
     gap: 1rem;
     margin-top: 1rem;
   }
-  .box {
-    display: flex;
-    flex-direction: column;
-    transition: all 0.1s ease-in-out;
-  }
-  .box:active {
-    transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-    -moz-transform: scale(1.01);
-    -ms-transform: scale(1.01);
-    -o-transform: scale(1.01);
-  }
   .word-count {
-    text-align: center;
-    font-weight: 800;
-    font-size: 25px;
-    margin: 2rem 0rem 1rem 0rem;
-    color: var(--headline);
+    margin: 2rem 0 1rem;
   }
   .box img {
     height: 11rem;
     width: 10rem;
-    cursor: pointer;
-    padding-bottom: 0.5rem;
   }
-  .active {
-    border-bottom: 0.5rem solid;
-    border-color: var(--highlight);
+  .active,
+  .notactive {
+    border-bottom: 0.5rem solid var(--highlight);
   }
   .notactive {
-    border-bottom: 0.5rem solid;
     border-color: transparent;
   }
-  /* flashcard */
   .container-flashcard {
     width: 50rem;
     height: 25rem;
   }
   .window-flashcard {
-    position: relative;
-
     height: 14rem;
     width: 35rem;
-
     background-color: var(--secondBackground);
     border-radius: 2rem 2rem 2rem 2rem;
     border: solid 3px var(--headline);
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     gap: 2rem;
-
-    font-size: 25px;
-    color: var(--headline);
-    font-weight: 600;
   }
-
   .flashcard-description {
-    display: flex;
-    justify-content: center;
     margin-top: 1rem;
     font-size: 20px;
-    text-transform: uppercase;
-    font-weight: 600;
-    max-width: 100%;
-    text-align: justify;
-    color: var(--headline);
   }
+  .button-container,
   .top-flashcard {
     display: flex;
     flex-direction: row;
     gap: 1rem;
   }
   .button-container {
-    display: flex;
     flex-direction: column;
-    gap: 1rem;
     height: 14rem;
-    align-items: center;
-    justify-content: center;
   }
   .flashcard-input {
-    border: none;
     width: calc(1ch * var(--wordLength));
     background: repeating-linear-gradient(
         90deg,
@@ -807,60 +576,28 @@
       )
       0 100%/100% 5px no-repeat;
     font-size: 4ch;
-    color: var(--paragraph);
-    text-align: center;
   }
-  .flashcard-input:focus {
-    outline: none;
-    color: var(--paragraph);
-  }
-
   .correct {
     background-color: var(--highlight);
   }
-  .notcorrect {
-    background-color: var(--secondary);
-  }
   .wrong-answer {
     display: flex;
-    justify-content: center;
     margin-top: 1rem;
-    font-size: 20px;
-    text-transform: uppercase;
-    font-weight: 600;
     max-width: 35rem;
     margin-bottom: 1rem;
   }
-  .not-visible {
-    visibility: hidden;
-  }
   .learning {
-    position: absolute;
     height: 90%;
     width: 90%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--secondary);
   }
-  .label-container {
-    position: relative;
-  }
-
   .label-container label {
-    position: absolute;
     font-size: 4ch;
     color: rgba(0, 0, 0, 0.1);
-    pointer-events: none;
-    padding-left: 0.3rem;
-  }
-  .label-container input {
-    text-align: left;
     padding-left: 0.3rem;
   }
 }
-@media (min-width: 768px)and (max-width: 1060px){
+
+@media (min-width: 768px) and (max-width: 1060px) {
   .home-right {
     display: none;
   }

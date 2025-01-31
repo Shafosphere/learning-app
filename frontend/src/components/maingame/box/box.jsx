@@ -3,7 +3,6 @@ import boxHalf from "../../../data/resized_box_half.png";
 import boxSome from "../../../data/resized_box_some.png";
 import box from "../../../data/resized_box.png";
 
-import "./box.css";
 import { FormattedMessage } from "react-intl";
 import MyButton from "../../button/button";
 import React, { useEffect } from "react";

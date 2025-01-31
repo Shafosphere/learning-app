@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "./flashcard.css";
 import { FormattedMessage } from "react-intl";
 
 export default function Flashcard({

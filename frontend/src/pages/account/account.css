@@ -1,43 +1,142 @@
+.container-account {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--background-rgba), 1) 0%,
+    rgba(var(--border-rgba), 1) 100%
+  );
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--paragraph);
+}
+
+.window-account {
+  display: flex;
+  background-color: var(--secondBackground);
+  -webkit-box-shadow: inset 0px 0px 24px 0px var(--background);
+  -moz-box-shadow: inset 0px 0px 24px 0px var(--background);
+  box-shadow: inset 0px 0px 24px 0px var(--background);
+  flex-direction: row;
+  border: 2px solid var(--border);
+  position: relative;
+}
+
+.account-left {
+  height: 100%;
+}
+
+.account-right {
+  height: 100%;
+}
+
+.account-input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-text {
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--paragraph);
+}
+
+.account-input {
+  border-radius: 10px 0px 0px 10px;
+  border: 4px solid var(--border);
+  border-right: none;
+  font-weight: 500;
+  color: var(--paragraph);
+  background-color: var(--background);
+  width: 100%;
+}
+
+.account-input-fullborder {
+  border-radius: 10px;
+  border: 4px solid var(--border);
+  font-weight: 500;
+  color: var(--paragraph);
+  background-color: var(--background);
+  width: 100%;
+}
+
+.custom_input-acc {
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 0.1rem;
+  max-width: 100%;
+}
+
+.avatar-container {
+  height: 100%;
+  width: 100%;
+}
+
+.avatar-slider {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.avatarIMG {
+  object-fit: contain;
+}
+
+.arrows-container-account {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-pass-acc {
+  width: 3rem;
+  background: var(--background);
+  color: var(--headline);
+  border-radius: 0px 10px 10px 0px;
+  border: 4px solid var(--border);
+  border-left: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-pass-acc:hover {
+  scale: 105%;
+  cursor: pointer;
+}
+
+.btn-pass-acc:active {
+  background: var(--border);
+}
+
+.account-buttons {
+  display: flex;
+  flex-direction: row;
+}
+
 @media (max-width: 480px) {
   .container-account {
-    width: 100%;
-    height: 100vh;
     padding: 6rem 1rem 1rem 1rem;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
-
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--paragraph);
   }
-
   .window-account {
     height: 100%;
     width: 100%;
-
     max-width: 30rem;
-
-    display: flex;
-    background-color: var(--secondBackground);
-    -webkit-box-shadow: inset 0px 0px 24px 0px var(--background);
-    -moz-box-shadow: inset 0px 0px 24px 0px var(--background);
-    box-shadow: inset 0px 0px 24px 0px var(--background);
-    flex-direction: row;
     gap: 1rem;
     padding: 1rem;
-    border: 2px solid var(--border);
-
-    position: relative;
-    /* z-index: 2; */
   }
   .pageNumbers-account {
     position: absolute;
@@ -57,172 +156,76 @@
     color: var(--tertiary);
   }
   .account-left {
-    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
   .account-right {
-    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
   .account-input-container {
-    display: flex;
-    flex-direction: column;
     justify-content: space-around;
     height: 100%;
     padding-bottom: 1rem;
   }
   .input-group {
-    display: flex;
-    flex-direction: column;
     padding: 0rem 0.5rem 0rem 0.5rem;
-    /* border-bottom: solid 1px var(--border); */
     border-radius: 10px;
   }
   .account-text {
-    text-transform: uppercase;
-    font-weight: 600;
-    color: var(--paragraph);
     font-size: 15px;
   }
   .account-input {
     padding: 0.1rem 0.5rem 0.1rem 0.5rem;
-    border-radius: 10px 0px 0px 10px;
-    border: 4px solid var(--border);
-    border-right: none;
     font-size: 14px;
-    font-weight: 500;
-    color: var(--paragraph);
-    background-color: var(--background);
     height: 2.5rem;
-    width: 100%;
   }
   .account-input-fullborder {
     padding: 0.1rem 0.5rem 0.1rem 0.5rem;
-    border-radius: 10px;
-    border: 4px solid var(--border);
     font-size: 14px;
-    font-weight: 500;
-    color: var(--paragraph);
-    background-color: var(--background);
     height: 2.5rem;
-    width: 100%;
   }
-  .custom_input-acc {
-    display: flex;
-    align-items: center;
-    position: relative;
-    gap: 0.1rem;
-    max-width: 100%;
-  }
-
   .avatar-container {
-    height: 100%;
-    width: 100%;
     display: flex;
     flex-direction: column;
-  }
-  .avatar-slider {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
   }
   .avatarIMG {
     height: 100%;
     width: 100%;
-    object-fit: contain;
   }
   .explanation-account {
     display: none;
   }
   .arrows-container-account {
-    display: flex;
-    width: 100%;
-    justify-content: center;
     flex-direction: row;
     gap: 1rem;
   }
   .btn-pass-acc {
     height: 2.5rem;
-    width: 3rem;
-    background: var(--background);
-    color: var(--headline);
-    border-radius: 0px 10px 10px 0px;
-    border: 4px solid var(--border);
-    border-left: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .btn-pass-acc:hover {
-    scale: 105%;
-    cursor: pointer;
-  }
-  .btn-pass-acc:active {
-    background: var(--border);
   }
   .icon-lock-account {
     font-size: 25px;
   }
   .account-buttons {
-    display: flex;
-    flex-direction: row;
     justify-content: space-around;
-  }
-  .account-buttons button {
-    padding: 0;
   }
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
   .container-account {
-    width: 100%;
-    height: 100vh;
     padding: 6rem 1rem 1rem 1rem;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
-
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--paragraph);
   }
-
   .window-account {
     height: 100%;
     width: 100%;
-
     max-width: 30rem;
     max-height: 45rem;
-
-    display: flex;
-    background-color: var(--secondBackground);
-    -webkit-box-shadow: inset 0px 0px 24px 0px var(--background);
-    -moz-box-shadow: inset 0px 0px 24px 0px var(--background);
-    box-shadow: inset 0px 0px 24px 0px var(--background);
-    flex-direction: row;
     gap: 1rem;
     padding: 1rem;
-    border: 2px solid var(--border);
-
-    position: relative;
-    /* z-index: 2; */
   }
   .pageNumbers-account {
     position: absolute;
@@ -244,166 +247,74 @@
     font-size: 25px;
   }
   .account-left {
-    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
   .account-right {
-    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
   .account-input-container {
-    display: flex;
-    flex-direction: column;
     justify-content: space-around;
     height: 100%;
     padding-bottom: 1rem;
   }
   .input-group {
-    display: flex;
-    flex-direction: column;
     padding: 0rem 0.5rem 0rem 0.5rem;
-    /* border-bottom: solid 1px var(--border); */
     border-radius: 10px;
   }
   .account-text {
-    text-transform: uppercase;
-    font-weight: 600;
-    color: var(--paragraph);
     font-size: 20px;
   }
   .account-input {
     padding: 0.2rem 0.5rem 0.2rem 0.5rem;
-    border-radius: 10px 0px 0px 10px;
-    border: 4px solid var(--border);
-    border-right: none;
     font-size: 17px;
-    font-weight: 500;
-    color: var(--paragraph);
-    background-color: var(--background);
     height: 3rem;
-    width: 100%;
   }
   .account-input-fullborder {
     padding: 0.2rem 0.5rem 0.2rem 0.5rem;
-    border-radius: 10px;
-    border: 4px solid var(--border);
     font-size: 17px;
-    font-weight: 500;
-    color: var(--paragraph);
-    background-color: var(--background);
     height: 3rem;
-    width: 100%;
   }
-  .custom_input-acc {
-    display: flex;
-    align-items: center;
-    position: relative;
-    gap: 0.1rem;
-    max-width: 100%;
-  }
-
   .avatar-container {
-    height: 100%;
-    width: 100%;
     display: flex;
     flex-direction: column;
-  }
-  .avatar-slider {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
   }
   .avatarIMG {
     height: 100%;
     width: 100%;
-    object-fit: contain;
   }
   .explanation-account {
     display: none;
   }
   .arrows-container-account {
-    display: flex;
-    width: 100%;
-    justify-content: center;
     flex-direction: row;
     gap: 2rem;
   }
   .btn-pass-acc {
     height: 3rem;
-    width: 3rem;
-    background: var(--background);
-    color: var(--headline);
-    border-radius: 0px 10px 10px 0px;
-    border: 4px solid var(--border);
-    border-left: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .btn-pass-acc:hover {
-    scale: 105%;
-    cursor: pointer;
-  }
-  .btn-pass-acc:active {
-    background: var(--border);
   }
   .icon-lock-account {
     font-size: 25px;
   }
   .account-buttons {
-    display: flex;
-    flex-direction: row;
     justify-content: space-around;
   }
-  .account-buttons button {
-    padding: 0;
-  }
 }
+
 @media (min-width: 769px) and (max-width: 1450px) {
   .container-account {
-    width: 100%;
-    height: 100vh;
     padding: 6rem 2rem 1rem 1rem;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
-
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--paragraph);
   }
   .window-account {
     height: 100%;
     width: 100%;
-
-    display: flex;
-    background-color: var(--secondBackground);
-    -webkit-box-shadow: inset 0px 0px 24px 0px var(--background);
-    -moz-box-shadow: inset 0px 0px 24px 0px var(--background);
-    box-shadow: inset 0px 0px 24px 0px var(--background);
-    flex-direction: row;
     gap: 2rem;
     padding: 2rem;
-    border: 2px solid var(--border);
-
-    position: relative;
     z-index: 2;
   }
   .pageNumbers-account {
@@ -411,25 +322,19 @@
   }
   .account-right {
     width: 50%;
-    height: 100%;
   }
   .account-left {
     width: 50%;
-    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
   .account-input-container {
-    display: flex;
-    flex-direction: column;
     justify-content: space-between;
     height: 100%;
   }
   .input-group {
     height: 100%;
-    display: flex;
-    flex-direction: column;
     padding: 1rem 0.5rem 0rem 0.5rem;
     border-bottom: solid 1px var(--border);
   }
@@ -437,129 +342,60 @@
     background-color: var(--border);
   }
   .account-text {
-    text-transform: uppercase;
-    font-weight: 600;
-    color: var(--paragraph);
     margin-bottom: 0.5rem;
   }
   .account-input {
     padding: 0.2rem 1rem 0.2rem 1rem;
-    border-radius: 10px 0px 0px 10px;
-    border: 4px solid var(--border);
-    border-right: none;
     font-size: 20px;
-    font-weight: 500;
-    color: var(--paragraph);
-    background-color: var(--background);
     height: 3rem;
-    width: 100%;
   }
-
   .account-input-fullborder {
     padding: 0.2rem 1rem 0.2rem 1rem;
-    border-radius: 10px;
-    border: 4px solid var(--border);
     font-size: 20px;
-    font-weight: 500;
-    color: var(--paragraph);
-    background-color: var(--background);
     height: 3rem;
-    width: 100%;
   }
-
   .account-buttons {
-    display: flex;
-    flex-direction: row;
     gap: 1rem;
     justify-content: left;
     padding-top: 1rem;
   }
-
   .btn-pass-acc {
     height: 3rem;
-    width: 3rem;
-    background: var(--background);
-    color: var(--headline);
-    border-radius: 0px 10px 10px 0px;
-    border: 4px solid var(--border);
-    border-left: none;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
-  .btn-pass-acc:hover {
-    scale: 105%;
-    cursor: pointer;
-  }
-  .btn-pass-acc:active {
-    background: var(--border);
-  }
-
-  .custom_input-acc {
-    display: flex;
-    align-items: center;
-    position: relative;
-    gap: 0.1rem;
-    max-width: 100%;
-  }
-
   .account-top-input {
     border: 4px solid var(--border);
     border-radius: 10px;
   }
-
-  .avatar-container {
-    height: 100%;
-    width: 100%;
-  }
   .avatar-slider {
-    display: flex;
-    flex-direction: column;
     gap: 1rem;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
   }
   .arrows-container-account {
-    display: flex;
-    justify-content: center;
-    width: 100%;
     gap: 1rem;
   }
   .avatarIMG {
     max-height: 100%;
     max-width: 100%;
-    object-fit: contain;
   }
   .explanation-account {
-    height: 50%;
+    height: 30%;
     width: 100%;
     border: solid 2px var(--border);
     padding: 1rem;
-
     text-transform: uppercase;
     font-weight: 700;
     color: var(--headline);
-  }
-  .account-right {
-    width: 50%;
-    height: 100%;
   }
   .bookmarks-account {
     display: flex;
     flex-direction: row;
     margin-left: 1rem;
   }
-
   .bookmarks-account div {
     height: 2.5rem;
     width: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-
     background-color: var(--secondBackground);
     border-left: 2px solid var(--border);
     border-right: 2px solid var(--border);
@@ -568,42 +404,25 @@
     border-radius: 10px 10px 0 0;
     z-index: 1;
   }
-
   .bookmarks-account div:not(:last-child) {
     margin-right: -2px;
   }
-
   .bookmarks-account div:hover {
     font-weight: 900;
     cursor: pointer;
   }
-
   .bookmarks-account div:active {
     transform: translateY(5px);
   }
-
-  .explanation-account {
-    height: 30%;
-    width: 100%;
-    border: solid 2px var(--border);
-    padding: 1rem;
-
-    text-transform: uppercase;
-    font-weight: 700;
-    color: var(--headline);
-  }
-
   .switches-account {
     width: 100%;
   }
-
   .switch-account {
     position: relative;
     display: inline-block;
     width: 60px;
     height: 34px;
   }
-
   .switch-container-account {
     display: flex;
     justify-content: space-between;
@@ -612,56 +431,22 @@
     border-bottom: solid 1px var(--border);
     padding: 1rem 0.5rem 1rem 0.5rem;
   }
-
   .switch-text-account {
     display: flex;
     align-items: center;
     text-transform: uppercase;
   }
-
   .hide-span-account {
     display: none;
   }
-  .icon-lock-account {
-    font-size: 30px;
-  }
 }
+
 @media (min-width: 1450px) {
-  .container-account {
-    width: 100%;
-    height: 100vh;
-    /* padding: 6rem 1rem 1rem 1rem; */
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
-
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--paragraph);
-  }
   .window-account {
     height: 50rem;
     width: 80rem;
-
-    display: flex;
-    background-color: var(--secondBackground);
-    -webkit-box-shadow: inset 0px 0px 24px 0px var(--background);
-    -moz-box-shadow: inset 0px 0px 24px 0px var(--background);
-    box-shadow: inset 0px 0px 24px 0px var(--background);
-    flex-direction: row;
     gap: 2rem;
     padding: 2rem;
-    border: 2px solid var(--border);
-
-    position: relative;
     z-index: 2;
   }
   .pageNumbers-account {
@@ -669,20 +454,12 @@
   }
   .account-right {
     width: 50%;
-    height: 100%;
   }
   .account-left {
     width: 50%;
-    height: 100%;
-  }
-  .account-input-container {
-    display: flex;
-    flex-direction: column;
   }
   .input-group {
     height: 100%;
-    display: flex;
-    flex-direction: column;
     padding: 1rem 0.5rem 1.5rem 0.5rem;
     border-bottom: solid 1px var(--border);
   }
@@ -690,39 +467,19 @@
     background-color: var(--border);
   }
   .account-text {
-    text-transform: uppercase;
-    font-weight: 600;
-    color: var(--paragraph);
     margin-bottom: 0.5rem;
   }
   .account-input {
     padding: 0.2rem 1rem 0.2rem 1rem;
-    border-radius: 10px 0px 0px 10px;
-    border: 4px solid var(--border);
-    border-right: none;
     font-size: 20px;
-    font-weight: 500;
-    color: var(--paragraph);
-    background-color: var(--background);
     height: 3rem;
-    width: 100%;
   }
-
   .account-input-fullborder {
     padding: 0.2rem 1rem 0.2rem 1rem;
-    border-radius: 10px;
-    border: 4px solid var(--border);
     font-size: 20px;
-    font-weight: 500;
-    color: var(--paragraph);
-    background-color: var(--background);
     height: 3rem;
-    width: 100%;
   }
-
   .account-buttons {
-    display: flex;
-    flex-direction: row;
     gap: 1rem;
     justify-content: left;
     margin: 1rem 0rem 1rem 0rem;
@@ -730,89 +487,41 @@
   }
   .btn-pass-acc {
     height: 3rem;
-    width: 3rem;
-    background: var(--background);
-    color: var(--headline);
-    border-radius: 0px 10px 10px 0px;
-    border: 4px solid var(--border);
-    border-left: none;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
-  .btn-pass-acc:hover {
-    scale: 105%;
-    cursor: pointer;
-  }
-  .btn-pass-acc:active {
-    background: var(--border);
-  }
-
-  .custom_input-acc {
-    display: flex;
-    align-items: center;
-    position: relative;
-    gap: 0.1rem;
-    max-width: 100%;
-  }
-
   .account-top-input {
     border: 4px solid var(--border);
     border-radius: 10px;
   }
-
-  .avatar-container {
-    height: 100%;
-    width: 100%;
-  }
   .avatar-slider {
-    display: flex;
-    flex-direction: column;
     gap: 1rem;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
   }
   .arrows-container-account {
-    display: flex;
-    justify-content: center;
-    width: 100%;
     gap: 1rem;
   }
   .avatarIMG {
     max-height: 100%;
     max-width: 100%;
-    object-fit: contain;
   }
   .explanation-account {
-    height: 50%;
+    height: 30%;
     width: 100%;
     border: solid 2px var(--border);
     padding: 1rem;
-
     text-transform: uppercase;
     font-weight: 700;
     color: var(--headline);
-  }
-  .account-right {
-    width: 50%;
-    height: 100%;
   }
   .bookmarks-account {
     display: flex;
     flex-direction: row;
     margin-left: 1rem;
   }
-
   .bookmarks-account div {
     height: 2.5rem;
     width: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-
     background-color: var(--secondBackground);
     border-left: 2px solid var(--border);
     border-right: 2px solid var(--border);
@@ -821,42 +530,25 @@
     border-radius: 10px 10px 0 0;
     z-index: 1;
   }
-
   .bookmarks-account div:not(:last-child) {
     margin-right: -2px;
   }
-
   .bookmarks-account div:hover {
     font-weight: 900;
     cursor: pointer;
   }
-
   .bookmarks-account div:active {
     transform: translateY(5px);
   }
-
-  .explanation-account {
-    height: 30%;
-    width: 100%;
-    border: solid 2px var(--border);
-    padding: 1rem;
-
-    text-transform: uppercase;
-    font-weight: 700;
-    color: var(--headline);
-  }
-
   .switches-account {
     width: 100%;
   }
-
   .switch-account {
     position: relative;
     display: inline-block;
     width: 60px;
     height: 34px;
   }
-
   .switch-container-account {
     display: flex;
     justify-content: space-between;
@@ -865,17 +557,12 @@
     border-bottom: solid 1px var(--border);
     padding: 1rem 0.5rem 1rem 0.5rem;
   }
-
   .switch-text-account {
     display: flex;
     align-items: center;
     text-transform: uppercase;
   }
-
   .hide-span-account {
     display: none;
-  }
-  .icon-lock-account {
-    font-size: 30px;
   }
 }

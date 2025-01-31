@@ -1,368 +1,168 @@
-@media (max-width: 479px) {
-  .container {
-    height: 100vh;
-    width: 100vw;
-    padding-top: 5rem;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    color: var(--headline);
-
-    background-color: var(--f2f4f6);
-    background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-    background-size: 40px 40px;
-
-    background: linear-gradient(
+.container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--headline);
+  background-color: var(--f2f4f6);
+  background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
+  background-size: 40px 40px;
+  background: linear-gradient(
       180deg,
       rgba(var(--background-rgba), 1) 0%,
       rgba(var(--border-rgba), 1) 100%
     );
-  }
+}
 
+.window {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-right: 10px solid var(--border);
+  border-left: 10px solid var(--border);
+}
+
+.gold {
+  height: 2rem;
+}
+
+.silver {
+  height: 1.5rem;
+}
+
+.bronze {
+  height: 1rem;
+}
+
+.avatar {
+  margin-right: 1rem;
+}
+
+.tablehead {
+  text-transform: uppercase;
+}
+
+.rowhead th:nth-child(2) {
+  padding: 1rem;
+}
+
+.firstrow td,
+  .firstrow th {
+  border-bottom: 2px solid var(--headline);
+}
+
+.row td {
+  text-align: center;
+}
+
+.userInfo {
+  padding: 0rem 1rem 0rem 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  width: 100%;
+}
+
+.userInfo div:nth-child(1) {
+  width: 30%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+@media (max-width: 479px) {
+  .container {
+    padding-top: 5rem;
+  }
   .window {
     height: 100%;
     width: 100%;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    border-right: 10px solid var(--border);
-    border-left: 10px solid var(--border);
-  }
-
-  .gold {
-    height: 2rem;
-  }
-  .silver {
-    height: 1.5rem;
-  }
-  .bronze {
-    height: 1rem;
   }
   .avatar {
-    margin-right: 1rem;
     width: 1rem;
     height: 1rem;
   }
-
-  .tablehead {
-    text-transform: uppercase;
-  }
-
-  .rowhead th:nth-child(2) {
-    padding: 1rem;
-  }
-
   .firstrow {
     font-weight: 600;
   }
-  .firstrow td,
-  .firstrow th {
-    border-bottom: 2px solid var(--headline);
-  }
   .row td {
-    text-align: center;
     padding: 0.55rem 0rem 0.15rem 0rem;
-  }
-  .userInfo {
-    padding: 0rem 1rem 0rem 1rem;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    width: 100%;
-  }
-  .userInfo div:nth-child(1) {
-    width: 30%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-  }
-  .userInfo div:nth-child(2) {
-    display: flex;
-    width: 70%;
-    justify-content: left;
-    align-items: center;
   }
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
   .container {
-    height: 100vh;
-    width: 100vw;
     padding-top: 5rem;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    color: var(--headline);
-
-    background-color: var(--f2f4f6);
-    background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-    background-size: 40px 40px;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
   }
-
   .window {
     height: 100%;
     width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    border-right: 10px solid var(--border);
-    border-left: 10px solid var(--border);
-  }
-
-  .gold {
-    height: 2rem;
-  }
-  .silver {
-    height: 1.5rem;
-  }
-  .bronze {
-    height: 1rem;
   }
   .avatar {
-    margin-right: 1rem;
     width: 1rem;
     height: 1rem;
   }
-
   .tablehead {
     font-size: 1.5em;
-    text-transform: uppercase;
   }
-
-  .rowhead th:nth-child(2) {
-    padding: 1rem;
-  }
-
   .firstrow {
     font-weight: 900;
     font-size: 1.5em;
   }
-  .firstrow td,
-  .firstrow th {
-    border-bottom: 2px solid var(--headline);
-  }
   .row td {
     padding: 1rem 0rem 0.25rem 0rem;
-    text-align: center;
     font-weight: 600;
-  }
-  .userInfo {
-    padding: 0rem 1rem 0rem 1rem;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    width: 100%;
-  }
-  .userInfo div:nth-child(1) {
-    width: 30%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-  }
-  .userInfo div:nth-child(2) {
-    display: flex;
-    width: 70%;
-    justify-content: left;
-    align-items: center;
   }
 }
 
 @media (min-width: 769px) and (max-width: 1450px) {
   .container {
-    height: 100vh;
-    width: 100vw;
     padding-top: 5rem;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    color: var(--headline);
-
-    background-color: var(--f2f4f6);
-    background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-    background-size: 40px 40px;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
   }
-
   .window {
     height: 100%;
     width: 100%;
     max-width: 70rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    border-right: 10px solid var(--border);
-    border-left: 10px solid var(--border);
-  }
-
-  .gold {
-    height: 2rem;
-  }
-  .silver {
-    height: 1.5rem;
-  }
-  .bronze {
-    height: 1rem;
   }
   .avatar {
-    margin-right: 1rem;
     width: 1rem;
     height: 1rem;
   }
-
   .tablehead {
     font-size: 2.25em;
-    text-transform: uppercase;
   }
-
-  .rowhead th:nth-child(2) {
-    padding: 1rem;
-  }
-
   .firstrow {
     font-weight: 900;
     font-size: 2em;
-  }
-  .firstrow td,
-  .firstrow th {
-    border-bottom: 2px solid var(--headline);
   }
   .row td {
     padding: 1.25rem 0rem 0.75rem 0rem;
-    text-align: center;
     font-weight: 600;
-  }
-  .userInfo {
-    padding: 0rem 1rem 0rem 1rem;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    width: 100%;
-  }
-  .userInfo div:nth-child(1) {
-    width: 30%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-  }
-  .userInfo div:nth-child(2) {
-    display: flex;
-    width: 70%;
-    justify-content: left;
-    align-items: center;
   }
 }
 
-
 @media (min-width: 1450px) {
-  .container {
-    height: 100vh;
-    width: 100vw;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    color: var(--headline);
-
-    background-color: var(--f2f4f6);
-    background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-    background-size: 40px 40px;
-
-    background: linear-gradient(
-      180deg,
-      rgba(var(--background-rgba), 1) 0%,
-      rgba(var(--border-rgba), 1) 100%
-    );
-  }
   .window {
     height: 100vh;
     width: 70rem;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    border-right: 10px solid var(--border);
-    border-left: 10px solid var(--border);
   }
   .tablehead {
     font-size: 3em;
-    text-transform: uppercase;
   }
-
-  .rowhead th:nth-child(2) {
-    padding: 1rem;
-  }
-
   .firstrow {
     font-size: 2em;
     font-weight: 900;
   }
-  .firstrow td,
-  .firstrow th {
-    border-bottom: 2px solid var(--headline);
-  }
   .row td {
     padding: 1.5rem 0rem 1rem 0rem;
-    text-align: center;
     font-weight: 600;
   }
   .medal {
     margin-left: 0.5rem;
   }
-  .gold {
-    height: 2rem;
-  }
-  .silver {
-    height: 1.5rem;
-  }
-  .bronze {
-    height: 1rem;
-  }
   .avatar {
-    margin-right: 1rem;
-    width: 2rem; /* Szerokość avatara */
-    height: 2rem; /* Wysokość avatara */
-  }
-
-  .userInfo {
-    padding: 0rem 1rem 0rem 1rem;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    width: 100%;
-  }
-  .userInfo div:nth-child(1) {
-    width: 30%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-  }
-  .userInfo div:nth-child(2) {
-    display: flex;
-    width: 70%;
-    justify-content: left;
-    align-items: center;
+    width: 2rem;
+    height: 2rem;
   }
 }
