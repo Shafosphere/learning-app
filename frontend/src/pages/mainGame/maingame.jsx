@@ -29,7 +29,7 @@ export default function MainGame({ setDisplay, lvl }) {
   const { boxes, setBoxes, setAutoSave } = useBoxesDB(lvl);
 
   // Ustawienia z kontekstu
-  const { 
+  const {
     calculatePercent,
     calculateTotalPercent,
     isSoundEnabled,
@@ -49,16 +49,29 @@ export default function MainGame({ setDisplay, lvl }) {
   // Stan dla wylosowanego słowa i stanu UI
   const [randomWord, setRandom] = useState(null);
   const [className, setClass] = useState("");
-  const [showWrongAnswer, setShowWrongAnswer] = useState("not-visible");
+  const [cssClasses, setCssClasses] = useState({
+    notVisible: "not-visible",
+    notDisplay: "not-display",
+    notDisplayReverse: "display",
+  });
+
+  // const [showWrongAnswer, setShowWrongAnswer] = useState("not-visible");
   const [activeBox, setActiveBox] = useState("boxOne");
+  const [blockSwitch, setBlock] = useState(false);
 
   // Confetti
   const [showConfetti, setShowConfetti] = useState(false);
   const [generateConfetti, setGenerateConfetti] = useState(false);
 
   // Patch – numeracja i stany
-  const [patchNumberB2, setB2Patch] = usePersistedState("patchNumberB2-home", 1);
-  const [patchNumberC1, setC1Patch] = usePersistedState("patchNumberC1-home", 1);
+  const [patchNumberB2, setB2Patch] = usePersistedState(
+    "patchNumberB2-home",
+    1
+  );
+  const [patchNumberC1, setC1Patch] = usePersistedState(
+    "patchNumberC1-home",
+    1
+  );
   const [totalB2Patches, setTotalB2] = useState(null);
   const [totalC1Patches, setTotalC1] = useState(null);
 
@@ -119,8 +132,15 @@ export default function MainGame({ setDisplay, lvl }) {
       }, 1500);
     } else {
       setClass("notcorrect");
-      setShowWrongAnswer("visible");
+
+      setCssClasses({
+        notVisible: "visible",
+        notDisplay: "visible",
+        notDisplayReverse: "not-display",
+      });
+
       correctWordRef.current.focus();
+      setBlock(true);
       if (isSoundEnabled === "true") dongSoundRef.current.play();
     }
   }
@@ -136,21 +156,28 @@ export default function MainGame({ setDisplay, lvl }) {
   const handleSetWordFlash = useCallback((item) => {
     wordFlashcardRef.current = item;
   }, []);
-  
+
   const handleSetwordId = useCallback((item) => {
     idFlashcardRef.current = item;
   }, []);
-  
+
   function changeCorrectStatus() {
     setClass("");
     moveWord(wordFlashcardRef.current, true);
     selectRandomWord(activeBox);
-    setShowWrongAnswer("not-visible");
+    setCssClasses({
+      notVisible: "not-visible",
+      notDisplay: "not-display",
+      notDisplayReverse: "display",
+    });
+
     setAutoSave(true);
     userWordRef.current.focus();
+    setBlock(false);
   }
 
   function handleSetBox(item) {
+    if (blockSwitch) return;
     selectRandomWord(item);
     setActiveBox(item);
   }
@@ -228,7 +255,7 @@ export default function MainGame({ setDisplay, lvl }) {
             data={randomWord}
             check={check}
             className={className}
-            showWrongAnswer={showWrongAnswer}
+            cssClasses={cssClasses}
             activeBox={activeBox}
             handleSetWordFlash={handleSetWordFlash}
             handleSetwordId={handleSetwordId}

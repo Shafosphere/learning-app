@@ -1,6 +1,5 @@
-// useMoveWord.js
+
 import { addWord, getAllWords } from "../../utils/indexedDB";
-// lub inna ścieżka, zależy gdzie masz addWord/getAllWords
 
 export default function useMoveWord({
   boxes,
@@ -18,7 +17,6 @@ export default function useMoveWord({
 }) {
   const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
 
-  // Ta funkcja ma już wszystkie zależności, których potrzebuje.
   async function moveWord(chosenWord, moveToFirst = false) {
     const currentBoxIndex = boxOrder.indexOf(activeBox);
     let nextBox = boxOrder[currentBoxIndex + 1];

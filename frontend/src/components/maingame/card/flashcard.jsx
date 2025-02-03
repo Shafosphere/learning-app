@@ -5,7 +5,7 @@ export default function Flashcard({
   data,
   check,
   className,
-  showWrongAnswer,
+  cssClasses,
   activeBox,
   handleSetWordFlash,
   handleSetwordId,
@@ -134,17 +134,17 @@ export default function Flashcard({
   return (
     <>
       <div className="container-flashcard">
-        <div className={`wrong-answer ${showWrongAnswer}`}>
+        <div className={`wrong-answer ${cssClasses.notVisible}`}>
           <span style={{ color: "red" }}>{word}&#8203;</span>
         </div>
         <form className="form-flashcard" onSubmit={handleSubmit}>
           <div className="top-flashcard">
             <div className={`window-flashcard ${className}`}>
-              <div className={`learning ${showWrongAnswer}`}>
+              <div className={`learning ${cssClasses.notDisplay}`}>
                 <div className="label-container">
                   <label>{word}</label>
                   <input
-                    className="flashcard-input"
+                    className="flashcard-input flashcard-input-learning"
                     type="text"
                     style={{ "--wordLength": calculateAdjustedLength(word) }}
                     maxLength={word.length}
@@ -156,7 +156,7 @@ export default function Flashcard({
                 <div className="label-container">
                   <label>{secondWord}</label>
                   <input
-                    className="flashcard-input"
+                    className="flashcard-input flashcard-input-learning"
                     type="text"
                     style={{
                       "--wordLength": calculateAdjustedLength(secondWord),
@@ -168,16 +168,21 @@ export default function Flashcard({
                   />
                 </div>
               </div>
-              <span>{secondWord}</span>
-              <input
-                className="flashcard-input"
-                type="text"
-                style={{ "--wordLength": calculateAdjustedLength(word) }}
-                maxLength={word.length}
-                value={userWord}
-                onChange={handleInputChange}
-                ref={userWordRef}
-              />
+
+              <div
+                className={`valuesuser-flashcard ${cssClasses.notDisplayReverse}`}
+              >
+                <span>{secondWord}</span>
+                <input
+                  className="flashcard-input flashcard-input-normal"
+                  type="text"
+                  style={{ "--wordLength": calculateAdjustedLength(word) }}
+                  maxLength={word.length}
+                  value={userWord}
+                  onChange={handleInputChange}
+                  ref={userWordRef}
+                />
+              </div>
             </div>
 
             <div className="button-container">

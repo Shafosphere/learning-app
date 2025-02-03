@@ -62,6 +62,7 @@
   flex-direction: column;
   align-items: center;
   font-size: 25px;
+  background-color: var(--secondBackground);
 }
 
 .flashcard-description {
@@ -98,7 +99,7 @@
 }
 
 .not-visible {
-  visibility: hidden;
+  display: none;
 }
 
 .learning {
@@ -108,17 +109,54 @@
   align-items: center;
   justify-content: center;
   background-color: var(--secondary);
+  width: 90%;
 }
 
 .label-container {
   position: relative;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .label-container label {
   position: absolute;
   pointer-events: none;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
+.valuesuser-flashcard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.not-visible {
+  visibility: hidden;
+}
+
+.not-display {
+  display: none;
+}
+
+.flashcard-input-normal {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.flashcard-input-learning {
+  width: clamp(5ch, calc(1ch * var(--wordLength)), 50ch);
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+}
 @media (max-width: 480px) {
   .container-home {
     flex-direction: column;
@@ -408,7 +446,7 @@
   .window-flashcard {
     height: 14rem;
     width: 35rem;
-    background-color: var(--secondBackground);
+    /* background-color: var(--secondBackground); */
     border-radius: 2rem 2rem 2rem 2rem;
     border: solid 3px var(--headline);
     gap: 2rem;
@@ -548,7 +586,7 @@
   .window-flashcard {
     height: 14rem;
     width: 35rem;
-    background-color: var(--secondBackground);
+    /* background-color: var(--secondBackground); */
     border-radius: 2rem 2rem 2rem 2rem;
     border: solid 3px var(--headline);
     gap: 2rem;
@@ -576,6 +614,8 @@
       )
       0 100%/100% 5px no-repeat;
     font-size: 4ch;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   .correct {
     background-color: var(--highlight);
@@ -593,6 +633,10 @@
   .label-container label {
     font-size: 4ch;
     color: rgba(0, 0, 0, 0.1);
+    padding-left: 0.3rem;
+  }
+  .label-container input {
+    text-align: left;
     padding-left: 0.3rem;
   }
 }

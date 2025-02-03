@@ -131,7 +131,7 @@
   height: 95%;
   width: 100%;
   top: 5%;
-  left: 6px;
+  left: 3px;
   opacity: 0.3;
   display: flex;
   flex-direction: column-reverse;
@@ -141,13 +141,13 @@
 }
 .short-belt-vertical {
   background-color: #fff;
-  height: 1%;
+  height: 4%;
   width: 4px;
   border-radius: 2px;
 }
 .long-belt-vertical {
   background-color: #fff;
-  height: 80%;
+  height: 90%;
   width: 4px;
   border-radius: 2px;
 }
