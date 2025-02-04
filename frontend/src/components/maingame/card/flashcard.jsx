@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
+import LearingInput from "./custominput/custominput";
 
 export default function Flashcard({
   data,
@@ -141,7 +142,7 @@ export default function Flashcard({
           <div className="top-flashcard">
             <div className={`window-flashcard ${className}`}>
               <div className={`learning ${cssClasses.notDisplay}`}>
-                <div className="label-container">
+                {/* <div className="label-container">
                   <label>{word}</label>
                   <input
                     className="flashcard-input flashcard-input-learning"
@@ -152,8 +153,26 @@ export default function Flashcard({
                     onChange={correctWordChange}
                     ref={correctWordRef}
                   />
-                </div>
-                <div className="label-container">
+                </div> */}
+
+                <LearingInput
+                className="custom-input-bottom-border"
+                  placeholder={word}
+                  maxLength={word.length}
+                  value={correctWord}
+                  correctWordChange={correctWordChange}
+                  correctWordRef={correctWordRef}
+                />
+
+                <LearingInput
+                  placeholder={secondWord}
+                  maxLength={secondWord.length}
+                  value={correctSecondWord}
+                  correctWordChange={correctSecondWordChange}
+                  correctWordRef={correctSecondWordRef}
+                />
+
+                {/* <div className="label-container">
                   <label>{secondWord}</label>
                   <input
                     className="flashcard-input flashcard-input-learning"
@@ -166,7 +185,7 @@ export default function Flashcard({
                     onChange={correctSecondWordChange}
                     ref={correctSecondWordRef}
                   />
-                </div>
+                </div> */}
               </div>
 
               <div

@@ -110,6 +110,7 @@
   justify-content: center;
   background-color: var(--secondary);
   width: 90%;
+  padding: 1rem;
 }
 
 .label-container {
