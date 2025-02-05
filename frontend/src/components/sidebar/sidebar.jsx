@@ -81,7 +81,9 @@ export default function Sidebar() {
       <div className="container-sidebar">
         {/* Brand name */}
         <div className="sidebar-title">
-          <span className="sidebar-initial">M</span>
+          <Link to="/about">
+            <span className="sidebar-initial">M</span>
+          </Link>
           <span className="sidebar-full full-title">emolingo</span>
         </div>
 
@@ -126,7 +128,7 @@ export default function Sidebar() {
               </span>
             </Link>
 
-            <Link className="link" to="/about">
+            {/* <Link className="link" to="/about">
               <span className="sidebar-initial link-icon">
                 <IoIosHeartHalf />
               </span>
@@ -135,7 +137,7 @@ export default function Sidebar() {
                   <FormattedMessage id="sidebar.about" defaultMessage="About" />
                 </div>
               </span>
-            </Link>
+            </Link> */}
 
             <Link className="link" to="/account">
               <span className="sidebar-initial link-icon">

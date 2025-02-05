@@ -61,10 +61,13 @@
   position: relative;
   flex-direction: column;
   align-items: center;
+  padding: 1rem;
   font-size: 25px;
   background-color: var(--secondBackground);
 }
-
+.hidden-message{
+  text-align: center;
+}
 .flashcard-description {
   text-transform: uppercase;
   max-width: 100%;
