@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./custominput.css";
 
 export default function LearingInput({
-  className, // nowy prop
   placeholder,
   maxLength,
   value,
@@ -16,13 +15,13 @@ export default function LearingInput({
   };
 
   return (
-    <div className="input-container123">
+    <div className="input-container-flashcard">
       <input
         type="text"
         value={value}
         onChange={correctWordChange}
         onScroll={handleScroll}
-        className={`custom-input123 ${className || ""}`}
+        className={`custom-input-flashcard`}
         maxLength={maxLength}
         ref={correctWordRef}
       />

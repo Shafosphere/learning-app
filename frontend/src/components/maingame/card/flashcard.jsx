@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import LearingInput from "./custominput/custominput";
+import MyButton from "../../button/button";
 
 export default function Flashcard({
   data,
@@ -142,27 +143,16 @@ export default function Flashcard({
           <div className="top-flashcard">
             <div className={`window-flashcard ${className}`}>
               <div className={`learning ${cssClasses.notDisplay}`}>
-                {/* <div className="label-container">
-                  <label>{word}</label>
-                  <input
-                    className="flashcard-input flashcard-input-learning"
-                    type="text"
-                    style={{ "--wordLength": calculateAdjustedLength(word) }}
-                    maxLength={word.length}
-                    value={correctWord}
-                    onChange={correctWordChange}
-                    ref={correctWordRef}
-                  />
-                </div> */}
 
                 <LearingInput
-                className="custom-input-bottom-border"
                   placeholder={word}
                   maxLength={word.length}
                   value={correctWord}
                   correctWordChange={correctWordChange}
                   correctWordRef={correctWordRef}
                 />
+                
+                <span className="solid-border-flashcard"></span>
 
                 <LearingInput
                   placeholder={secondWord}
@@ -171,21 +161,6 @@ export default function Flashcard({
                   correctWordChange={correctSecondWordChange}
                   correctWordRef={correctSecondWordRef}
                 />
-
-                {/* <div className="label-container">
-                  <label>{secondWord}</label>
-                  <input
-                    className="flashcard-input flashcard-input-learning"
-                    type="text"
-                    style={{
-                      "--wordLength": calculateAdjustedLength(secondWord),
-                    }}
-                    maxLength={secondWord.length}
-                    value={correctSecondWord}
-                    onChange={correctSecondWordChange}
-                    ref={correctSecondWordRef}
-                  />
-                </div> */}
               </div>
 
               <div
@@ -205,22 +180,16 @@ export default function Flashcard({
             </div>
 
             <div className="button-container">
-              <button
+              <MyButton
+                message={<FormattedMessage id="submit" />}
+                color="green"
                 onClick={() => check(userWord, word, wordID)}
-                className="button"
-                type="submit"
-                style={{ "--buttonColor": "var(--highlight)" }}
-              >
-                <FormattedMessage id="submit" />
-              </button>
-              <button
+              />
+              <MyButton
+                message={<FormattedMessage id="firstLetter" />}
+                color="red"
                 onClick={() => showLetter()}
-                className="button"
-                type="button"
-                style={{ "--buttonColor": "var(--secondary)" }}
-              >
-                <FormattedMessage id="firstLetter" />
-              </button>
+              />
             </div>
           </div>
         </form>
