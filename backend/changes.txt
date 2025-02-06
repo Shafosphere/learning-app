@@ -1,108 +1,13 @@
-Konta:
-t "/register" >>> "/auth/register" - rejestruje - 
-t "/admin" >>> "/auth/admin" - sprawdza czy uzytkownik jest adminem - 
-t "/check-auth" >>> "/auth/user" - poprawic controlery i w frondendzie zeby było podobne do admina
-t "/login" >>> "/auth/login" - loguje
-t "/logout" >>> "/auth/logout" - wylogowje
-t "/account-data" >>> "/auth/information" - trzeba to ulepszyc bo jezeli uzytniwk przejdzie autoryzacje tokenu to moze dostac inforamcje o jakimkolwiek uzytkowniku
-t "/account-update" >>> "/auth/update" - uzytkownik aktualizwouje SWOJE dane
-t "/delete-account" >>> /auth/delete" - uzytkownik usuwa swoje konto
-
-Słowa:
-t "/pre-data" >>> "/word/information"
-t "/data" >>> "/word/data"
-t "/words" >>> "/word/list"
-t "/word-detail" >>> "/word/detail"
-t "/word-update" >>> "/word/update" >>> /word/update-translations"
-t "/search" >>> "/word/search"
-t "/add-word" >>> "/word/add"
-t /word-delete", >>> "/word/delete" ---- nie ma tego?
-
-
-Reporty
-t "/data-reports" >>> "/report/data"
-t "/detail-report" >>> "/report/details"
-t "/detail-update" >>> "/report/update"
-t "/detail-delete" >>> "/report/delete:id" - zmienic sposób wysyłania w front na :id
-t "/report" >>> "/report/add" - zwykły dziala ale nie word
-
-
-Tylko dla Admina:
-t "/global-data" >>> "/admin/global-data - generuje statystki wyswietlajace sie w panelu admina
-"/generate-patches" "/admin/generatepatch - generuje losowe liczby na serwerze w zakresie liczby słów 
-
-Działania dla uzytnikikach
-t "/users" >>> "/user/list" - zwraca liste uzytkowników z jego paraemtrami 
-t "/users-update" >>> "/user/update - updatuje dane wybranego uzytkownika
-t "/search-user" >>> "/user/search" - wyszuwiarka w panelu admina
-t /user/delete
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function clearBoxes() {
-  //   return new Promise((resolve, reject) => {
-  //     let db;
-  //     const request = indexedDB.open("MyTestDatabase", 2);
-
-  //     request.onupgradeneeded = (event) => {
-  //       console.log("onupgradeneeded event fired");
-  //       db = event.target.result;
-  //       console.log("Upgrading database to version", db.version);
-  //       if (!db.objectStoreNames.contains("boxes")) {
-  //         db.createObjectStore("boxes", { keyPath: "id" });
-  //         console.log('Object store "boxes" created.');
-  //       } else {
-  //         console.log('Object store "boxes" already exists.');
-  //       }
-  //     };
-
-  //     request.onsuccess = (event) => {
-  //       console.log("onsuccess event fired");
-  //       db = event.target.result;
-  //       console.log("Database opened successfully");
-  //       if (db.objectStoreNames.contains("boxes")) {
-  //         const transaction = db.transaction(["boxes"], "readwrite");
-  //         const store = transaction.objectStore("boxes");
-
-  //         const clearRequest = store.clear();
-
-  //         clearRequest.onsuccess = () => {
-  //           console.log('Object store "boxes" has been cleared.');
-  //           resolve(); // Zakończ Promise po pomyślnym wyczyszczeniu
-  //         };
-
-  //         clearRequest.onerror = () => {
-  //           console.error('Error clearing the object store "boxes".');
-  //           reject('Error clearing the object store "boxes".'); // Zakończ Promise z błędem
-  //         };
-  //       } else {
-  //         console.error("Object store 'boxes' does not exist.");
-  //         reject("Object store 'boxes' does not exist."); // Zakończ Promise z błędem
-  //       }
-  //     };
-
-  //     request.onerror = (event) => {
-  //       console.error("IndexedDB error:", event.target.error);
-  //       reject("IndexedDB error: " + event.target.error); // Zakończ Promise z błędem
-  //     };
-  //   });
-  // }
-
-  // function clearProgress() {
-  //   let wordIds = [];
-  //   localStorage.setItem("wordIds", JSON.stringify(wordIds));
-  //   localStorage.setItem("totalPercent", JSON.stringify(0));
-  //   localStorage.setItem("lastID", JSON.stringify(null));
-  //   localStorage.setItem("dailyGoal", JSON.stringify("20"));
-  // }
+  wordroutes
+    router.get("/information", getInformation);
+    router.post("/data", getWordData);
+    router.post("/patch-data", getWordsByPatchAndLevel)
+    router.get("/patch-info", getPatchesInfo);
+    router.get("/list", authenticateToken, authorizeAdmin, getWordsList);
+    router.post("/detail", authenticateToken, authorizeAdmin, getWordDetail);
+    router.patch("/update-translations", authenticateToken, authorizeAdmin, updateWordTranslations);
+    router.patch("/update-word", )
+    router.get("/search", authenticateToken, authorizeAdmin, searchWords);
+    router.post("/add", authenticateToken, authorizeAdmin, addWord);
+    router.delete("/delete/:id", authenticateToken, authorizeAdmin, deleteWord);
+  

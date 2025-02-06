@@ -145,9 +145,7 @@ export const learnWord = async (req, res) => {
 
 export const getRanking = async (req, res) => {
   try {
-    console.log('test')
     const topUsers = await getTopRankingUsers(10);
-    console.log(topUsers)
     res.status(200).json(topUsers);
   } catch (error) {
     console.error('Błąd podczas pobierania rankingu:', error);

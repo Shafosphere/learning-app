@@ -13,14 +13,16 @@ import {
 } from "../controllers/wordController.js";
 import authenticateToken from "../middleware/authenticateToken.js";
 import authorizeAdmin from "../middleware/authorizeAdmin.js";
+import authorizeData from "../middleware/validators/word-vali/post-data-vali.js";
+import authorizePatchAndLevel from "../middleware/validators/word-vali/post-patchdata-vali.js";
 
 const router = express.Router();
 
 router.get("/information", getInformation);
 
-router.post("/data", getWordData);
+router.post("/data", authorizeData, getWordData);
 
-router.post("/patch-data", getWordsByPatchAndLevel)
+router.post("/patch-data", authorizePatchAndLevel, getWordsByPatchAndLevel);
 
 router.get("/patch-info", getPatchesInfo);
 
@@ -28,9 +30,14 @@ router.get("/list", authenticateToken, authorizeAdmin, getWordsList);
 
 router.post("/detail", authenticateToken, authorizeAdmin, getWordDetail);
 
-router.patch("/update-translations", authenticateToken, authorizeAdmin, updateWordTranslations);
+router.patch(
+  "/update-translations",
+  authenticateToken,
+  authorizeAdmin,
+  updateWordTranslations
+);
 
-router.patch("/update-word", )
+router.patch("/update-word");
 
 router.get("/search", authenticateToken, authorizeAdmin, searchWords);
 
