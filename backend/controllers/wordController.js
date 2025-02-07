@@ -18,20 +18,6 @@ import {
   getNumberOfWords,
 } from "../models/userModel.js";
 
-// B2 >= 3264 < C1
-const maxWordId = 5260;
-const minWordId = 1;
-const b2 = 3264;
-
-//to jest do zmiany
-export const getInformation = (req, res) => {
-  const data = {
-    b2: b2,
-    minWordId: minWordId,
-    maxWordId: maxWordId,
-  };
-  res.json(data);
-};
 
 //information about patch
 export const getPatchesInfo = async (req, res) => {
@@ -58,8 +44,6 @@ export const getPatchesInfo = async (req, res) => {
 export const getWordsByPatchAndLevel = async (req, res) => {
   const { level, patchNumber } = req.body;
   if (patchNumber && patchNumber > 0) {
-    console.log(`Pobieranie danych dla patcha numer ${patchNumber}`);
-    console.log("poziomu: " + level);
     try {
       // Pobranie listy słów na podstawie patcha
       const wordIds = await getPatchWordsByLevel(patchNumber, level);
@@ -196,7 +180,7 @@ export const getWordsList = async (req, res) => {
 
 export const getWordDetail = async (req, res) => {
   const { id } = req.body;
-
+  console.log("tym jest id: " + id);
   try {
     // Pobranie tłumaczeń z modelu
     const translations = await getTranslationsByWordId(id);

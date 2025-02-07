@@ -102,7 +102,7 @@ export const loginUser = async (req, res) => {
     await updateLastLogin(user.id);
 
     // Zwiększ licznik logowań
-    const today = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
+    const today = new Date().toISOString().slice(0, 10);
     await incrementUserActivity("login", today);
 
     // Generujemy token JWT
@@ -179,7 +179,7 @@ export const updateUserAccount = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { username, email, oldPass, newPass, avatar} = req.body;
+  const { username, email, oldPass, newPass, avatar } = req.body;
   const userId = req.user.id;
 
   try {
@@ -191,8 +191,11 @@ export const updateUserAccount = async (req, res) => {
     }
 
     // Jeśli podano stare hasło, sprawdź jego poprawność
-    if (oldPass && !(await bcrypt.compare(oldPass, user.password))) {
-      return res.status(400).json({ message: "Old password is incorrect" });
+    if (oldPass) {
+      const isOldPassValid = await bcrypt.compare(oldPass, user.password);
+      if (!isOldPassValid) {
+        return res.status(400).json({ message: "Old password is incorrect." });
+      }
     }
 
     // Jeśli podano nowe hasło, zahaszuj je
@@ -207,13 +210,15 @@ export const updateUserAccount = async (req, res) => {
     });
 
     // Generuj nowy token JWT (tylko jeśli zaktualizowano email lub hasło)
-    const newToken =
-      email || hashedPassword
-        ? generateToken({ id: userId, username, email })
-        : null;
+    let newToken = null;
+    if (email || hashedPassword) {
+      newToken = generateToken({
+        id: userId,
+        username: username || user.username,
+        email: email || user.email,
+      });
 
-    // Jeśli generujesz nowy token, ustaw go w ciasteczku
-    if (newToken) {
+      // Ustawienie nowego tokena w ciasteczku
       res.cookie("token", newToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -228,10 +233,11 @@ export const updateUserAccount = async (req, res) => {
       token: newToken,
     });
   } catch (error) {
-    console.error("Error updating account:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to update account." });
+    console.error("Error updating account:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating your account.",
+    });
   }
 };
 
@@ -260,22 +266,27 @@ export const deleteUserAccount = async (req, res) => {
 };
 
 export const sendUserResetLink = async (req, res) => {
-  const { email, language = 'en' } = req.body; 
-  const users = await getUserByEmail(email);
-
-  if (users.length === 0) {
-    return res.status(200).json({ message: "Email wysłany, jeśli istnieje." });
-  }
-
-  const user = users[0];
-  const token = generateToken(user);
-  const resetLink = `http://localhost:3000/reset-password/${token}`;
+  const { email, language = "en" } = req.body;
 
   try {
+    const users = await getUserByEmail(email);
+
+    // Ukrywamy, czy użytkownik istnieje (zapobiegamy "user enumeration attack")
+    const responseMessage =
+      language === "pl"
+        ? "Jeśli adres e-mail istnieje w bazie, wysłaliśmy wiadomość z linkiem resetującym."
+        : "If the email exists in our database, we have sent a reset link.";
+
+    if (users.length === 0) {
+      return res.status(200).json({ message: responseMessage });
+    }
+
+    const user = users[0];
+    const token = generateToken(user);
+    const resetLink = `http://localhost:3000/reset-password/${token}`;
+
     const htmlContent = generateResetPasswordEmail(resetLink, language);
-    const subject = language === 'pl' 
-      ? "Resetowanie hasła" 
-      : "Password Reset";
+    const subject = language === "pl" ? "Resetowanie hasła" : "Password Reset";
 
     await sendEmail({
       to: email,
@@ -283,10 +294,15 @@ export const sendUserResetLink = async (req, res) => {
       html: htmlContent, // Używamy HTML
     });
 
-    res.status(200).json({ message: "Email wysłany, jeśli istnieje." });
+    res.status(200).json({ message: responseMessage });
   } catch (error) {
-    console.error("Błąd podczas wysyłania e-maila:", error);
-    res.status(500).json({ message: "Nie udało się wysłać emaila." });
+    console.error("Error sending reset email:", error.message);
+    res.status(500).json({
+      message:
+        language === "pl"
+          ? "Nie udało się wysłać wiadomości e-mail."
+          : "Failed to send reset email.",
+    });
   }
 };
 

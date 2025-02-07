@@ -1,9 +1,8 @@
 import express from "express";
-import { validatePageName } from "../middleware/validatePageName.js";
-import { countingEntries } from "../controllers/analyticsController.js"; // Poprawna ścieżka
-
+import { countingEntries } from "../controllers/analyticsController.js"; 
+import { pageNameValidator } from "../middleware/validators/analytics/post-visit-vali.js";
 const router = express.Router();
 
-router.post("/visit", validatePageName, countingEntries);
+router.post("/visit", pageNameValidator, countingEntries);
 
 export default router;

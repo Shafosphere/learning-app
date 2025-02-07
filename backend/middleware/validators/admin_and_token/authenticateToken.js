@@ -1,8 +1,8 @@
-import jwt from 'jsonwebtoken';
-import { config } from '../config.js';
+import jwt from "jsonwebtoken";
+import { config } from "../../../config.js";
 
 const authenticateToken = (req, res, next) => {
-  const token = req.cookies.token; // Pobieranie tokenu z ciasteczka
+  const token = req.cookies.token;
   if (!token) {
     return res.status(403).json({
       success: false,
@@ -17,8 +17,8 @@ const authenticateToken = (req, res, next) => {
         message: "Invalid or expired token. Please login again.",
       });
     }
-    req.user = user; // Przypisywanie użytkownika do req, aby inne funkcje mogły z niego korzystać
-    next(); // Kontynuacja przetwarzania żądania
+    req.user = user;
+    next();
   });
 };
 

@@ -19,12 +19,6 @@ const verifyPin = (req, res, next) => {
     });
   }
 
-  // console.log("dobrze");
-  // res.status(200).json({
-  //   success: true,
-  //   message: "PIN verified successfully.",
-  // });
-
   next();
 };
 

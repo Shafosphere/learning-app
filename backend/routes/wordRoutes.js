@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  getInformation,
   getWordData,
   getWordsList,
   getWordDetail,
@@ -11,14 +10,13 @@ import {
   getPatchesInfo,
   getWordsByPatchAndLevel,
 } from "../controllers/wordController.js";
-import authenticateToken from "../middleware/authenticateToken.js";
-import authorizeAdmin from "../middleware/authorizeAdmin.js";
-import authorizeData from "../middleware/validators/word-vali/post-data-vali.js";
-import authorizePatchAndLevel from "../middleware/validators/word-vali/post-patchdata-vali.js";
+import authenticateToken from "../middleware/validators/admin_and_token/authenticateToken.js";
+import authorizeAdmin from "../middleware/validators/admin_and_token/authorizeAdmin.js";
+import authorizeData from "../middleware/validators/word/post-data-vali.js";
+import authorizePatchAndLevel from "../middleware/validators/word/post-patchdata-vali.js";
+import authorizeList from "../middleware/validators/word/get-list-vali.js";
 
 const router = express.Router();
-
-router.get("/information", getInformation);
 
 router.post("/data", authorizeData, getWordData);
 
@@ -26,7 +24,13 @@ router.post("/patch-data", authorizePatchAndLevel, getWordsByPatchAndLevel);
 
 router.get("/patch-info", getPatchesInfo);
 
-router.get("/list", authenticateToken, authorizeAdmin, getWordsList);
+router.get(
+  "/list",
+  authenticateToken,
+  authorizeAdmin,
+  authorizeList,
+  getWordsList
+);
 
 router.post("/detail", authenticateToken, authorizeAdmin, getWordDetail);
 
