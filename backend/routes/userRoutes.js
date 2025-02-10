@@ -10,19 +10,32 @@ import {
   getRanking,
 } from "../controllers/userControllers.js";
 
-import authorizeLearn from "../middleware/validators/users/post-learnword-vali.js";
-
+import { deleteUserValidator } from "../middleware/validators/users/delete-deleteuser-vali.js";
+import { learnWordValidator } from "../middleware/validators/users/post-learnword-vali.js";
+import { updateUsersValidator } from "../middleware/validators/users/patch-updateuser-vali.js";
 const router = express.Router();
 
 router.get("/list", authenticateToken, authorizeAdmin, getUsersList);
 
-router.patch("/update", authenticateToken, authorizeAdmin, updateUsers);
+router.patch(
+  "/update",
+  authenticateToken,
+  authorizeAdmin,
+  updateUsersValidator,
+  updateUsers
+);
 
 router.get("/search", authenticateToken, authorizeAdmin, searchUsers);
 
-router.post("/learn-word", authenticateToken, authorizeLearn, learnWord);
+router.post("/learn-word", authenticateToken, learnWordValidator, learnWord);
 
-router.delete("/delete/:id", authenticateToken, authorizeAdmin, deleteUser);
+router.delete(
+  "/delete/:id",
+  authenticateToken,
+  authorizeAdmin,
+  deleteUserValidator,
+  deleteUser
+);
 
 router.get("/ranking", getRanking);
 

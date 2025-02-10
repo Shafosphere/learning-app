@@ -18,12 +18,8 @@ export const getUsersList = async (req, res) => {
 
   try {
     const offset = (page - 1) * limit;
-    console.log(
-      `Fetching users for page: ${page}, limit: ${limit}, offset: ${offset}`
-    );
 
     const users = await getUsersWithPagination(parseInt(limit), offset);
-    console.log(users);
     res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -34,13 +30,8 @@ export const getUsersList = async (req, res) => {
 export const updateUsers = async (req, res) => {
   const { editedRows } = req.body;
 
-  if (!editedRows || Object.keys(editedRows).length === 0) {
-    return res.status(400).send("No data to update");
-  }
-
-  console.log(editedRows)
   try {
-    // Iteracja po wszystkich użytkownikach i aktualizacja w bazie danych
+    // Iteracja po użytkownikach i aktualizacja w bazie danych
     const updatePromises = Object.values(editedRows).map(async (user) => {
       await updateUserInDb(user);
     });
@@ -53,7 +44,7 @@ export const updateUsers = async (req, res) => {
       message: "Users updated successfully.",
     });
   } catch (error) {
-    console.error("Error updating users:", error);
+    console.error("Error updating users:", error.message);
     res.status(500).json({
       success: false,
       message: "An error occurred while processing user update.",
@@ -91,7 +82,6 @@ export const searchUsers = async (req, res) => {
 };
 
 export const deleteUser = async (req, res) => {
-  console.log("deleteUser is Working");
   const userId = req.params.id;
   try {
     await deleteUserByID(userId);
@@ -100,7 +90,7 @@ export const deleteUser = async (req, res) => {
       message: "User deleted successfully.",
     });
   } catch (error) {
-    console.error("Error deleting user:", error); // Dodaj logowanie błędu
+    console.error("Error deleting user:", error);
     res.status(500).json({
       success: false,
       message: "An error occurred while deleting user.",
@@ -115,14 +105,15 @@ export const learnWord = async (req, res) => {
   const wordId = req.body.wordId;
 
   try {
-    await client.query('BEGIN'); // Rozpocznij transakcję
+    await client.query("BEGIN"); // Rozpocznij transakcję
 
-    // Sprawdź, czy słówko już zostało nauczone przez użytkownika
+    // Sprawdzenie, czy użytkownik już nauczył się tego słowa
     const checkResult = await getUserIdFromProgress(client, userId, wordId);
-
     if (checkResult.rows.length > 0) {
-      await client.query('ROLLBACK'); // Wycofaj transakcję w przypadku błędu
-      return res.status(400).send('Już nauczyłeś się tego słówka.');
+      await client.query("ROLLBACK");
+      return res
+        .status(400)
+        .json({ message: "You have already learned this word." });
     }
 
     // Wstawienie rekordu do `user_word_progress`
@@ -131,15 +122,17 @@ export const learnWord = async (req, res) => {
     // Aktualizacja `ranking`
     await userRankingUpdate(client, userId, username);
 
-    await client.query('COMMIT'); // Zatwierdź transakcję
+    await client.query("COMMIT");
 
-    res.status(200).send('Słówko dodane do progresu użytkownika i ranking zaktualizowany.');
+    res
+      .status(200)
+      .json({ message: "Word added to progress and ranking updated." });
   } catch (err) {
-    await client.query('ROLLBACK'); // Wycofaj transakcję w przypadku błędu
-    console.error('Błąd podczas dodawania słówka:', err);
-    res.status(500).send('Błąd serwera.');
+    await client.query("ROLLBACK");
+    console.error("Error adding word:", err.message);
+    res.status(500).json({ message: "Server error." });
   } finally {
-    client.release(); // Zwolnij klienta z puli
+    client.release();
   }
 };
 
@@ -148,7 +141,9 @@ export const getRanking = async (req, res) => {
     const topUsers = await getTopRankingUsers(10);
     res.status(200).json(topUsers);
   } catch (error) {
-    console.error('Błąd podczas pobierania rankingu:', error);
-    res.status(500).json({ message: 'Błąd serwera podczas pobierania rankingu.' });
+    console.error("Błąd podczas pobierania rankingu:", error);
+    res
+      .status(500)
+      .json({ message: "Błąd serwera podczas pobierania rankingu." });
   }
 };

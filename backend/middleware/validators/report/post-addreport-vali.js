@@ -1,9 +1,9 @@
-import sanitizeInput from "../sanitize-html.js";
+import { sanitizeInput } from "../sanitize-html.js";
 
 const authorizeAddReport = (req, res, next) => {
   const { reportType, word, description, language } = req.body;
 
-  // Walidacja reportType - musi być "other" lub "word_issue"
+  // **1. Walidacja reportType**
   if (reportType !== "other" && reportType !== "word_issue") {
     return res.status(400).json({
       success: false,
@@ -12,7 +12,7 @@ const authorizeAddReport = (req, res, next) => {
     });
   }
 
-  // Walidacja language - tylko "pl" lub "en"
+  // **2. Walidacja language**
   if (language !== "pl" && language !== "en") {
     return res.status(400).json({
       success: false,
@@ -20,7 +20,7 @@ const authorizeAddReport = (req, res, next) => {
     });
   }
 
-  // Dla reportType "other": description musi być podana i niepusta
+  // **3. Walidacja description dla reportType "other"**
   if (reportType === "other") {
     if (
       !description ||
@@ -34,7 +34,7 @@ const authorizeAddReport = (req, res, next) => {
     }
   }
 
-  // Dla reportType "word_issue": word musi być podane i niepuste
+  // **4. Walidacja word dla reportType "word_issue"**
   if (reportType === "word_issue") {
     if (!word || typeof word !== "string" || word.trim().length === 0) {
       return res.status(400).json({
@@ -44,15 +44,18 @@ const authorizeAddReport = (req, res, next) => {
     }
   }
 
-  // **Sanitizacja description**
-  const sanitizedDescription = description ? sanitizeInput(description) : "";
+  // **5. Sanitizacja description (jeśli istnieje)**
+  if (description) {
+    const sanitizedDescription = sanitizeInput(description);
 
-  // Sprawdzamy, czy po sanitizacji coś zostało
-  if (sanitizedDescription.length === 0) {
-    return res.status(400).json({
-      success: false,
-      message: "Description cannot be empty after sanitization.",
-    });
+    if (!sanitizedDescription) {
+      return res.status(400).json({
+        success: false,
+        message: "Description cannot be empty after sanitization.",
+      });
+    }
+
+    req.body.description = sanitizedDescription; // Nadpisujemy oczyszczony opis
   }
 
   next();

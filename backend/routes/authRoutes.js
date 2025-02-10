@@ -21,6 +21,8 @@ import { loginRateLimiter } from "../middleware/rateLimiter.js";
 import { accountUpdateValidationRules } from "../middleware/validators/auth/patch-userUpdate-vali.js";
 import { resetPasswordLinkValidationRules } from "../middleware/validators/auth/post-resetLink-vali.js";
 import { resetPasswordValidationRules } from "../middleware/validators/auth/post-resetPass-vali.js";
+import { deleteUserValidator } from "../middleware/validators/auth/delete-deleteuser-vali.js";
+import { getUserInformationValidator } from "../middleware/validators/auth/post-information-vali.js";
 const router = express.Router();
 
 router.post("/register", registerValidator, registerUser);
@@ -33,7 +35,7 @@ router.post("/login", loginRateLimiter, loginValidator, loginUser);
 
 router.post("/logout", authenticateToken, logoutUser);
 
-router.post("/information", authenticateToken, userInformation);
+router.post("/information", authenticateToken, getUserInformationValidator,userInformation);
 
 router.patch(
   "/update",
@@ -42,7 +44,12 @@ router.patch(
   updateUserAccount
 );
 
-router.delete("/delete", authenticateToken, deleteUserAccount);
+router.delete(
+  "/delete",
+  authenticateToken,
+  deleteUserValidator,
+  deleteUserAccount
+);
 
 router.post(
   "/send-reset-link",

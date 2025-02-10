@@ -22,7 +22,7 @@ export default function ReportsPanel() {
 
     const getData = async () => {
       try {
-        const response = await api.post("/report/data");
+        const response = await api.get("/report/data");
         console.log(response.data);
 
         const formattedReports = response.data.map((report) => ({

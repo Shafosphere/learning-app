@@ -9,17 +9,27 @@ import {
   createReport,
 } from "../controllers/reportController.js";
 import authorizeAddReport from "../middleware/validators/report/post-addreport-vali.js";
+import { deleteReportValidator } from "../middleware/validators/report/delete-deletereport-vali.js";
+import { updateReportValidator } from "../middleware/validators/report/patch-updatereporttrans-vali.js";
+import { getDetailReportValidator } from "../middleware/validators/report/post-getdetail-vali.js";
 
 const router = express.Router();
 
-router.post("/details", authenticateToken, authorizeAdmin, getDetailReport);
+router.post(
+  "/details",
+  authenticateToken,
+  authorizeAdmin,
+  getDetailReportValidator,
+  getDetailReport
+);
 
-router.post("/data", authenticateToken, authorizeAdmin, getDataReports);
+router.get("/data", authenticateToken, authorizeAdmin, getDataReports);
 
 router.patch(
   "/update",
   authenticateToken,
   authorizeAdmin,
+  updateReportValidator,
   updateReportTranslations
 );
 
@@ -27,6 +37,7 @@ router.delete(
   "/delete/:id",
   authenticateToken,
   authorizeAdmin,
+  deleteReportValidator,
   deleteReportData
 );
 

@@ -180,7 +180,6 @@ export const getWordsList = async (req, res) => {
 
 export const getWordDetail = async (req, res) => {
   const { id } = req.body;
-  console.log("tym jest id: " + id);
   try {
     // Pobranie tłumaczeń z modelu
     const translations = await getTranslationsByWordId(id);
@@ -188,7 +187,6 @@ export const getWordDetail = async (req, res) => {
     const response_data = {
       translations: translations,
     };
-    console.log(response_data);
     res.json(response_data);
   } catch (error) {
     console.error("Error fetching word details:", error);
@@ -230,7 +228,6 @@ export const searchWords = async (req, res) => {
       result = await searchWordByText(query);
     }
 
-    console.log("Search result:", result);
     res.json(result);
   } catch (error) {
     console.error("Error during search:", error);

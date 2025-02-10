@@ -1,7 +1,7 @@
-export default function sanitizeInput(input) {
-  if (typeof input !== "string") return "";
+export const sanitizeInput = (input) => {
+  if (typeof input !== "string") return null;
 
-  let sanitized = input.replace(/<[^>]+>/g, "");
+  let sanitized = input.replace(/<[^>]+>/g, ""); // Usunięcie tagów HTML
 
   sanitized = sanitized
     .replace(/&/g, "&amp;")
@@ -10,7 +10,7 @@ export default function sanitizeInput(input) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#x27;");
 
-  sanitized = sanitized.substring(0, 1000);
+  sanitized = sanitized.substring(0, 1000); // Maks. 1000 znaków
 
-  return sanitized.trim(); // Usunięcie nadmiarowych spacji
-}
+  return sanitized.trim() || null; // Jeśli po sanitizacji nie ma nic, zwróć `null`
+};

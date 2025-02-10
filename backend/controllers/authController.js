@@ -139,8 +139,10 @@ export const logoutUser = (req, res) => {
   res.status(200).json({
     success: true,
     message: "Logged out successfully",
+    token: null, // Dodatkowe zerowanie tokena
   });
 };
+
 
 export const userInformation = async (req, res) => {
   const username = req.user.username;
@@ -154,8 +156,6 @@ export const userInformation = async (req, res) => {
         message: "User not found.",
       });
     }
-
-    console.log(userResult);
 
     res.status(200).json({
       success: true,
@@ -258,10 +258,11 @@ export const deleteUserAccount = async (req, res) => {
       message: "Account deleted and logged out successfully.",
     });
   } catch (error) {
-    console.error("Error deleting account:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to delete account." });
+    console.error("Error deleting account:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete account.",
+    });
   }
 };
 
