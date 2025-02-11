@@ -25,6 +25,8 @@ export default function Settings() {
     spellChecking,
     setSpellChecking,
     calculatePercent,
+    toggleLogo,
+    logostatus
   } = useContext(SettingsContext);
 
   // popup
@@ -162,6 +164,8 @@ export default function Settings() {
               spellChecking={spellChecking}
               setSpellChecking={setSpellChecking}
               showConfirm={showConfirm}
+              toggleLogo={toggleLogo}
+              logostatus={logostatus}
             />
           )}
         </div>

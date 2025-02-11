@@ -8,6 +8,7 @@ export const SettingsContext = createContext();
 export const SettingsProvider = ({ children }) => {
   const [procentC1, setProcentC1] = usePersistedState("ProcentC1MainGame", 0);
   const [procentB2, setProcentB2] = usePersistedState("ProcentB2MainGame", 0);
+  const [logostatus, setlogo] = usePersistedState("logostatus", false);
 
   const [totalPercentC1, setTotalPercentC1] = usePersistedState(
     "totalPercentC1MainGame",
@@ -164,6 +165,11 @@ export const SettingsProvider = ({ children }) => {
     }
   };
 
+  const toggleLogo = () => {
+    const newLogo = logostatus === false ? true : false;
+    setlogo(newLogo);
+  };
+
   return (
     <SettingsContext.Provider
       value={{
@@ -197,6 +203,9 @@ export const SettingsProvider = ({ children }) => {
         totalPercentC1,
         procentC1,
         procentB2,
+        logostatus,
+        setlogo,
+        toggleLogo,
       }}
     >
       {children}

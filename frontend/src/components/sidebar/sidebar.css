@@ -14,13 +14,6 @@
   color: var(--highlight);
   align-items: center;
 }
-.sidebar-title a {
-  transition: color 0.2s ease-in-out;
-}
-
-.sidebar-title a:hover {
-  color: var(--tertiary);
-}
 
 .link {
   display: flex;
@@ -42,6 +35,11 @@
 
 .link-icon {
   font-size: 20px; 
+}
+
+.sidebar-logo{
+  height: 3rem;
+  display: flex;
 }
 
 @media (max-width: 480px) {

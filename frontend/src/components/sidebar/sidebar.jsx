@@ -12,7 +12,6 @@ import { FaBook, FaScroll } from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
 import { FaRankingStar } from "react-icons/fa6";
 import { useIntl, FormattedMessage } from "react-intl";
-import { IoIosHeartHalf } from "react-icons/io";
 
 import api from "../../utils/api";
 import ReportPopup from "../report/report-popup";
@@ -20,8 +19,10 @@ import { PopupContext } from "../popup/popupcontext";
 import { SettingsContext } from "../../pages/settings/properties";
 import "./sidebar.css";
 
+import logo from "../../data/logo.png";
+
 export default function Sidebar() {
-  const { isLoggedIn, setIsLoggedIn, setUser, toggleTheme } =
+  const { isLoggedIn, setIsLoggedIn, setUser, toggleTheme, logostatus} =
     useContext(SettingsContext);
   const { setPopup } = useContext(PopupContext);
 
@@ -33,6 +34,7 @@ export default function Sidebar() {
   const handleFormVisibleChange = (visible) => {
     setFormVisible(visible);
   };
+
 
   useEffect(() => {
     const checkAdminRole = async () => {
@@ -82,7 +84,17 @@ export default function Sidebar() {
         {/* Brand name */}
         <div className="sidebar-title">
           <Link to="/about">
-            <span className="sidebar-initial">M</span>
+            {logostatus ? (
+              <span>
+                <img
+                  alt="logo"
+                  className="sidebar-logo"
+                  src={logo}
+                />
+              </span>
+            ) : (
+              <span className="sidebar-initial">M</span>
+            )}
           </Link>
           <span className="sidebar-full full-title">emolingo</span>
         </div>
@@ -127,17 +139,6 @@ export default function Sidebar() {
                 </div>
               </span>
             </Link>
-
-            {/* <Link className="link" to="/about">
-              <span className="sidebar-initial link-icon">
-                <IoIosHeartHalf />
-              </span>
-              <span className="sidebar-full">
-                <div className="link-text">
-                  <FormattedMessage id="sidebar.about" defaultMessage="About" />
-                </div>
-              </span>
-            </Link> */}
 
             <Link className="link" to="/account">
               <span className="sidebar-initial link-icon">

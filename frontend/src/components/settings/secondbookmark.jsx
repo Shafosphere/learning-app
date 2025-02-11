@@ -10,6 +10,8 @@ export default function SecondBookMark({
   spellChecking,
   setSpellChecking,
   showConfirm,
+  toggleLogo,
+  logostatus,
 }) {
   const intl = useIntl();
 
@@ -62,6 +64,23 @@ export default function SecondBookMark({
           <input
             onClick={() => setSpellChecking(!spellChecking)}
             defaultChecked={spellChecking === true}
+            type="checkbox"
+          />
+          <span className="slider round"></span>
+        </label>
+      </div>
+
+      <div
+        className="switch-container onMouse"
+        onMouseEnter={() => setSpan("")}
+      >
+        <span className="switch-text">
+          ustaw super logo
+        </span>
+        <label className="switch">
+          <input
+            onClick={() => toggleLogo()}
+            defaultChecked={logostatus === true}
             type="checkbox"
           />
           <span className="slider round"></span>
