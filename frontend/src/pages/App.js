@@ -32,7 +32,7 @@ const AppWrapper = () => {
     <IntlProvider locale={language} messages={messages[language]}>
       <Sidebar />
       <Routes>
-        <Route path="/" element={<Navigate to="/maingame" replace />} />
+        <Route path="/" element={<Navigate to="/about" replace />} />
         <Route path="/maingame" element={<MainGameSelect />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/login" element={<Login />} />

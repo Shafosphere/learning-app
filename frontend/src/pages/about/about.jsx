@@ -2,6 +2,11 @@ import React from "react";
 // import { FormattedMessage } from "react-intl";
 import "./about.css";
 import logo from "../../data/logo.png";
+import flashcard from "../../data/flashcard.png";
+
+import owo from "../../data/box_owo.png";
+import smile from "../../data/box_smile.png";
+import tongue from "../../data/box_tongue.png";
 
 export default function About() {
   return (
@@ -40,6 +45,18 @@ export default function About() {
         <div className="window-about">
           <div className="section-title-about">fiszki</div>
           <div className="content-about">
+            <div className="flashcard-about">
+              <img
+                alt="flashcard"
+                className="flashcard1-about"
+                src={flashcard}
+              />
+              <img
+                alt="flashcard"
+                className="flashcard2-about"
+                src={flashcard}
+              />
+            </div>
             <div className="leftsection-about">
               <span className="text-about">
                 Fiszki to niewielkie kartoniki z informacją na obu stronach: z
@@ -48,25 +65,21 @@ export default function About() {
                 angażowanie pamięci. Idealne do nauki języków i innych dziedzin.
               </span>
             </div>
-            <div className="rightsection-about">
-              <img alt="logo" className="logo-about" src={logo} />
-            </div>
           </div>
         </div>
       </section>
 
-      <section className="section-fullwidth">
+      {/* <section className="section-fullwidth">
         <div className="window-about">
           <div className="section-title-about">nigdy wiecej nudy!</div>
           <div className="content-about">
             <div className="leftsection-about">
               <span className="text-about">
-                „przeczytaj, zasłoń dłonią, powtórz w myślach” brzmi jak
-                echa minionej epoki – nijaka i mało angażująca. W
-                przeciwieństwie do fiszek, które wprowadzają interaktywne
-                powtórki i pobudzają pamięć, ta stara technika nie rozbudza
-                wyobraźni. Postaw na fiszki, a nauka stanie się dynamiczna i
-                pełna życia!
+                „przeczytaj, zasłoń dłonią, powtórz w myślach” brzmi jak echa
+                minionej epoki – nijaka i mało angażująca. W przeciwieństwie do
+                fiszek, które wprowadzają interaktywne powtórki i pobudzają
+                pamięć, ta stara technika nie rozbudza wyobraźni. Postaw na
+                fiszki, a nauka stanie się dynamiczna i pełna życia!
               </span>
             </div>
             <div className="rightsection-about">
@@ -74,9 +87,9 @@ export default function About() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="section-fullwidth second-section">
+      <section className="section-fullwidth">
         <div className="window-about">
           <div className="section-title-about">Leitner system</div>
           <div className="content-about">
@@ -90,16 +103,17 @@ export default function About() {
                 ciepłego systemu!
               </span>
             </div>
-            <div className="rightsection-about">
-              <img alt="logo" className="logo-about" src={logo} />
+            <div className="flashcard-about">
+              <img alt="flashcard" className="box1-about" src={smile} />
+              <img alt="flashcard" className="box2-about" src={tongue} />
+              <img alt="flashcard" className="box3-about" src={owo} />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section-fullwidth">
-        stpóka
-        dodac płynne animacje podczas wejscia na strone
+      <section className="section-footer-about">
+        <div className="window-about footer-about"></div>
       </section>
     </div>
   );
