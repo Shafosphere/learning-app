@@ -110,6 +110,13 @@ export default function Flashcard({
   }, [userWordRef]);
 
   useEffect(() => {
+    if (cssClasses.notDisplayReverse === "display" && userWordRef.current) {
+      userWordRef.current.focus();
+    }
+  }, [cssClasses, userWordRef]);
+  
+
+  useEffect(() => {
     function handleKeyDown(event) {
       if (event.key === "ArrowDown") {
         if (document.activeElement === correctWordRef.current) {

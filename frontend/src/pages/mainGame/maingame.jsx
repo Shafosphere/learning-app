@@ -129,6 +129,7 @@ export default function MainGame({ setDisplay, lvl }) {
         moveWord(word, false);
         selectRandomWord(activeBox);
         setAutoSave(true);
+        userWordRef.current.focus();
       }, 1500);
     } else {
       setClass("notcorrect");
@@ -228,6 +229,12 @@ export default function MainGame({ setDisplay, lvl }) {
 
   // *** 6. Efekty uboczne ***
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
+
+  useEffect(() => {
+    if (userWordRef.current) {
+      userWordRef.current.focus();
+    }
+  }, [activeBox]);
 
   useEffect(() => {
     async function fetchPatchInfo() {
