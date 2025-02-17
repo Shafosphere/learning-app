@@ -1,0 +1,85 @@
+.pudelko {
+  position: relative;
+  width: 10rem;
+  height: 10rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.pudelko img{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.gornepudelko {
+  position: absolute;
+  top: 0;
+}
+
+.dolnepudelko {
+  position: absolute;
+  bottom: 0;
+}
+
+.face {
+  position: absolute;
+  /* border: solid 1px red; */
+  height: 50px;
+  width: 80px;
+  bottom: 10%;
+  right: 13%;
+}
+
+.orginal {
+  z-index: 11;
+  opacity: 0.5;
+  padding-top: 25px;
+}
+.lewe_oko{
+  position: absolute;
+  left: 3%;
+  top: 1%;
+  height: 30px;
+  width: 30px;
+  /* border: solid 1px red; */
+}
+.iris_left{
+  position: absolute;
+  height: 22px;
+  left: 30%;
+  top: 9%;
+}
+.pupil_left{
+  position: absolute;
+  left: 53%;
+  top: 21%;
+  height: 13px;
+  /* background-color: rgb(0, 0, 0); */
+}
+.prawe_oko{
+  position: absolute;
+  right: 10%;
+  top: 1%;
+  height: 30px;
+  width: 30px;
+  /* border: solid 1px red; */
+}
+.iris_right{
+  position: absolute;
+  left: 33%;
+  top: 11%;
+  height: 21px;
+}
+.pupil_right{
+  position: absolute;
+  left: 53%;
+  top: 21%;
+  height: 12px;
+}
+.smile{
+  position: absolute;
+  left: 34%;
+  top: 40%;
+  width: 20px;
+}

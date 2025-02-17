@@ -573,10 +573,13 @@
     margin-top: 1rem;
   }
   .word-count {
-    margin: 2rem 0 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10rem;
+    height: 4rem;
   }
-  .box img {
-    height: 11rem;
+  .box {
     width: 10rem;
   }
   .active,
