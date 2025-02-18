@@ -46,7 +46,7 @@
 
 .box img {
   cursor: pointer;
-  padding-bottom: 0.5rem;
+  /* padding-bottom: 0.5rem; */
 }
 
 .flashcard-description,
@@ -65,7 +65,7 @@
   font-size: 25px;
   background-color: var(--secondBackground);
 }
-.hidden-message{
+.hidden-message {
   text-align: center;
 }
 .flashcard-description {
@@ -208,16 +208,16 @@
     flex: 0 0 33%;
     align-items: center;
   }
-  .box img {
-    height: 5.5rem;
+  .box {
     width: 4.5rem;
   }
+
   .active {
-    border-bottom: 0.2rem solid;
+    border-bottom: 0.3rem solid;
     border-color: var(--highlight);
   }
   .notactive {
-    border-bottom: 0.2rem solid;
+    border-bottom: 0.3rem solid;
     border-color: transparent;
   }
   .container-flashcard,
@@ -343,13 +343,13 @@
     flex: 0 0 33.33%;
     align-items: center;
   }
-  .box img {
-    height: 6.5rem;
+  .box {
     width: 5.5rem;
+    /* scale: 80%; */
   }
   .active,
   .notactive {
-    border-bottom: 0.2rem solid var(--highlight);
+    border-bottom: 0.4rem solid var(--highlight);
   }
   .notactive {
     border-color: transparent;
@@ -525,8 +525,7 @@
   .word-count {
     margin: 2rem 0 1rem;
   }
-  .box img {
-    height: 11rem;
+  .box {
     width: 10rem;
   }
   .active,
