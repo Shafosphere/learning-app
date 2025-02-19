@@ -1,115 +1,90 @@
-.pudelko {
+.cutebox {
   position: relative;
   width: 10rem;
-  height:10rem;
+  height: 10rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
-.pudelko img{
+.cutebox img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }
-.gornepudelko {
+.topBox {
   position: absolute;
   top: 0;
 }
 
-.dolnepudelko {
+.bottomBox {
   position: absolute;
   bottom: 0;
+  z-index: 12;
 }
-
+.card {
+  position: absolute;
+  top: 0;
+  z-index: 11;
+}
 .face {
   position: absolute;
-
-  /* height: 50px; */
-  /* height: 3.1em; */
-  /* height: 3.1em; */
-  /* width: 5em; */
   height: 34%;
   width: 50%;
   bottom: 10%;
   right: 13%;
+  z-index: 13;
 }
 
-.orginal {
-  z-index: 11;
-  opacity: 0.5;
-  padding-top: 25px;
-}
-.lewe_oko{
+.lefteye {
   position: absolute;
   left: 3%;
   top: 1%;
-  /* height: 30px;
-  width: 30px; */
-  /* width: 1.9em; */
   width: 40%;
-  /* height: 1.9em; */
   height: 55%;
-
 }
-.iris_left{
+.iris_left {
   position: absolute;
-  /* height: 22px; */
-  /* height: 1.4em; */
   height: 55%;
   left: 30%;
   top: 40%;
 }
-.pupil_left{
+.pupil_left {
   position: absolute;
   left: 53%;
   top: 47%;
-  /* height: 13px; */
-  /* height: 0.8em; */
   height: 16%;
   width: 16%;
-  /* background-color: rgb(0, 0, 0); */
 }
-.prawe_oko{
+.rightEye {
   position: absolute;
   right: 10%;
   top: 1%;
-  /* height: 30px;
-  width: 30px; */
-  /* width: 1.9em; */
   width: 43%;
-  /* height: 1.9em; */
   height: 55%;
-
 }
-.iris_right{
+.iris_right {
   position: absolute;
   right: 13%;
   top: 29%;
-  /* height: 21px; */
-  /* height: 1.4em; */
   height: 55%;
 }
-.pupil_right{
+.pupil_right {
   position: absolute;
   right: 22%;
   top: 39%;
-  /* height: 12px; */
-  /* height: 0.8em; */
   height: 15%;
 }
-.smile{
+.smile {
   position: absolute;
   left: 34%;
   top: 47%;
-  /* width: 20px; */
-  /* width: 1.3em; */
   width: 30%;
 }
 
 @media (max-width: 480px) {
-  .pudelko{
-    height: 4.5rem;
-    width: 4.5rem;
+  .cutebox {
+    height: 5rem;
+    width: 5rem;
   }
 }

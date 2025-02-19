@@ -1,33 +1,10 @@
-// import boxFull from "../../../data/resized_box_full.png";
-// import boxHalf from "../../../data/resized_box_half.png";
-// import boxSome from "../../../data/resized_box_some.png";
-// import box from "../../../data/resized_box.png";
-
-// import cutebox2 from "../../../data/cutebox2.png";
-
 import { FormattedMessage } from "react-intl";
 import MyButton from "../../button/button";
 import React, { useEffect } from "react";
-// import { useState } from "react";
 
-import SingleBox from "./boxanimation";
+import SkinSelector from "./skinselector";
 export default function Boxes({ boxes, activeBox, handleSetBox, addWords }) {
   const boxNames = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
-
-  // function boxImage(words) {
-  //   if(skin){
-  //     return cutebox2;
-  //   }
-  //   if (words === 0) {
-  //     return box;
-  //   } else if (words > 0 && words < 30) {
-  //     return boxSome;
-  //   } else if (words >= 30 && words < 60) {
-  //     return boxHalf;
-  //   } else {
-  //     return boxFull;
-  //   }
-  // }
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -57,12 +34,7 @@ export default function Boxes({ boxes, activeBox, handleSetBox, addWords }) {
             onClick={() => handleSetBox(boxName)}
             className="box"
           >
-            {/* <img
-              alt="box"
-              className={activeBox === boxName ? "active" : "notactive"}
-              src={boxImage(boxes[boxName].length)}
-            /> */}
-            <SingleBox boxName={boxName} activeBox={activeBox} boxes={boxes} />
+            <SkinSelector boxName={boxName} activeBox={activeBox} boxes={boxes} />
             <div className="word-count">{boxes[boxName].length}</div>
           </div>
         ))}

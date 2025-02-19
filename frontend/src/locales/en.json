@@ -161,5 +161,9 @@
   "tableResults.wrong": "Wrong",
   "tableResults.pl": "PL",
   "tableResults.eng": "ENG",
-  "tableResults.loading": "Loading..."
+  "tableResults.loading": "Loading...",
+  "switches.superLogo": "Enable super logo",
+  "switches.superSkin": "Enable super box skin",
+  "explanation.toggleSkin": "This will change the box skins in the main game.",
+  "explanation.toggleLogo": "This will change the logo in the sidebar"
 }

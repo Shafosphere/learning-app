@@ -1,7 +1,7 @@
 import "./maingame.css";
 import Flashcard from "../../components/maingame/card/flashcard";
 import EmptyFlashcard from "../../components/maingame/card/empty-flashcard";
-import Boxes from "../../components/maingame/box/box";
+import Boxes from "../../components/maingame/boxex/boxex";
 import NewProgressBar from "../../components/progress_bar/progressbar";
 import Confetti from "../../components/confetti/confetti";
 

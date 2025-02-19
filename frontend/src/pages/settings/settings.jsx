@@ -26,7 +26,9 @@ export default function Settings() {
     setSpellChecking,
     calculatePercent,
     toggleLogo,
-    logostatus
+    logostatus,
+    toggleSkin,
+    skinstatus,
   } = useContext(SettingsContext);
 
   // popup
@@ -146,7 +148,6 @@ export default function Settings() {
               toggleTheme={toggleTheme}
               themeMode={themeMode}
               toggleLevel={toggleLevel}
-              // level={level}
               language={language}
               setLanguage={setLanguage}
               showConfirm={showConfirm}
@@ -166,6 +167,8 @@ export default function Settings() {
               showConfirm={showConfirm}
               toggleLogo={toggleLogo}
               logostatus={logostatus}
+              toggleSkin={toggleSkin}
+              skinstatus={skinstatus}
             />
           )}
         </div>
@@ -231,6 +234,18 @@ export default function Settings() {
                   <FormattedMessage
                     id="explanation.resetsvocabulary"
                     defaultMessage="This will reset the progress at the specified level in the vocabulary tab."
+                  />
+                ),
+                toggleLogo: (
+                  <FormattedMessage
+                    id="explanation.toggleLogo"
+                    defaultMessage="This will set the super logo instead of the default one."
+                  />
+                ),
+                toggleSkin: (
+                  <FormattedMessage
+                    id="explanation.toggleSkin"
+                    defaultMessage="This will change the box skins in the main game."
                   />
                 ),
               };

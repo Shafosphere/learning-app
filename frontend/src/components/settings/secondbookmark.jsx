@@ -12,6 +12,8 @@ export default function SecondBookMark({
   showConfirm,
   toggleLogo,
   logostatus,
+  toggleSkin,
+  skinstatus,
 }) {
   const intl = useIntl();
 
@@ -70,17 +72,42 @@ export default function SecondBookMark({
         </label>
       </div>
 
+      {/* Toggle Super Logo */}
       <div
         className="switch-container onMouse"
-        onMouseEnter={() => setSpan("")}
+        onMouseEnter={() => setSpan("toggleLogo")}
       >
         <span className="switch-text">
-          ustaw super logo
+          <FormattedMessage
+            id="switches.superLogo"
+            defaultMessage="Enable super logo"
+          />
         </span>
         <label className="switch">
           <input
             onClick={() => toggleLogo()}
             defaultChecked={logostatus === true}
+            type="checkbox"
+          />
+          <span className="slider round"></span>
+        </label>
+      </div>
+
+      {/* Toggle Super Skin */}
+      <div
+        className="switch-container onMouse"
+        onMouseEnter={() => setSpan("toggleSkin")}
+      >
+        <span className="switch-text">
+          <FormattedMessage
+            id="switches.superSkin"
+            defaultMessage="Enable super box skin"
+          />
+        </span>
+        <label className="switch">
+          <input
+            onClick={() => toggleSkin()}
+            defaultChecked={skinstatus === true}
             type="checkbox"
           />
           <span className="slider round"></span>

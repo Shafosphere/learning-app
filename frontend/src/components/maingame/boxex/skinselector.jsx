@@ -2,15 +2,15 @@ import boxFull from "../../../data/resized_box_full.png";
 import boxHalf from "../../../data/resized_box_half.png";
 import boxSome from "../../../data/resized_box_some.png";
 import box from "../../../data/resized_box.png";
+import { SettingsContext } from "../../../pages/settings/properties";
 
-import { useState } from "react";
-import NewSkinBox from "./newskinbox"; // Upewnij się, że ścieżka jest poprawna
+import { useContext } from "react";
+import CuteBoxSkin from "./cutebox"; // Upewnij się, że ścieżka jest poprawna
 
-export default function SingleBox({ boxName, activeBox, boxes }) {
-  const [skin, setSkin] = useState(true);
+export default function SkinSelector({ boxName, activeBox, boxes }) {
+  const { skinstatus } = useContext(SettingsContext);
 
   function boxImage(words) {
-    // Logika starego systemu
     if (words === 0) {
       return box;
     } else if (words > 0 && words < 30) {
@@ -24,11 +24,15 @@ export default function SingleBox({ boxName, activeBox, boxes }) {
 
   return (
     <>
-      {skin ? (
-        // Nowy system skórek z animacją
-        <NewSkinBox  activeBox={activeBox} boxName={boxName}/>
+      {!skinstatus ? (
+        //newskin
+        <CuteBoxSkin
+          activeBox={activeBox}
+          boxName={boxName}
+          words={boxes[boxName].length}
+        />
       ) : (
-        // Stary system – pojedynczy obraz, który może zmieniać się w zależności od wartości
+        //oldskin
         <img
           alt="box"
           className={activeBox === boxName ? "active" : "notactive"}

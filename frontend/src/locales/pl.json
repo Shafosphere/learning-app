@@ -165,5 +165,9 @@
   "tableResults.wrong": "Źle",
   "tableResults.pl": "PL",
   "tableResults.eng": "ANG",
-  "tableResults.loading": "Ładowanie..."
+  "tableResults.loading": "Ładowanie...",
+  "switches.superLogo": "Włącz super logo",
+  "switches.superSkin": "Włącz super skin pudełek",
+  "explanation.toggleSkin": "Zmieni to skórki pudełek w grze głownej.",
+  "explanation.toggleLogo": "Zmieni to logo na pasku bocznym"
 }

@@ -9,6 +9,7 @@ export const SettingsProvider = ({ children }) => {
   const [procentC1, setProcentC1] = usePersistedState("ProcentC1MainGame", 0);
   const [procentB2, setProcentB2] = usePersistedState("ProcentB2MainGame", 0);
   const [logostatus, setlogo] = usePersistedState("logostatus", false);
+  const [skinstatus, setskin] = usePersistedState("skinstatus", false);
 
   const [totalPercentC1, setTotalPercentC1] = usePersistedState(
     "totalPercentC1MainGame",
@@ -170,6 +171,11 @@ export const SettingsProvider = ({ children }) => {
     setlogo(newLogo);
   };
 
+  const toggleSkin = () => {
+    const newSkin = skinstatus === false ? true : false;
+    setskin(newSkin);
+  };
+
   return (
     <SettingsContext.Provider
       value={{
@@ -206,6 +212,9 @@ export const SettingsProvider = ({ children }) => {
         logostatus,
         setlogo,
         toggleLogo,
+        skinstatus,
+        setskin,
+        toggleSkin,
       }}
     >
       {children}
