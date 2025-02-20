@@ -72,6 +72,7 @@
   display: flex;
   align-items: center;
   text-transform: uppercase;
+  max-width: 50%;
 }
 
 .switch input {
@@ -167,7 +168,16 @@ input:focus + .slider {
 .activated_lang {
   outline: 2px double var(--highlight);
 }
-
+.onMouse:hover {
+  cursor: pointer;
+  background-color: var(--border);
+}
+.resets-buttons-bottom{
+  display: flex;
+  width: 100%;
+  justify-content: right;
+  padding-right: 0.75rem;
+}
 @media (max-width: 480px) {
   .container-settings1 {
     padding: 5.25rem 0.25rem 0.25rem 0.25rem;
@@ -186,7 +196,9 @@ input:focus + .slider {
   }
   .pageNumbers-settings {
     bottom: 0px;
-    right: 0px;
+    right: 0%;
+    font-size: 20px;
+    font-weight: 900;
   }
   .settings-right {
     justify-content: center;

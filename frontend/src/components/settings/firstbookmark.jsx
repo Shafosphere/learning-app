@@ -128,14 +128,17 @@ export default function FirstBookMark({
       </div>
 
       {/* Save Button */}
-      <div className="button-container-save">
-        <button
-          style={{ "--buttonColor": "var(--secondary)" }}
-          className="button"
-          onClick={saveSettings}
-        >
-          <FormattedMessage id="saveSettings" defaultMessage="Save Settings" />
-        </button>
+      <div className="resets-buttons resets-buttons-bottom">
+        <MyButton
+          message={
+            <FormattedMessage
+              id="saveSettings"
+              defaultMessage="Save Settings"
+            />
+          }
+          color="red"
+          onClick={() => saveSettings()}
+        />
       </div>
     </>
   );

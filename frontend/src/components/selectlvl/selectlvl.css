@@ -75,6 +75,9 @@
       height: 100%; 
       padding-top: 5rem;
     }
+    .select-gametype{
+      font-size: 40px;
+    }
     .select-window {
       height: 100%;
       width: 100%;

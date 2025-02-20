@@ -24,6 +24,10 @@ export default function LearingInput({
         className={`custom-input-flashcard`}
         maxLength={maxLength}
         ref={correctWordRef}
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+        name="wordInput"
       />
       <span
         className="persistent-placeholder"

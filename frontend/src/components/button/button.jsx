@@ -17,6 +17,7 @@ export default function MyButton({ message, color, onClick, width = "12rem" }) {
         width: width ? `${width}rem` : null, // Ustawienie szerokości, jeśli przekazano
       }}
       onClick={onClick}
+      type="button" 
     >
       {message}
     </button>
