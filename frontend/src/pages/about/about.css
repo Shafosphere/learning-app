@@ -1,49 +1,41 @@
+
 .container-about {
-  padding-left: 5rem;
   color: var(--headline);
 }
 
 .section-fullwidth {
   width: 100%;
-  padding: 2rem 0;
   color: var(--headline);
-  margin-bottom: 3rem;
-  min-height: 40rem;
 }
 
 .window-about {
   width: 100%;
-  max-width: 65rem;
   margin: 0 auto;
-  padding: 0 1rem;
 }
 
 .login-about {
   display: flex;
   flex-direction: row;
-  height: 5rem;
-  margin-bottom: 1rem;
-  padding-top: 2rem;
-  padding-right: 1rem;
   gap: 1rem;
   text-transform: uppercase;
   justify-content: right;
   font-weight: 800;
+  margin-bottom: 1rem;
 }
+
 .login-about span:hover {
   color: var(--highlight);
   cursor: pointer;
 }
-.section-title-about {
-  display: flex;
-  justify-content: center;
+
+.content-about {
   width: 100%;
-  height: 4rem;
-  text-transform: uppercase;
-  font-size: 35px;
-  font-weight: 700;
-  align-items: center;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
+
 .leftsection-about {
   display: flex;
   flex-direction: column;
@@ -52,36 +44,27 @@
   justify-content: center;
   text-align: justify;
 }
+
 .title-about {
-  font-size: 90px;
   font-weight: 900;
 }
+
+.text-about {
+  font-weight: 600;
+  width: 100%;
+}
+
 .rightsection-about {
   display: flex;
   align-items: center;
-  justify-content: right;
   width: 50%;
 }
-.rightsection-about img {
-  max-width: 100%;
-}
-.content-about {
-  width: 100%;
-  height: 100%;
+
+.section-title-about {
   display: flex;
-  flex-direction: row;
-  gap: 1rem;
-}
-.text-about {
-  font-weight: 600;
-  font-size: 20px;
+  justify-content: center;
   width: 100%;
-  padding-top: 1rem;
-  /* padding-left: 2rem; */
-  padding-right: 4rem;
-}
-.second-section {
-  background-color: var(--secondBackground);
+  text-transform: uppercase;
 }
 
 .flashcard-about {
@@ -89,57 +72,331 @@
   position: relative;
   align-items: center;
   justify-content: right;
-  width: 50%;
 }
+
 .flashcard1-about {
   position: absolute;
   max-width: 100%;
-  top: -60%;
-  left: 10%;
-  transform: rotate(-50deg);
   z-index: 10;
-  height: 30rem;
 }
+
 .flashcard2-about {
   position: absolute;
   max-width: 100%;
-  top: 40%;
-  transform: rotate(-90deg);
   z-index: 11;
-  height: 30rem;
 }
+
+.second-section {
+  background-color: var(--secondBackground);
+}
+
 .box1-about {
   position: absolute;
-  height: 10rem;
-  max-width: 100%;
   top: 0%;
   left: 0%;
 }
+
 .box2-about {
   position: absolute;
-  height: 20rem;
   max-width: 100%;
-  top: 0%;
   transform: scaleX(-1);
 }
+
 .box3-about {
   position: absolute;
-  height: 15rem;
-  max-width: 100%;
-  top: 110%;
   left: 0%;
-  transform: rotate(20deg);
+}
+
+@media (max-width: 480px) {
+  .container-about {
+    padding-top: 5rem;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .section-fullwidth {
+    padding: 1rem 0rem 1rem 0rem;
+  }
+  .window-about {
+    max-width: 20rem;
+    padding: 0rem 1.5rem 0rem 1.5rem;
+  }
+  .login-about {
+    height: 1rem;
+    align-items: center;
+    font-size: 10px;
+    padding-top: 1rem;
+  }
+  .title-about {
+    font-size: 40px;
+    width: 100%;
+    text-align: center;
+  }
+  .text-about {
+    font-size: 13px;
+    text-align: left;
+  }
+  .rightsection-about {
+    justify-content: center;
+    padding-top: 2rem;
+  }
+  .logo-about {
+    max-width: 100%;
+    height: 7rem;
+  }
+  .section-title-about {
+    font-size: 20px;
+    font-weight: 900;
+    align-items: left;
+    padding-bottom: 0.2rem;
+  }
+  .flashcard-about {
+    width: 45%;
+  }
+  .flashcard1-about {
+    max-height: 100%;
+    height: 8rem;
+    top: 0%;
+    left: 5%;
+    transform: rotate(20deg);
+  }
+  .flashcard2-about {
+    max-height: 100%;
+    height: 8rem;
+  }
+  .box1-about {
+    height: 5rem;
+    width: 5rem;
+  }
+  .box2-about {
+    height: 6rem;
+    width: 6rem;
+    top: 20%;
+  }
+  .box3-about {
+    height: 7rem;
+    width: 7rem;
+    top: 45%;
+  }
+  
+}
+
+@media (min-width: 480px) and (max-width: 768px) {
+  .container-about {
+    padding-top: 5rem;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .section-fullwidth {
+    padding: 1.5rem 0rem 3rem 0rem;
+  }
+  .window-about {
+    max-width: 35rem;
+    padding: 0rem 1.5rem 0rem 1.5rem;
+  }
+  .login-about {
+    height: 1rem;
+    align-items: center;
+    font-size: 13px;
+    padding-top: 1rem;
+  }
+  .title-about {
+    font-size: 55px;
+    width: 100%;
+    text-align: center;
+  }
+  .text-about {
+    font-size: 20px;
+    text-align: left;
+  }
+  .rightsection-about {
+    justify-content: center;
+    padding-top: 2rem;
+  }
+  .logo-about {
+    max-width: 100%;
+    height: 10rem;
+  }
+  .section-title-about {
+    font-size: 30px;
+    font-weight: 900;
+    align-items: left;
+    padding-bottom: 0.6rem;
+  }
+  .flashcard-about {
+    width: 45%;
+  }
+  .flashcard1-about {
+    max-height: 100%;
+    height: 12rem;
+    top: 0%;
+    left: 5%;
+    transform: rotate(20deg);
+  }
+  .flashcard2-about {
+    max-height: 100%;
+    height: 12rem;
+  }
+  .box1-about {
+
+    height: 8rem;
+    width: 8rem;
+  }
+  .box2-about {
+    height: 10rem;
+    width: 10rem;
+    top: 20%;
+  }
+  .box3-about {
+    height: 12rem;
+    width: 12rem;
+    top: 45%;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1450px) {
+  .container-about {
+    padding-top: 5rem;
+  }
+  .section-fullwidth {
+    padding: 3rem;
+    min-height: 40rem;
+  }
+  .window-about {
+    max-width: 65rem;
+    padding: 0 1rem;
+  }
+  .login-about {
+    height: 5rem;
+    padding-top: 2rem;
+    padding-right: 1rem;
+  }
+  .section-title-about {
+    height: 4rem;
+    font-size: 35px;
+    font-weight: 700;
+    align-items: center;
+  }
+  .title-about {
+    font-size: 90px;
+  }
+  .rightsection-about {
+    justify-content: right;
+  }
+  .rightsection-about img {
+    max-width: 100%;
+  }
+  .text-about {
+    font-size: 20px;
+    padding-top: 1rem;
+    padding-right: 4rem;
+  }
+  .flashcard-about {
+    width: 50%;
+  }
+  .flashcard1-about {
+    height: 15rem;
+    top: -10%;
+    left: 10%;
+  }
+  .flashcard2-about {
+    top: 20%;
+    left: 20%;
+    transform: rotate(30deg);
+    height: 20rem;
+  }
+  .box1-about {
+    height: 10rem;
+    max-width: 100%;
+  }
+  .box2-about {
+    height: 15rem;
+    top: 0%;
+  }
+  .box3-about {
+    height: 20rem;
+    max-width: 100%;
+    top: 50%;
+    transform: rotate(20deg);
+  }
+}
+
+@media (min-width: 1450px) {
+  .container-about {
+    padding-left: 5rem;
+  }
+  .section-fullwidth {
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+    min-height: 40rem;
+  }
+  .window-about {
+    max-width: 65rem;
+    padding: 0 1rem;
+  }
+  .login-about {
+    height: 5rem;
+    padding-top: 2rem;
+    padding-right: 1rem;
+  }
+  .section-title-about {
+    height: 4rem;
+    font-size: 35px;
+    font-weight: 700;
+    align-items: center;
+  }
+  .title-about {
+    font-size: 90px;
+  }
+  .rightsection-about {
+    justify-content: right;
+  }
+  .rightsection-about img {
+    max-width: 100%;
+  }
+  .text-about {
+    font-size: 20px;
+    padding-top: 1rem;
+    padding-right: 4rem;
+  }
+  .flashcard-about {
+    width: 50%;
+  }
+  .flashcard1-about {
+    top: -60%;
+    left: 10%;
+    transform: rotate(-50deg);
+    height: 30rem;
+  }
+  .flashcard2-about {
+    top: 40%;
+    transform: rotate(-90deg);
+    height: 30rem;
+  }
+  .box1-about {
+    height: 10rem;
+    max-width: 100%;
+  }
+  .box2-about {
+    height: 20rem;
+    top: 0%;
+  }
+  .box3-about {
+    height: 15rem;
+    max-width: 100%;
+    top: 110%;
+    transform: rotate(20deg);
+  }
+  
 }
 .section-footer-about {
   width: 100%;
-  height: 8rem;
+  height: 5%;
   padding: 2rem 0;
   color: var(--headline);
-  margin-bottom: 3rem;
-  border-top: solid 10px var(--font); 
+  border-top: solid 10px var(--font);
   background-color: var(--secondBackground);
 }
-/* .footer-about{
-  border-top: solid 10px var(--font); 
-} */
-/* Kontener centrowany o max. szerokości 65rem */

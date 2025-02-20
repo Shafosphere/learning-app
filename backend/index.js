@@ -17,10 +17,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000", "http://192.168.0.113:3000"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 };
+
 app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
@@ -44,7 +45,6 @@ app.use("/analytics", analyticsRoutes);
 
 initializeCronJobs();
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port ${port}`);
 });
-

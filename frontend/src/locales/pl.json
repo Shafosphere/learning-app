@@ -167,7 +167,14 @@
   "tableResults.eng": "ANG",
   "tableResults.loading": "Ładowanie...",
   "switches.superLogo": "Włącz super logo",
-  "switches.superSkin": "Włącz super skin pudełek",
+  "switches.superSkin": "Włącz klasyczny wygląd pudełek",
   "explanation.toggleSkin": "Zmieni to skórki pudełek w grze głownej.",
-  "explanation.toggleLogo": "Zmieni to logo na pasku bocznym"
+  "explanation.toggleLogo": "Zmieni to logo na pasku bocznym",
+  "about.login": "Zaloguj się",
+  "about.register": "Zarejestruj się",
+  "about.intro": "Poznaj świat słówek z łatwizną! 3000 słów B2 i 2000 słów C1 czekają na Ciebie – ucz się ich łatwo dzięki fiszkom i metodzie Leitnera!",
+  "about.flashcards": "Fiszki",
+  "about.flashcardDescription": "Fiszki to niewielkie kartoniki z informacją na obu stronach: z jednej pytanie lub słowo, z drugiej odpowiedź lub tłumaczenie. Ułatwiają zapamiętywanie poprzez regularne powtórki i angażowanie pamięci. Idealne do nauki języków i innych dziedzin.",
+  "about.leitnerSystem": "System Leitnera",
+  "about.leitnerDescription": "System Leitnera to przyjazna metoda nauki, w której Twoje fiszki przesuwają się między pudełkami w zależności od Twoich odpowiedzi. Poprawna odpowiedź przesuwa fiszkę do kolejnego pudełka, a błąd sprowadza ją z powrotem, umożliwiając kolejną powtórkę. Ucz się efektywnie i z uśmiechem, korzystając z tego ciepłego systemu!"
 }

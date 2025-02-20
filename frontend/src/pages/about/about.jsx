@@ -1,5 +1,5 @@
 import React from "react";
-// import { FormattedMessage } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import "./about.css";
 import logo from "../../data/logo.png";
 import flashcard from "../../data/flashcard.png";
@@ -7,6 +7,7 @@ import flashcard from "../../data/flashcard.png";
 import owo from "../../data/box_owo.png";
 import smile from "../../data/box_smile.png";
 import tongue from "../../data/box_tongue.png";
+import { Link } from "react-router-dom";
 
 export default function About() {
   return (
@@ -14,24 +15,34 @@ export default function About() {
       <section className="top-section-about">
         <div className="window-about">
           <section className="login-about">
-            <span>zaloguj sie</span>
-            <span>zarejestruj sie</span>
+            <Link className="link" to="/login">
+              <span>
+                <FormattedMessage id="about.login" defaultMessage="Log in" />
+              </span>
+            </Link>
+            <Link className="link" to="/register">
+              <span>
+                <FormattedMessage
+                  id="about.register"
+                  defaultMessage="Register"
+                />
+              </span>
+            </Link>
           </section>
         </div>
       </section>
 
       <section className="section-fullwidth">
         <div className="window-about">
-          <div className="section-title-about">
-            {/* Możesz dodać tytuł lub pozostawić pusty */}
-          </div>
+          <div className="section-title-about"></div>
           <div className="content-about">
             <div className="leftsection-about">
               <span className="title-about">Memolingo</span>
               <span className="text-about">
-                Poznaj świat słówek z łatwizną! 🌟 3000 słów B2 i 2000 słów C1
-                czekają na Ciebie – ucz się ich łatwo dzięki fiszkom i metodzie
-                Leitnera! 🚀💡
+                <FormattedMessage
+                  id="about.intro"
+                  defaultMessage="Discover the world of words with ease! 3,000 B2 words and 2,000 C1 words await you – learn them easily with flashcards and the Leitner system!"
+                />
               </span>
             </div>
             <div className="rightsection-about">
@@ -43,7 +54,12 @@ export default function About() {
 
       <section className="section-fullwidth second-section">
         <div className="window-about">
-          <div className="section-title-about">fiszki</div>
+          <div className="section-title-about">
+            <FormattedMessage
+              id="about.flashcards"
+              defaultMessage="Flashcards"
+            />
+          </div>
           <div className="content-about">
             <div className="flashcard-about">
               <img
@@ -57,50 +73,34 @@ export default function About() {
                 src={flashcard}
               />
             </div>
+
             <div className="leftsection-about">
               <span className="text-about">
-                Fiszki to niewielkie kartoniki z informacją na obu stronach: z
-                jednej pytanie lub słowo, z drugiej odpowiedź lub tłumaczenie.
-                Ułatwiają zapamiętywanie poprzez regularne powtórki i
-                angażowanie pamięci. Idealne do nauki języków i innych dziedzin.
+                <FormattedMessage
+                  id="about.flashcardDescription"
+                  defaultMessage="Flashcards are small cards with information on both sides: a question or word on one side, and an answer or translation on the other. They facilitate memorization through regular reviews and engaging memory. Ideal for language learning and other subjects."
+                />
               </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* <section className="section-fullwidth">
-        <div className="window-about">
-          <div className="section-title-about">nigdy wiecej nudy!</div>
-          <div className="content-about">
-            <div className="leftsection-about">
-              <span className="text-about">
-                „przeczytaj, zasłoń dłonią, powtórz w myślach” brzmi jak echa
-                minionej epoki – nijaka i mało angażująca. W przeciwieństwie do
-                fiszek, które wprowadzają interaktywne powtórki i pobudzają
-                pamięć, ta stara technika nie rozbudza wyobraźni. Postaw na
-                fiszki, a nauka stanie się dynamiczna i pełna życia!
-              </span>
-            </div>
-            <div className="rightsection-about">
-              <img alt="logo" className="logo-about" src={logo} />
-            </div>
-          </div>
-        </div>
-      </section> */}
-
       <section className="section-fullwidth">
         <div className="window-about">
-          <div className="section-title-about">Leitner system</div>
+          <div className="section-title-about">
+            <FormattedMessage
+              id="about.leitnerSystem"
+              defaultMessage="Leitner System"
+            />
+          </div>
           <div className="content-about">
             <div className="leftsection-about">
               <span className="text-about">
-                System Leitnera to przyjazna metoda nauki, w której Twoje fiszki
-                przesuwają się między pudełkami w zależności od Twoich
-                odpowiedzi. Poprawna odpowiedź przesuwa fiszkę do kolejnego
-                pudełka, a błąd sprowadza ją z powrotem, umożliwiając kolejną
-                powtórkę. Ucz się efektywnie i z uśmiechem, korzystając z tego
-                ciepłego systemu!
+                <FormattedMessage
+                  id="about.leitnerDescription"
+                  defaultMessage="The Leitner system is a friendly learning method where your flashcards move between boxes depending on your answers. A correct answer moves the flashcard forward, while an incorrect answer moves it back for another review. Learn effectively and with a smile using this proven system!"
+                />
               </span>
             </div>
             <div className="flashcard-about">

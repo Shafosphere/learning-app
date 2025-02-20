@@ -101,7 +101,7 @@ export default function Sidebar() {
 
         <div className="sidebar-content">
           <div>
-            <Link className="link" to="/maingame">
+            <Link className="link-container" to="/maingame">
               <span className="sidebar-initial link-icon">
                 <FaBook />
               </span>
@@ -112,7 +112,7 @@ export default function Sidebar() {
               </span>
             </Link>
 
-            <Link className="link" to="/vocabulary">
+            <Link className="link-container" to="/vocabulary">
               <span className="sidebar-initial link-icon">
                 <FaScroll />
               </span>
@@ -126,7 +126,7 @@ export default function Sidebar() {
               </span>
             </Link>
 
-            <Link className="link" to="/settings">
+            <Link className="link-container" to="/settings">
               <span className="sidebar-initial link-icon">
                 <IoMdSettings />
               </span>
@@ -140,7 +140,7 @@ export default function Sidebar() {
               </span>
             </Link>
 
-            <Link className="link" to="/account">
+            <Link className="link-container" to="/account">
               <span className="sidebar-initial link-icon">
                 <MdAccountBox />
               </span>
@@ -154,7 +154,7 @@ export default function Sidebar() {
               </span>
             </Link>
 
-            <Link className="link" to="/ranking">
+            <Link className="link-container" to="/ranking">
               <span className="sidebar-initial link-icon">
                 <FaRankingStar />
               </span>
@@ -169,7 +169,7 @@ export default function Sidebar() {
             </Link>
 
             {isAdmin && isLoggedIn && (
-              <Link className="link" to="/admin">
+              <Link className="link-container" to="/admin">
                 <span className="sidebar-initial link-icon">
                   <MdAdminPanelSettings />
                 </span>
@@ -187,7 +187,7 @@ export default function Sidebar() {
 
           <div>
             {isLoggedIn && (
-              <div onClick={() => setFormVisible(true)} className="link">
+              <div onClick={() => setFormVisible(true)} className="link-container">
                 <span className="sidebar-initial link-icon">
                   <IoBug />
                 </span>
@@ -203,7 +203,7 @@ export default function Sidebar() {
             )}
 
             {isLoggedIn && (
-              <div onClick={logout} className="link">
+              <div onClick={logout} className="link-container">
                 <span className="sidebar-initial link-icon">
                   <MdLogout />
                 </span>
@@ -218,7 +218,7 @@ export default function Sidebar() {
               </div>
             )}
 
-            <div className="link" onClick={() => toggleTheme()}>
+            <div className="link-container" onClick={() => toggleTheme()}>
               <span className="sidebar-initial link-icon">
                 <MdDarkMode />
               </span>
@@ -233,7 +233,7 @@ export default function Sidebar() {
             </div>
 
             {!isLoggedIn && (
-              <Link className="link" to="/login">
+              <Link className="link-container" to="/login">
                 <span className="sidebar-initial link-icon">
                   <MdLogin />
                 </span>
@@ -253,7 +253,7 @@ export default function Sidebar() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <div className="link">
+              <div className="link-container">
                 <span className="sidebar-initial link-icon">
                   <IoLogoGithub />
                 </span>

@@ -163,7 +163,14 @@
   "tableResults.eng": "ENG",
   "tableResults.loading": "Loading...",
   "switches.superLogo": "Enable super logo",
-  "switches.superSkin": "Enable super box skin",
+  "switches.superSkin": "Enable classic box skin",
   "explanation.toggleSkin": "This will change the box skins in the main game.",
-  "explanation.toggleLogo": "This will change the logo in the sidebar"
+  "explanation.toggleLogo": "This will change the logo in the sidebar",
+  "about.login": "Log in",
+  "about.register": "Register",
+  "about.intro": "Discover the world of words with ease! 3,000 B2 words and 2,000 C1 words await you – learn them easily with flashcards and the Leitner system!",
+  "about.flashcards": "Flashcards",
+  "about.flashcardDescription": "Flashcards are small cards with information on both sides: a question or word on one side, and an answer or translation on the other. They facilitate memorization through regular reviews and engaging memory. Ideal for language learning and other subjects.",
+  "about.leitnerSystem": "Leitner System",
+  "about.leitnerDescription": "The Leitner system is a friendly learning method where your flashcards move between boxes depending on your answers. A correct answer moves the flashcard forward, while an incorrect answer moves it back for another review. Learn effectively and with a smile using this proven system!"
 }
