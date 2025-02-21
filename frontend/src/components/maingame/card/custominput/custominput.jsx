@@ -28,6 +28,7 @@ export default function LearingInput({
         autocorrect="off"
         spellcheck="false"
         name="wordInput"
+        autoCapitalize="off"
       />
       <span
         className="persistent-placeholder"

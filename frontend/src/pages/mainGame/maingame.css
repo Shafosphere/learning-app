@@ -228,7 +228,7 @@
   }
   .container-flashcard {
     height: 50%;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
   }
   .form-flashcard {

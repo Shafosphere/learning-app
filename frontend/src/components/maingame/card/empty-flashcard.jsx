@@ -36,6 +36,7 @@ export default function EmptyFlashcard() {
             </div>
           </div>
         </form>
+        <div className="flashcard-description"></div>
       </div>
     </>
   );

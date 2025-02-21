@@ -20,7 +20,7 @@ export default function About() {
                 <FormattedMessage id="about.login" defaultMessage="Log in" />
               </span>
             </Link>
-            <Link className="link" to="/register">
+            <Link className="link" to="/login">
               <span>
                 <FormattedMessage
                   id="about.register"

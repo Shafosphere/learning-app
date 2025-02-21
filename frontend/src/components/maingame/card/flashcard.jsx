@@ -182,6 +182,7 @@ export default function Flashcard({
                   value={userWord}
                   onChange={handleInputChange}
                   ref={userWordRef}
+                  autoCapitalize="off"
                 />
               </div>
             </div>

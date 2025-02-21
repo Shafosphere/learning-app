@@ -113,16 +113,16 @@
   .return-btn-voca {
     position: absolute;
 
-    top: 11rem;
-    right: -1rem;
+    top: 7rem;
+    left: 3rem;
 
     transform: translate(-50%, -50%);
     z-index: 99;
 
-    font-size: 0.5rem;
+    font-size: 10px;
     font-weight: 900;
     color: var(--headline);
-    border-right: solid 10px var(--tertiary);
+    border-left: solid 10px var(--tertiary);
     transition: padding 1s, border-color 1s;
     padding: 0.5rem;
 
@@ -137,7 +137,6 @@
     align-items: center;
     width: 100%;
     height: 100%;
-    padding-top: 1rem;
     padding-bottom: 4rem;
     flex-direction: column-reverse;
   }
@@ -161,9 +160,11 @@
   }
   .bar-and-inputs{
     display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    /* align-items: center; */
+    /* justify-content: center; */
+    gap: 1rem;
+    justify-content: space-between;
+    flex-direction: column-reverse;
     width: 80%;
     height: 100%;
     max-width: 20rem;
@@ -191,11 +192,11 @@
   .top-right-words {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     width: 90%;
     height: 50%;
+    padding-bottom: 4.5rem;
     position: relative;
-    margin-bottom: 2.5rem
   }
 
   .wrapper {
@@ -227,7 +228,7 @@
 
   .top {
     opacity: 0.8;
-    transform: translateY(-5rem);
+    transform: translateY(-4.5rem);
     scale: 0.8;
     height: 3rem;
     font-weight: 400;
@@ -242,7 +243,7 @@
   }
   .bottom {
     opacity: 0.8;
-    transform: translateY(5rem);
+    transform: translateY(4.5rem);
     scale: 0.8;
     font-weight: 400;
     z-index: 9;
