@@ -7,7 +7,7 @@ const authorizeAdmin = (req, res, next) => {
     });
   }
 
-  next(); // Kontynuacja przetwarzania żądania
+  next();
 };
 
 export default authorizeAdmin;

@@ -108,11 +108,11 @@ export const loginUser = async (req, res) => {
     // Generujemy token JWT
     const token = generateToken(user);
 
-    // Ustawienie ciasteczka z tokenem
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: "lax",
+      path: "/",
       maxAge: 3600000, // 1 godzina
     });
 
