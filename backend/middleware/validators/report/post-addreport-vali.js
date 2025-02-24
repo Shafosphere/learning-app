@@ -1,7 +1,7 @@
 import { sanitizeInput } from "../sanitize-html.js";
 
 const authorizeAddReport = (req, res, next) => {
-  const { reportType, word, description, language } = req.body;
+  const { reportType, word, description } = req.body;
 
   // **1. Walidacja reportType**
   if (reportType !== "other" && reportType !== "word_issue") {
@@ -12,15 +12,6 @@ const authorizeAddReport = (req, res, next) => {
     });
   }
 
-  // **2. Walidacja language**
-  if (language !== "pl" && language !== "en") {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid language. Allowed values are 'pl' and 'en'.",
-    });
-  }
-
-  // **3. Walidacja description dla reportType "other"**
   if (reportType === "other") {
     if (
       !description ||

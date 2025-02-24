@@ -86,22 +86,22 @@ export const deleteReportData = async (req, res) => {
 };
 
 export const createReport = async (req, res) => {
-  const { reportType, word, description, language } = req.body;
+  const { reportType, word, description } = req.body;
   const userId = req.user.id;
 
-  console.log(reportType, word, description, language, userId);
+  console.log(reportType, word, description, userId);
 
   try {
     let wordId = null;
 
     if (reportType === "word_issue") {
       // Szukanie słowa na podstawie tłumaczenia i języka
-      const wordResult = await getWordByTranslation(language, word);
+      const wordResult = await getWordByTranslation(word);
 
       if (!wordResult) {
         return res.status(404).json({
           success: false,
-          message: "Word not found in the specified language.",
+          message: "Word not found",
         });
       }
 

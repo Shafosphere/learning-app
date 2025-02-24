@@ -46,10 +46,10 @@ export const createUser = async (username, email, hashedPassword) => {
 };
 
 // Funkcja pobierająca słowo na podstawie tłumaczenia i języka
-export const getWordByTranslation = async (language, translation) => {
+export const getWordByTranslation = async (translation) => {
   const result = await pool.query(
-    "SELECT * FROM Translation WHERE language = $1 AND translation = $2",
-    [language, translation]
+    "SELECT * FROM Translation WHERE translation = $1",
+    [translation]
   );
   return result.rows[0]; // Zwracamy pierwszy wynik lub `undefined`, jeśli nie ma wyniku
 };

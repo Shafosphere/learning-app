@@ -9,7 +9,6 @@ export default function ReportForm() {
   const [reportType, setReportType] = useState("other");
   const [word, setWord] = useState("");
   const [description, setDescription] = useState("");
-  const [language, setLanguage] = useState("");
 
   const { setPopup } = useContext(PopupContext);
   const intl = useIntl();
@@ -23,7 +22,7 @@ export default function ReportForm() {
           reportType,
           word,
           description,
-          language,
+          // language,
         },
         {
           headers: {
@@ -56,6 +55,7 @@ export default function ReportForm() {
   return (
     <>
       <form className="report-form" onSubmit={handleSubmit}>
+
         <div className="report-top">
           <div>
             <label htmlFor="reportType">
@@ -95,7 +95,7 @@ export default function ReportForm() {
               />
             </div>
           )}
-          {reportType === "word_issue" && (
+          {/* {reportType === "word_issue" && (
             <div className="language-field">
               <span className="question-form">
                 <label htmlFor="language">
@@ -132,8 +132,8 @@ export default function ReportForm() {
                 </option>
               </select>
             </div>
-          )}
-          <div>
+          )} */}
+          <div className="description-report-containter">
             <label htmlFor="description">
               <FormattedMessage
                 id="reportForm.description"
@@ -141,6 +141,7 @@ export default function ReportForm() {
               />
             </label>
             <textarea
+              className="description-report"
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -148,6 +149,7 @@ export default function ReportForm() {
             />
           </div>
         </div>
+
         <div className="report-bottom">
           <button
             style={{ "--buttonColor": "var(--highlight)", width: "100%" }}
@@ -160,6 +162,7 @@ export default function ReportForm() {
             />
           </button>
         </div>
+
       </form>
     </>
   );

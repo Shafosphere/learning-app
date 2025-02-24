@@ -40,6 +40,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
     height: 4rem;
     width: 95vw;
     font-size: 20px;
@@ -54,7 +55,7 @@
     background-color: var(--background);
   }
 }
-@media (min-width: 640px){
+@media (min-width: 640px) {
   .popup {
     position: fixed;
     top: 8%;
@@ -64,6 +65,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
     height: 4rem;
     width: 40rem;
     font-size: 20px;

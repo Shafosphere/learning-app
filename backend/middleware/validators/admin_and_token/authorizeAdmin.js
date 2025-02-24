@@ -6,7 +6,7 @@ const authorizeAdmin = (req, res, next) => {
       message: "Access denied.",
     });
   }
-
+  console.log("Got Access, user is an admin.");
   next();
 };
 
