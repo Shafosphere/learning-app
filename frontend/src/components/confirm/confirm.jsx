@@ -1,6 +1,7 @@
 import styles from "./confirm.module.css";
 import React, { useRef, useEffect } from "react";
 import { useIntl } from "react-intl";
+import MyButton from "../button/button";
 
 export default function ConfirmWindow({ message, onClose }) {
   const confirmRef = useRef(null);
@@ -25,20 +26,23 @@ export default function ConfirmWindow({ message, onClose }) {
     <dialog ref={confirmRef} className={styles.confirm}>
       <p>{message}</p>
       <div className={styles.buttons}>
-        <button
-          style={{ "--buttonColor": "var(--secondary)" }}
-          className="button"
+        <MyButton
+          message={intl.formatMessage({
+            id: "confirm.no",
+            defaultMessage: "No",
+          })}
+          color="red"
           onClick={() => handleClose(false)}
-        >
-          {intl.formatMessage({ id: "confirm.no", defaultMessage: "No" })}
-        </button>
-        <button
-          style={{ "--buttonColor": "var(--highlight)" }}
-          className="button"
+        />
+
+        <MyButton
+          message={intl.formatMessage({
+            id: "confirm.yes",
+            defaultMessage: "Yes",
+          })}
+          color="green"
           onClick={() => handleClose(true)}
-        >
-          {intl.formatMessage({ id: "confirm.yes", defaultMessage: "Yes" })}
-        </button>
+        />
       </div>
     </dialog>
   );
