@@ -1,7 +1,12 @@
 // useBoxesDB.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { SettingsContext } from "../../pages/settings/properties";
+import api from "../../utils/api";
 
 export default function useBoxesDB(lvl) {
+  // Ustawienia z kontekstu
+  const { isLoggedIn } = useContext(SettingsContext);
+
   const [boxes, setBoxes] = useState({
     boxOne: [],
     boxTwo: [],
@@ -11,6 +16,26 @@ export default function useBoxesDB(lvl) {
   });
 
   const [autoSave, setAutoSave] = useState(false);
+
+  // 1. Poprawiona funkcja serwerAutosave
+  const serwerAutosave = async () => {
+    // Generowanie dynamicznych danych z boxów
+    const words = Object.entries(boxes).flatMap(([boxName, items]) =>
+      items.map(({ id }) => ({ id, boxName }))
+    );
+
+    const data = {
+      level: lvl, // Poprawiona składnia - brak niepotrzebnych nawiasów klamrowych
+      words,
+    };
+
+    try {
+      const response = await api.post("/user/auto-save", data); // Usunięto zbędne {data}
+      console.log("autozapis wykonany", response.data);
+    } catch (error) {
+      console.error("Błąd autozapisu:", error);
+    }
+  };
 
   // 1. Odczyt z IndexedDB
   useEffect(() => {
@@ -63,53 +88,71 @@ export default function useBoxesDB(lvl) {
 
   // 2. Zapis do IndexedDB, wywoływany jeśli autoSave == true
   useEffect(() => {
-    if (!autoSave) return;
+    const saveData = async () => {
+      if (!autoSave) return;
+      console.log("Rozpoczęcie autozapisu");
 
-    const request = indexedDB.open("SavedBoxes", 1);
-    request.onsuccess = (event) => {
-      const db = event.target.result;
-      if (db.objectStoreNames.contains(`boxes${lvl}`)) {
-        const transaction = db.transaction([`boxes${lvl}`], "readwrite");
-        const store = transaction.objectStore(`boxes${lvl}`);
-
-        const clearRequest = store.clear();
-        clearRequest.onsuccess = () => {
-          const addRequests = [];
-
-          Object.keys(boxes).forEach((boxName) => {
-            boxes[boxName].forEach((item) => {
-              const itemWithBox = { ...item, boxName };
-              const addRequest = new Promise((resolve, reject) => {
-                const req = store.add(itemWithBox);
-                req.onsuccess = () => resolve();
-                req.onerror = () =>
-                  reject(`Błąd zapisu do boxa: ${boxName}`);
-              });
-              addRequests.push(addRequest);
-            });
-          });
-
-          Promise.all(addRequests)
-            .then(() => {
-              setAutoSave(false);
-              console.log("Zapisano postęp w IndexedDB");
-            })
-            .catch((err) => {
-              console.error("Wystąpił błąd przy zapisie: ", err);
-              setAutoSave(false);
-            });
-        };
-
-        clearRequest.onerror = () => {
-          console.error("Błąd czyszczenia store boxes");
-        };
+      if (isLoggedIn) {
+        console.log("wysyłam na serwer")
+        await serwerAutosave();
       }
+
+      // Operacje IndexedDB
+      await new Promise((resolve, reject) => {
+        const request = indexedDB.open("SavedBoxes", 1);
+
+        request.onsuccess = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(`boxes${lvl}`)) {
+            reject(`Brak store boxes${lvl}`);
+            return;
+          }
+
+          const transaction = db.transaction([`boxes${lvl}`], "readwrite");
+          const store = transaction.objectStore(`boxes${lvl}`);
+
+          store.clear().onsuccess = () => {
+            const addRequests = [];
+
+            Object.entries(boxes).forEach(([boxName, items]) => {
+              items.forEach((item) => {
+                const itemWithBox = { ...item, boxName };
+                addRequests.push(store.add(itemWithBox));
+              });
+            });
+
+            Promise.all(
+              addRequests.map(
+                (req) =>
+                  new Promise((res, rej) => {
+                    req.onsuccess = res;
+                    req.onerror = rej;
+                  })
+              )
+            )
+              .then(() => {
+                console.log("Zapisano w IndexedDB");
+                resolve();
+              })
+              .catch(reject);
+          };
+        };
+
+        request.onerror = (event) => {
+          reject(event.target.error);
+        };
+      });
+
+      setAutoSave(false);
+      console.log("Cały proces zapisu zakończony");
     };
 
-    request.onerror = (event) => {
-      console.error("IndexedDB error:", event.target.error);
-    };
-  }, [autoSave, boxes, lvl]);
+    // Wywołaj funkcję zapisu
+    saveData().catch((error) => {
+      console.error("Błąd podczas zapisu:", error);
+      setAutoSave(false);
+    });
+  }, [autoSave, boxes, lvl, isLoggedIn]);
 
   return { boxes, setBoxes, autoSave, setAutoSave };
 }
