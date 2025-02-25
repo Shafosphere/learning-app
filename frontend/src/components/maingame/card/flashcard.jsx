@@ -114,7 +114,6 @@ export default function Flashcard({
       userWordRef.current.focus();
     }
   }, [cssClasses, userWordRef]);
-  
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -140,6 +139,22 @@ export default function Flashcard({
     };
   }, [correctSecondWordRef, correctWordRef, userWordRef]);
 
+  function handleKeyDown(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      check(userWord, word, wordID);
+    }
+  }
+
+  useEffect(() => {
+    if (cssClasses.notVisible === "visible") {
+      // Dodaj małe opóźnienie aby dać czas na aktualizację DOM
+      setTimeout(() => {
+        correctWordRef.current?.focus();
+      }, 50);
+    }
+  }, [cssClasses.notVisible]);
+
   return (
     <>
       <div className="container-flashcard">
@@ -150,15 +165,16 @@ export default function Flashcard({
           <div className="top-flashcard">
             <div className={`window-flashcard ${className}`}>
               <div className={`learning ${cssClasses.notDisplay}`}>
-
+                
                 <LearingInput
                   placeholder={word}
                   maxLength={word.length}
                   value={correctWord}
                   correctWordChange={correctWordChange}
                   correctWordRef={correctWordRef}
+                  autoFocus={cssClasses.notVisible === "visible"} // Teraz to zadziała
                 />
-                
+
                 <span className="solid-border-flashcard"></span>
 
                 <LearingInput
@@ -183,6 +199,7 @@ export default function Flashcard({
                   onChange={handleInputChange}
                   ref={userWordRef}
                   autoCapitalize="off"
+                  onKeyDown={handleKeyDown}
                 />
               </div>
             </div>

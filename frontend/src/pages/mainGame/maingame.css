@@ -655,3 +655,14 @@
     display: none;
   }
 }
+
+.not-display {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.visible {
+  opacity: 1;
+  height: auto;
+}

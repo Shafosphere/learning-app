@@ -95,11 +95,11 @@
   gap: 0.5rem;
 }
 .block-number {
-  font-size: 2vw; 
+  font-size: 40px; 
   font-weight: 900;
 }
 .block-title {
-  font-size: 1vw;
+  font-size: 15px;
   text-transform: uppercase;
   font-weight: 700;
 }

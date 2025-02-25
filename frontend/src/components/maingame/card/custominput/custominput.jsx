@@ -7,6 +7,7 @@ export default function LearingInput({
   value,
   correctWordChange,
   correctWordRef,
+  autoFocus // Dodajemy nową prop
 }) {
   const [scroll, setScroll] = useState(0);
 
@@ -24,11 +25,12 @@ export default function LearingInput({
         className={`custom-input-flashcard`}
         maxLength={maxLength}
         ref={correctWordRef}
-        autocomplete="off"
-        autocorrect="off"
-        spellcheck="false"
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck="false"
         name="wordInput"
         autoCapitalize="off"
+        autoFocus={autoFocus} // Używamy nowej propsy
       />
       <span
         className="persistent-placeholder"

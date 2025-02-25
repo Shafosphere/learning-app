@@ -140,7 +140,7 @@ export default function MainGame({ setDisplay, lvl }) {
         notDisplayReverse: "not-display",
       });
 
-      correctWordRef.current.focus();
+      // correctWordRef.current.focus();
       setBlock(true);
       if (isSoundEnabled === "true") dongSoundRef.current.play();
     }
