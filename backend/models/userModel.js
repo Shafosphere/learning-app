@@ -722,3 +722,18 @@ export const getTopRankingUsers = async (limit) => {
   const result = await pool.query(query, values);
   return result.rows;
 };
+
+export const insertOrUpdateUserAutosave = async (client, userId, level, words, device_identifier) => {
+  const query = `
+    INSERT INTO user_autosave (user_id, level, words, device_identifier)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (user_id)
+    DO UPDATE SET
+      level = EXCLUDED.level,
+      words = EXCLUDED.words,
+      device_identifier = EXCLUDED.device_identifier,
+      last_saved = NOW();
+  `;
+  const values = [userId, level, JSON.stringify(words), device_identifier];
+  await client.query(query, values);
+};

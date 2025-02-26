@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 // import MainGame from "./mainGame/maingame";
 import MainGameSelect from "./mainGame/maingameselect";
@@ -18,6 +18,7 @@ import plMessages from "../locales/pl.json";
 import { PopupProvider } from "../components/popup/popupcontext";
 import Vocabulary from "./voca/vocabulary";
 import ResetPassword from "./resetPassword/resetpassword";
+import { v4 as uuidv4 } from "uuid";
 // Obiekt zawierający tłumaczenia dla różnych języków
 const messages = {
   en: enMessages,
@@ -27,6 +28,14 @@ const messages = {
 // Komponent do owijania całej aplikacji z `IntlProvider`
 const AppWrapper = () => {
   const { language, isLoggedIn } = useContext(SettingsContext);
+
+  useEffect(() => {
+    let deviceId = localStorage.getItem("deviceId");
+    if (!deviceId) {
+      deviceId = uuidv4();
+      localStorage.setItem("deviceId", deviceId);
+    }
+  }, []);
 
   return (
     <IntlProvider locale={language} messages={messages[language]}>

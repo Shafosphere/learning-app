@@ -16,6 +16,7 @@ export default function useBoxesDB(lvl) {
   });
 
   const [autoSave, setAutoSave] = useState(false);
+  let deviceId = localStorage.getItem("deviceId");
 
   // 1. Poprawiona funkcja serwerAutosave
   const serwerAutosave = async () => {
@@ -25,10 +26,11 @@ export default function useBoxesDB(lvl) {
     );
 
     const data = {
-      level: lvl, // Poprawiona składnia - brak niepotrzebnych nawiasów klamrowych
+      level: lvl,
+      deviceId: deviceId,
       words,
     };
-
+    console.log(data);
     try {
       const response = await api.post("/user/auto-save", data); // Usunięto zbędne {data}
       console.log("autozapis wykonany", response.data);
@@ -37,54 +39,74 @@ export default function useBoxesDB(lvl) {
     }
   };
 
+  const serwerAutoload = async () => {
+    try {
+      const response = await api.post("/user/auto-load");
+      console.log("wczytywanie danych", response.data);
+    } catch (error) {
+      console.error("Błąd wczytywania z serwera:", error);
+    }
+  };
+
   // 1. Odczyt z IndexedDB
   useEffect(() => {
-    const request = indexedDB.open("SavedBoxes", 1);
+    const loadData = async () => {
+      const request = indexedDB.open("SavedBoxes", 1);
 
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains("boxesB2")) {
-        db.createObjectStore("boxesB2", { keyPath: "id" });
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains("boxesB2")) {
+          db.createObjectStore("boxesB2", { keyPath: "id" });
+        }
+        if (!db.objectStoreNames.contains("boxesC1")) {
+          db.createObjectStore("boxesC1", { keyPath: "id" });
+        }
+      };
+
+      if (isLoggedIn) {
+        console.log("pobieram dane z serwera");
+        await serwerAutoload();
       }
-      if (!db.objectStoreNames.contains("boxesC1")) {
-        db.createObjectStore("boxesC1", { keyPath: "id" });
-      }
-    };
 
-    request.onsuccess = (event) => {
-      const db = event.target.result;
-      if (db.objectStoreNames.contains(`boxes${lvl}`)) {
-        const transaction = db.transaction([`boxes${lvl}`], "readonly");
-        const store = transaction.objectStore(`boxes${lvl}`);
-        const getAllRequest = store.getAll();
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        if (db.objectStoreNames.contains(`boxes${lvl}`)) {
+          const transaction = db.transaction([`boxes${lvl}`], "readonly");
+          const store = transaction.objectStore(`boxes${lvl}`);
+          const getAllRequest = store.getAll();
 
-        getAllRequest.onsuccess = () => {
-          const allData = getAllRequest.result;
-          const newBoxesState = {
-            boxOne: [],
-            boxTwo: [],
-            boxThree: [],
-            boxFour: [],
-            boxFive: [],
+          getAllRequest.onsuccess = () => {
+            const allData = getAllRequest.result;
+            const newBoxesState = {
+              boxOne: [],
+              boxTwo: [],
+              boxThree: [],
+              boxFour: [],
+              boxFive: [],
+            };
+            allData.forEach((item) => {
+              const { boxName, ...rest } = item;
+              if (newBoxesState[boxName]) {
+                newBoxesState[boxName].push(rest);
+              }
+            });
+            setBoxes(newBoxesState);
           };
-          allData.forEach((item) => {
-            const { boxName, ...rest } = item;
-            if (newBoxesState[boxName]) {
-              newBoxesState[boxName].push(rest);
-            }
-          });
-          setBoxes(newBoxesState);
-        };
-        getAllRequest.onerror = () => {
-          console.error("Błąd odczytu z boxes w IndexedDB");
-        };
-      }
-    };
+          getAllRequest.onerror = () => {
+            console.error("Błąd odczytu z boxes w IndexedDB");
+          };
+        }
+      };
 
-    request.onerror = (event) => {
-      console.error("IndexedDB error:", event.target.error);
+      request.onerror = (event) => {
+        console.error("IndexedDB error:", event.target.error);
+      };
     };
-  }, [lvl]);
+    // Wywołaj funkcję zapisu
+    loadData().catch((error) => {
+      console.error("Błąd podczas wczytywania:", error);
+    });
+  }, [lvl, serwerAutoload]);
 
   // 2. Zapis do IndexedDB, wywoływany jeśli autoSave == true
   useEffect(() => {
@@ -93,7 +115,7 @@ export default function useBoxesDB(lvl) {
       console.log("Rozpoczęcie autozapisu");
 
       if (isLoggedIn) {
-        console.log("wysyłam na serwer")
+        console.log("wysyłam na serwer");
         await serwerAutosave();
       }
 

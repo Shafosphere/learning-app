@@ -9,6 +9,7 @@ import {
   insertWordIntoUserProgress,
   userRankingUpdate,
   getTopRankingUsers,
+  insertOrUpdateUserAutosave,
 } from "../models/userModel.js";
 
 import pool from "../dbClient.js";
@@ -145,5 +146,59 @@ export const getRanking = async (req, res) => {
     res
       .status(500)
       .json({ message: "Błąd serwera podczas pobierania rankingu." });
+  }
+};
+
+export const autoSave = async (req, res) => {
+  const username = req.user.username;
+  const userId = req.user.id;
+  const { level, deviceId, words } = req.body;
+  console.log("Username:", username);
+  console.log("Data:", level, deviceId);
+
+  try {
+    const client = await pool.connect();
+    try {
+      await insertOrUpdateUserAutosave(client, userId, level, words, deviceId);
+      res.status(200).json({ message: "Dane odebrane", username });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Błąd podczas autozapisu:", error);
+    res.status(500).json({ message: "Błąd serwera podczas autozapisu." });
+  }
+};
+
+export const autoLoad = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT words FROM user_autosave 
+       WHERE user_id = $1 AND level = $2`,
+      [req.user.id, req.body.level]
+    );
+
+    if (result.rows.length === 0) {
+      return res.json({ words: [] });
+    }
+
+    // Pobierz wszystkie ID słówek z autosave
+    const wordIds = result.rows[0].words.map((item) => item.id);
+
+    // Pobierz pełne dane słówek
+    const wordsResult = await pool.query(
+      `SELECT w.*, t.translation, t.language 
+       FROM words w
+       LEFT JOIN translation t ON w.id = t.word_id
+       WHERE w.id = ANY($1)`,
+      [wordIds]
+    );
+
+    res.json({
+      words: wordsResult.rows,
+      originalStructure: result.rows[0].words, // Potrzebne do odtworzenia boxów
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
