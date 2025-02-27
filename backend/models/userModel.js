@@ -723,7 +723,13 @@ export const getTopRankingUsers = async (limit) => {
   return result.rows;
 };
 
-export const insertOrUpdateUserAutosave = async (client, userId, level, words, device_identifier) => {
+export const insertOrUpdateUserAutosave = async (
+  client,
+  userId,
+  level,
+  words,
+  device_identifier
+) => {
   const query = `
     INSERT INTO user_autosave (user_id, level, words, device_identifier)
     VALUES ($1, $2, $3, $4)
@@ -736,4 +742,37 @@ export const insertOrUpdateUserAutosave = async (client, userId, level, words, d
   `;
   const values = [userId, level, JSON.stringify(words), device_identifier];
   await client.query(query, values);
+};
+
+// Zmodyfikowane funkcje pomocnicze
+export const getAutosaveData = async (client, userId) => {
+  const result = await client.query(
+    "SELECT * FROM user_autosave WHERE user_id = $1",
+    [userId]
+  );
+  console.log("Wynik zapytania:", result.rows[0]);
+  return result.rows[0] || null;
+};
+
+export const getBatchWordTranslations = async (client, wordIds) => {
+  if (wordIds.length === 0) return [];
+
+  const query = `
+    SELECT 
+      t1.word_id,
+      t1.translation as en_translation,
+      t1.description as en_description,
+      t2.translation as pl_translation,
+      t2.description as pl_description
+    FROM translation t1
+    LEFT JOIN translation t2 
+      ON t1.word_id = t2.word_id 
+      AND t2.language = 'pl'
+    WHERE t1.language = 'en'
+      AND t1.word_id = ANY($1)
+  `;
+
+  console.log("Wykonuję zapytanie:", query, wordIds);
+  const result = await client.query(query, [wordIds]);
+  return result.rows;
 };

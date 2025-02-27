@@ -1,12 +1,10 @@
 // useBoxesDB.js
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import { SettingsContext } from "../../pages/settings/properties";
 import api from "../../utils/api";
 
 export default function useBoxesDB(lvl) {
-  // Ustawienia z kontekstu
   const { isLoggedIn } = useContext(SettingsContext);
-
   const [boxes, setBoxes] = useState({
     boxOne: [],
     boxTwo: [],
@@ -14,12 +12,11 @@ export default function useBoxesDB(lvl) {
     boxFour: [],
     boxFive: [],
   });
-
   const [autoSave, setAutoSave] = useState(false);
-  let deviceId = localStorage.getItem("deviceId");
+  const deviceId = localStorage.getItem("deviceId");
 
-  // 1. Poprawiona funkcja serwerAutosave
-  const serwerAutosave = async () => {
+  // 1. Użycie useCallback dla funkcji serwerowych
+  const serwerAutosave = useCallback(async () => {
     // Generowanie dynamicznych danych z boxów
     const words = Object.entries(boxes).flatMap(([boxName, items]) =>
       items.map(({ id }) => ({ id, boxName }))
@@ -37,144 +34,141 @@ export default function useBoxesDB(lvl) {
     } catch (error) {
       console.error("Błąd autozapisu:", error);
     }
-  };
+  }, [boxes, lvl, deviceId]);
 
-  const serwerAutoload = async () => {
+  const serwerAutoload = useCallback(async () => {
     try {
       const response = await api.post("/user/auto-load");
-      console.log("wczytywanie danych", response.data);
+      // 2. Po wczytaniu z serwera - aktualizacja IndexedDB
+      console.log(response)
+      console.log(response.data.words)
+      await updateIndexedDBFromServer(response.data.words);
+      console.log("Dane z serwera wczytane i zapisane w IndexedDB");
     } catch (error) {
-      console.error("Błąd wczytywania z serwera:", error);
+      /* ... */
     }
-  };
+  }, [lvl]);
 
-  // 1. Odczyt z IndexedDB
-  useEffect(() => {
-    const loadData = async () => {
-      const request = indexedDB.open("SavedBoxes", 1);
-
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        if (!db.objectStoreNames.contains("boxesB2")) {
-          db.createObjectStore("boxesB2", { keyPath: "id" });
-        }
-        if (!db.objectStoreNames.contains("boxesC1")) {
-          db.createObjectStore("boxesC1", { keyPath: "id" });
-        }
-      };
-
-      if (isLoggedIn) {
-        console.log("pobieram dane z serwera");
-        await serwerAutoload();
-      }
-
-      request.onsuccess = (event) => {
-        const db = event.target.result;
-        if (db.objectStoreNames.contains(`boxes${lvl}`)) {
-          const transaction = db.transaction([`boxes${lvl}`], "readonly");
-          const store = transaction.objectStore(`boxes${lvl}`);
-          const getAllRequest = store.getAll();
-
-          getAllRequest.onsuccess = () => {
-            const allData = getAllRequest.result;
-            const newBoxesState = {
-              boxOne: [],
-              boxTwo: [],
-              boxThree: [],
-              boxFour: [],
-              boxFive: [],
-            };
-            allData.forEach((item) => {
-              const { boxName, ...rest } = item;
-              if (newBoxesState[boxName]) {
-                newBoxesState[boxName].push(rest);
-              }
-            });
-            setBoxes(newBoxesState);
-          };
-          getAllRequest.onerror = () => {
-            console.error("Błąd odczytu z boxes w IndexedDB");
-          };
-        }
-      };
-
-      request.onerror = (event) => {
-        console.error("IndexedDB error:", event.target.error);
-      };
-    };
-    // Wywołaj funkcję zapisu
-    loadData().catch((error) => {
-      console.error("Błąd podczas wczytywania:", error);
-    });
-  }, [lvl, serwerAutoload]);
-
-  // 2. Zapis do IndexedDB, wywoływany jeśli autoSave == true
-  useEffect(() => {
-    const saveData = async () => {
-      if (!autoSave) return;
-      console.log("Rozpoczęcie autozapisu");
-
-      if (isLoggedIn) {
-        console.log("wysyłam na serwer");
-        await serwerAutosave();
-      }
-
-      // Operacje IndexedDB
-      await new Promise((resolve, reject) => {
+  // 3. Nowa funkcja do aktualizacji IndexedDB z danymi z serwera
+  const updateIndexedDBFromServer = useCallback(
+    async (serverData) => {
+      return new Promise((resolve, reject) => {
         const request = indexedDB.open("SavedBoxes", 1);
 
         request.onsuccess = (event) => {
           const db = event.target.result;
-          if (!db.objectStoreNames.contains(`boxes${lvl}`)) {
-            reject(`Brak store boxes${lvl}`);
-            return;
-          }
-
           const transaction = db.transaction([`boxes${lvl}`], "readwrite");
           const store = transaction.objectStore(`boxes${lvl}`);
 
           store.clear().onsuccess = () => {
-            const addRequests = [];
-
-            Object.entries(boxes).forEach(([boxName, items]) => {
-              items.forEach((item) => {
-                const itemWithBox = { ...item, boxName };
-                addRequests.push(store.add(itemWithBox));
-              });
+            serverData.forEach((item) => {
+              store.add(item);
             });
-
-            Promise.all(
-              addRequests.map(
-                (req) =>
-                  new Promise((res, rej) => {
-                    req.onsuccess = res;
-                    req.onerror = rej;
-                  })
-              )
-            )
-              .then(() => {
-                console.log("Zapisano w IndexedDB");
-                resolve();
-              })
-              .catch(reject);
+            resolve();
           };
         };
 
-        request.onerror = (event) => {
-          reject(event.target.error);
+        request.onerror = reject;
+      });
+    },
+    [lvl]
+  );
+
+  // 4. Poprawiony efekt ładowania danych
+  useEffect(() => {
+    const loadData = async () => {
+      // Najpierw sprawdź czy jest zalogowany
+      if (isLoggedIn) {
+        await serwerAutoload();
+      }
+
+      // Następnie zawsze ładuj z IndexedDB
+      const dbData = await new Promise((resolve, reject) => {
+        const request = indexedDB.open("SavedBoxes", 1);
+
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains("boxesB2")) {
+            db.createObjectStore("boxesB2", { keyPath: "id" });
+          }
+          if (!db.objectStoreNames.contains("boxesC1")) {
+            db.createObjectStore("boxesC1", { keyPath: "id" });
+          }
         };
+
+        request.onsuccess = (event) => {
+          const db = event.target.result;
+          const transaction = db.transaction([`boxes${lvl}`], "readonly");
+          const store = transaction.objectStore(`boxes${lvl}`);
+          const request = store.getAll();
+
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = reject;
+        };
+
+        request.onerror = reject;
       });
 
-      setAutoSave(false);
-      console.log("Cały proces zapisu zakończony");
+      // Aktualizacja stanu
+      const newBoxesState = {
+        boxOne: [],
+        boxTwo: [],
+        boxThree: [],
+        boxFour: [],
+        boxFive: [],
+      };
+      dbData.forEach((item) => {
+        const { boxName, ...rest } = item;
+        if (newBoxesState[boxName]) {
+          newBoxesState[boxName].push(rest);
+        }
+      });
+      setBoxes(newBoxesState);
     };
 
-    // Wywołaj funkcję zapisu
-    saveData().catch((error) => {
-      console.error("Błąd podczas zapisu:", error);
-      setAutoSave(false);
-    });
-  }, [autoSave, boxes, lvl, isLoggedIn]);
+    loadData();
+  }, [lvl, isLoggedIn, serwerAutoload]); // 5. Stabilne zależności
+
+  // 6. Poprawiony efekt zapisu
+  useEffect(() => {
+    const saveData = async () => {
+      if (!autoSave) return;
+
+      try {
+        if (isLoggedIn) await serwerAutosave();
+
+        await new Promise((resolve, reject) => {
+          const request = indexedDB.open("SavedBoxes", 1);
+
+          request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction([`boxes${lvl}`], "readwrite");
+            const store = transaction.objectStore(`boxes${lvl}`);
+
+            store.clear().onsuccess = async () => {
+              const promises = [];
+              Object.entries(boxes).forEach(([boxName, items]) => {
+                items.forEach((item) => {
+                  promises.push(store.put({ ...item, boxName }));
+                });
+              });
+
+              await Promise.all(promises);
+              resolve();
+            };
+          };
+
+          request.onerror = reject;
+        });
+
+        setAutoSave(false);
+      } catch (error) {
+        /* ... */
+      }
+    };
+
+    saveData();
+  }, [autoSave, boxes, lvl, isLoggedIn, serwerAutosave]);
 
   return { boxes, setBoxes, autoSave, setAutoSave };
 }

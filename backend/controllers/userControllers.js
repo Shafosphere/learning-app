@@ -10,6 +10,8 @@ import {
   userRankingUpdate,
   getTopRankingUsers,
   insertOrUpdateUserAutosave,
+  getAutosaveData,
+  getBatchWordTranslations,
 } from "../models/userModel.js";
 
 import pool from "../dbClient.js";
@@ -155,6 +157,7 @@ export const autoSave = async (req, res) => {
   const { level, deviceId, words } = req.body;
   console.log("Username:", username);
   console.log("Data:", level, deviceId);
+  console.log("Data:", words);
 
   try {
     const client = await pool.connect();
@@ -171,34 +174,70 @@ export const autoSave = async (req, res) => {
 };
 
 export const autoLoad = async (req, res) => {
+  const userId = req.user.id;
+  const username = req.user.username;
+  console.log("wczytywanie:", userId);
+
   try {
-    const result = await pool.query(
-      `SELECT words FROM user_autosave 
-       WHERE user_id = $1 AND level = $2`,
-      [req.user.id, req.body.level]
-    );
+    const client = await pool.connect(); // Dodaj połączenie z puli
+    console.log("wczytuję:");
 
-    if (result.rows.length === 0) {
-      return res.json({ words: [] });
+    try {
+      const autosaveData = await getAutosaveData(client, userId); // Przekaż client
+      console.log("Autosave data:", autosaveData);
+
+      if (!autosaveData) {
+        console.log("Brak zapisanych danych");
+        return res.status(404).json({ message: "Brak zapisanych danych" });
+      }
+
+      const wordsFromSave = autosaveData.words; // Usuń JSON.parse()
+      console.log("Words from save:", wordsFromSave);
+
+      const wordIds = [...new Set(wordsFromSave.map((w) => w.id))];
+      console.log("Unique word IDs:", wordIds);
+
+      const translations = await getBatchWordTranslations(client, wordIds); // Przekaż client
+      console.log("Tłumaczenia:", translations);
+
+      const formattedWords = wordsFromSave
+        .map((word) => {
+          const translation = translations.find((t) => t.word_id === word.id);
+          return (
+            translation && {
+              id: word.id,
+              boxName: word.boxName,
+              wordEng: {
+                word: translation.en_translation,
+                description: translation.en_description,
+              },
+              wordPl: {
+                word: translation.pl_translation,
+                description: translation.pl_description,
+              },
+            }
+          );
+        })
+        .filter(Boolean);
+
+      console.log("Level:", autosaveData.level);
+      console.log("Formatted words:", formattedWords);
+
+      // TYLKO JEDNA ODPOWIEDŹ
+      res.status(200).json({
+        message: "Dane odebrane",
+        username,
+        level: autosaveData.level,
+        words: formattedWords,
+      });
+    } finally {
+      client.release(); // Zwolnij połączenie
     }
-
-    // Pobierz wszystkie ID słówek z autosave
-    const wordIds = result.rows[0].words.map((item) => item.id);
-
-    // Pobierz pełne dane słówek
-    const wordsResult = await pool.query(
-      `SELECT w.*, t.translation, t.language 
-       FROM words w
-       LEFT JOIN translation t ON w.id = t.word_id
-       WHERE w.id = ANY($1)`,
-      [wordIds]
-    );
-
-    res.json({
-      words: wordsResult.rows,
-      originalStructure: result.rows[0].words, // Potrzebne do odtworzenia boxów
-    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Błąd:", error);
+    res.status(500).json({
+      message: "Błąd serwera",
+      error: error.message,
+    });
   }
 };
