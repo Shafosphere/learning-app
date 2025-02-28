@@ -103,3 +103,16 @@ CREATE TABLE user_autosave (
   last_saved TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE user_autosave (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  level VARCHAR(2) NOT NULL,
+  words JSONB NOT NULL,
+  device_identifier VARCHAR(255),
+  last_saved TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT unique_user_level UNIQUE (user_id, level)
+);
+
+ALTER TABLE user_autosave
+ADD COLUMN version SERIAL NOT NULL;

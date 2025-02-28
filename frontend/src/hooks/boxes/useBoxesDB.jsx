@@ -38,7 +38,7 @@ export default function useBoxesDB(lvl) {
 
   const serwerAutoload = useCallback(async () => {
     try {
-      const response = await api.post("/user/auto-load");
+      const response = await api.post("/user/auto-load", lvl);
       // 2. Po wczytaniu z serwera - aktualizacja IndexedDB
       console.log(response)
       console.log(response.data.words)

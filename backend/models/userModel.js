@@ -733,9 +733,8 @@ export const insertOrUpdateUserAutosave = async (
   const query = `
     INSERT INTO user_autosave (user_id, level, words, device_identifier)
     VALUES ($1, $2, $3, $4)
-    ON CONFLICT (user_id)
+    ON CONFLICT (user_id, level)
     DO UPDATE SET
-      level = EXCLUDED.level,
       words = EXCLUDED.words,
       device_identifier = EXCLUDED.device_identifier,
       last_saved = NOW();
@@ -744,11 +743,11 @@ export const insertOrUpdateUserAutosave = async (
   await client.query(query, values);
 };
 
-// Zmodyfikowane funkcje pomocnicze
-export const getAutosaveData = async (client, userId) => {
+// Zmodyfikowana funkcja pomocnicza, która pobiera dane z uwzględnieniem level
+export const getAutosaveData = async (client, userId, level) => {
   const result = await client.query(
-    "SELECT * FROM user_autosave WHERE user_id = $1",
-    [userId]
+    "SELECT * FROM user_autosave WHERE user_id = $1 AND level = $2",
+    [userId, level]
   );
   console.log("Wynik zapytania:", result.rows[0]);
   return result.rows[0] || null;
@@ -771,7 +770,6 @@ export const getBatchWordTranslations = async (client, wordIds) => {
     WHERE t1.language = 'en'
       AND t1.word_id = ANY($1)
   `;
-
   console.log("Wykonuję zapytanie:", query, wordIds);
   const result = await client.query(query, [wordIds]);
   return result.rows;

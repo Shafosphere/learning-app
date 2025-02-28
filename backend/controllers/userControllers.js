@@ -176,6 +176,8 @@ export const autoSave = async (req, res) => {
 export const autoLoad = async (req, res) => {
   const userId = req.user.id;
   const username = req.user.username;
+  const { level, deviceId } = req.body;
+  console.log("Data:", level, deviceId);
   console.log("wczytywanie:", userId);
 
   try {
@@ -184,7 +186,7 @@ export const autoLoad = async (req, res) => {
 
     try {
       const autosaveData = await getAutosaveData(client, userId); // Przekaż client
-      console.log("Autosave data:", autosaveData);
+      // console.log("Autosave data:", autosaveData);
 
       if (!autosaveData) {
         console.log("Brak zapisanych danych");
@@ -192,13 +194,13 @@ export const autoLoad = async (req, res) => {
       }
 
       const wordsFromSave = autosaveData.words; // Usuń JSON.parse()
-      console.log("Words from save:", wordsFromSave);
+      // console.log("Words from save:", wordsFromSave);
 
       const wordIds = [...new Set(wordsFromSave.map((w) => w.id))];
-      console.log("Unique word IDs:", wordIds);
+      // console.log("Unique word IDs:", wordIds);
 
       const translations = await getBatchWordTranslations(client, wordIds); // Przekaż client
-      console.log("Tłumaczenia:", translations);
+      // console.log("Tłumaczenia:", translations);
 
       const formattedWords = wordsFromSave
         .map((word) => {
