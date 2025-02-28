@@ -177,15 +177,14 @@ export const autoLoad = async (req, res) => {
   const userId = req.user.id;
   const username = req.user.username;
   const { level, deviceId } = req.body;
-  console.log("Data:", level, deviceId);
-  console.log("wczytywanie:", userId);
+
 
   try {
     const client = await pool.connect(); // Dodaj połączenie z puli
-    console.log("wczytuję:");
 
     try {
-      const autosaveData = await getAutosaveData(client, userId); // Przekaż client
+      console.log("wczytywanie nicku i levela:", userId, level);
+      const autosaveData = await getAutosaveData(client, userId, level); // Przekaż client
       // console.log("Autosave data:", autosaveData);
 
       if (!autosaveData) {
