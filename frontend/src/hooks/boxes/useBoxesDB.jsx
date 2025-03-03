@@ -38,10 +38,20 @@ export default function useBoxesDB(lvl) {
 
   const serwerAutoload = useCallback(async () => {
     try {
-      const response = await api.post("/user/auto-load", { level: lvl, deviceId: deviceId });
+      const response = await api.post("/user/auto-load", {
+        level: lvl,
+        deviceId: deviceId,
+      });
+      const serverData = response.data;
+      if (serverData.last_saved) {
+        localStorage.setItem(
+          `serverTimestamp_${lvl}`,
+          new Date(serverData.last_saved).getTime()
+        );
+      }
       // 2. Po wczytaniu z serwera - aktualizacja IndexedDB
-      console.log(response)
-      console.log(response.data.words)
+      console.log(response);
+      console.log(response.data.words);
       await updateIndexedDBFromServer(response.data.words);
       console.log("Dane z serwera wczytane i zapisane w IndexedDB");
     } catch (error) {
@@ -74,12 +84,56 @@ export default function useBoxesDB(lvl) {
     [lvl]
   );
 
+  const resolveSaveConflict = async () => {
+    const guestTimestamp = localStorage.getItem(`guestTimestamp_${lvl}`);
+    if (!guestTimestamp) return;
+
+    try {
+      const response = await api.post("/user/auto-load", {
+        level: lvl,
+        deviceId: deviceId,
+      });
+      const serverData = response.data;
+
+      if (!serverData.last_saved) {
+        await serwerAutosave();
+        return;
+      }
+
+      const serverTimestamp = new Date(serverData.last_saved).getTime();
+      const guestTimeNumber = parseInt(guestTimestamp);
+
+      if (guestTimeNumber > serverTimestamp) {
+        const confirmOverride = window.confirm(
+          `Masz niezapisany progres jako gość (${new Date(
+            guestTimeNumber
+          ).toLocaleString()}). ` +
+            `Na koncie istnieje zapis z ${new Date(
+              serverTimestamp
+            ).toLocaleString()}.\n\n` +
+            `Kontynuować lokalny progres? (OK - tak, Anuluj - wczytaj serwerowy)`
+        );
+
+        if (confirmOverride) {
+          await serwerAutosave();
+        } else {
+          await updateIndexedDBFromServer(serverData.words);
+        }
+      }
+
+      localStorage.removeItem(`guestTimestamp_${lvl}`);
+    } catch (error) {
+      console.error("Błąd konfliktu:", error);
+    }
+  };
+
   // 4. Poprawiony efekt ładowania danych
   useEffect(() => {
     const loadData = async () => {
       // Najpierw sprawdź czy jest zalogowany
       if (isLoggedIn) {
-        await serwerAutoload();
+        await resolveSaveConflict(); // Najpierw rozwiąż konflikt
+        await serwerAutoload(); // Dopiero potem wczytaj
       }
 
       // Następnie zawsze ładuj z IndexedDB
@@ -133,6 +187,11 @@ export default function useBoxesDB(lvl) {
   useEffect(() => {
     const saveData = async () => {
       if (!autoSave) return;
+
+      // Dla gościa: zapisz timestamp
+      if (!isLoggedIn) {
+        localStorage.setItem(`guestTimestamp_${lvl}`, Date.now());
+      }
 
       try {
         if (isLoggedIn) await serwerAutosave();

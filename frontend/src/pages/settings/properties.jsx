@@ -81,21 +81,60 @@ export const SettingsProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       const response = await api.get("/auth/user");
-      if (response.status === 200 && response.data.loggedIn) {
+
+      if (response.data.loggedIn) {
+        // Zapisz czas wygaśnięcia
+        localStorage.setItem("token_expires", response.data.user.expiresAt);
+
+        // Ustaw timer automatycznego czyszczenia
+        const timeLeft = response.data.expiresIn;
+        if (timeLeft > 0) {
+          setTimeout(handleLogoutLogic, timeLeft);
+        }
+
         setIsLoggedIn(true);
         setUser(response.data.user);
       } else {
-        setIsLoggedIn(false);
-        setUser(null);
+        handleLogoutLogic();
       }
     } catch (error) {
-      setIsLoggedIn(false);
-      setUser(null);
+      handleLogoutLogic();
+    }
+  };
+
+  // Funkcja do czyszczenia danych
+  const handleLogoutLogic = () => {
+    setIsLoggedIn(false);
+    setUser(null);
+    localStorage.removeItem("token_expires");
+
+    // Usuń guest timestamps tylko jeśli był zalogowany
+    if (localStorage.getItem("token")) {
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("guestTimestamp_")) {
+          localStorage.removeItem(key);
+        }
+      });
     }
   };
 
   useEffect(() => {
     checkAuthStatus();
+  }, []);
+
+  // W SettingsProvider
+  useEffect(() => {
+    const checkTokenValidity = () => {
+      const expiresAt = localStorage.getItem("token_expires");
+
+      if (expiresAt && Date.now() > parseInt(expiresAt)) {
+        handleLogoutLogic();
+      }
+    };
+
+    // Sprawdzaj co 30 sekund
+    const interval = setInterval(checkTokenValidity, 30_000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {

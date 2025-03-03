@@ -22,7 +22,7 @@ import "./sidebar.css";
 import logo from "../../data/logo.png";
 
 export default function Sidebar() {
-  const { isLoggedIn, setIsLoggedIn, setUser, toggleTheme, logostatus} =
+  const { isLoggedIn, setIsLoggedIn, setUser, toggleTheme, logostatus } =
     useContext(SettingsContext);
   const { setPopup } = useContext(PopupContext);
 
@@ -34,7 +34,6 @@ export default function Sidebar() {
   const handleFormVisibleChange = (visible) => {
     setFormVisible(visible);
   };
-
 
   useEffect(() => {
     const checkAdminRole = async () => {
@@ -59,6 +58,13 @@ export default function Sidebar() {
       await api.post("/auth/logout");
       setIsLoggedIn(false);
       setUser(null);
+
+      // Object.keys(localStorage).forEach((key) => {
+      //   if (key.startsWith("guestTimestamp_")) {
+      //     localStorage.removeItem(key);
+      //   }
+      // });
+
       setPopup({
         message: intl.formatMessage({
           id: "logoutSuccessful",
@@ -86,11 +92,7 @@ export default function Sidebar() {
           <Link to="/about">
             {logostatus ? (
               <span>
-                <img
-                  alt="logo"
-                  className="sidebar-logo"
-                  src={logo}
-                />
+                <img alt="logo" className="sidebar-logo" src={logo} />
               </span>
             ) : (
               <span className="sidebar-initial">M</span>
@@ -187,7 +189,10 @@ export default function Sidebar() {
 
           <div>
             {isLoggedIn && (
-              <div onClick={() => setFormVisible(true)} className="link-container">
+              <div
+                onClick={() => setFormVisible(true)}
+                className="link-container"
+              >
                 <span className="sidebar-initial link-icon">
                   <IoBug />
                 </span>

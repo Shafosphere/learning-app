@@ -222,7 +222,7 @@ export const autoLoad = async (req, res) => {
         .filter(Boolean);
 
       console.log("Level:", autosaveData.level);
-      console.log("Formatted words:", formattedWords);
+      console.log("Level:", autosaveData.last_saved);
 
       // TYLKO JEDNA ODPOWIEDŹ
       res.status(200).json({
@@ -230,6 +230,7 @@ export const autoLoad = async (req, res) => {
         username,
         level: autosaveData.level,
         words: formattedWords,
+        last_saved: autosaveData.last_saved,
       });
     } finally {
       client.release(); // Zwolnij połączenie

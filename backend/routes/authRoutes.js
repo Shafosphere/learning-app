@@ -35,7 +35,7 @@ router.post("/login", loginRateLimiter, loginValidator, loginUser);
 
 router.post("/logout", authenticateToken, logoutUser);
 
-router.post("/information", authenticateToken, getUserInformationValidator,userInformation);
+router.post("/information", authenticateToken, getUserInformationValidator, userInformation);
 
 router.patch(
   "/update",

@@ -17,7 +17,10 @@ const authenticateToken = (req, res, next) => {
         message: "Invalid or expired token. Please login again.",
       });
     }
-    req.user = user;
+    req.user = {
+      ...user,
+      expiresAt: user.exp * 1000 // Konwersja sekund na milisekundy
+    };
     next();
   });
 };

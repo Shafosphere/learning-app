@@ -72,9 +72,12 @@ export const adminWelcome = (req, res) => {
 };
 
 export const userWelcome = (req, res) => {
-  res.status(200).json({ loggedIn: true, user: req.user });
+  res.status(200).json({ 
+    loggedIn: true,
+    user: req.user,
+    expiresIn: req.user.expiresAt - Date.now() // Czas pozostały w ms
+  });
 };
-
 export const loginUser = async (req, res) => {
   const { username, password } = req.body;
 
