@@ -5,7 +5,14 @@ import React, { useEffect } from "react";
 import SkinSelector from "./skinselector";
 export default function Boxes({ boxes, activeBox, handleSetBox, addWords }) {
   const boxNames = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
+  const isDisabled = boxes["boxOne"].length + 30 > 90;
 
+  const handleAddWords = () => {
+    if (!isDisabled) {
+      addWords();
+    }
+  };
+  
   useEffect(() => {
     function handleKeyDown(event) {
       const boxes = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
@@ -34,12 +41,16 @@ export default function Boxes({ boxes, activeBox, handleSetBox, addWords }) {
             onClick={() => handleSetBox(boxName)}
             className="box"
           >
-            <SkinSelector boxName={boxName} activeBox={activeBox} boxes={boxes} />
+            <SkinSelector
+              boxName={boxName}
+              activeBox={activeBox}
+              boxes={boxes}
+            />
             <div className="word-count">{boxes[boxName].length}</div>
           </div>
         ))}
         <div className="smallscreenbutton">
-          <MyButton message="add" color="yellow" onClick={addWords} />
+          <MyButton message="add" color="yellow" onClick={handleAddWords} />
         </div>
       </div>
 
@@ -47,7 +58,7 @@ export default function Boxes({ boxes, activeBox, handleSetBox, addWords }) {
         <MyButton
           message={<FormattedMessage id="addWords" />}
           color="yellow"
-          onClick={addWords}
+          onClick={handleAddWords}
         />
       </div>
     </div>

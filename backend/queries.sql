@@ -116,3 +116,7 @@ CREATE TABLE user_autosave (
 
 ALTER TABLE user_autosave
 ADD COLUMN version SERIAL NOT NULL;
+
+ALTER TABLE user_autosave
+ADD COLUMN patch_number_b2 INT DEFAULT 1,
+ADD COLUMN patch_number_c1 INT DEFAULT 1;

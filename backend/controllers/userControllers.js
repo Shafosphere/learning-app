@@ -154,7 +154,7 @@ export const getRanking = async (req, res) => {
 export const autoSave = async (req, res) => {
   const username = req.user.username;
   const userId = req.user.id;
-  const { level, deviceId, words } = req.body;
+  const { level, deviceId, words, patchNumber } = req.body;
   console.log("Username:", username);
   console.log("Data:", level, deviceId);
   console.log("Data:", words);
@@ -162,8 +162,8 @@ export const autoSave = async (req, res) => {
   try {
     const client = await pool.connect();
     try {
-      await insertOrUpdateUserAutosave(client, userId, level, words, deviceId);
-      res.status(200).json({ message: "Dane odebrane", username });
+      await insertOrUpdateUserAutosave(client, userId, level, words, deviceId, patchNumber);
+      res.status(200).json({ message: "Dane odebrane" });
     } finally {
       client.release();
     }
@@ -231,6 +231,7 @@ export const autoLoad = async (req, res) => {
         level: autosaveData.level,
         words: formattedWords,
         last_saved: autosaveData.last_saved,
+        patchNumber: autosaveData[`patch_number_${level.toLowerCase()}`]
       });
     } finally {
       client.release(); // Zwolnij połączenie

@@ -25,8 +25,26 @@ import usePatch from "../../hooks/boxes/usePatch";
 export default function MainGame({ setDisplay, lvl }) {
   const intl = useIntl();
 
+  // Patch – numeracja i stany
+  const [patchNumberB2, setB2Patch] = usePersistedState(
+    "patchNumberB2-home",
+    1
+  );
+  const [patchNumberC1, setC1Patch] = usePersistedState(
+    "patchNumberC1-home",
+    1
+  );
+  const [totalB2Patches, setTotalB2] = useState(null);
+  const [totalC1Patches, setTotalC1] = useState(null);
+
   // *** 2. Stany i refy – logika danych ***
-  const { boxes, setBoxes, setAutoSave } = useBoxesDB(lvl);
+  const { boxes, setBoxes, setAutoSave } = useBoxesDB(
+    lvl,
+    patchNumberB2,
+    patchNumberC1,
+    setB2Patch,
+    setC1Patch
+  );
 
   // Ustawienia z kontekstu
   const {
@@ -62,18 +80,6 @@ export default function MainGame({ setDisplay, lvl }) {
   // Confetti
   const [showConfetti, setShowConfetti] = useState(false);
   const [generateConfetti, setGenerateConfetti] = useState(false);
-
-  // Patch – numeracja i stany
-  const [patchNumberB2, setB2Patch] = usePersistedState(
-    "patchNumberB2-home",
-    1
-  );
-  const [patchNumberC1, setC1Patch] = usePersistedState(
-    "patchNumberC1-home",
-    1
-  );
-  const [totalB2Patches, setTotalB2] = useState(null);
-  const [totalC1Patches, setTotalC1] = useState(null);
 
   // *** 3. Refy ***
   const timeoutRef = useRef(null);

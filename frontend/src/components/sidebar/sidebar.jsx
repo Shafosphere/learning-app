@@ -58,13 +58,6 @@ export default function Sidebar() {
       await api.post("/auth/logout");
       setIsLoggedIn(false);
       setUser(null);
-
-      // Object.keys(localStorage).forEach((key) => {
-      //   if (key.startsWith("guestTimestamp_")) {
-      //     localStorage.removeItem(key);
-      //   }
-      // });
-
       setPopup({
         message: intl.formatMessage({
           id: "logoutSuccessful",

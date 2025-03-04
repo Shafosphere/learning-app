@@ -723,23 +723,35 @@ export const getTopRankingUsers = async (limit) => {
   return result.rows;
 };
 
+// Zmodyfikowana funkcja insertOrUpdateUserAutosave
 export const insertOrUpdateUserAutosave = async (
   client,
   userId,
   level,
   words,
-  device_identifier
+  device_identifier,
+  patchNumber
 ) => {
   const query = `
-    INSERT INTO user_autosave (user_id, level, words, device_identifier)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO user_autosave (user_id, level, words, device_identifier, 
+      ${level === "B2" ? "patch_number_b2" : "patch_number_c1"})
+    VALUES ($1, $2, $3, $4, $5)
     ON CONFLICT (user_id, level)
     DO UPDATE SET
       words = EXCLUDED.words,
       device_identifier = EXCLUDED.device_identifier,
+      ${level === "B2" ? "patch_number_b2" : "patch_number_c1"} = EXCLUDED.${
+    level === "B2" ? "patch_number_b2" : "patch_number_c1"
+  },
       last_saved = NOW();
   `;
-  const values = [userId, level, JSON.stringify(words), device_identifier];
+  const values = [
+    userId,
+    level,
+    JSON.stringify(words),
+    device_identifier,
+    patchNumber,
+  ];
   await client.query(query, values);
 };
 
