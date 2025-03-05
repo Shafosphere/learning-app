@@ -3,9 +3,10 @@ import React, { useContext, useState, useEffect } from "react";
 import { SettingsContext } from "./properties";
 import { PopupContext } from "../../components/popup/popupcontext";
 import ConfirmWindow from "../../components/confirm/confirm";
-import { FormattedMessage, useIntl } from "react-intl"; // używamy także useIntl
+import { FormattedMessage, useIntl } from "react-intl";
 import FirstBookMark from "../../components/settings/firstbookmark";
 import SecondBookMark from "../../components/settings/secondbookmark";
+import api from "../../utils/api";
 
 export default function Settings() {
   const intl = useIntl();
@@ -29,6 +30,7 @@ export default function Settings() {
     logostatus,
     toggleSkin,
     skinstatus,
+    isLoggedIn,
   } = useContext(SettingsContext);
 
   // popup
@@ -49,9 +51,7 @@ export default function Settings() {
 
   function saveSettings() {
     setDailyGoal(newDailyGoal);
-
     setPopup({
-      // Zamiast tekstu wprost używamy tłumaczenia
       message: intl.formatMessage({
         id: "settings.saved",
         defaultMessage: "Settings saved",
@@ -85,11 +85,9 @@ export default function Settings() {
     try {
       localStorage.clear();
       const deleteIndexedDB = () => {
-        // Niektóre przeglądarki nie wspierają indexedDB.databases()
         const dbs = indexedDB.databases
           ? indexedDB.databases()
           : Promise.resolve([]);
-
         dbs.then((databases) => {
           databases.forEach((db) => {
             indexedDB.deleteDatabase(db.name);
@@ -102,7 +100,6 @@ export default function Settings() {
           });
         });
       };
-
       deleteIndexedDB();
       window.location.reload();
     } catch (error) {
@@ -113,6 +110,62 @@ export default function Settings() {
         }),
         error
       );
+    }
+  }
+
+  // Funkcja resetująca progres w Vocabulary (localStorage)
+  function resetProgressVoca(lvl) {
+    const keysToRemove = [
+      `carouselItems-${lvl}`,
+      `lastDataItemId-${lvl}`,
+      `currentPatch-${lvl}`,
+      `patchLength-${lvl}`,
+      `dataIndexForBottomDiv-${lvl}`,
+      `end-${lvl}`,
+      `summary-${lvl}`,
+      `wordsAnsweredCount-${lvl}`,
+    ];
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+  }
+
+  // Funkcja resetująca progres w Flashcards (localStorage + IndexedDB)
+  async function resetProgressFlashcards(level) {
+    // Reset numeru paczki
+    localStorage.setItem(`patchNumber${level}-home`, 1);
+    // Czyścimy store w IndexedDB
+
+
+    
+    const request = indexedDB.open("SavedBoxes", 2);
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const storeName = `boxes${level}`;
+      if (db.objectStoreNames.contains(storeName)) {
+        const transaction = db.transaction([storeName], "readwrite");
+        const store = transaction.objectStore(storeName);
+        const clearRequest = store.clear();
+        clearRequest.onsuccess = () => {
+          console.log(`IndexedDB store ${storeName} cleared successfully.`);
+        };
+        clearRequest.onerror = (e) => {
+          console.error(`Error clearing store ${storeName}:`, e);
+        };
+      } else {
+        console.warn(`Store ${storeName} not found in IndexedDB.`);
+      }
+    };
+    request.onerror = (e) => {
+      console.error("Error opening IndexedDB:", e);
+    };
+
+    if (isLoggedIn) {
+      try {
+        await api.post('/user/auto-delete', { level });
+        console.log('Progres zresetowany na serwerze');
+      } catch (error) {
+        console.error('Błąd resetowania na serwerze:', error);
+        throw error;
+      }
     }
   }
 
@@ -155,25 +208,27 @@ export default function Settings() {
               handleDailyGoalChange={handleDailyGoalChange}
               newDailyGoal={newDailyGoal}
               saveSettings={saveSettings}
-            />
-          )}
-          {activePage === "2" && (
-            <SecondBookMark
               diacritical={diacritical}
               setDiacritical={setDiacritical}
-              setSpan={setSpan}
               spellChecking={spellChecking}
               setSpellChecking={setSpellChecking}
-              showConfirm={showConfirm}
               toggleLogo={toggleLogo}
               logostatus={logostatus}
               toggleSkin={toggleSkin}
               skinstatus={skinstatus}
             />
           )}
+          {activePage === "2" && (
+            <SecondBookMark
+              setSpan={setSpan}
+              showConfirm={showConfirm}
+              clearEverything={clearEverything}
+              resetProgressVoca={resetProgressVoca}
+              resetProgressFlashcards={resetProgressFlashcards}
+            />
+          )}
         </div>
 
-        {/* descriptions */}
         <div className="settings-right">
           <div className="explanation">
             {(() => {
@@ -236,6 +291,12 @@ export default function Settings() {
                     defaultMessage="This will reset the progress at the specified level in the vocabulary tab."
                   />
                 ),
+                resetsflashcard: (
+                  <FormattedMessage
+                    id="explanation.resetsflashcard"
+                    defaultMessage="This will reset the progress at the specified level in the vocabulary tab."
+                  />
+                ),
                 toggleLogo: (
                   <FormattedMessage
                     id="explanation.toggleLogo"
@@ -249,7 +310,6 @@ export default function Settings() {
                   />
                 ),
               };
-
               return contentMap[activeSpan] || null;
             })()}
           </div>

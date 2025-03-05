@@ -244,3 +244,36 @@ export const autoLoad = async (req, res) => {
     });
   }
 };
+
+// controllers/userController.js
+export const autoDelete = async (req, res) => {
+  const userId = req.user.id;
+  const { level } = req.body;
+
+  try {
+    const client = await pool.connect();
+    try {
+      // Usuń cały zapis dla danego poziomu
+      await client.query(
+        'DELETE FROM user_autosave WHERE user_id = $1 AND level = $2',
+        [userId, level]
+      );
+      
+      // Zresetuj również patch number w osobnej kolumnie
+      const updateQuery = `
+        UPDATE user_autosave 
+        SET 
+          ${level === 'B2' ? 'patch_number_b2 = 1' : 'patch_number_c1 = 1'}
+        WHERE user_id = $1
+      `;
+      await client.query(updateQuery, [userId]);
+
+      res.status(200).json({ success: true });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Błąd podczas resetowania progresu:', error);
+    res.status(500).json({ message: 'Błąd serwera podczas resetowania' });
+  }
+};

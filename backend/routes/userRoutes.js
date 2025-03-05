@@ -10,6 +10,7 @@ import {
   getRanking,
   autoSave,
   autoLoad,
+  autoDelete
 } from "../controllers/userControllers.js";
 
 import { deleteUserValidator } from "../middleware/validators/users/delete-deleteuser-vali.js";
@@ -42,6 +43,8 @@ router.delete(
 router.post("/auto-save", authenticateToken, autoSave);
 
 router.post("/auto-load", authenticateToken, autoLoad);
+
+router.post("/auto-delete", authenticateToken, autoDelete);
 
 router.get("/ranking", getRanking);
 

@@ -19,6 +19,15 @@ export default function FirstBookMark({
   handleDailyGoalChange,
   newDailyGoal,
   saveSettings,
+
+  diacritical,
+  setDiacritical,
+  spellChecking,
+  setSpellChecking,
+  toggleLogo,
+  logostatus,
+  toggleSkin,
+  skinstatus,
 }) {
   return (
     <>
@@ -84,29 +93,88 @@ export default function FirstBookMark({
         </div>
       </div>
 
-      {/* Reset */}
+      {/* Diacritical marks */}
       <div
-        className="container-resets onMouse"
-        onMouseEnter={() => setSpan("resetsbuttons")}
+        className="switch-container onMouse"
+        onMouseEnter={() => setSpan("diacritical")}
       >
         <span className="switch-text">
-          <FormattedMessage id="resetButtons" defaultMessage="Reset Buttons" />
-        </span>
-        <div className="resets-buttons">
-          <MyButton
-            message={<FormattedMessage id="resetAll" defaultMessage="All" />}
-            color="red"
-            onClick={() =>
-              showConfirm(
-                <FormattedMessage
-                  id="areYouSureResetEverything"
-                  defaultMessage="Are you sure you want to reset everything?"
-                />,
-                () => clearEverything()
-              )
-            }
+          <FormattedMessage
+            id="switches.diacritical"
+            defaultMessage="Diacritical marks"
           />
-        </div>
+        </span>
+        <label className="switch">
+          <input
+            onClick={() => setDiacritical(!diacritical)}
+            defaultChecked={diacritical === false}
+            type="checkbox"
+          />
+          <span className="slider round"></span>
+        </label>
+      </div>
+
+      {/* Margin of error */}
+      <div
+        className="switch-container onMouse"
+        onMouseEnter={() => setSpan("spellChecking")}
+      >
+        <span className="switch-text">
+          <FormattedMessage
+            id="switches.spellChecking"
+            defaultMessage="Margin of error"
+          />
+        </span>
+        <label className="switch">
+          <input
+            onClick={() => setSpellChecking(!spellChecking)}
+            defaultChecked={spellChecking === true}
+            type="checkbox"
+          />
+          <span className="slider round"></span>
+        </label>
+      </div>
+
+      {/* Toggle Super Logo */}
+      <div
+        className="switch-container onMouse"
+        onMouseEnter={() => setSpan("toggleLogo")}
+      >
+        <span className="switch-text">
+          <FormattedMessage
+            id="switches.superLogo"
+            defaultMessage="Enable super logo"
+          />
+        </span>
+        <label className="switch">
+          <input
+            onClick={() => toggleLogo()}
+            defaultChecked={logostatus === true}
+            type="checkbox"
+          />
+          <span className="slider round"></span>
+        </label>
+      </div>
+
+      {/* Toggle Super Skin */}
+      <div
+        className="switch-container onMouse"
+        onMouseEnter={() => setSpan("toggleSkin")}
+      >
+        <span className="switch-text">
+          <FormattedMessage
+            id="switches.superSkin"
+            defaultMessage="Enable super box skin"
+          />
+        </span>
+        <label className="switch">
+          <input
+            onClick={() => toggleSkin()}
+            defaultChecked={skinstatus === true}
+            type="checkbox"
+          />
+          <span className="slider round"></span>
+        </label>
       </div>
 
       {/* Daily Goal */}

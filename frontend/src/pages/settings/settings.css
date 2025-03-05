@@ -254,6 +254,11 @@ input:focus + .slider {
   .button-container-save {
     padding: 0.5rem 0.75rem 0.5rem 0.75rem;
   }
+  .resets-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
@@ -323,6 +328,11 @@ input:focus + .slider {
     flex-direction: row;
     justify-content: space-between;
     padding: 1rem 0.75rem 1rem 0.75rem;
+  }
+  .resets-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
   }
   .resets-buttons button {
     width: 9rem;
@@ -407,6 +417,11 @@ input:focus + .slider {
   }
   .button-container-save {
     padding: 0.5rem 0.75rem 0.5rem 0.75rem;
+  }
+  .resets-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
   }
 }
 
@@ -502,5 +517,11 @@ input:focus + .slider {
   }
   .flags img {
     height: 2.5rem;
+  }
+  .resets-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 0.25rem;
+    justify-content: left;
   }
 }

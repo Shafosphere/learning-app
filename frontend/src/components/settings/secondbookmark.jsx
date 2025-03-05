@@ -4,125 +4,83 @@ import { FormattedMessage } from "react-intl";
 import MyButton from "../button/button";
 
 export default function SecondBookMark({
-  diacritical,
-  setDiacritical,
   setSpan,
-  spellChecking,
-  setSpellChecking,
   showConfirm,
-  toggleLogo,
-  logostatus,
-  toggleSkin,
-  skinstatus,
+  clearEverything,
+  resetProgressVoca,
+  resetProgressFlashcards,
 }) {
   const intl = useIntl();
 
-  function resetProgress(lvl) {
-    localStorage.removeItem(`carouselItems-${lvl}`);
-    localStorage.removeItem(`lastDataItemId-${lvl}`);
-    localStorage.removeItem(`currentPatch-${lvl}`);
-    localStorage.removeItem(`patchLength-${lvl}`);
-    localStorage.removeItem(`dataIndexForBottomDiv-${lvl}`);
-    localStorage.removeItem(`end-${lvl}`);
-    localStorage.removeItem(`summary-${lvl}`);
-    localStorage.removeItem(`wordsAnsweredCount-${lvl}`);
-  }
-
   return (
     <div className="switches">
-      {/* Diacritical marks */}
+      {/* Reset ALL */}
       <div
-        className="switch-container onMouse"
-        onMouseEnter={() => setSpan("diacritical")}
+        className="container-resets onMouse"
+        onMouseEnter={() => setSpan("resetsbuttons")}
       >
         <span className="switch-text">
-          <FormattedMessage
-            id="switches.diacritical"
-            defaultMessage="Diacritical marks"
-          />
+          <FormattedMessage id="resetButtons" defaultMessage="Reset Buttons" />
         </span>
-        <label className="switch">
-          <input
-            onClick={() => setDiacritical(!diacritical)}
-            defaultChecked={diacritical === false}
-            type="checkbox"
+        <div className="resets-buttons">
+          <MyButton
+            message={<FormattedMessage id="resetAll" defaultMessage="All" />}
+            color="red"
+            onClick={() =>
+              showConfirm(
+                <FormattedMessage
+                  id="areYouSureResetEverything"
+                  defaultMessage="Are you sure you want to reset everything?"
+                />,
+                () => clearEverything()
+              )
+            }
           />
-          <span className="slider round"></span>
-        </label>
+        </div>
       </div>
 
-      {/* Margin of error */}
+      {/* Reset Flashcards */}
       <div
-        className="switch-container onMouse"
-        onMouseEnter={() => setSpan("spellChecking")}
+        className="container-resets onMouse"
+        onMouseEnter={() => setSpan("resetsflashcard")}
       >
         <span className="switch-text">
-          <FormattedMessage
-            id="switches.spellChecking"
-            defaultMessage="Margin of error"
+        <FormattedMessage
+            id="switches.resetFlash"
+            defaultMessage="Reset vocabulary progress"
           />
         </span>
-        <label className="switch">
-          <input
-            onClick={() => setSpellChecking(!spellChecking)}
-            defaultChecked={spellChecking === true}
-            type="checkbox"
+        <div className="resets-buttons">
+          <MyButton
+            message={"B2"}
+            color="red"
+            onClick={() =>
+              showConfirm("Czy chcesz zresetować pudełka w B2?", () =>
+                resetProgressFlashcards("B2")
+              )
+            }
           />
-          <span className="slider round"></span>
-        </label>
+          <MyButton
+            message={"C1"}
+            color="red"
+            onClick={() =>
+              showConfirm("Czy chcesz zresetować pudełka w C1?", () =>
+                resetProgressFlashcards("C1")
+              )
+            }
+          />
+        </div>
       </div>
 
-      {/* Toggle Super Logo */}
-      <div
-        className="switch-container onMouse"
-        onMouseEnter={() => setSpan("toggleLogo")}
-      >
-        <span className="switch-text">
-          <FormattedMessage
-            id="switches.superLogo"
-            defaultMessage="Enable super logo"
-          />
-        </span>
-        <label className="switch">
-          <input
-            onClick={() => toggleLogo()}
-            defaultChecked={logostatus === true}
-            type="checkbox"
-          />
-          <span className="slider round"></span>
-        </label>
-      </div>
-
-      {/* Toggle Super Skin */}
-      <div
-        className="switch-container onMouse"
-        onMouseEnter={() => setSpan("toggleSkin")}
-      >
-        <span className="switch-text">
-          <FormattedMessage
-            id="switches.superSkin"
-            defaultMessage="Enable super box skin"
-          />
-        </span>
-        <label className="switch">
-          <input
-            onClick={() => toggleSkin()}
-            defaultChecked={skinstatus === true}
-            type="checkbox"
-          />
-          <span className="slider round"></span>
-        </label>
-      </div>
-
-      {/* Reset vocabulary B2 */}
+      {/* Reset Vocabulary */}
       <div
         className="container-resets onMouse"
         onMouseEnter={() => setSpan("resetsvocabulary")}
       >
         <span className="switch-text">
           <FormattedMessage
-            id="switches.resetB2"
-            defaultMessage="Reset vocabulary B2"
+            id="switches.resetVoca"
+            defaultMessage="Reset vocabulary progress"
           />
         </span>
         <div className="resets-buttons">
@@ -138,15 +96,31 @@ export default function SecondBookMark({
                   id: "switches.confirmResetB2",
                   defaultMessage: "Are you sure you want to reset level B2?",
                 }),
-                () => resetProgress("B2")
+                () => resetProgressVoca("B2")
+              )
+            }
+          />
+
+          <MyButton
+            message={intl.formatMessage({
+              id: "switches.buttonC1",
+              defaultMessage: "C1",
+            })}
+            color="red"
+            onClick={() =>
+              showConfirm(
+                intl.formatMessage({
+                  id: "switches.confirmResetC1",
+                  defaultMessage: "Are you sure you want to reset level C1?",
+                }),
+                () => resetProgressVoca("C1")
               )
             }
           />
         </div>
       </div>
 
-      {/* Reset vocabulary C1 */}
-      <div
+      {/* <div
         className="container-resets onMouse"
         onMouseEnter={() => setSpan("resetsvocabulary")}
       >
@@ -169,12 +143,12 @@ export default function SecondBookMark({
                   id: "switches.confirmResetC1",
                   defaultMessage: "Are you sure you want to reset level C1?",
                 }),
-                () => resetProgress("C1")
+                () => resetProgressVoca("C1")
               )
             }
           />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

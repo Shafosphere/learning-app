@@ -29,8 +29,6 @@ export default function useBoxesDB(
     [lvl, setB2Patch, setC1Patch]
   );
 
-
-
   const updateIndexedDBFromServer = useCallback(
     async (serverData) => {
       return new Promise((resolve, reject) => {
@@ -63,7 +61,6 @@ export default function useBoxesDB(
     },
     [lvl]
   );
-
 
   const serwerAutoload = useCallback(async () => {
     try {
@@ -170,10 +167,6 @@ export default function useBoxesDB(
     }
   };
 
-
-  // 3. Nowa funkcja do aktualizacji IndexedDB z danymi z serwera
-
-
   // 4. Poprawiony efekt ładowania danych
   useEffect(() => {
     const loadData = async () => {
@@ -273,16 +266,19 @@ export default function useBoxesDB(
     const saveData = async () => {
       if (!autoSave) return;
 
-      // Dla gościa: zapisz timestamp
-      if (!isLoggedIn) {
-        localStorage.setItem(`guestTimestamp_${lvl}`, Date.now());
-      }
-
+      // Zawsze zapisuj do IndexedDB, niezależnie od logowania
       try {
-        if (isLoggedIn) await serwerAutosave();
+        // Dla zalogowanych: wyślij do serwera
+        if (isLoggedIn) {
+          await serwerAutosave();
+        } else {
+          // Dla gości: zapisz timestamp
+          localStorage.setItem(`guestTimestamp_${lvl}`, Date.now());
+        }
 
+        // Zawsze zapisz do IndexedDB
         await new Promise((resolve, reject) => {
-          const request = indexedDB.open("SavedBoxes", 1);
+          const request = indexedDB.open("SavedBoxes", 2); // Zmiana wersji na 2
 
           request.onsuccess = (event) => {
             const db = event.target.result;
@@ -307,7 +303,7 @@ export default function useBoxesDB(
 
         setAutoSave(false);
       } catch (error) {
-        /* ... */
+        console.error("Błąd zapisu:", error);
       }
     };
 
