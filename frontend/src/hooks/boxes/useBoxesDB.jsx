@@ -8,7 +8,8 @@ export default function useBoxesDB(
   patchNumberB2,
   patchNumberC1,
   setB2Patch,
-  setC1Patch
+  setC1Patch,
+  showConfirm
 ) {
   const { isLoggedIn } = useContext(SettingsContext);
   const [boxes, setBoxes] = useState({
@@ -110,17 +111,13 @@ export default function useBoxesDB(
       const guestTimeNumber = parseInt(guestTimestamp);
 
       if (guestTimeNumber > serverTimestamp) {
-        const confirmOverride = window.confirm(
-          `Masz niezapisany progres jako gość (${new Date(
-            guestTimeNumber
-          ).toLocaleString()}). ` +
-            `Na koncie istnieje zapis z ${new Date(
-              serverTimestamp
-            ).toLocaleString()}.\n\n` +
-            `Kontynuować lokalny progres? (OK - tak, Anuluj - wczytaj serwerowy)`
+        // Przekazujemy timestampy zamiast gotowego tekstu
+        const userConfirmed = await showConfirm(
+          guestTimeNumber,
+          serverTimestamp
         );
 
-        if (confirmOverride) {
+        if (userConfirmed) {
           await serwerAutosave();
         } else {
           await updateIndexedDBFromServer(serverData.words);

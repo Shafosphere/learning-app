@@ -177,5 +177,9 @@
   "about.flashcards": "Fiszki",
   "about.flashcardDescription": "Fiszki to niewielkie kartoniki z informacją na obu stronach: z jednej pytanie lub słowo, z drugiej odpowiedź lub tłumaczenie. Ułatwiają zapamiętywanie poprzez regularne powtórki i angażowanie pamięci. Idealne do nauki języków i innych dziedzin.",
   "about.leitnerSystem": "System Leitnera",
-  "about.leitnerDescription": "System Leitnera to przyjazna metoda nauki, w której Twoje fiszki przesuwają się między pudełkami w zależności od Twoich odpowiedzi. Poprawna odpowiedź przesuwa fiszkę do kolejnego pudełka, a błąd sprowadza ją z powrotem, umożliwiając kolejną powtórkę. Ucz się efektywnie i z uśmiechem, korzystając z tego ciepłego systemu!"
+  "about.leitnerDescription": "System Leitnera to przyjazna metoda nauki, w której Twoje fiszki przesuwają się między pudełkami w zależności od Twoich odpowiedzi. Poprawna odpowiedź przesuwa fiszkę do kolejnego pudełka, a błąd sprowadza ją z powrotem, umożliwiając kolejną powtórkę. Ucz się efektywnie i z uśmiechem, korzystając z tego ciepłego systemu!",
+  "confirm.newer": "nowszy",
+  "confirm.older": "starszy",
+  "confirm.conflictTitle": "Różne wersje zapisu!",
+  "confirm.conflictMessage": "Masz {newer} zapis z tego komputera ({localDate}) i {older} zapis z konta ({serverDate}). Klikając {yes} użyjesz nowszego zapisu lokalnego, a klikając {no} pozostanie zapis z konta."
 }

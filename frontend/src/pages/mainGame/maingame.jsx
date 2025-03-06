@@ -4,6 +4,7 @@ import EmptyFlashcard from "../../components/maingame/card/empty-flashcard";
 import Boxes from "../../components/maingame/boxex/boxex";
 import NewProgressBar from "../../components/progress_bar/progressbar";
 import Confetti from "../../components/confetti/confetti";
+import ConfirmWindow from "../../components/confirm/confirm";
 
 import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
@@ -37,13 +38,47 @@ export default function MainGame({ setDisplay, lvl }) {
   const [totalB2Patches, setTotalB2] = useState(null);
   const [totalC1Patches, setTotalC1] = useState(null);
 
+  //confirm
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmCallback, setConfirmCallback] = useState(null);
+  const [isConflict, setIsConflict] = useState(false);
+  const [confirmParams, setConfirmParams] = useState(null);
+
+  const handleConfirmClose = (result) => {
+    setConfirmMessage("");
+    if (confirmCallback) {
+      confirmCallback(result);
+    }
+  };
+
+  const showConfirm = (localTimestamp, serverTimestamp) => {
+    const formatDate = (timestamp) =>
+      new Date(timestamp).toLocaleString(undefined, {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+    return new Promise((resolve) => {
+      setConfirmParams({
+        conflict: true,
+        localDate: formatDate(localTimestamp),
+        serverDate: formatDate(serverTimestamp),
+      });
+      setConfirmCallback(() => resolve);
+    });
+  };
+
   // *** 2. Stany i refy – logika danych ***
   const { boxes, setBoxes, setAutoSave } = useBoxesDB(
     lvl,
     patchNumberB2,
     patchNumberC1,
     setB2Patch,
-    setC1Patch
+    setC1Patch,
+    showConfirm
   );
 
   // Ustawienia z kontekstu
@@ -306,6 +341,9 @@ export default function MainGame({ setDisplay, lvl }) {
         )}
       </div>
 
+      {confirmParams && (
+        <ConfirmWindow {...confirmParams} onClose={handleConfirmClose} />
+      )}
       {showConfetti && <Confetti generateConfetti={generateConfetti} />}
     </div>
   );

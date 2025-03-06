@@ -173,5 +173,9 @@
   "about.flashcards": "Flashcards",
   "about.flashcardDescription": "Flashcards are small cards with information on both sides: a question or word on one side, and an answer or translation on the other. They facilitate memorization through regular reviews and engaging memory. Ideal for language learning and other subjects.",
   "about.leitnerSystem": "Leitner System",
-  "about.leitnerDescription": "The Leitner system is a friendly learning method where your flashcards move between boxes depending on your answers. A correct answer moves the flashcard forward, while an incorrect answer moves it back for another review. Learn effectively and with a smile using this proven system!"
+  "about.leitnerDescription": "The Leitner system is a friendly learning method where your flashcards move between boxes depending on your answers. A correct answer moves the flashcard forward, while an incorrect answer moves it back for another review. Learn effectively and with a smile using this proven system!",
+  "confirm.newer": "newer",
+  "confirm.older": "older",
+  "confirm.conflictTitle": "Different save versions!",
+  "confirm.conflictMessage": "You have a {newer} save from this computer ({localDate}) and an {older} save from your account ({serverDate}). Clicking {yes} will use the newer local save, while clicking {no} will keep the save from your account."
 }
