@@ -292,6 +292,10 @@
     text-align: left;
     padding-left: 0.2rem;
   }
+  .classicskin img{
+    width: 5rem;
+    height: 5rem;
+  }
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
@@ -345,7 +349,6 @@
   }
   .box {
     width: 5.5rem;
-    /* scale: 80%; */
   }
   .active,
   .notactive {
@@ -426,6 +429,10 @@
   .label-container input {
     text-align: left;
     padding-left: 0.2rem;
+  }
+  .classicskin img{
+    width: 7rem;
+    height: 7rem;
   }
 }
 
@@ -534,6 +541,10 @@
   }
   .notactive {
     border-color: transparent;
+  }
+  .classicskin img{
+    width: 10rem;
+    height: 10rem;
   }
 }
 
@@ -647,6 +658,10 @@
   .label-container input {
     text-align: left;
     padding-left: 0.3rem;
+  }
+  .classicskin img{
+    width: 10rem;
+    height: 10rem;
   }
 }
 

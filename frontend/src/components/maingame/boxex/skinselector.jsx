@@ -5,7 +5,7 @@ import box from "../../../data/resized_box.png";
 import { SettingsContext } from "../../../pages/settings/properties";
 
 import { useContext } from "react";
-import CuteBoxSkin from "./cutebox"; // Upewnij się, że ścieżka jest poprawna
+import CuteBoxSkin from "./cutebox";
 
 export default function SkinSelector({ boxName, activeBox, boxes }) {
   const { skinstatus } = useContext(SettingsContext);
@@ -33,11 +33,13 @@ export default function SkinSelector({ boxName, activeBox, boxes }) {
         />
       ) : (
         //oldskin
-        <img
-          alt="box"
-          className={activeBox === boxName ? "active" : "notactive"}
-          src={boxImage(boxes[boxName].length)}
-        />
+        <div className="classicskin">
+          <img
+            alt="box"
+            className={activeBox === boxName ? "active" : "notactive"}
+            src={boxImage(boxes[boxName].length)}
+          />
+        </div>
       )}
     </>
   );
