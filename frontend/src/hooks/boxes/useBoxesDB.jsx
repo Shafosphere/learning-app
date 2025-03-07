@@ -79,7 +79,7 @@ export default function useBoxesDB(
       }
 
       if (serverData.patchNumber) {
-        localStorage.setItem(`patchNumber${lvl}-home`, serverData.patchNumber);
+        localStorage.setItem(`patchNumber${lvl}-maingame`, serverData.patchNumber);
       }
 
       await updateIndexedDBFromServer(response.data.words);
@@ -244,7 +244,7 @@ export default function useBoxesDB(
       setBoxes(newBoxesState);
 
       if (!isLoggedIn) {
-        const localPatch = localStorage.getItem(`patchNumber${lvl}-home`);
+        const localPatch = localStorage.getItem(`patchNumber${lvl}-maingame`);
         if (localPatch) {
           if (lvl === `B2`) {
             setB2Patch(Number(localPatch));

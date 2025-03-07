@@ -132,7 +132,7 @@ export default function Settings() {
   // Funkcja resetująca progres w Flashcards (localStorage + IndexedDB)
   async function resetProgressFlashcards(level) {
     // Reset numeru paczki
-    localStorage.setItem(`patchNumber${level}-home`, 1);
+    localStorage.setItem(`patchNumber${level}-maingame`, 1);
     // Czyścimy store w IndexedDB
 
     const request = indexedDB.open("SavedBoxes", 2);

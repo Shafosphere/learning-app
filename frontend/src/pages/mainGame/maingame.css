@@ -1,4 +1,4 @@
-.container-home {
+.container-maingame {
   display: flex;
   width: 100%;
   align-items: center;
@@ -162,15 +162,15 @@
   overflow: hidden;
 }
 @media (max-width: 480px) {
-  .container-home {
+  .container-maingame {
     flex-direction: column;
     height: 100%;
     padding: 6rem 1rem 1rem;
   }
-  .home-right {
+  .maingame-right {
     display: none;
   }
-  .home-left {
+  .maingame-left {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -299,15 +299,15 @@
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
-  .container-home {
+  .container-maingame {
     flex-direction: column;
     height: 100%;
     padding: 6rem 1rem 1rem;
   }
-  .home-right {
+  .maingame-right {
     display: none;
   }
-  .home-left {
+  .maingame-left {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -437,18 +437,18 @@
 }
 
 @media (min-width: 769px) and (max-width: 1450px) {
-  .container-home {
+  .container-maingame {
     flex-direction: row;
     height: 100%;
     padding: 6rem 1rem 1rem;
     gap: 5rem;
   }
-  .home-left,
-  .home-right {
+  .maingame-left,
+  .maingame-right {
     display: flex;
     flex-direction: column;
   }
-  .home-right {
+  .maingame-right {
     flex-direction: row;
     gap: 5rem;
     height: 60%;
@@ -549,17 +549,17 @@
 }
 
 @media (min-width: 1450px) {
-  .container-home {
+  .container-maingame {
     flex-direction: row;
     height: 100vh;
     gap: 6rem;
   }
-  .home-left,
-  .home-right {
+  .maingame-left,
+  .maingame-right {
     display: flex;
     flex-direction: column;
   }
-  .home-right {
+  .maingame-right {
     flex-direction: row;
     gap: 5rem;
     height: 60%;
@@ -666,7 +666,7 @@
 }
 
 @media (min-width: 768px) and (max-width: 1060px) {
-  .home-right {
+  .maingame-right {
     display: none;
   }
 }

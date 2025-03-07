@@ -28,11 +28,11 @@ export default function MainGame({ setDisplay, lvl }) {
 
   // Patch – numeracja i stany
   const [patchNumberB2, setB2Patch] = usePersistedState(
-    "patchNumberB2-home",
+    "patchNumberB2-maingame",
     1
   );
   const [patchNumberC1, setC1Patch] = usePersistedState(
-    "patchNumberC1-home",
+    "patchNumberC1-maingame",
     1
   );
   const [totalB2Patches, setTotalB2] = useState(null);
@@ -292,12 +292,12 @@ export default function MainGame({ setDisplay, lvl }) {
 
   // *** 7. Render komponentu ***
   return (
-    <div className="container-home">
+    <div className="container-maingame">
       <div className="return-btn-voca" onClick={() => setDisplay("default")}>
         <h1>{lvl}</h1>
       </div>
 
-      <div className="home-left">
+      <div className="maingame-left">
         {randomWord ? (
           <Flashcard
             data={randomWord}
@@ -324,7 +324,7 @@ export default function MainGame({ setDisplay, lvl }) {
         />
       </div>
 
-      <div className="home-right">
+      <div className="maingame-right">
         {["B2", "C1"].includes(lvl) && (
           <>
             <NewProgressBar
