@@ -7,6 +7,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import FirstBookMark from "../../components/settings/firstbookmark";
 import SecondBookMark from "../../components/settings/secondbookmark";
 import api from "../../utils/api";
+import ThirdBookMark from "../../components/settings/thirdbookmark";
 
 export default function Settings() {
   const intl = useIntl();
@@ -134,8 +135,6 @@ export default function Settings() {
     localStorage.setItem(`patchNumber${level}-home`, 1);
     // Czyścimy store w IndexedDB
 
-
-    
     const request = indexedDB.open("SavedBoxes", 2);
     request.onsuccess = (event) => {
       const db = event.target.result;
@@ -160,10 +159,10 @@ export default function Settings() {
 
     if (isLoggedIn) {
       try {
-        await api.post('/user/auto-delete', { level });
-        console.log('Progres zresetowany na serwerze');
+        await api.post("/user/auto-delete", { level });
+        console.log("Progres zresetowany na serwerze");
       } catch (error) {
-        console.error('Błąd resetowania na serwerze:', error);
+        console.error("Błąd resetowania na serwerze:", error);
         throw error;
       }
     }
@@ -189,6 +188,14 @@ export default function Settings() {
           >
             2
           </div>
+          <div
+            onClick={() => setPage("3")}
+            className={
+              activePage === "3" ? "tab-settings-active" : "tab-settings"
+            }
+          >
+            3
+          </div>
         </div>
 
         <div className="settings-left">
@@ -205,13 +212,6 @@ export default function Settings() {
               setLanguage={setLanguage}
               showConfirm={showConfirm}
               clearEverything={clearEverything}
-              handleDailyGoalChange={handleDailyGoalChange}
-              newDailyGoal={newDailyGoal}
-              saveSettings={saveSettings}
-              diacritical={diacritical}
-              setDiacritical={setDiacritical}
-              spellChecking={spellChecking}
-              setSpellChecking={setSpellChecking}
               toggleLogo={toggleLogo}
               logostatus={logostatus}
               toggleSkin={toggleSkin}
@@ -220,6 +220,18 @@ export default function Settings() {
           )}
           {activePage === "2" && (
             <SecondBookMark
+              setSpan={setSpan}
+              diacritical={diacritical}
+              setDiacritical={setDiacritical}
+              spellChecking={spellChecking}
+              setSpellChecking={setSpellChecking}
+              handleDailyGoalChange={handleDailyGoalChange}
+              newDailyGoal={newDailyGoal}
+              saveSettings={saveSettings}
+            />
+          )}
+          {activePage === "3" && (
+            <ThirdBookMark
               setSpan={setSpan}
               showConfirm={showConfirm}
               clearEverything={clearEverything}

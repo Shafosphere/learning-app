@@ -259,6 +259,11 @@ input:focus + .slider {
     flex-direction: column;
     gap: 0.25rem;
   }
+  .resets-buttons-bottom{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+  }
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
@@ -337,6 +342,11 @@ input:focus + .slider {
   .resets-buttons button {
     width: 9rem;
     height: 3.5rem;
+  }
+  .resets-buttons-bottom{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
   }
   .button-container-save {
     padding: 0.5rem 0.75rem 0.5rem 0.75rem;
@@ -423,6 +433,11 @@ input:focus + .slider {
     flex-direction: column;
     gap: 0.25rem;
   }
+  .resets-buttons-bottom{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+  }
 }
 
 @media (min-width: 1450px) {
@@ -503,7 +518,8 @@ input:focus + .slider {
   .resets-buttons {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    gap: 0.25rem;
+    justify-content: left;
   }
   ul.reset-list {
     list-style-type: none;
@@ -517,11 +533,5 @@ input:focus + .slider {
   }
   .flags img {
     height: 2.5rem;
-  }
-  .resets-buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 0.25rem;
-    justify-content: left;
   }
 }

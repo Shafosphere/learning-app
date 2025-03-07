@@ -304,6 +304,7 @@
   .account-buttons {
     justify-content: space-around;
   }
+  
 }
 
 @media (min-width: 769px) and (max-width: 1450px) {
@@ -439,6 +440,9 @@
   .hide-span-account {
     display: none;
   }
+  .icon-lock-account{
+    font-size: 30px;
+  }
 }
 
 @media (min-width: 1450px) {
@@ -564,5 +568,8 @@
   }
   .hide-span-account {
     display: none;
+  }
+  .icon-lock-account{
+    font-size: 30px;
   }
 }
