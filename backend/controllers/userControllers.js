@@ -12,6 +12,8 @@ import {
   insertOrUpdateUserAutosave,
   getAutosaveData,
   getBatchWordTranslations,
+  resetPatchNumberByUserID,
+  deleteDataUserByUserID,
 } from "../models/userModel.js";
 
 import pool from "../dbClient.js";
@@ -162,7 +164,14 @@ export const autoSave = async (req, res) => {
   try {
     const client = await pool.connect();
     try {
-      await insertOrUpdateUserAutosave(client, userId, level, words, deviceId, patchNumber);
+      await insertOrUpdateUserAutosave(
+        client,
+        userId,
+        level,
+        words,
+        deviceId,
+        patchNumber
+      );
       res.status(200).json({ message: "Dane odebrane" });
     } finally {
       client.release();
@@ -177,7 +186,6 @@ export const autoLoad = async (req, res) => {
   const userId = req.user.id;
   const username = req.user.username;
   const { level, deviceId } = req.body;
-
 
   try {
     const client = await pool.connect(); // Dodaj połączenie z puli
@@ -231,7 +239,7 @@ export const autoLoad = async (req, res) => {
         level: autosaveData.level,
         words: formattedWords,
         last_saved: autosaveData.last_saved,
-        patchNumber: autosaveData[`patch_number_${level.toLowerCase()}`]
+        patchNumber: autosaveData[`patch_number_${level.toLowerCase()}`],
       });
     } finally {
       client.release(); // Zwolnij połączenie
@@ -253,27 +261,18 @@ export const autoDelete = async (req, res) => {
   try {
     const client = await pool.connect();
     try {
-      // Usuń cały zapis dla danego poziomu
-      await client.query(
-        'DELETE FROM user_autosave WHERE user_id = $1 AND level = $2',
-        [userId, level]
-      );
-      
-      // Zresetuj również patch number w osobnej kolumnie
-      const updateQuery = `
-        UPDATE user_autosave 
-        SET 
-          ${level === 'B2' ? 'patch_number_b2 = 1' : 'patch_number_c1 = 1'}
-        WHERE user_id = $1
-      `;
-      await client.query(updateQuery, [userId]);
+      // Wywołaj funkcję usuwającą dane dla danego poziomu
+      await deleteDataUserByUserID(client, userId, level);
+
+      // Wywołaj funkcję resetującą numer patcha
+      await resetPatchNumberByUserID(client, userId, level);
 
       res.status(200).json({ success: true });
     } finally {
       client.release();
     }
   } catch (error) {
-    console.error('Błąd podczas resetowania progresu:', error);
-    res.status(500).json({ message: 'Błąd serwera podczas resetowania' });
+    console.error("Błąd podczas resetowania progresu:", error);
+    res.status(500).json({ message: "Błąd serwera podczas resetowania" });
   }
 };

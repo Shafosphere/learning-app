@@ -761,7 +761,6 @@ export const getAutosaveData = async (client, userId, level) => {
     "SELECT * FROM user_autosave WHERE user_id = $1 AND level = $2",
     [userId, level]
   );
-  console.log("Wynik zapytania:", result.rows[0]);
   return result.rows[0] || null;
 };
 
@@ -782,7 +781,23 @@ export const getBatchWordTranslations = async (client, wordIds) => {
     WHERE t1.language = 'en'
       AND t1.word_id = ANY($1)
   `;
-  console.log("Wykonuję zapytanie:", query, wordIds);
   const result = await client.query(query, [wordIds]);
   return result.rows;
+};
+
+export const deleteDataUserByUserID = async (client, userId, level) => {
+  const query = `
+    DELETE FROM user_autosave
+    WHERE user_id = $1 AND level = $2
+  `;
+  await client.query(query, [userId, level]);
+};
+
+export const resetPatchNumberByUserID = async (client, userId, level) => {
+  const query = `
+    UPDATE user_autosave
+    SET ${level === "B2" ? "patch_number_b2 = 1" : "patch_number_c1 = 1"}
+    WHERE user_id = $1
+  `;
+  await client.query(query, [userId]);
 };
