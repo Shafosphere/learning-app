@@ -10,12 +10,13 @@ import {
   getRanking,
   autoSave,
   autoLoad,
-  autoDelete
+  autoDelete,
 } from "../controllers/userControllers.js";
 
 import { deleteUserValidator } from "../middleware/validators/users/delete-deleteuser-vali.js";
 import { learnWordValidator } from "../middleware/validators/users/post-learnword-vali.js";
 import { updateUsersValidator } from "../middleware/validators/users/patch-updateuser-vali.js";
+import { autoSaveValidator } from "../middleware/validators/users/post-autosave-vali.js";
 const router = express.Router();
 
 router.get("/list", authenticateToken, authorizeAdmin, getUsersList);
@@ -40,7 +41,7 @@ router.delete(
   deleteUser
 );
 
-router.post("/auto-save", authenticateToken, autoSave);
+router.post("/auto-save", authenticateToken, autoSaveValidator, autoSave);
 
 router.post("/auto-load", authenticateToken, autoLoad);
 
