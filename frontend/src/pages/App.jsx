@@ -8,7 +8,8 @@ import Sidebar from "../components/sidebar/sidebar";
 import AdminPanel from "./admin/admin";
 import PrivateRoute from "../utils/privateroute";
 import Account from "./account/account";
-import Ranking from "./ranking/ranking";
+import RankingTable from "./rankingTable/rankingTable";
+import RankingGame from "./rankingGame/rankingGame";
 import About from "./about/about";
 import NotFound from "./notfound/notfound";
 import { SettingsProvider, SettingsContext } from "./settings/properties";
@@ -47,7 +48,8 @@ const AppWrapper = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={isLoggedIn ? <Account /> : <Login />} />
         <Route path="/vocabulary" element={<Vocabulary />} />
-        <Route path="/ranking" element={<Ranking />} />
+        <Route path="/rankingtable" element={<RankingTable />} />
+        <Route path="/rankinggame" element={<RankingGame />} />
         <Route path="/about" element={<About />} />
         <Route
           path="/admin"

@@ -16,8 +16,8 @@ import {
   getPatchWordsByLevel,
   getAllPatchLength,
   getNumberOfWords,
+  getRandomWordsByNumber
 } from "../models/userModel.js";
-
 
 //information about patch
 export const getPatchesInfo = async (req, res) => {
@@ -286,5 +286,56 @@ export const deleteWord = async (req, res) => {
   } catch (error) {
     console.error("Error while deleting the word:", error);
     res.status(500).send("An error occurred while deleting the word.");
+  }
+};
+
+export const getRankingWord = async (req, res) => {
+  try {
+    // const length = await getAllPatchLength();
+    const random_language = Math.random() < 0.5;
+    const language = random_language ? "pl" : "en";
+    const words = await getWordTranslations(213);
+
+    const selectedWord = words.find((word) => word.language === language);
+
+    if (!selectedWord) {
+      res.status(404).send("Nie znaleziono tłumaczenia");
+      return;
+    }
+
+    const result = [selectedWord.word_id, selectedWord.translation];
+
+    console.log(result);
+    res.status(200).json(result); // Zwracanie statystyk
+  } catch (error) {
+    console.error("Error getting information:", error);
+    res.status(500).send("Server Error");
+  }
+};
+
+export const getRandomWords = async (req, res) => {
+  try {
+    const count = parseInt(req.query.count) || 10;
+
+    const randomWordsQuery = await getRandomWordsByNumber(count);
+    const wordIds = randomWordsQuery.rows.map((row) => row.id);
+
+    const wordsData = await Promise.all(
+      wordIds.map((id) => getWordTranslations(id))
+    );
+
+    const result = wordsData.map((translations, index) => {
+      const language = Math.random() < 0.5 ? "pl" : "en";
+      const translation = translations.find((t) => t.language === language);
+      return {
+        id: wordIds[index],
+        content: translation?.translation || "Brak tłumaczenia",
+      };
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Server error");
   }
 };

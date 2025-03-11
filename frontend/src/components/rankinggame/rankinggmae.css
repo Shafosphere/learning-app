@@ -1,0 +1,59 @@
+.rankinggmae-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 100%;
+    color: var(--headline);
+    background: linear-gradient(
+      180deg,
+      rgba(var(--background-rgba), 1) 0%,
+      rgba(var(--border-rgba), 1) 100%
+    );
+  }
+  
+  .rankinggame-input {
+    background-color: var(--lightbg);
+    padding: 1rem;
+    border: solid 7px var(--tertiary);
+    border-radius: 0.5rem;
+    font-size: 20px;
+    width: 20rem;
+    height: 5rem;
+  }
+  .rankinggmae-window{
+    gap: 1rem;
+    display: flex;
+    flex-direction: row;
+    /* background-color: aqua; */
+  }
+  .deck{
+    /* background-color: red; */
+    width: 20rem;
+    height: 5rem;
+    position: relative;
+  }
+  .card{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    transition: all 1s ease;
+    font-size: 20px;
+    opacity: 80%;
+    background-color: var(--lightbg);
+    border: 7px solid var(--highlight);
+    padding: 0rem 0rem 0rem 1rem;
+    border-radius: 0.5rem;
+    color: black;
+  }
+.rankinggmae-button{
+  z-index: 12;
+}
+.chosen_card{
+  z-index: 11;
+  opacity: 100%;
+}

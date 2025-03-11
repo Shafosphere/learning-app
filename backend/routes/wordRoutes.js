@@ -9,6 +9,8 @@ import {
   deleteWord,
   getPatchesInfo,
   getWordsByPatchAndLevel,
+  getRankingWord,
+  getRandomWords,
 } from "../controllers/wordController.js";
 import authenticateToken from "../middleware/validators/admin_and_token/authenticateToken.js";
 import authorizeAdmin from "../middleware/validators/admin_and_token/authorizeAdmin.js";
@@ -26,6 +28,10 @@ router.post("/data", authorizeData, getWordData);
 router.post("/patch-data", authorizePatchAndLevel, getWordsByPatchAndLevel);
 
 router.get("/patch-info", getPatchesInfo);
+
+router.get("/ranking-word", getRankingWord);
+
+router.get("/random-words", getRandomWords);
 
 router.get(
   "/list",

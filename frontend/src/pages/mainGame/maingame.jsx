@@ -41,7 +41,7 @@ export default function MainGame({ setDisplay, lvl }) {
   //confirm
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState(null);
-  const [isConflict, setIsConflict] = useState(false);
+  // const [isConflict, setIsConflict] = useState(false);
   const [confirmParams, setConfirmParams] = useState(null);
 
   const handleConfirmClose = (result) => {

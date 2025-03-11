@@ -132,6 +132,14 @@ export const getWordTranslations = async (wordId) => {
   return result.rows;
 };
 
+export const getRandomWordsByNumber = async (count) => {
+  const reults = await pool.query(
+    "SELECT id FROM word ORDER BY RANDOM() LIMIT $1",
+    [count]
+  );
+  return reults;
+}
+
 // Pobranie maksymalnego numeru patcha
 export const getMaxPatchId = async () => {
   const result = await pool.query(

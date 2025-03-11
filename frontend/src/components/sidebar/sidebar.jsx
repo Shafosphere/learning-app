@@ -8,7 +8,7 @@ import {
   MdLogin,
 } from "react-icons/md";
 import { IoBug, IoLogoGithub } from "react-icons/io5";
-import { FaBook, FaScroll } from "react-icons/fa";
+import { FaBook, FaScroll, FaTrophy} from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
 import { FaRankingStar } from "react-icons/fa6";
 import { useIntl, FormattedMessage } from "react-intl";
@@ -121,6 +121,20 @@ export default function Sidebar() {
               </span>
             </Link>
 
+            <Link className="link-container" to="/rankinggame">
+              <span className="sidebar-initial link-icon">
+                <FaTrophy />
+              </span>
+              <span className="sidebar-full">
+                <div className="link-text">
+                  <FormattedMessage
+                    id="sidebar.rankinggame"
+                    defaultMessage="Ranking Game"
+                  />
+                </div>
+              </span>
+            </Link>
+
             <Link className="link-container" to="/settings">
               <span className="sidebar-initial link-icon">
                 <IoMdSettings />
@@ -149,7 +163,7 @@ export default function Sidebar() {
               </span>
             </Link>
 
-            <Link className="link-container" to="/ranking">
+            <Link className="link-container" to="/rankingtable">
               <span className="sidebar-initial link-icon">
                 <FaRankingStar />
               </span>

@@ -3,7 +3,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import styles from "./ranking.module.css";
 import api from "../../utils/api";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Loading from "../../components/loading/loading";
+import Loading from "../loading/loading";
 import gold from "../../data/medal/gold.png";
 import silver from "../../data/medal/silver.png";
 import bronze from "../../data/medal/bronze.png";
@@ -13,7 +13,7 @@ import avatar2 from "../../data/avatars/man_1.png";
 import avatar3 from "../../data/avatars/woman.png";
 import avatar4 from "../../data/avatars/woman_1.png";
 
-export default function RankingContent() {
+export default function RankingTableContent() {
   const [data, setData] = useState(null);
   const [hasMore, setHasMore] = useState(true);
 
