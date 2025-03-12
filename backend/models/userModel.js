@@ -138,7 +138,7 @@ export const getRandomWordsByNumber = async (count) => {
     [count]
   );
   return reults;
-}
+};
 
 // Pobranie maksymalnego numeru patcha
 export const getMaxPatchId = async () => {
@@ -708,10 +708,10 @@ export const insertWordIntoUserProgress = async (client, userId, wordId) => {
 export const userRankingUpdate = async (client, userId) => {
   await client.query(
     `
-    INSERT INTO ranking (user_id, weekly_points)
+    INSERT INTO ranking (user_id, flashcard_points)
     VALUES ($1, 1)
     ON CONFLICT (user_id) DO UPDATE
-    SET weekly_points = ranking.weekly_points + 1, last_updated = NOW();
+    SET flashcard_points = ranking.flashcard_points + 1, last_updated = NOW();
     `,
     [userId]
   );
@@ -719,11 +719,11 @@ export const userRankingUpdate = async (client, userId) => {
 
 export const getTopRankingUsers = async (limit) => {
   const query = `
-    SELECT users.username, users.avatar, ranking.weekly_points
+    SELECT users.username, users.avatar, ranking.flashcard_points
     FROM ranking
     JOIN users ON ranking.user_id = users.id
     WHERE ranking.ban = false
-    ORDER BY ranking.weekly_points DESC
+    ORDER BY ranking.flashcard_points DESC
     LIMIT $1;
   `;
   const values = [limit];
@@ -808,4 +808,83 @@ export const resetPatchNumberByUserID = async (client, userId, level) => {
     WHERE user_id = $1
   `;
   await client.query(query, [userId]);
+};
+
+export const checkBan = async (userId) => {
+  const result = await pool.query(
+    "SELECT ban FROM ranking WHERE user_id = $1",
+    [userId]
+  );
+  return result;
+};
+
+export const ranking_init = async (userId) => {
+  await pool.query(
+    "INSERT INTO ranking_game (user_id, current_points) VALUES ($1, 1000) ON CONFLICT (user_id) DO NOTHING",
+    [userId]
+  );
+};
+
+export const getUserRankingPoints = async (userId) => {
+  const result = await pool.query(
+    "SELECT current_points FROM ranking_game WHERE user_id = $1",
+    [userId]
+  );
+  return result;
+};
+
+export const getRandomWord = async (difficulty) => {
+  const result = await pool.query(
+    "SELECT id FROM word WHERE level = $1 ORDER BY random()LIMIT 1",
+    [difficulty]
+  );
+  return result;
+};
+
+export const getLanguageWordTranslations = async (wordId) => {
+  const result = await pool.query(
+    "SELECT translation, language FROM translation WHERE word_id = $1",
+    [wordId]
+  );
+  return result.rows; // Zwracamy już same wiersze
+};
+
+export const updateUserRankingGame = async (pointsAfter, newStreak, userId) => {
+  await pool.query(
+    `
+    UPDATE ranking_game SET
+      current_points = $1,
+      current_streak = $2,
+      last_answered = NOW()
+    WHERE user_id = $3
+  `,
+    [pointsAfter, newStreak, userId]
+  );
+};
+
+export const updateUserRankingHistory = async (
+  userId,
+  wordId,
+  userAnswer,
+  isCorrect,
+  pointsBefore,
+  pointsAfter,
+  responseTimeMs,
+  tier,
+  newStreak
+) => {
+  await pool.query(
+    "INSERT INTO answer_history (user_id, word_id, given_answer, is_correct,points_before, points_after, response_time_ms,difficulty_tier, streak) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+    [
+      userId,
+      wordId,
+      userAnswer,
+      isCorrect,
+      pointsBefore,
+      pointsAfter,
+      responseTimeMs,
+      tier,
+      newStreak,
+    ]
+  );
 };

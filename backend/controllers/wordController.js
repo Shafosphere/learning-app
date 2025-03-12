@@ -16,7 +16,14 @@ import {
   getPatchWordsByLevel,
   getAllPatchLength,
   getNumberOfWords,
-  getRandomWordsByNumber
+  getRandomWordsByNumber,
+  checkBan,
+  ranking_init,
+  getUserRankingPoints,
+  getRandomWord,
+  getLanguageWordTranslations,
+  updateUserRankingGame,
+  updateUserRankingHistory
 } from "../models/userModel.js";
 
 //information about patch
@@ -290,23 +297,55 @@ export const deleteWord = async (req, res) => {
 };
 
 export const getRankingWord = async (req, res) => {
+  const userId = req.user.id;
+
   try {
-    // const length = await getAllPatchLength();
-    const random_language = Math.random() < 0.5;
-    const language = random_language ? "pl" : "en";
-    const words = await getWordTranslations(213);
+    const banCheck = await checkBan(userId);
 
-    const selectedWord = words.find((word) => word.language === language);
-
-    if (!selectedWord) {
-      res.status(404).send("Nie znaleziono tłumaczenia");
-      return;
+    if (banCheck.rows[0]?.ban) {
+      return res.status(403).json({ error: "Account banned" });
     }
 
-    const result = [selectedWord.word_id, selectedWord.translation];
+    await ranking_init(userId);
 
-    console.log(result);
-    res.status(200).json(result); // Zwracanie statystyk
+    const pointsResult = await getUserRankingPoints(userId);
+
+    const points = pointsResult.rows[0]?.current_points || 1000;
+
+    const probabilityTiers = [
+      { max: 500, B2: 1.0, C1: 0.0 },
+      { max: 1000, B2: 0.9, C1: 0.1 },
+      { max: 1500, B2: 0.7, C1: 0.3 },
+      { max: 2000, B2: 0.5, C1: 0.5 },
+      { max: 2500, B2: 0.4, C1: 0.6 },
+      { max: 3000, B2: 0.1, C1: 0.9 },
+    ];
+
+    const tier = probabilityTiers.find((t) => points <= t.max) || {
+      B2: 0.0,
+      C1: 1.0,
+    };
+    const difficulty = Math.random() <= tier.B2 ? "B2" : "C1";
+
+    const wordResult = await getRandomWord(difficulty);
+
+    if (wordResult.rows.length === 0) {
+      return res.status(404).json({ error: "Words missing" });
+    }
+    const wordId = wordResult.rows[0].id;
+
+    const translationsResult = await getLanguageWordTranslations(wordId);
+
+    const randomLang = Math.random() < 0.5 ? "en" : "pl";
+    const translation = translationsResult.find(
+      (t) => t.language === randomLang
+    );
+
+    if (!translation) {
+      return res.status(404).json({ error: "Translation is missing" });
+    }
+
+    res.status(200).json([wordId, translation.translation]);
   } catch (error) {
     console.error("Error getting information:", error);
     res.status(500).send("Server Error");
@@ -337,5 +376,86 @@ export const getRandomWords = async (req, res) => {
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Server error");
+  }
+};
+
+const getDifficultyTier = (points) => {
+  const tiers = [
+    { max: 500, tier: "B2" },
+    { max: 1000, tier: "B2" },
+    { max: 1500, tier: "B2" },
+    { max: 2000, tier: "B2/C1" },
+    { max: 2500, tier: "C1" },
+    { max: 3000, tier: "C1" },
+  ];
+
+  const found = tiers.find((t) => points <= t.max);
+  return found ? found.tier : "C1";
+};
+
+// controllers/rankingController.js
+export const submitAnswer = async (req, res) => {
+  const userId = req.user.id;
+  const { wordId, userAnswer, startTime } = req.body;
+
+  try {
+    // 1. Sprawdź bana
+    const banCheck = await checkBan(userId);
+    if (banCheck.rows[0]?.ban)
+      return res.status(403).json({ error: "Account banned" });
+
+    // 2. Pobierz poprawne tłumaczenia
+    const translations = await getWordTranslations(wordId);
+    const correctAnswers = translations.map((t) => t.translation.toLowerCase());
+
+    // 3. Oblicz czas odpowiedzi
+    const responseTimeMs = Date.now() - startTime;
+
+    // 4. Sprawdź poprawność
+    const isCorrect = correctAnswers.includes(userAnswer.trim().toLowerCase());
+
+    // 5. Pobierz aktualny stan
+    const pointsResult = await getUserRankingPoints(userId);
+    const pointsBefore = pointsResult.rows[0]?.current_points || 1000;
+    const streakBefore = pointsResult.rows[0]?.current_streak || 0;
+
+    // 6. Oblicz nowe punkty i streak
+    const pointsDelta = isCorrect ? 5 : -5;
+    let pointsAfter = Math.min(Math.max(pointsBefore + pointsDelta, 0), 9999);
+    let newStreak = isCorrect ? streakBefore + 1 : 0;
+
+    // 7. Aktualizuj ranking
+    await updateUserRankingGame(pointsAfter, newStreak, userId);
+
+    // 8. Zapisz historię
+    const tier = getDifficultyTier(pointsBefore);
+    await updateUserRankingHistory(
+      userId,
+      wordId,
+      userAnswer,
+      isCorrect,
+      pointsBefore,
+      pointsAfter,
+      responseTimeMs,
+      tier,
+      newStreak
+    );
+
+
+    const allTranslations = translations.map(t => ({
+      language: t.language,
+      translation: t.translation
+    }));
+
+    res.status(200).json({
+      success: true,
+      isCorrect,
+      newPoints: pointsAfter,
+      streak: newStreak,
+      correctTranslations: allTranslations 
+    });
+  } catch (error) {
+    console.error("Error submitting answer:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };

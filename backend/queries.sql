@@ -1,6 +1,7 @@
 CREATE TABLE word (
   id SERIAL PRIMARY KEY,
-  word VARCHAR(100) NOT NULL
+  word VARCHAR(100) NOT NULL,
+  level VARCHAR(2) NOT NULL DEFAULT 'B2'
 );
 CREATE TABLE translation (
   id SERIAL PRIMARY KEY,
@@ -10,6 +11,10 @@ CREATE TABLE translation (
   description VARCHAR(100) NOT NULL,
   FOREIGN KEY (word_id) REFERENCES Word(id)
 );
+
+CREATE INDEX idx_word_level ON word(level);
+CREATE INDEX idx_translation_word ON translation(word_id);
+
 CREATE TABLE users(
   id SERIAL PRIMARY KEY,
   username VARCHAR(100) NOT NULL UNIQUE,
@@ -34,8 +39,8 @@ CREATE TABLE word_patches (
   word_ids JSON                
 );
 
-ALTER TABLE word ADD COLUMN level VARCHAR(2) NOT NULL DEFAULT 'B2';
-UPDATE word SET level = 'C1' WHERE id >= '3265';
+-- ALTER TABLE word ADD COLUMN level VARCHAR(2) NOT NULL DEFAULT 'B2';
+-- UPDATE word SET level = 'C1' WHERE id >= '3265';
 
 -- new patch system
 CREATE TABLE b2_patches(
@@ -72,7 +77,7 @@ CREATE TABLE ranking (
   id SERIAL PRIMARY KEY,
   user_id INT NOT NULL,
   username VARCHAR(100) NOT NULL,
-  weekly_points INT NOT NULL DEFAULT 0,
+  flashcard_points INT NOT NULL DEFAULT 0,
   last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -86,7 +91,7 @@ CREATE TABLE ranking (
   id SERIAL PRIMARY KEY,
   user_id INT NOT NULL UNIQUE,
   username VARCHAR(100) NOT NULL,
-  weekly_points INT NOT NULL DEFAULT 0,
+  flashcard_points INT NOT NULL DEFAULT 0,
   last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -120,3 +125,34 @@ ADD COLUMN version SERIAL NOT NULL;
 ALTER TABLE user_autosave
 ADD COLUMN patch_number_b2 INT DEFAULT 1,
 ADD COLUMN patch_number_c1 INT DEFAULT 1;
+
+
+
+
+ALTER TABLE ranking 
+  RENAME COLUMN weekly_points TO flashcard_points
+
+CREATE TABLE ranking_game (
+  user_id INT PRIMARY KEY,
+  current_points INT NOT NULL DEFAULT 1000 CHECK (current_points BETWEEN 0 AND 9999),
+  current_streak INT NOT NULL DEFAULT 0,
+  last_answered TIMESTAMP,
+  last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE answer_history (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  word_id INT NOT NULL,
+  given_answer VARCHAR(255) NOT NULL,
+  is_correct BOOLEAN NOT NULL,
+  points_before INT NOT NULL,
+  points_after INT NOT NULL,
+  response_time_ms INT NOT NULL,
+  difficulty_tier VARCHAR(2) NOT NULL,
+  streak INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (word_id) REFERENCES word(id)
+);

@@ -4,7 +4,12 @@ import MyButton from "../button/button";
 import api from "../../utils/api";
 
 export default function RankingGameContent() {
-  const [data, setdata] = useState();
+  const [data, setData] = useState([]);
+  const [userWord, setUserWord] = useState("");
+  const [startTime, setStartTime] = useState(Date.now());
+  const [isLoading, setIsLoading] = useState(false);
+  const [correctTranslations, setCorrectTranslations] = useState([]);
+  const [lastAnswerStatus, setLastAnswerStatus] = useState(null);
   const [cards, setCards] = useState(
     Array(10).fill({
       Move: 0,
@@ -16,21 +21,54 @@ export default function RankingGameContent() {
   );
 
   useEffect(() => {
-    fetchNewWords();
+    const fetchInitialData = async () => {
+      await fetchNewWords();
+      await fetchNewWord(); // Dodane
+    };
+    fetchInitialData();
   }, []);
 
-  useEffect(() => {
-    async function getWord() {
-      try {
-        const response = await api.get("/word/ranking-word");
-        setdata(response.data);
-      } catch (error) {
-        console.error("Error fetching visits data:", error);
-        return [];
+  const fetchNewWord = async () => {
+    try {
+      const response = await api.get("/word/ranking-word");
+      if (response.data && response.data.length >= 2) {
+        setData(response.data);
+        setStartTime(Date.now());
       }
+    } catch (error) {
+      console.error("Error fetching word:", error);
     }
-    getWord();
-  }, []);
+  };
+
+  const handleSubmit = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      if (!data || !data[0]) {
+        console.error("Missing data");
+        return;
+      }
+
+      const response = await api.post("/word/submit-answer", {
+        wordId: data[0],
+        userAnswer: userWord,
+        startTime: startTime,
+      });
+
+      // Aktualizuj UI na podstawie odpowiedzi
+      if (response.data.success) {
+        setCorrectTranslations(response.data.correctTranslations);
+        setLastAnswerStatus(response.data.isCorrect);
+        setUserWord("");
+        shuffle();
+        fetchNewWord();
+      }
+    } catch (error) {
+      console.error("Error submitting answer:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchNewWords = async () => {
     try {
@@ -40,27 +78,13 @@ export default function RankingGameContent() {
         Rotate: 0,
         zIndex: index + 1,
         chosen: false,
-        content: word.content
+        content: word.content,
       }));
       setCards(newCards);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-
-  const initialState = [
-    { Move: 0, Rotate: 0, zIndex: 1, chosen: false, content: "raz" },
-    { Move: 0, Rotate: 0, zIndex: 2, chosen: false, content: "dwa" },
-    { Move: 0, Rotate: 0, zIndex: 3, chosen: false, content: "trzy" },
-    { Move: 0, Rotate: 0, zIndex: 4, chosen: false, content: "cztery" },
-    { Move: 0, Rotate: 0, zIndex: 5, chosen: false, content: "piec" },
-    { Move: 0, Rotate: 0, zIndex: 6, chosen: false, content: "szesc" },
-    { Move: 0, Rotate: 0, zIndex: 7, chosen: false, content: "siedem" },
-    { Move: 0, Rotate: 0, zIndex: 8, chosen: false, content: "osiem" },
-    { Move: 0, Rotate: 0, zIndex: 9, chosen: false, content: "dziewiec" },
-    { Move: 0, Rotate: 0, zIndex: 10, chosen: false, content: "dziesiec" },
-  ];
-
 
   function shuffle() {
     const currentChosenIndex = cards.findIndex((card) => card.chosen);
@@ -100,10 +124,40 @@ export default function RankingGameContent() {
     }, 750);
   }
 
+  async function handleKeyDown(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      await handleSubmit();
+    }
+  }
+
   return (
     <div className="rankinggmae-container">
+      {correctTranslations.length > 0 && (
+        <div
+          className={`answer-feedback ${
+            lastAnswerStatus ? "correct" : "incorrect"
+          }`}
+        >
+          <h3>{lastAnswerStatus ? "Poprawnie!" : "Błąd!"}</h3>
+          <p>Poprawne tłumaczenia:</p>
+          <ul>
+            {correctTranslations.map((t, index) => (
+              <li key={index}>
+                {t.language.toUpperCase()}: {t.translation}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div className="rankinggmae-window">
-        <input className="rankinggame-input" />
+        <input
+          value={userWord}
+          onKeyDown={handleKeyDown}
+          onChange={(e) => setUserWord(e.target.value)}
+          className="rankinggame-input"
+          disabled={isLoading}
+        />
         <div className="deck">
           {cards.map((item, index) => (
             <div
@@ -120,7 +174,7 @@ export default function RankingGameContent() {
         </div>
       </div>
       <div className="rankinggmae-button">
-        <MyButton message="shuffle" color="green" onClick={shuffle} />
+        <MyButton message="Confrim" color="green" onClick={shuffle} />
       </div>
     </div>
   );

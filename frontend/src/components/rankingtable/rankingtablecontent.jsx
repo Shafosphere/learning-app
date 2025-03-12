@@ -147,7 +147,7 @@ export default function RankingTableContent() {
                         <div>{item.username}</div>
                       </div>
                     </td>
-                    <td>{item.weekly_points}</td>
+                    <td>{item.flashcard_points}</td>
                   </tr>
                 );
               })}

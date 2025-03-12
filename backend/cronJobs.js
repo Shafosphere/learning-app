@@ -7,11 +7,11 @@ export const initializeCronJobs = () => {
 
     const query = `
       TRUNCATE TABLE ranking;
-      INSERT INTO ranking (user_id, username, weekly_points)
+      INSERT INTO ranking (user_id, username, flashcard_points)
       SELECT
         u.id AS user_id,
         u.username,
-        COUNT(uwp.id) AS weekly_points
+        COUNT(uwp.id) AS flashcard_points
       FROM
         users u
       JOIN
@@ -22,7 +22,7 @@ export const initializeCronJobs = () => {
       GROUP BY
         u.id, u.username
       ORDER BY
-        weekly_points DESC;
+        flashcard_points DESC;
     `;
 
     try {

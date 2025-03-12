@@ -11,6 +11,7 @@ import {
   getWordsByPatchAndLevel,
   getRankingWord,
   getRandomWords,
+  submitAnswer,
 } from "../controllers/wordController.js";
 import authenticateToken from "../middleware/validators/admin_and_token/authenticateToken.js";
 import authorizeAdmin from "../middleware/validators/admin_and_token/authorizeAdmin.js";
@@ -29,9 +30,12 @@ router.post("/patch-data", authorizePatchAndLevel, getWordsByPatchAndLevel);
 
 router.get("/patch-info", getPatchesInfo);
 
-router.get("/ranking-word", getRankingWord);
+router.get("/ranking-word", authenticateToken, getRankingWord);
 
 router.get("/random-words", getRandomWords);
+
+// routes/ranking.js
+router.post("/submit-answer", authenticateToken, submitAnswer);
 
 router.get(
   "/list",
