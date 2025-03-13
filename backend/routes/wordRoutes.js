@@ -12,6 +12,7 @@ import {
   getRankingWord,
   getRandomWords,
   submitAnswer,
+  getRankingHistory,
 } from "../controllers/wordController.js";
 import authenticateToken from "../middleware/validators/admin_and_token/authenticateToken.js";
 import authorizeAdmin from "../middleware/validators/admin_and_token/authorizeAdmin.js";
@@ -34,6 +35,7 @@ router.get("/ranking-word", authenticateToken, getRankingWord);
 
 router.get("/random-words", getRandomWords);
 
+router.get('/history', authenticateToken, getRankingHistory);
 // routes/ranking.js
 router.post("/submit-answer", authenticateToken, submitAnswer);
 

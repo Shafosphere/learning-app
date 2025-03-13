@@ -23,7 +23,8 @@ import {
   getRandomWord,
   getLanguageWordTranslations,
   updateUserRankingGame,
-  updateUserRankingHistory
+  updateUserRankingHistory,
+  getRankingHistoryById,
 } from "../models/userModel.js";
 
 //information about patch
@@ -441,10 +442,9 @@ export const submitAnswer = async (req, res) => {
       newStreak
     );
 
-
-    const allTranslations = translations.map(t => ({
+    const allTranslations = translations.map((t) => ({
       language: t.language,
-      translation: t.translation
+      translation: t.translation,
     }));
 
     res.status(200).json({
@@ -452,10 +452,23 @@ export const submitAnswer = async (req, res) => {
       isCorrect,
       newPoints: pointsAfter,
       streak: newStreak,
-      correctTranslations: allTranslations 
+      correctTranslations: allTranslations,
     });
   } catch (error) {
     console.error("Error submitting answer:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const getRankingHistory = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const result = await getRankingHistoryById(userId, 10);
+
+    const history = result.rows.map((row) => row.points_after).reverse();
+    res.status(200).json(history);
+  } catch (error) {
+    console.error("Error fetching ranking history:", error);
     res.status(500).json({ error: "Server error" });
   }
 };

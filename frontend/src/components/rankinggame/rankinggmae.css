@@ -29,6 +29,11 @@
   flex-direction: row;
   /* background-color: aqua; */
 }
+.rankinggame-left{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 .deck {
   /* background-color: red; */
   width: 20rem;
@@ -52,6 +57,9 @@
 }
 .rankinggmae-button {
   z-index: 12;
+  display: flex;
+  width: 100%;
+  justify-content: right;
 }
 .chosen_card {
   z-index: 11;
@@ -88,3 +96,60 @@
   margin: 0.3rem 0;
   font-size: 0.9em;
 }
+
+
+.chart-container {
+  width: 400px;
+  background: transparent;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.my-svg {
+  background: transparent;
+}
+
+/* Linie pionowe siatki */
+.chart-grid-line {
+  stroke: var(--secondBackground);
+  stroke-width: 1;
+  fill: none;
+}
+
+/* Słupki boczne */
+.chart-side-rect {
+  fill: var(--secondBackground);
+}
+
+/* Linia idąca w górę */
+.line-up {
+  stroke: var(--highlight);
+  stroke-width: 2;
+  fill: none;
+}
+
+/* Linia idąca w dół */
+.line-down {
+  stroke: var(--secondary);
+  stroke-width: 2;
+  fill: none;
+}
+
+/* Kółko – parametry stałe */
+.chart-circle {
+  r: 4;
+}
+
+/* Opcjonalnie klasa "circle-up" i "circle-down", jeśli też bywa różnie kolorowana */
+.circle-up {
+  fill: var(--highlight);
+}
+.circle-down {
+  fill: var(--secondary);
+}
+
+/* Tekst (np. .chart-text) można tu też stylować */

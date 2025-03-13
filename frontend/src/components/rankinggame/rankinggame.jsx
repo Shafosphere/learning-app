@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import "./rankinggmae.css";
 import MyButton from "../button/button";
 import api from "../../utils/api";
+import MyCustomChart from "./chart";
 
 export default function RankingGameContent() {
   const [data, setData] = useState([]);
@@ -10,6 +11,10 @@ export default function RankingGameContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [correctTranslations, setCorrectTranslations] = useState([]);
   const [lastAnswerStatus, setLastAnswerStatus] = useState(null);
+  const [chartData, setChartData] = useState([]);
+  const [currentWord, setCurrentWord] = useState("");
+  const [currentPoints, setCurrentPoints] = useState(1000);
+  const inputRef = useRef(null);
   const [cards, setCards] = useState(
     Array(10).fill({
       Move: 0,
@@ -26,6 +31,28 @@ export default function RankingGameContent() {
       await fetchNewWord(); // Dodane
     };
     fetchInitialData();
+  }, []);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (data.length > 0) {
+      inputRef.current?.focus();
+    }
+  }, [data]);
+
+  useEffect(() => {
+    const fetchRankingHistory = async () => {
+      try {
+        const response = await api.get("/word/history");
+        setChartData(response.data);
+      } catch (error) {
+        console.error("Error fetching ranking history:", error);
+      }
+    };
+    fetchRankingHistory();
   }, []);
 
   const fetchNewWord = async () => {
@@ -55,13 +82,24 @@ export default function RankingGameContent() {
         startTime: startTime,
       });
 
-      // Aktualizuj UI na podstawie odpowiedzi
       if (response.data.success) {
+        setChartData((prev) => {
+          const newData = [...prev, response.data.newPoints];
+          return newData.slice(-10);
+        });
+
         setCorrectTranslations(response.data.correctTranslations);
         setLastAnswerStatus(response.data.isCorrect);
         setUserWord("");
-        shuffle();
-        fetchNewWord();
+
+        // Najpierw aktualizacje stanów
+        await shuffle();
+        await fetchNewWord();
+
+        // Następnie focus po aktualizacji
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 50); // Krótkie opóźnienie dla stabilności
       }
     } catch (error) {
       console.error("Error submitting answer:", error);
@@ -86,7 +124,7 @@ export default function RankingGameContent() {
     }
   };
 
-  function shuffle() {
+  const shuffle = useCallback(() => {
     const currentChosenIndex = cards.findIndex((card) => card.chosen);
     let randomCardIndex = Math.floor(Math.random() * cards.length);
     if (currentChosenIndex !== -1 && cards.length > 1) {
@@ -122,7 +160,7 @@ export default function RankingGameContent() {
         }))
       );
     }, 750);
-  }
+  }, [cards]);
 
   async function handleKeyDown(event) {
     if (event.key === "Enter") {
@@ -151,13 +189,26 @@ export default function RankingGameContent() {
         </div>
       )}
       <div className="rankinggmae-window">
-        <input
-          value={userWord}
-          onKeyDown={handleKeyDown}
-          onChange={(e) => setUserWord(e.target.value)}
-          className="rankinggame-input"
-          disabled={isLoading}
-        />
+        <div className="rankinggame-left">
+          <input
+            value={userWord}
+            onKeyDown={handleKeyDown}
+            onChange={(e) => setUserWord(e.target.value)}
+            className="rankinggame-input"
+            disabled={isLoading}
+            ref={inputRef}
+          />
+
+          <div className="rankinggmae-button">
+            <MyButton
+              message="Confirm"
+              color="green"
+              onClick={handleSubmit}
+              disabled={isLoading}
+            />
+          </div>
+        </div>
+
         <div className="deck">
           {cards.map((item, index) => (
             <div
@@ -173,9 +224,8 @@ export default function RankingGameContent() {
           ))}
         </div>
       </div>
-      <div className="rankinggmae-button">
-        <MyButton message="Confrim" color="green" onClick={shuffle} />
-      </div>
+
+      <MyCustomChart ranks={chartData} />
     </div>
   );
 }

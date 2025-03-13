@@ -888,3 +888,11 @@ export const updateUserRankingHistory = async (
     ]
   );
 };
+
+export const getRankingHistoryById = async (userId, number) => {
+  const result = await pool.query(
+    "SELECT points_after FROM answer_history WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2",
+    [userId, number]
+  );
+  return result; // Zwracamy już same wiersze
+};
