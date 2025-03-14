@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import "./rankinggmae.css";
 import MyButton from "../button/button";
 import api from "../../utils/api";
 import MyCustomChart from "./chart";
+import polandFlag from "../../data/poland-small.png";
+import usaFlag from "../../data/united-states-small.png";
 
 export default function RankingGameContent() {
   const [data, setData] = useState([]);
@@ -10,11 +11,11 @@ export default function RankingGameContent() {
   const [startTime, setStartTime] = useState(Date.now());
   const [isLoading, setIsLoading] = useState(false);
   const [correctTranslations, setCorrectTranslations] = useState([]);
+  const [userPoints, setUserPoints] = useState();
   const [lastAnswerStatus, setLastAnswerStatus] = useState(null);
   const [chartData, setChartData] = useState([]);
-  const [currentWord, setCurrentWord] = useState("");
-  const [currentPoints, setCurrentPoints] = useState(1000);
   const inputRef = useRef(null);
+  // const [isInitialized, setIsInitialized] = useState(false);
   const [cards, setCards] = useState(
     Array(10).fill({
       Move: 0,
@@ -28,13 +29,19 @@ export default function RankingGameContent() {
   useEffect(() => {
     const fetchInitialData = async () => {
       await fetchNewWords();
-      await fetchNewWord(); // Dodane
+      await fetchNewWord();
+      // Oznacz jedną kartę jako wybraną po inicjalizacji
+      setCards((prevCards) => {
+        if (prevCards.length === 0) return prevCards;
+        const randomIndex = Math.floor(Math.random() * prevCards.length);
+        return prevCards.map((card, index) => ({
+          ...card,
+          chosen: index === randomIndex,
+          zIndex: index === randomIndex ? 11 : 1,
+        }));
+      });
     };
     fetchInitialData();
-  }, []);
-
-  useEffect(() => {
-    inputRef.current?.focus();
   }, []);
 
   useEffect(() => {
@@ -42,6 +49,12 @@ export default function RankingGameContent() {
       inputRef.current?.focus();
     }
   }, [data]);
+
+  useEffect(() => {
+    if (chartData.length > 0) {
+      setUserPoints(chartData[chartData.length - 1]);
+    }
+  }, [chartData]);
 
   useEffect(() => {
     const fetchRankingHistory = async () => {
@@ -60,6 +73,7 @@ export default function RankingGameContent() {
       const response = await api.get("/word/ranking-word");
       if (response.data && response.data.length >= 2) {
         setData(response.data);
+        console.log(response.data);
         setStartTime(Date.now());
       }
     } catch (error) {
@@ -76,9 +90,12 @@ export default function RankingGameContent() {
         return;
       }
 
+      const language = data[2] === "pl" ? "en" : "pl";
+
       const response = await api.post("/word/submit-answer", {
         wordId: data[0],
         userAnswer: userWord,
+        lang: language,
         startTime: startTime,
       });
 
@@ -170,62 +187,79 @@ export default function RankingGameContent() {
   }
 
   return (
-    <div className="rankinggmae-container">
-      {correctTranslations.length > 0 && (
-        <div
-          className={`answer-feedback ${
-            lastAnswerStatus ? "correct" : "incorrect"
-          }`}
-        >
-          <h3>{lastAnswerStatus ? "Poprawnie!" : "Błąd!"}</h3>
-          <p>Poprawne tłumaczenia:</p>
-          <ul>
-            {correctTranslations.map((t, index) => (
-              <li key={index}>
-                {t.language.toUpperCase()}: {t.translation}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <div className="rankinggmae-window">
-        <div className="rankinggame-left">
-          <input
-            value={userWord}
-            onKeyDown={handleKeyDown}
-            onChange={(e) => setUserWord(e.target.value)}
-            className="rankinggame-input"
-            disabled={isLoading}
-            ref={inputRef}
-          />
-
-          <div className="rankinggmae-button">
-            <MyButton
-              message="Confirm"
-              color="green"
-              onClick={handleSubmit}
-              disabled={isLoading}
-            />
+    <>
+      <div class="game">
+        <div class="main-game">
+          <div className="main-rankinggame">
+            <div className="answer-rankinggame">
+              {correctTranslations.length > 0 && (
+                <div
+                  className={`answer-feedback ${
+                    lastAnswerStatus ? "good-rankinggame" : "wrong-rankinggame"
+                  }`}
+                >
+                  {correctTranslations.map((t, index) => (
+                    <span key={index}>{t.translation}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div
+              className={`points-rankinggame ${
+                lastAnswerStatus ? "good-rankinggame" : "wrong-rankinggame"
+              }`}
+            >
+              {userPoints}
+            </div>
+            <div className="left-rankinggame">
+              <div className="flag-rankinggame">
+                <div className="flags">
+                  {data[2] === "pl" && <img alt="english" src={usaFlag} />}
+                  {data[2] === "en" && <img alt="polish" src={polandFlag} />}
+                </div>
+              </div>
+              <div className="input-rankinggame">
+                <input
+                  value={userWord}
+                  onKeyDown={handleKeyDown}
+                  onChange={(e) => setUserWord(e.target.value)}
+                  className="rankinggame-input"
+                  disabled={isLoading}
+                  ref={inputRef}
+                />
+              </div>
+            </div>
+            <div className="right-rankinggame">
+              <div className="deck">
+                {cards.map((item, index) => (
+                  <div
+                    className={`card ${item.chosen ? "chosen_card" : ""}`}
+                    key={index}
+                    style={{
+                      transform: `translateY(${item.Move}rem) rotate(${item.Rotate}deg)`,
+                      zIndex: item.zIndex,
+                    }}
+                  >
+                    {item.chosen ? data?.[1] || "Ładowanie..." : item.content}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="button-rankinggame">
+              <MyButton
+                message="Confirm"
+                color="green"
+                onClick={handleSubmit}
+                disabled={isLoading}
+              />
+            </div>
+            <div className="placeholder-rankinggame"></div>
           </div>
         </div>
-
-        <div className="deck">
-          {cards.map((item, index) => (
-            <div
-              className={`card ${item.chosen ? "chosen_card" : ""}`}
-              key={index}
-              style={{
-                transform: `translateY(${item.Move}rem) rotate(${item.Rotate}deg)`,
-                zIndex: item.zIndex,
-              }}
-            >
-              {item.chosen ? data?.[1] || "Ładowanie..." : item.content}
-            </div>
-          ))}
+        <div class="chart">
+          <MyCustomChart ranks={chartData} />
         </div>
       </div>
-
-      <MyCustomChart ranks={chartData} />
-    </div>
+    </>
   );
 }

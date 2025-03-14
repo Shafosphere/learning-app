@@ -337,6 +337,7 @@ export const getRankingWord = async (req, res) => {
 
     const translationsResult = await getLanguageWordTranslations(wordId);
 
+    console.log(translationsResult);
     const randomLang = Math.random() < 0.5 ? "en" : "pl";
     const translation = translationsResult.find(
       (t) => t.language === randomLang
@@ -346,7 +347,9 @@ export const getRankingWord = async (req, res) => {
       return res.status(404).json({ error: "Translation is missing" });
     }
 
-    res.status(200).json([wordId, translation.translation]);
+    console.log([wordId, translation.translation, randomLang]);
+
+    res.status(200).json([wordId, translation.translation, randomLang]);
   } catch (error) {
     console.error("Error getting information:", error);
     res.status(500).send("Server Error");
@@ -397,7 +400,7 @@ const getDifficultyTier = (points) => {
 // controllers/rankingController.js
 export const submitAnswer = async (req, res) => {
   const userId = req.user.id;
-  const { wordId, userAnswer, startTime } = req.body;
+  const { wordId, userAnswer, lang, startTime } = req.body;
 
   try {
     // 1. Sprawdź bana
@@ -407,7 +410,12 @@ export const submitAnswer = async (req, res) => {
 
     // 2. Pobierz poprawne tłumaczenia
     const translations = await getWordTranslations(wordId);
-    const correctAnswers = translations.map((t) => t.translation.toLowerCase());
+    const filteredTranslations = translations.filter(
+      (t) => t.language === lang
+    );
+    const correctAnswers = filteredTranslations.map((t) =>
+      t.translation.toLowerCase()
+    );
 
     // 3. Oblicz czas odpowiedzi
     const responseTimeMs = Date.now() - startTime;
@@ -442,18 +450,19 @@ export const submitAnswer = async (req, res) => {
       newStreak
     );
 
-    const allTranslations = translations.map((t) => ({
-      language: t.language,
-      translation: t.translation,
-    }));
+    // const allTranslations = translations.map((t) => ({
+    //   language: t.language,
+    //   translation: t.translation,
+    // }));
 
     res.status(200).json({
       success: true,
       isCorrect,
       newPoints: pointsAfter,
       streak: newStreak,
-      correctTranslations: allTranslations,
+      correctTranslations: filteredTranslations,
     });
+
   } catch (error) {
     console.error("Error submitting answer:", error);
     res.status(500).json({ error: "Server error" });

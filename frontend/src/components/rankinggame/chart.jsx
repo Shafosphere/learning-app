@@ -67,10 +67,10 @@ export default function MyCustomChart({ ranks = [] }) {
   return (
     <div className="chart-container">
       {/* Pasek nad wykresem z dwiema liczbami po bokach */}
-      <div className="chart-header">
+      {/* <div className="chart-header">
         <span style={{ color: "var(--headline)" }}>{bracketLeft}</span>
         <span style={{ color: "var(--headline)" }}>{bracketRight}</span>
-      </div>
+      </div> */}
 
       <svg width={chartWidth} height={chartHeight} className="my-svg">
         {/* Linie pionowe w tle */}
@@ -98,7 +98,7 @@ export default function MyCustomChart({ ranks = [] }) {
         )}
 
         {/* Słupki boczne (25 px szerokości) */}
-        <rect
+        {/* <rect
           x="0"
           y="0"
           width="25"
@@ -111,7 +111,7 @@ export default function MyCustomChart({ ranks = [] }) {
           width="25"
           height={chartHeight}
           className="chart-side-rect"
-        />
+        /> */}
       </svg>
     </div>
   );
