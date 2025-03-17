@@ -188,8 +188,8 @@ export default function RankingGameContent() {
 
   return (
     <>
-      <div class="game">
-        <div class="main-game">
+      <div className="game">
+        <div className="main-game">
           <div className="main-rankinggame">
             <div className="answer-rankinggame">
               {correctTranslations.length > 0 && (
@@ -256,7 +256,7 @@ export default function RankingGameContent() {
             <div className="placeholder-rankinggame"></div>
           </div>
         </div>
-        <div class="chart">
+        <div className="chart">
           <MyCustomChart ranks={chartData} />
         </div>
       </div>
