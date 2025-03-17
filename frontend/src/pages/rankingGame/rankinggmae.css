@@ -14,8 +14,56 @@
   );
 }
 
+.rankinggame-select-window{
+  height: 100vh;
+  width: 70rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border-left: 10px solid var(--border);
+  border-right: 10px solid var(--border);
+}
+
+.rankinggame-trophy{
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  align-items: center;
+}
+
+.rankinggame-trophy-text{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+.rankinggame-trophy-text span{
+  font-size: 2.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.rankinggame-trophy-text > :first-child {
+  font-weight: 800;
+  font-size: 3rem;
+}
+
+.rankinggame-trophy-button {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  gap: 0.5rem;
+}
+
+.rankinggame-trophy-button span{
+  width: 100%;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
 .icon-rankinggame{
-  font-size: 20rem;
+  font-size: 6rem; /* Zmniejszenie rozmiaru ikony */
 }
 
 .game {
