@@ -4,7 +4,7 @@ import MyButton from "../../components/button/button";
 import "./rankinggmae.css";
 import { FaTrophy } from "react-icons/fa";
 import { SettingsContext } from "../settings/properties";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 const RankingGameContent = React.lazy(() =>
   import("../../components/rankinggame/rankinggame")
 );
@@ -13,11 +13,10 @@ export default function RankingGame() {
   const [gameStarted, setGameStarted] = useState(false);
   const {isLoggedIn} = useContext(SettingsContext)
   const navigate = useNavigate();
-
+  const location = useLocation();
   function start(){
     if(!isLoggedIn){
-      console.log("sprawdzam " + isLoggedIn);
-      navigate("/login");
+      navigate(`/login?redirectTo=${encodeURIComponent(location.pathname)}`)
     } else {
       setGameStarted(true);
     }

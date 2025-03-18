@@ -13,6 +13,7 @@ import {
   deleteUserAccount,
   sendUserResetLink,
   resetPassword,
+  getRequirements
 } from "../controllers/authController.js";
 
 import { registerValidator } from "../middleware/validators/auth/post-registeruser-vali.js";
@@ -36,6 +37,8 @@ router.post("/login", loginRateLimiter, loginValidator, loginUser);
 router.post("/logout", authenticateToken, logoutUser);
 
 router.post("/information", authenticateToken, getUserInformationValidator, userInformation);
+
+router.get("/requirements", getRequirements)
 
 router.patch(
   "/update",

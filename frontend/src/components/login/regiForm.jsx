@@ -1,8 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 import { PopupContext } from "../popup/popupcontext";
+import api from "../../utils/api";
 
 export default function RegiForm({ setDisplay }) {
   const [username, setUsername] = useState("");
@@ -11,10 +12,25 @@ export default function RegiForm({ setDisplay }) {
   const [confirmPass, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [requirements, setRequirements] = useState(null);
 
   const { setPopup } = useContext(PopupContext);
 
   const intl = useIntl();
+
+  useEffect(() => {
+    async function getRequirements() {
+      try {
+        const response = await api.get("/auth/requirements");
+        if (response.data?.validationRules) {
+          setRequirements(response.data.validationRules);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getRequirements();
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -29,11 +45,17 @@ export default function RegiForm({ setDisplay }) {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:8080/auth/register", {
+      const response = await api.post("/auth/register", {
         username,
         email,
         password,
       });
+
+      // const response = await axios.post("http://localhost:8080/auth/register", {
+      //   username,
+      //   email,
+      //   password,
+      // });
 
       if (response.data.success) {
         setPopup({
@@ -45,14 +67,27 @@ export default function RegiForm({ setDisplay }) {
         });
       }
     } catch (error) {
-      console.error("Registration error", error);
-      setPopup({
-        message: intl.formatMessage({
-          id: "registrationError",
-          defaultMessage: "An error occurred during registration",
-        }),
-        emotion: "negative",
-      });
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        Array.isArray(error.response.data?.errors)
+      ) {
+        const firstErrorMessage = error.response.data.errors[0].msg;
+
+        setPopup({
+          message: firstErrorMessage,
+          emotion: "negative",
+        });
+      } else {
+        console.error("Registration error", error);
+        setPopup({
+          message: intl.formatMessage({
+            id: "registrationError",
+            defaultMessage: "An error occurred during registration",
+          }),
+          emotion: "negative",
+        });
+      }
     }
   }
 
@@ -77,10 +112,20 @@ export default function RegiForm({ setDisplay }) {
               value={username}
               autoComplete="username"
               onChange={(e) => setUsername(e.target.value)}
-              placeholder={intl.formatMessage({
-                id: "username",
-                defaultMessage: "Username",
-              })}
+              placeholder={
+                requirements
+                  ? intl.formatMessage(
+                      { id: "usernamePlaceholder" },
+                      {
+                        min: requirements.USERNAME.MIN_LENGTH,
+                        max: requirements.USERNAME.MAX_LENGTH,
+                      }
+                    )
+                  : intl.formatMessage({
+                      id: "username",
+                      defaultMessage: "Username",
+                    })
+              }
               required
             />
           </div>
@@ -89,7 +134,7 @@ export default function RegiForm({ setDisplay }) {
               className="input-login"
               type="email"
               value={email}
-              autoComplete="username"
+              autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
               placeholder={intl.formatMessage({
                 id: "email",
@@ -105,10 +150,20 @@ export default function RegiForm({ setDisplay }) {
               value={password}
               autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
-              placeholder={intl.formatMessage({
-                id: "password",
-                defaultMessage: "Password",
-              })}
+              placeholder={
+                requirements
+                  ? intl.formatMessage(
+                      { id: "passwordPlaceholder" },
+                      {
+                        min: requirements.PASSWORD.MIN_LENGTH,
+                        max: requirements.PASSWORD.MAX_LENGTH,
+                      }
+                    )
+                  : intl.formatMessage({
+                      id: "password",
+                      defaultMessage: "Password",
+                    })
+              }
               required
             />
             <button

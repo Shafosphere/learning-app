@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 import api from "../../utils/api";
@@ -9,13 +9,16 @@ import { PopupContext } from "../popup/popupcontext";
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const { setPopup } = useContext(PopupContext);
 
   const { setIsLoggedIn, setUser } = useContext(SettingsContext); // Uzyskaj funkcje z kontekstu
-  // const navigate = useNavigate();
   const intl = useIntl();
 
   async function handleSubmit(event) {
@@ -35,6 +38,8 @@ export default function LoginForm() {
         });
         setIsLoggedIn(true); // Ustaw stan logowania na true
         setUser({ username }); // Ustaw zalogowanego użytkownika
+        const redirectTo = new URLSearchParams(location.search).get('redirectTo');
+        navigate(redirectTo || '/about');
       }
     } catch (error) {
       if (error.response.status === 401) {

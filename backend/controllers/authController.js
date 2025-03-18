@@ -2,6 +2,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
+import VALIDATION_RULES from "../middleware/validators/validationConfig.js";
 import {
   createUser,
   getUserByUsername,
@@ -26,6 +27,13 @@ const generateToken = (user) => {
     process.env.REACT_APP_TOKEN_KEY,
     { expiresIn: "1h" }
   );
+};
+
+export const getRequirements = (req, res) => {
+  res.status(200).json({
+    success: true,
+    validationRules: VALIDATION_RULES,
+  });
 };
 
 export const registerUser = async (req, res) => {
@@ -72,10 +80,10 @@ export const adminWelcome = (req, res) => {
 };
 
 export const userWelcome = (req, res) => {
-  res.status(200).json({ 
+  res.status(200).json({
     loggedIn: true,
     user: req.user,
-    expiresIn: req.user.expiresAt - Date.now() // Czas pozostały w ms
+    expiresIn: req.user.expiresAt - Date.now(), // Czas pozostały w ms
   });
 };
 export const loginUser = async (req, res) => {
@@ -145,7 +153,6 @@ export const logoutUser = (req, res) => {
     token: null, // Dodatkowe zerowanie tokena
   });
 };
-
 
 export const userInformation = async (req, res) => {
   const username = req.user.username;

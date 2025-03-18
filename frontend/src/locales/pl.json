@@ -35,6 +35,8 @@
   "login": "Zaloguj się",
   "loggingIn": "Logowanie",
   "username": "Nazwa użytkownika",
+  "usernamePlaceholder": "Nazwa od {min} do {max} znaków",
+  "passwordPlaceholder": "Hasło (min. {min}, wielka litera i cyfra)",
   "password": "Hasło",
   "loginButton": "Zaloguj się",
   "unexpectedError": "Wystąpił nieoczekiwany błąd",

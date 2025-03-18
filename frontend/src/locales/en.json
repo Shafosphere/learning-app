@@ -36,6 +36,8 @@
   "loggingIn": "Logging in",
   "username": "Username",
   "password": "Password",
+  "usernamePlaceholder": "Username from {min} to {max} characters",
+  "passwordPlaceholder": "Password (min. {min}, e.g. uppercase & digit)",
   "loginButton": "Log in",
   "unexpectedError": "An unexpected error occurred",
   "createAccount": "Create an account",
