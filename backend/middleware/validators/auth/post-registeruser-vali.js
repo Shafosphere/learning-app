@@ -1,54 +1,56 @@
+// backend/validators/registerValidator.js
+
 import { body, validationResult } from "express-validator";
 import VALIDATION_RULES from "../validationConfig.js";
 
 export const registerValidator = [
-  // Walidacja username - min. 4, max. 20 znaków, tylko litery, cyfry i "_"
+  // Walidacja username
   body("username")
     .isLength({
       min: VALIDATION_RULES.USERNAME.MIN_LENGTH,
       max: VALIDATION_RULES.USERNAME.MAX_LENGTH,
     })
-    .withMessage(
-      `Username must be between ${VALIDATION_RULES.USERNAME.MIN_LENGTH} and ${VALIDATION_RULES.USERNAME.MAX_LENGTH} characters.`
-    )
+    .withMessage("ERROR_USERNAME_LENGTH")
     .matches(VALIDATION_RULES.USERNAME.REGEX)
-    .withMessage("Username can only contain letters, numbers, and underscores.")
+    .withMessage("ERROR_USERNAME_REGEX")
     .trim(),
 
-  // Walidacja email - musi być poprawnym adresem i mieć max. 255 znaków
+  // Walidacja email
   body("email")
     .isEmail()
-    .withMessage("Invalid email format.")
+    .withMessage("ERROR_EMAIL_FORMAT")
     .isLength({ max: VALIDATION_RULES.EMAIL.MAX_LENGTH })
-    .withMessage(
-      `Email cannot exceed ${VALIDATION_RULES.EMAIL.MAX_LENGTH} characters.`
-    )
+    .withMessage("ERROR_EMAIL_MAX_LENGTH")
     .normalizeEmail(),
 
-  // Walidacja password - min. 8 znaków, wielka litera, cyfra, znak specjalny
+  // Walidacja password
   body("password")
     .isLength({
       min: VALIDATION_RULES.PASSWORD.MIN_LENGTH,
       max: VALIDATION_RULES.PASSWORD.MAX_LENGTH,
     })
-    .withMessage(
-      `Password must be between ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} and ${VALIDATION_RULES.PASSWORD.MAX_LENGTH} characters.`
-    )
+    .withMessage("ERROR_PASSWORD_LENGTH")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.UPPER)
-    .withMessage("Password must contain at least one uppercase letter.")
+    .withMessage("ERROR_PASSWORD_NO_UPPER")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.LOWER)
-    .withMessage("Password must contain at least one lowercase letter.")
+    .withMessage("ERROR_PASSWORD_NO_LOWER")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.DIGIT)
-    .withMessage("Password must contain at least one digit.")
+    .withMessage("ERROR_PASSWORD_NO_DIGIT")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.SPECIAL)
-    .withMessage("Password must contain at least one special character.")
+    .withMessage("ERROR_PASSWORD_NO_SPECIAL")
     .trim(),
 
   // Middleware do obsługi błędów walidacji
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      // Modyfikujemy strukturę, tak aby w polu 'code' pojawiła się nazwa błędu
+      // (można też wrzucić w 'msg', ale 'code' bywa bardziej czytelne)
+      const errorResponse = errors.array().map((err) => ({
+        param: err.param,
+        code: err.msg, // np. "ERROR_USERNAME_LENGTH"
+      }));
+      return res.status(400).json({ errors: errorResponse });
     }
     next();
   },

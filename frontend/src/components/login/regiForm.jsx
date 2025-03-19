@@ -50,13 +50,6 @@ export default function RegiForm({ setDisplay }) {
         email,
         password,
       });
-
-      // const response = await axios.post("http://localhost:8080/auth/register", {
-      //   username,
-      //   email,
-      //   password,
-      // });
-
       if (response.data.success) {
         setPopup({
           message: intl.formatMessage({
@@ -72,10 +65,10 @@ export default function RegiForm({ setDisplay }) {
         error.response.status === 400 &&
         Array.isArray(error.response.data?.errors)
       ) {
-        const firstErrorMessage = error.response.data.errors[0].msg;
+        const firstErrorCode = error.response.data.errors[0].code;
 
         setPopup({
-          message: firstErrorMessage,
+          message: intl.formatMessage({ id: firstErrorCode }),
           emotion: "negative",
         });
       } else {

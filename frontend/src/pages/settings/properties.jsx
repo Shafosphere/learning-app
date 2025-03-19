@@ -2,10 +2,13 @@ import React, { createContext, useState, useEffect } from "react";
 import api from "../../utils/api"; // Importuj api do wykonywania zapytań do serwera
 import { getAllWords } from "../../utils/indexedDB";
 import usePersistedState from "../../hooks/localstorage/usePersistedState";
+import { useApi } from "../../hooks/api/useApi";
 
 export const SettingsContext = createContext();
 
-export const SettingsProvider = ({ children }) => {
+export const SettingsProvider = ({ children, language, setLanguage }) => {
+  const { get, post } = useApi();
+
   const [procentC1, setProcentC1] = usePersistedState("ProcentC1MainGame", 0);
   const [procentB2, setProcentB2] = usePersistedState("ProcentB2MainGame", 0);
   const [logostatus, setlogo] = usePersistedState("logostatus", false);
@@ -26,7 +29,7 @@ export const SettingsProvider = ({ children }) => {
     "sound",
     "true"
   );
-  const [language, setLanguage] = usePersistedState("language", "en");
+  // const [language, setLanguage] = usePersistedState("language", "en");
   const [level, setLevel] = usePersistedState("level", "B2");
   const [isLoggedIn, setIsLoggedIn] = usePersistedState("isLoggedIn", false);
   const [user, setUser] = usePersistedState("user", null);
@@ -79,25 +82,18 @@ export const SettingsProvider = ({ children }) => {
   };
 
   const checkAuthStatus = async () => {
-    try {
-      const response = await api.get("/auth/user");
-
-      if (response.data.loggedIn) {
-        // Zapisz czas wygaśnięcia
-        localStorage.setItem("token_expires", response.data.user.expiresAt);
-
-        // Ustaw timer automatycznego czyszczenia
-        const timeLeft = response.data.expiresIn;
-        if (timeLeft > 0) {
-          setTimeout(handleLogoutLogic, timeLeft);
-        }
-
-        setIsLoggedIn(true);
-        setUser(response.data.user);
-      } else {
-        handleLogoutLogic();
+    const data = await get("/auth/user");
+    if (data.error) {
+      handleLogoutLogic();
+    } else if (data.loggedIn) {
+      localStorage.setItem("token_expires", data.user.expiresAt);
+      const timeLeft = data.expiresIn;
+      if (timeLeft > 0) {
+        setTimeout(handleLogoutLogic, timeLeft);
       }
-    } catch (error) {
+      setIsLoggedIn(true);
+      setUser(data.user);
+    } else {
       handleLogoutLogic();
     }
   };
@@ -174,24 +170,23 @@ export const SettingsProvider = ({ children }) => {
     let percent = 0;
     let numberOfWords = 0;
 
-    try {
-      // 2. Pobranie informacji z backendu
-      const response = await api.get("/word/patch-info");
+    // 2. Pobranie informacji z backendu
+    const data = await get("/word/patch-info");
+    if (data.error) {
+      console.log("Błąd pobierania danych:", data.message);
+      return; // obsługa błędu wg uznania
+    }
 
-      // 3. Wybór właściwej wartości z obiektu response
-      if (lvl === "B2") {
-        numberOfWords = response.data.numberWordsB2;
-      } else if (lvl === "C1") {
-        numberOfWords = response.data.numberWordsC1;
-      }
+    // 3. Wybór właściwej wartości z obiektu response
+    if (lvl === "B2") {
+      numberOfWords = data.numberWordsB2;
+    } else if (lvl === "C1") {
+      numberOfWords = data.numberWordsC1;
+    }
 
-      // 4. Obliczenie procentu
-      if (numberOfWords > 0) {
-        percent = (wordIds.length / numberOfWords) * 100;
-      }
-    } catch (error) {
-      console.log(error);
-      return;
+    // 4. Obliczenie procentu
+    if (numberOfWords > 0) {
+      percent = (wordIds.length / numberOfWords) * 100;
     }
 
     // 5. Zaokrąglenie do dwóch miejsc po przecinku
