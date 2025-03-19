@@ -13,6 +13,7 @@ import {
   deleteUserByID,
   incrementUserActivity,
   getUserByEmail,
+  userRankingUpdate,
 } from "../models/userModel.js";
 import { sendEmail, generateResetPasswordEmail } from "../emailService.js";
 import { config } from "../config.js";
@@ -50,6 +51,7 @@ export const registerUser = async (req, res) => {
     // Użycie funkcji modelu do tworzenia użytkownika
     const newUserId = await createUser(username, email, hashedPassword);
 
+    await userRankingUpdate(newUserId, username);
     // Zwiększ licznik rejestracji
     const today = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
     await incrementUserActivity("registration", today);

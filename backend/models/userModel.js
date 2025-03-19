@@ -705,15 +705,15 @@ export const insertWordIntoUserProgress = async (client, userId, wordId) => {
   );
 };
 
-export const userRankingUpdate = async (client, userId) => {
-  await client.query(
+export const userRankingUpdate = async (userId, username) => {
+  await pool.query(
     `
-    INSERT INTO ranking (user_id, flashcard_points)
-    VALUES ($1, 1)
+    INSERT INTO ranking (user_id, username, flashcard_points)
+    VALUES ($1, $2, 1)
     ON CONFLICT (user_id) DO UPDATE
     SET flashcard_points = ranking.flashcard_points + 1, last_updated = NOW();
     `,
-    [userId]
+    [userId, username]
   );
 };
 

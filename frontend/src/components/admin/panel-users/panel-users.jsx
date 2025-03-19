@@ -110,11 +110,13 @@ export default function UsersPanel() {
       }
     } catch (error) {
       setPopup({
-        message: error.response?.data?.message || "An error occurred",
+        message: error.response?.data?.message || "Wystąpił błąd",
         emotion: "negative",
       });
-
-      console.error("Error updating users:", error);
+      console.error(
+        "Update error:",
+        error.response?.data?.errors || error
+      );
     }
   }
   ////

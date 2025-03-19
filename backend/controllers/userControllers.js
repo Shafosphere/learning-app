@@ -125,7 +125,7 @@ export const learnWord = async (req, res) => {
     await insertWordIntoUserProgress(client, userId, wordId);
 
     // Aktualizacja `ranking`
-    await userRankingUpdate(client, userId, username);
+    await userRankingUpdate(userId, username);
 
     await client.query("COMMIT");
 
