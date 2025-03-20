@@ -67,27 +67,28 @@ export default function RegiForm({ setDisplay }) {
         });
       }
     } catch (error) {
-      if (
-        error.response &&
-        error.response.status === 400 &&
-        Array.isArray(error.response.data?.errors)
-      ) {
-        const firstErrorMessage = error.response.data.errors[0].msg;
+      // if (
+      //   error.response &&
+      //   error.response.status === 400 &&
+      //   Array.isArray(error.response.data?.errors)
+      // ) {
+      //   const firstErrorMessage = error.response.data.errors[0].msg;
 
-        setPopup({
-          message: firstErrorMessage,
-          emotion: "negative",
-        });
-      } else {
-        console.error("Registration error", error);
-        setPopup({
-          message: intl.formatMessage({
-            id: "registrationError",
-            defaultMessage: "An error occurred during registration",
-          }),
-          emotion: "negative",
-        });
-      }
+      //   setPopup({
+      //     message: firstErrorMessage,
+      //     emotion: "negative",
+      //   });
+      // } else {
+      //   console.error("Registration error", error);
+      //   setPopup({
+      //     message: intl.formatMessage({
+      //       id: "registrationError",
+      //       defaultMessage: "An error occurred during registration",
+      //     }),
+      //     emotion: "negative",
+      //   });
+      // }
+      console.error("Registration error:", error);
     }
   }
 

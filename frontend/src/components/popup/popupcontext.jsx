@@ -1,10 +1,18 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect} from "react";
 import NewPopup from "./newpopup";
+import { registerPopupHandler } from "../../utils/popupManager";
 
 export const PopupContext = createContext();
 
 export const PopupProvider = ({ children }) => {
   const [popup, setPopup] = useState(null);
+
+  // Rejestrujemy funkcję setPopup w managerze
+  useEffect(() => {
+    registerPopupHandler((params) => {
+      setPopup(params);
+    });
+  }, []);
 
   return (
     <PopupContext.Provider value={{ setPopup }}>
