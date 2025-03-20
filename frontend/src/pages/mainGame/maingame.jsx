@@ -8,8 +8,7 @@ import ConfirmWindow from "../../components/confirm/confirm";
 
 import dingSound from "../../data/ding.wav";
 import dongSound from "../../data/dong.wav";
-// import api from "../../utils/api";
-import { useApi } from "../../hooks/api/useApi";
+import api from "../../utils/api";
 
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
 import { useIntl } from "react-intl";
@@ -26,7 +25,6 @@ import usePatch from "../../hooks/boxes/usePatch";
 
 export default function MainGame({ setDisplay, lvl }) {
   const intl = useIntl();
-  const { post, get } = useApi();
 
   // Patch – numeracja i stany
   const [patchNumberB2, setB2Patch] = usePersistedState(
@@ -262,11 +260,11 @@ export default function MainGame({ setDisplay, lvl }) {
   }
 
   async function sendLearnedWordToServer(wordId) {
-    const result = await post("/user/learn-word", { wordId });
-    if (result.error) {
-      console.error("Error sending word:", result.message);
-    } else {
-      console.log("Word added:", result);
+    try {
+      const response = await api.post("/user/learn-word", { wordId });
+      console.log("Słówko zgłoszone do serwera:", response.data);
+    } catch (error) {
+      console.error("Błąd wysyłania słówka:", error);
     }
   }
 
@@ -281,12 +279,12 @@ export default function MainGame({ setDisplay, lvl }) {
 
   useEffect(() => {
     async function fetchPatchInfo() {
-      const result = await get("/word/patch-info");
-      if (!result.error) {
-        setTotalB2(result.totalB2Patches);
-        setTotalC1(result.totalC1Patches);
-      } else {
-        console.error("Error patch info:", result.message);
+      try {
+        const response = await api.get("/word/patch-info");
+        setTotalB2(response.data.totalB2Patches);
+        setTotalC1(response.data.totalC1Patches);
+      } catch (error) {
+        console.error("Błąd patch info:", error);
       }
     }
     fetchPatchInfo();

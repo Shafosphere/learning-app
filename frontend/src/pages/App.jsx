@@ -20,7 +20,6 @@ import { PopupProvider } from "../components/popup/popupcontext";
 import Vocabulary from "./voca/vocabulary";
 import ResetPassword from "./resetPassword/resetpassword";
 import { v4 as uuidv4 } from "uuid";
-import usePersistedState from "../hooks/localstorage/usePersistedState";
 // Obiekt zawierający tłumaczenia dla różnych języków
 const messages = {
   en: enMessages,
@@ -29,7 +28,7 @@ const messages = {
 
 // Komponent do owijania całej aplikacji z `IntlProvider`
 const AppWrapper = () => {
-  const { isLoggedIn } = useContext(SettingsContext);
+  const { language, isLoggedIn } = useContext(SettingsContext);
 
   useEffect(() => {
     let deviceId = localStorage.getItem("deviceId");
@@ -40,7 +39,7 @@ const AppWrapper = () => {
   }, []);
 
   return (
-    <>
+    <IntlProvider locale={language} messages={messages[language]}>
       <Sidebar />
       <Routes>
         <Route path="/" element={<Navigate to="/about" replace />} />
@@ -63,24 +62,17 @@ const AppWrapper = () => {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </IntlProvider>
   );
 };
 
 function App() {
-  const [language, setLanguage] = usePersistedState("language", "en");
-
   return (
-    <IntlProvider
-      locale={language}
-      messages={language === "pl" ? plMessages : enMessages}
-    >
-      <SettingsProvider language={language} setLanguage={setLanguage}>
-        <PopupProvider>
-          <AppWrapper />
-        </PopupProvider>
-      </SettingsProvider>
-    </IntlProvider>
+    <SettingsProvider>
+      <PopupProvider>
+        <AppWrapper />
+      </PopupProvider>
+    </SettingsProvider>
   );
 }
 
