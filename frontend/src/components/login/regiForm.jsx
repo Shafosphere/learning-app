@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from "react";
-import axios from "axios";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 import { PopupContext } from "../popup/popupcontext";
@@ -7,7 +6,7 @@ import api from "../../utils/api";
 
 export default function RegiForm({ setDisplay }) {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");``
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -50,13 +49,6 @@ export default function RegiForm({ setDisplay }) {
         email,
         password,
       });
-
-      // const response = await axios.post("http://localhost:8080/auth/register", {
-      //   username,
-      //   email,
-      //   password,
-      // });
-
       if (response.data.success) {
         setPopup({
           message: intl.formatMessage({
@@ -67,27 +59,6 @@ export default function RegiForm({ setDisplay }) {
         });
       }
     } catch (error) {
-      // if (
-      //   error.response &&
-      //   error.response.status === 400 &&
-      //   Array.isArray(error.response.data?.errors)
-      // ) {
-      //   const firstErrorMessage = error.response.data.errors[0].msg;
-
-      //   setPopup({
-      //     message: firstErrorMessage,
-      //     emotion: "negative",
-      //   });
-      // } else {
-      //   console.error("Registration error", error);
-      //   setPopup({
-      //     message: intl.formatMessage({
-      //       id: "registrationError",
-      //       defaultMessage: "An error occurred during registration",
-      //     }),
-      //     emotion: "negative",
-      //   });
-      // }
       console.error("Registration error:", error);
     }
   }

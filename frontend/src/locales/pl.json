@@ -184,5 +184,16 @@
   "confirm.newer": "nowszy",
   "confirm.older": "starszy",
   "confirm.conflictTitle": "Różne wersje zapisu!",
-  "confirm.conflictMessage": "Masz {newer} zapis z tego komputera ({localDate}) i {older} zapis z konta ({serverDate}). Klikając {yes} użyjesz nowszego zapisu lokalnego, a klikając {no} pozostanie zapis z konta."
+  "confirm.conflictMessage": "Masz {newer} zapis z tego komputera ({localDate}) i {older} zapis z konta ({serverDate}). Klikając {yes} użyjesz nowszego zapisu lokalnego, a klikając {no} pozostanie zapis z konta.",
+  "UNKNOWN_ERROR": "Wystąpił nieznany błąd",
+  "ERR_USERNAME_LENGTH": "Nazwa użytkownika musi mieć od {min} do {max} znaków",
+  "ERR_USERNAME_INVALID_CHARS": "Nazwa użytkownika może zawierać tylko litery, cyfry i podkreślenia",
+  "ERR_INVALID_EMAIL": "Nieprawidłowy format adresu email",
+  "ERR_EMAIL_TOO_LONG": "Email nie może przekraczać {max} znaków",
+  "ERR_PASSWORD_LENGTH": "Hasło musi mieć od {min} do {max} znaków",
+  "ERR_PASSWORD_UPPERCASE": "Hasło musi zawierać co najmniej jedną wielką literę",
+  "ERR_PASSWORD_LOWERCASE": "Hasło musi zawierać co najmniej jedną małą literę",
+  "ERR_PASSWORD_DIGIT": "Hasło musi zawierać co najmniej jedną cyfrę",
+  "ERR_PASSWORD_SPECIAL_CHAR": "Hasło musi zawierać co najmniej jeden znak specjalny",
+  "ERR_UNKNOWN_ERROR": "Wystąpił nieznany błąd"
 }

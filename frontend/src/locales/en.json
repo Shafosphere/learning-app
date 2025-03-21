@@ -180,5 +180,15 @@
   "confirm.newer": "newer",
   "confirm.older": "older",
   "confirm.conflictTitle": "Different save versions!",
-  "confirm.conflictMessage": "You have a {newer} save from this computer ({localDate}) and an {older} save from your account ({serverDate}). Clicking {yes} will use the newer local save, while clicking {no} will keep the save from your account."
+  "confirm.conflictMessage": "You have a {newer} save from this computer ({localDate}) and an {older} save from your account ({serverDate}). Clicking {yes} will use the newer local save, while clicking {no} will keep the save from your account.",
+  "ERR_USERNAME_LENGTH": "Username must be between {min} and {max} characters",
+  "ERR_USERNAME_INVALID_CHARS": "Username can only contain letters, numbers and underscores",
+  "ERR_INVALID_EMAIL": "Invalid email format",
+  "ERR_EMAIL_TOO_LONG": "Email cannot exceed {max} characters",
+  "ERR_PASSWORD_LENGTH": "Password must be between {min} and {max} characters",
+  "ERR_PASSWORD_UPPERCASE": "Password must contain at least one uppercase letter",
+  "ERR_PASSWORD_LOWERCASE": "Password must contain at least one lowercase letter",
+  "ERR_PASSWORD_DIGIT": "Password must contain at least one digit",
+  "ERR_PASSWORD_SPECIAL_CHAR": "Password must contain at least one special character",
+  "ERR_UNKNOWN_ERROR": "An unknown error occurred"
 }

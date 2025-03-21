@@ -1,5 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
+import { FormattedMessage } from "react-intl";
 import { SettingsContext } from "../../pages/settings/properties";
 import styles from "./popup.module.css";
 
@@ -19,6 +20,10 @@ export default function NewPopup({
   const dingSadSoundRef = useMemo(() => new Audio(wrongSound), []);
   const errorSoundRef = useMemo(() => new Audio(errorSound), []);
   const { isSoundEnabled } = useContext(SettingsContext);
+
+  function isErrorCode(msg) {
+    return msg?.startsWith("ERR_");
+  }
 
   useEffect(() => {
     // Dźwięk
@@ -71,7 +76,11 @@ export default function NewPopup({
       className={popupClass}
       style={{ backgroundColor }}
     >
-      {message}
+      {isErrorCode(message) ? (
+        <FormattedMessage id={message} defaultMessage="Unknown error" />
+      ) : (
+        message
+      )}
     </div>,
     document.getElementById("portal-root")
   );
