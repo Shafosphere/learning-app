@@ -79,15 +79,20 @@ export const SettingsProvider = ({ children }) => {
   };
 
   const checkAuthStatus = async () => {
+    const token = document.cookie
+
+    if (!token) {
+      setIsLoggedIn(false);
+      return;
+    }
+
     try {
       const response = await api.get("/auth/user");
 
       if (response.data.loggedIn) {
-        // Zapisz czas wygaśnięcia
         localStorage.setItem("token_expires", response.data.user.expiresAt);
-
-        // Ustaw timer automatycznego czyszczenia
         const timeLeft = response.data.expiresIn;
+
         if (timeLeft > 0) {
           setTimeout(handleLogoutLogic, timeLeft);
         }
@@ -96,6 +101,10 @@ export const SettingsProvider = ({ children }) => {
         setUser(response.data.user);
       } else {
         handleLogoutLogic();
+        showPopup({
+          message: "ERR_SESSION_EXPIRED",
+          emotion: "negative",
+        });
       }
     } catch (error) {
       handleLogoutLogic();

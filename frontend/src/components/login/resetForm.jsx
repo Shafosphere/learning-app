@@ -6,7 +6,6 @@ import { useIntl, FormattedMessage } from "react-intl";
 export default function ResetForm() {
   const [email, setEmail] = useState("");
   const { setPopup } = useContext(PopupContext);
-
   const intl = useIntl();
 
   async function handleSubmit(event) {
@@ -22,13 +21,6 @@ export default function ResetForm() {
       });
     } catch (error) {
       console.error("Error sending email:", error);
-      setPopup({
-        message: intl.formatMessage({
-          id: "resetForm.error",
-          defaultMessage: "An error occurred while sending the reset link.",
-        }),
-        emotion: "negative",
-      });
     }
   }
 

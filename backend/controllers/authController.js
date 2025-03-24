@@ -98,7 +98,8 @@ export const loginUser = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid username or password.",
+        message: "ERR_INVALID_CREDENTIALS", // lub np. "ERR_INVALID_EMAIL"
+        code: "ERR_INVALID_CREDENTIALS",
       });
     }
 
@@ -107,7 +108,8 @@ export const loginUser = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: "Invalid username or password.",
+        message: "ERR_INVALID_CREDENTIALS", // lub "ERR_INVALID_PASSWORD"
+        code: "ERR_INVALID_CREDENTIALS",
       });
     }
 
@@ -284,11 +286,8 @@ export const sendUserResetLink = async (req, res) => {
   try {
     const users = await getUserByEmail(email);
 
-    // Ukrywamy, czy użytkownik istnieje (zapobiegamy "user enumeration attack")
-    const responseMessage =
-      language === "pl"
-        ? "Jeśli adres e-mail istnieje w bazie, wysłaliśmy wiadomość z linkiem resetującym."
-        : "If the email exists in our database, we have sent a reset link.";
+    // Ukrywamy istnienie użytkownika – zawsze zwracamy ten sam komunikat
+    const responseMessage = "INFO_RESET_EMAIL_SENT"; // Klucz tłumaczenia
 
     if (users.length === 0) {
       return res.status(200).json({ message: responseMessage });
@@ -304,17 +303,15 @@ export const sendUserResetLink = async (req, res) => {
     await sendEmail({
       to: email,
       subject,
-      html: htmlContent, // Używamy HTML
+      html: htmlContent,
     });
 
     res.status(200).json({ message: responseMessage });
   } catch (error) {
     console.error("Error sending reset email:", error.message);
     res.status(500).json({
-      message:
-        language === "pl"
-          ? "Nie udało się wysłać wiadomości e-mail."
-          : "Failed to send reset email.",
+      message: "ERR_RESET_SENDING_FAIL", // Kod błędu
+      code: "ERR_RESET_SENDING_FAIL",
     });
   }
 };

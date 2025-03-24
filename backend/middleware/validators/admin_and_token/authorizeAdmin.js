@@ -3,7 +3,8 @@ const authorizeAdmin = (req, res, next) => {
     console.log("Access denied. User is not an admin.");
     return res.status(403).json({
       success: false,
-      message: "Access denied.",
+      message: "ERR_USER_NOT_ADMIN",
+      code: "ERR_USER_NOT_ADMIN"
     });
   }
   console.log("Got Access, user is an admin.");

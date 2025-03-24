@@ -3,23 +3,27 @@ import { config } from "../../../config.js";
 
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
+  
   if (!token) {
     return res.status(403).json({
-      success: false,
-      message: "Token not found. Please login.",
+      success: true,
+      message: "ERR_TOKEN_NOT_FOUND",
+      code: "ERR_TOKEN_NOT_FOUND"
     });
   }
 
   jwt.verify(token, config.tokenKey, (err, user) => {
     if (err) {
       return res.status(403).json({
-        success: false,
-        message: "Invalid or expired token. Please login again.",
+        success: true,
+        message: "ERR_INVALID_TOKEN", 
+        code: "ERR_INVALID_TOKEN"
       });
     }
+    
     req.user = {
       ...user,
-      expiresAt: user.exp * 1000 // Konwersja sekund na milisekundy
+      expiresAt: user.exp * 1000
     };
     next();
   });

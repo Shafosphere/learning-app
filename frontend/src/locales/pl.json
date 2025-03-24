@@ -195,5 +195,15 @@
   "ERR_PASSWORD_LOWERCASE": "Hasło musi zawierać co najmniej jedną małą literę",
   "ERR_PASSWORD_DIGIT": "Hasło musi zawierać co najmniej jedną cyfrę",
   "ERR_PASSWORD_SPECIAL_CHAR": "Hasło musi zawierać co najmniej jeden znak specjalny",
-  "ERR_UNKNOWN_ERROR": "Wystąpił nieznany błąd"
+  "ERR_UNKNOWN_ERROR": "Wystąpił nieznany błąd",
+  "ERR_TOKEN_NOT_FOUND": "Token autentykacyjny nie został znaleziony. Zaloguj się.",
+  "ERR_INVALID_TOKEN": "Nieprawidłowa lub wygasła sesja. Zaloguj się ponownie.",
+  "ERR_USER_NOT_ADMIN": "Użytkownik nie jest administratorem",
+  "ERR_LOGIN_USERNAME_LENGTH": "Nazwa użytkownika musi zawierać od {min} do {max} znaków",
+  "ERR_LOGIN_USERNAME_INVALID_CHARS": "Nazwa użytkownika ma zawierać tylko litery, cyfry i podkreślenia",
+  "ERR_LOGIN_PASSWORD_LENGTH": "Hasło musi zawierać od {min} do {max} znaków",
+  "ERR_INVALID_CREDENTIALS": "Nieprawidłowa nazwa użytkownika lub hasło",
+  "ERR_INVALID_EMAIL_FORMAT": "Nieprawidłowy format adresu e-mail",
+  "ERR_INVALID_LANGUAGE": "Pole language może zawierać tylko 'pl' lub 'en'",
+  "ERR_RESET_SENDING_FAIL": "Nie udało się wysłać wiadomości resetującej"
 }

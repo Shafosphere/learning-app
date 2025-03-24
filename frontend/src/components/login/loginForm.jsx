@@ -36,38 +36,16 @@ export default function LoginForm() {
           }),
           emotion: "positive",
         });
-        setIsLoggedIn(true); // Ustaw stan logowania na true
-        setUser({ username }); // Ustaw zalogowanego użytkownika
-        const redirectTo = new URLSearchParams(location.search).get('redirectTo');
-        navigate(redirectTo || '/about');
+        setIsLoggedIn(true);
+        setUser({ username });
+        const redirectTo = new URLSearchParams(location.search).get(
+          "redirectTo"
+        );
+        navigate(redirectTo || "/about");
       }
     } catch (error) {
-      if (error.response.status === 401) {
-        setPopup({
-          message: intl.formatMessage({
-            id: "invalidCredentials",
-            defaultMessage: "Invalid username or password",
-          }),
-          emotion: "negative",
-        });
-      } else if (error.response.status === 500) {
-        setPopup({
-          message: intl.formatMessage({
-            id: "serverError",
-            defaultMessage: "Server error. Please try again later.",
-          }),
-          emotion: "warning",
-        });
-      } else {
-        setPopup({
-          message: intl.formatMessage({
-            id: "unexpectedError",
-            defaultMessage: "An unexpected error occurred",
-          }),
-          emotion: "negative",
-        });
-      }
-      setError(error.response.data.message);
+      console.log(error);
+      return;
     }
   }
 

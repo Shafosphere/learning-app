@@ -9,5 +9,5 @@ export const translate = (id, defaultMessage, params = {}) => {
     console.error("Intl instance not registered!");
     return defaultMessage;
   }
-  return intlInstance.formatMessage({ id, defaultMessage }, params); // <-- Dodajemy params
+  return intlInstance.formatMessage({ id, defaultMessage }, params);
 };

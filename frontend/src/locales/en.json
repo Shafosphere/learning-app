@@ -190,5 +190,15 @@
   "ERR_PASSWORD_LOWERCASE": "Password must contain at least one lowercase letter",
   "ERR_PASSWORD_DIGIT": "Password must contain at least one digit",
   "ERR_PASSWORD_SPECIAL_CHAR": "Password must contain at least one special character",
-  "ERR_UNKNOWN_ERROR": "An unknown error occurred"
+  "ERR_UNKNOWN_ERROR": "An unknown error occurred",
+  "ERR_TOKEN_NOT_FOUND": "Authentication token not found. Please log in.",
+  "ERR_INVALID_TOKEN": "Invalid or expired session. Please log in again.",
+  "ERR_USER_NOT_ADMIN": "User is not admin",
+  "ERR_LOGIN_USERNAME_LENGTH": "Username must be between {min} and {max} characters",
+  "ERR_LOGIN_USERNAME_INVALID_CHARS": "Username can only contain letters, digits, and underscores",
+  "ERR_LOGIN_PASSWORD_LENGTH": "Password must be between {min} and {max} characters",
+  "ERR_INVALID_CREDENTIALS": "Invalid username or password",
+  "ERR_INVALID_EMAIL_FORMAT": "Invalid email format",
+  "ERR_INVALID_LANGUAGE": "Language must be 'pl' or 'en'",
+  "ERR_RESET_SENDING_FAIL": "Failed to send reset email"
 }
