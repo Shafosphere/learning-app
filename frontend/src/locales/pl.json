@@ -205,5 +205,11 @@
   "ERR_INVALID_CREDENTIALS": "Nieprawidłowa nazwa użytkownika lub hasło",
   "ERR_INVALID_EMAIL_FORMAT": "Nieprawidłowy format adresu e-mail",
   "ERR_INVALID_LANGUAGE": "Pole language może zawierać tylko 'pl' lub 'en'",
-  "ERR_RESET_SENDING_FAIL": "Nie udało się wysłać wiadomości resetującej"
+  "ERR_RESET_SENDING_FAIL": "Nie udało się wysłać wiadomości resetującej",
+  "ERR_RESET_TOKEN_REQUIRED": "Token resetowania jest wymagany.",
+  "ERR_RESET_PASSWORD_LENGTH": "Hasło musi mieć od {min} do {max} znaków.",
+  "ERR_RESET_PASSWORD_UPPERCASE": "Hasło musi zawierać przynajmniej jedną wielką literę.",
+  "ERR_RESET_PASSWORD_LOWERCASE": "Hasło musi zawierać przynajmniej jedną małą literę.",
+  "ERR_RESET_PASSWORD_DIGIT": "Hasło musi zawierać przynajmniej jedną cyfrę.",
+  "ERR_RESET_PASSWORD_SPECIAL": "Hasło musi zawierać przynajmniej jeden znak specjalny."
 }

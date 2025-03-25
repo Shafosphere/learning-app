@@ -200,5 +200,11 @@
   "ERR_INVALID_CREDENTIALS": "Invalid username or password",
   "ERR_INVALID_EMAIL_FORMAT": "Invalid email format",
   "ERR_INVALID_LANGUAGE": "Language must be 'pl' or 'en'",
-  "ERR_RESET_SENDING_FAIL": "Failed to send reset email"
+  "ERR_RESET_SENDING_FAIL": "Failed to send reset email",
+  "ERR_RESET_TOKEN_REQUIRED": "Reset token is required.",
+  "ERR_RESET_PASSWORD_LENGTH": "Password must be between {min} and {max} characters.",
+  "ERR_RESET_PASSWORD_UPPERCASE": "Password must contain at least one uppercase letter.",
+  "ERR_RESET_PASSWORD_LOWERCASE": "Password must contain at least one lowercase letter.",
+  "ERR_RESET_PASSWORD_DIGIT": "Password must contain at least one digit.",
+  "ERR_RESET_PASSWORD_SPECIAL": "Password must contain at least one special character."
 }

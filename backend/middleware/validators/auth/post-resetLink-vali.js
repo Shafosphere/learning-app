@@ -1,24 +1,25 @@
 import { body, validationResult } from "express-validator";
 import VALIDATION_RULES from "../validationConfig.js";
+import { getErrorParams } from "../../getErrorParams.js";
 
-const getErrorParams = (msg) => {
-  switch (msg) {
-    case "ERR_USERNAME_LENGTH":
-      return {
-        min: VALIDATION_RULES.USERNAME.MIN_LENGTH,
-        max: VALIDATION_RULES.USERNAME.MAX_LENGTH,
-      };
-    case "ERR_EMAIL_TOO_LONG":
-      return { max: VALIDATION_RULES.EMAIL.MAX_LENGTH };
-    case "ERR_PASSWORD_LENGTH":
-      return {
-        min: VALIDATION_RULES.PASSWORD.MIN_LENGTH,
-        max: VALIDATION_RULES.PASSWORD.MAX_LENGTH,
-      };
-    default:
-      return {};
-  }
-};
+// const getErrorParams = (msg) => {
+//   switch (msg) {
+//     case "ERR_USERNAME_LENGTH":
+//       return {
+//         min: VALIDATION_RULES.USERNAME.MIN_LENGTH,
+//         max: VALIDATION_RULES.USERNAME.MAX_LENGTH,
+//       };
+//     case "ERR_EMAIL_TOO_LONG":
+//       return { max: VALIDATION_RULES.EMAIL.MAX_LENGTH };
+//     case "ERR_PASSWORD_LENGTH":
+//       return {
+//         min: VALIDATION_RULES.PASSWORD.MIN_LENGTH,
+//         max: VALIDATION_RULES.PASSWORD.MAX_LENGTH,
+//       };
+//     default:
+//       return {};
+//   }
+// };
 
 export const resetPasswordLinkValidationRules = [
   // Walidacja adresu e-mail
