@@ -4,6 +4,7 @@ import api from "../../utils/api";
 import MyCustomChart from "./chart";
 import polandFlag from "../../data/poland-small.png";
 import usaFlag from "../../data/united-states-small.png";
+import ScrambledText from "./ScrambledText";
 
 export default function RankingGameContent() {
   const [data, setData] = useState([]);
@@ -11,7 +12,7 @@ export default function RankingGameContent() {
   const [startTime, setStartTime] = useState(Date.now());
   const [isLoading, setIsLoading] = useState(false);
   const [correctTranslations, setCorrectTranslations] = useState([]);
-  const [userPoints, setUserPoints] = useState();
+  const [userPoints, setUserPoints] = useState(0);
   const [lastAnswerStatus, setLastAnswerStatus] = useState(null);
   const [chartData, setChartData] = useState([]);
   const inputRef = useRef(null);
@@ -199,7 +200,13 @@ export default function RankingGameContent() {
                   }`}
                 >
                   {correctTranslations.map((t, index) => (
-                    <span key={index}>{t.translation}</span>
+                    <span key={index}>
+                      <ScrambledText
+                        text={String(t.translation)}
+                        duration={2000}
+                        interval={40}
+                      />
+                    </span>
                   ))}
                 </div>
               )}
@@ -209,7 +216,13 @@ export default function RankingGameContent() {
                 lastAnswerStatus ? "good-rankinggame" : "wrong-rankinggame"
               }`}
             >
-              {userPoints}
+              {userPoints !== undefined && (
+                <ScrambledText
+                  text={String(userPoints)}
+                  duration={2000}
+                  interval={40}
+                />
+              )}
             </div>
             <div className="left-rankinggame">
               <div className="flag-rankinggame">

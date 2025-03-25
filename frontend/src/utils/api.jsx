@@ -15,7 +15,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
-
+    if (code === "ERR_TOKEN_NOT_FOUND") {
+      return Promise.reject(error);
+    }
     // Wyciągnij wiadomość z backendu
     let rawMsg, params;
     if (status === 400 && error.response?.data?.errors) {

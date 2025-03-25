@@ -79,12 +79,12 @@ export const SettingsProvider = ({ children }) => {
   };
 
   const checkAuthStatus = async () => {
-    const token = document.cookie
+    // const token = document.cookie
 
-    if (!token) {
-      setIsLoggedIn(false);
-      return;
-    }
+    // if (!token) {
+    //   setIsLoggedIn(false);
+    //   return;
+    // }
 
     try {
       const response = await api.get("/auth/user");
