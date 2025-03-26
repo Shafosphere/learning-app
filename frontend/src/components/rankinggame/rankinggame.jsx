@@ -23,6 +23,8 @@ export default function RankingGameContent() {
       Rotate: 0,
       zIndex: 1,
       chosen: false,
+      isPrevious: false, // Nowe pole
+      previousContent: null, // Nowe pole
       content: " .. ",
     })
   );
@@ -110,8 +112,8 @@ export default function RankingGameContent() {
         setLastAnswerStatus(response.data.isCorrect);
         setUserWord("");
 
-        // Najpierw aktualizacje stanów
-        await shuffle();
+        const currentContent = data[1]; // Zapisz aktualną wartość przed aktualizacją
+        await shuffle(currentContent); // Przekaż aktualną wartość do shuffle
         await fetchNewWord();
 
         // Następnie focus po aktualizacji
@@ -142,43 +144,73 @@ export default function RankingGameContent() {
     }
   };
 
-  const shuffle = useCallback(() => {
-    const currentChosenIndex = cards.findIndex((card) => card.chosen);
-    let randomCardIndex = Math.floor(Math.random() * cards.length);
-    if (currentChosenIndex !== -1 && cards.length > 1) {
-      while (randomCardIndex === currentChosenIndex) {
-        randomCardIndex = Math.floor(Math.random() * cards.length);
+  const shuffle = useCallback(
+    (currentContent) => {
+      const currentChosenIndex = cards.findIndex((card) => card.chosen);
+      const newCards = [...cards];
+
+      if (currentChosenIndex !== -1) {
+        newCards[currentChosenIndex] = {
+          ...newCards[currentChosenIndex],
+          isPrevious: true,
+          previousContent: currentContent,
+          chosen: false,
+          zIndex: 1,
+        };
       }
-    }
-    const newCards = cards.map((card, index) => {
-      const isUp = Math.random() < 0.5;
-      const offset = Math.floor(Math.random() * 3) + 3;
-      const move = isUp ? -offset : offset;
-      const randomAngle = Math.floor(Math.random() * 15) + 5;
-      const rotate = isUp ? randomAngle : -randomAngle;
-      const chosen = index === randomCardIndex;
-      const zIndex = chosen ? 11 : 1;
-      return {
-        ...card,
-        Move: move,
-        Rotate: rotate,
-        zIndex: zIndex,
-        chosen: chosen,
-      };
-    });
 
-    setCards(newCards);
+      let randomCardIndex;
+      do {
+        randomCardIndex = Math.floor(Math.random() * newCards.length);
+      } while (newCards.length > 1 && randomCardIndex === currentChosenIndex);
 
-    setTimeout(() => {
-      setCards((currentCards) =>
-        currentCards.map((card) => ({
-          ...card,
-          Move: 0,
-          Rotate: 0,
-        }))
-      );
-    }, 750);
-  }, [cards]);
+      // Dodajemy początkową transformację dla nowej wybranej karty
+      const ENTRANCE_OFFSET = -3; // Wartość w rem
+      const ENTRANCE_ROTATION = 5; // Wartość w stopniach
+
+      newCards.forEach((card, index) => {
+        if (index === randomCardIndex) {
+          // Nowa karta zaczyna z offsetem i rotacją
+          newCards[index] = {
+            ...card,
+            Move: ENTRANCE_OFFSET,
+            Rotate: ENTRANCE_ROTATION,
+            chosen: true,
+            zIndex: 11,
+          };
+        } else {
+          const isUp = Math.random() < 0.5;
+          const offset = Math.floor(Math.random() * 2) + 1;
+          const move = isUp ? -offset : offset;
+          const randomAngle = Math.floor(Math.random() * 5) + 5;
+          const rotate = isUp ? randomAngle : -randomAngle;
+
+          newCards[index] = {
+            ...card,
+            Move: move,
+            Rotate: -rotate,
+            chosen: false,
+            zIndex: 1,
+          };
+        }
+      });
+
+      setCards(newCards);
+
+      setTimeout(() => {
+        setCards((currentCards) =>
+          currentCards.map((card) => ({
+            ...card,
+            Move: 0,
+            Rotate: 0, // Resetujemy do pozycji docelowej
+            isPrevious: false,
+            previousContent: null,
+          }))
+        );
+      }, 750); // Czas musi być zgodny z CSS transition
+    },
+    [cards]
+  );
 
   async function handleKeyDown(event) {
     if (event.key === "Enter") {
@@ -246,14 +278,21 @@ export default function RankingGameContent() {
               <div className="deck">
                 {cards.map((item, index) => (
                   <div
-                    className={`card ${item.chosen ? "chosen_card" : ""}`}
+                    className={`card ${item.chosen ? "chosen_card" : ""} ${
+                      item.isPrevious ? "previous_card" : ""
+                    }`}
                     key={index}
                     style={{
                       transform: `translateY(${item.Move}rem) rotate(${item.Rotate}deg)`,
                       zIndex: item.zIndex,
+                      opacity: item.isPrevious ? 0.5 : item.chosen ? 1 : 0.8,
                     }}
                   >
-                    {item.chosen ? data?.[1] || "Ładowanie..." : item.content}
+                    {item.chosen
+                      ? data?.[1] || "Ładowanie..."
+                      : item.isPrevious
+                      ? item.previousContent
+                      : item.content}
                   </div>
                 ))}
               </div>

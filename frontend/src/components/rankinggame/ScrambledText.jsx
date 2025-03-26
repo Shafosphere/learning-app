@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 
-const CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+const CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 export default function ScrambledText({ text, duration = 1500, interval = 30 }) {
   const [displayText, setDisplayText] = useState(text);
