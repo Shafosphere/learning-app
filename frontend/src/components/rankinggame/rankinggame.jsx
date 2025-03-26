@@ -5,7 +5,7 @@ import MyCustomChart from "./chart";
 import polandFlag from "../../data/poland-small.png";
 import usaFlag from "../../data/united-states-small.png";
 import ScrambledText from "./ScrambledText";
-
+import { useWindowWidth } from "../../hooks/window_width/windowWidth";
 export default function RankingGameContent() {
   const [data, setData] = useState([]);
   const [userWord, setUserWord] = useState("");
@@ -16,24 +16,25 @@ export default function RankingGameContent() {
   const [lastAnswerStatus, setLastAnswerStatus] = useState(null);
   const [chartData, setChartData] = useState([]);
   const inputRef = useRef(null);
-  // const [isInitialized, setIsInitialized] = useState(false);
   const [cards, setCards] = useState(
     Array(10).fill({
       Move: 0,
       Rotate: 0,
       zIndex: 1,
       chosen: false,
-      isPrevious: false, // Nowe pole
-      previousContent: null, // Nowe pole
+      isPrevious: false,
+      previousContent: null,
       content: " .. ",
     })
   );
+
+  // Hook do sprawdzenia szerokości okna
+  const windowWidth = useWindowWidth();
 
   useEffect(() => {
     const fetchInitialData = async () => {
       await fetchNewWords();
       await fetchNewWord();
-      // Oznacz jedną kartę jako wybraną po inicjalizacji
       setCards((prevCards) => {
         if (prevCards.length === 0) return prevCards;
         const randomIndex = Math.floor(Math.random() * prevCards.length);
@@ -76,7 +77,6 @@ export default function RankingGameContent() {
       const response = await api.get("/word/ranking-word");
       if (response.data && response.data.length >= 2) {
         setData(response.data);
-        console.log(response.data);
         setStartTime(Date.now());
       }
     } catch (error) {
@@ -112,14 +112,13 @@ export default function RankingGameContent() {
         setLastAnswerStatus(response.data.isCorrect);
         setUserWord("");
 
-        const currentContent = data[1]; // Zapisz aktualną wartość przed aktualizacją
-        await shuffle(currentContent); // Przekaż aktualną wartość do shuffle
+        const currentContent = data[1];
+        await shuffle(currentContent);
         await fetchNewWord();
 
-        // Następnie focus po aktualizacji
         setTimeout(() => {
           inputRef.current?.focus();
-        }, 50); // Krótkie opóźnienie dla stabilności
+        }, 50);
       }
     } catch (error) {
       console.error("Error submitting answer:", error);
@@ -164,13 +163,18 @@ export default function RankingGameContent() {
         randomCardIndex = Math.floor(Math.random() * newCards.length);
       } while (newCards.length > 1 && randomCardIndex === currentChosenIndex);
 
-      // Dodajemy początkową transformację dla nowej wybranej karty
-      const ENTRANCE_OFFSET = -3; // Wartość w rem
-      const ENTRANCE_ROTATION = 5; // Wartość w stopniach
+      // Domyślne wartości animacji
+      let ENTRANCE_OFFSET = -3;
+      let ENTRANCE_ROTATION = 5;
+
+      // Wyzerowanie jeśli <768px
+      if (windowWidth < 768) {
+        ENTRANCE_OFFSET = 0;
+        ENTRANCE_ROTATION = 0;
+      }
 
       newCards.forEach((card, index) => {
         if (index === randomCardIndex) {
-          // Nowa karta zaczyna z offsetem i rotacją
           newCards[index] = {
             ...card,
             Move: ENTRANCE_OFFSET,
@@ -180,9 +184,16 @@ export default function RankingGameContent() {
           };
         } else {
           const isUp = Math.random() < 0.5;
-          const offset = Math.floor(Math.random() * 2) + 1;
+          let offset = Math.floor(Math.random() * 2) + 1;
+          let randomAngle = Math.floor(Math.random() * 5) + 5;
+
+          // Również wyzerowanie offsetu i kąta przy małym oknie
+          if (windowWidth < 768) {
+            offset = 0;
+            randomAngle = 0;
+          }
+
           const move = isUp ? -offset : offset;
-          const randomAngle = Math.floor(Math.random() * 5) + 5;
           const rotate = isUp ? randomAngle : -randomAngle;
 
           newCards[index] = {
@@ -202,14 +213,14 @@ export default function RankingGameContent() {
           currentCards.map((card) => ({
             ...card,
             Move: 0,
-            Rotate: 0, // Resetujemy do pozycji docelowej
+            Rotate: 0,
             isPrevious: false,
             previousContent: null,
           }))
         );
-      }, 750); // Czas musi być zgodny z CSS transition
+      }, 750);
     },
-    [cards]
+    [cards, windowWidth]
   );
 
   async function handleKeyDown(event) {

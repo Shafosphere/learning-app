@@ -1,22 +1,20 @@
 .rankinggame-container {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
   color: var(--headline);
   background: linear-gradient(
-    180deg,
-    rgba(var(--background-rgba), 1) 0%,
-    rgba(var(--border-rgba), 1) 100%
-  );
+      180deg,
+      rgba(var(--background-rgba), 1) 0%,
+      rgba(var(--border-rgba), 1) 100%
+    );
 }
 
-.rankinggame-select-window{
-  height: 100vh;
-  width: 70rem;
+.rankinggame-select-window {
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -26,24 +24,25 @@
   border-right: 10px solid var(--border);
 }
 
-.rankinggame-trophy{
+.rankinggame-trophy {
   display: flex;
   flex-direction: column;
   gap: 3rem;
   align-items: center;
 }
 
-.rankinggame-trophy-text{
+.rankinggame-trophy-text {
   display: flex;
   justify-content: center;
   flex-direction: column;
   text-align: center;
 }
-.rankinggame-trophy-text span{
-  font-size: 2.5rem;
+
+.rankinggame-trophy-text span {
   font-weight: 900;
   text-transform: uppercase;
 }
+
 .rankinggame-trophy-text > :first-child {
   font-weight: 800;
   font-size: 3rem;
@@ -56,31 +55,32 @@
   gap: 0.5rem;
 }
 
-.rankinggame-trophy-button span{
+.rankinggame-trophy-button span {
   width: 100%;
   text-align: center;
   text-transform: uppercase;
   font-size: 0.8rem;
 }
-.icon-rankinggame{
-  font-size: 6rem; /* Zmniejszenie rozmiaru ikony */
+
+.icon-rankinggame {
+  font-size: 6rem;
 }
 
 .game {
   height: 100%;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
   gap: 0px 0px;
-  grid-template-areas:
-    "."
-    "main-game"
-    "chart";
+  grid-template-areas: "."
+      "main-game"
+      "chart";
   grid-area: game;
 }
+
 .main-game {
   grid-area: main-game;
 }
+
 .chart {
   grid-area: chart;
 }
@@ -88,21 +88,11 @@
 .main-rankinggame {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
-  gap: 1rem;
-  grid-auto-flow: row;
-  grid-template-areas:
-    "answer points ."
-    "left right ."
-    "button placeholder .";
 }
 
 .answer-rankinggame {
   grid-area: answer;
   display: flex;
-  justify-content: right;
-  align-items: end;
-  font-size: 1.5rem;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -110,16 +100,13 @@
 .points-rankinggame {
   grid-area: points;
   display: flex;
-  justify-content: left;
   align-items: end;
-  font-size: 1.5rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .left-rankinggame {
   display: grid;
-  grid-template-columns: 0.1fr 1fr;
   grid-template-rows: 1fr;
   gap: 1rem;
   grid-auto-flow: row;
@@ -143,8 +130,6 @@
 
 .button-rankinggame {
   grid-area: button;
-  display: flex;
-  justify-content: right;
 }
 
 .placeholder-rankinggame {
@@ -157,22 +142,18 @@
   border: solid 7px var(--tertiary);
   border-radius: 0.5rem;
   font-size: 20px;
-  width: 20rem;
-  height: 5rem;
 }
+
 .deck {
-  /* background-color: red; */
-  width: 20rem;
-  height: 5rem;
   position: relative;
 }
+
 .card {
   position: absolute;
   display: flex;
   align-items: center;
   height: 100%;
   width: 100%;
-  transition: all 1s ease;
   font-size: 20px;
   opacity: 80%;
   background-color: var(--lightbg);
@@ -181,6 +162,7 @@
   border-radius: 0.5rem;
   color: black;
 }
+
 .chosen_card {
   z-index: 11;
   opacity: 100%;
@@ -201,46 +183,254 @@
   background: transparent;
 }
 
-/* Linie pionowe siatki */
 .chart-grid-line {
   stroke: var(--secondBackground);
   stroke-width: 1;
   fill: none;
 }
 
-/* Słupki boczne */
 .chart-side-rect {
   fill: var(--secondBackground);
 }
 
-/* Linia idąca w górę */
 .line-up {
   stroke: var(--highlight);
   stroke-width: 2;
   fill: none;
 }
 
-/* Linia idąca w dół */
 .line-down {
   stroke: var(--secondary);
   stroke-width: 2;
   fill: none;
 }
 
-/* Kółko – parametry stałe */
 .chart-circle {
   r: 4;
 }
 
-/* Opcjonalnie klasa "circle-up" i "circle-down", jeśli też bywa różnie kolorowana */
 .circle-up {
   fill: var(--highlight);
 }
+
 .circle-down {
   fill: var(--secondary);
 }
 
-/* Tekst (np. .chart-text) można tu też stylować */
+.good-rankinggame {
+  color: var(--highlight);
+}
+
+@media (max-width: 479px) {
+  .rankinggame-container {
+    gap: 1rem;
+    padding-top: 5rem;
+  }
+  .rankinggame-select-window {
+    width: 100%;
+    max-width: 70rem;
+  }
+  .rankinggame-trophy-text span {
+    font-size: 2rem;
+  }
+  .game {
+    grid-template-rows: 0.1fr 1fr 1fr;
+    padding: 0.5rem;
+  }
+  .main-game {
+    width: 100%;
+  }
+  .main-rankinggame {
+    grid-template-rows: 0.25fr 0.5fr 1fr 1fr 1fr;
+    gap: 0.5rem;
+    grid-template-areas: "points points"
+      "answer answer"
+      "right  right"
+      "left   left"
+      "placeholder button";
+  }
+  .answer-rankinggame {
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+  }
+  .points-rankinggame {
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+  .left-rankinggame {
+    grid-template-columns: 0.1fr 1.9fr;
+  }
+  .flag-rankinggame {
+    position: relative;
+    align-items: center;
+    padding: 0.5rem;
+  }
+  .button-rankinggame button {
+    width: 100%;
+  }
+  .rankinggame-input {
+    width: 100%;
+    height: 4rem;
+  }
+  .deck {
+    width: 100%;
+    height: 4rem;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 768px) {
+  .rankinggame-container {
+    gap: 3rem;
+    padding-top: 5rem;
+  }
+  .rankinggame-select-window {
+    width: 100%;
+    max-width: 70rem;
+  }
+  .rankinggame-trophy-text span {
+    font-size: 2.5rem;
+  }
+  .game {
+    grid-template-rows: 0.5fr 1.1fr 1.1fr;
+  }
+  .main-rankinggame {
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 1rem;
+    grid-auto-flow: row;
+    grid-template-areas: "answer points"
+      "right right"
+      "left left"
+      "placeholder button";
+  }
+  .answer-rankinggame {
+    justify-content: right;
+    align-items: end;
+    font-size: 1.5rem;
+  }
+  .points-rankinggame {
+    justify-content: left;
+    font-size: 1.5rem;
+  }
+  .left-rankinggame {
+    grid-template-columns: 0.1fr 1fr;
+  }
+  .button-rankinggame {
+    display: flex;
+    justify-content: right;
+  }
+  .rankinggame-input {
+    width: 20rem;
+    height: 5rem;
+  }
+  .deck {
+    width: 24.5rem;
+    height: 5rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1450px) {
+  .rankinggame-container {
+    gap: 3rem;
+    padding-top: 5rem;
+  }
+  .rankinggame-select-window {
+    width: 100%;
+    max-width: 70rem;
+  }
+  .rankinggame-trophy-text span {
+    font-size: 2.5rem;
+  }
+  .game {
+    grid-template-rows: 0.8fr 1.1fr 1.1fr;
+  }
+  .main-rankinggame {
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 1rem;
+    grid-auto-flow: row;
+    grid-template-areas: "answer points"
+      "left right"
+      "button placeholder";
+  }
+  .answer-rankinggame {
+    justify-content: right;
+    align-items: end;
+    font-size: 1.5rem;
+  }
+  .points-rankinggame {
+    justify-content: left;
+    font-size: 1.5rem;
+  }
+  .left-rankinggame {
+    grid-template-columns: 0.1fr 1fr;
+  }
+  .button-rankinggame {
+    display: flex;
+    justify-content: right;
+  }
+  .rankinggame-input {
+    width: 20rem;
+    height: 5rem;
+  }
+  .deck {
+    width: 20rem;
+    height: 5rem;
+  }
+  .card {
+    transition: all 1s ease;
+  }
+}
+
+@media (min-width: 1450px) {
+  .rankinggame-container {
+    gap: 3rem;
+    padding-left: 5rem;
+  }
+  .rankinggame-select-window {
+    width: 70rem;
+  }
+  .rankinggame-trophy-text span {
+    font-size: 2.5rem;
+  }
+  .game {
+    grid-template-rows: 1fr 1fr 1fr;
+  }
+  .main-rankinggame {
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 1rem;
+    grid-auto-flow: row;
+    grid-template-areas: "answer points"
+      "left right"
+      "button placeholder";
+  }
+  .answer-rankinggame {
+    justify-content: right;
+    align-items: end;
+    font-size: 1.5rem;
+  }
+  .points-rankinggame {
+    justify-content: left;
+    font-size: 1.5rem;
+  }
+  .left-rankinggame {
+    grid-template-columns: 0.1fr 1fr;
+  }
+  .button-rankinggame {
+    display: flex;
+    justify-content: right;
+  }
+  .rankinggame-input {
+    width: 20rem;
+    height: 5rem;
+  }
+  .deck {
+    width: 20rem;
+    height: 5rem;
+  }
+  .card {
+    transition: all 1s ease;
+  }
+}
 
 .good-rankinggame {
   color: var(--highlight);
