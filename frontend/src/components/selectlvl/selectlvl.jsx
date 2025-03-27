@@ -2,8 +2,17 @@ import "./selectlvl.css";
 import React from "react";
 import { FormattedMessage } from "react-intl";
 
-export default function SelectLvl({ setDisplay, gametype }) {
-  const intlPrefix = gametype === "vocabulary" ? "vocabulary" : "select";
+const DEFAULT_LEVELS = [
+  { value: "B2", messageKey: "levelB2" },
+  { value: "C1", messageKey: "levelC1" },
+];
+
+export default function SelectLvl({
+  setDisplay,
+  gametype,
+  levels = DEFAULT_LEVELS,
+}) {
+  const intlPrefix = gametype || "select";
 
   return (
     <div className="select-container">
@@ -23,18 +32,18 @@ export default function SelectLvl({ setDisplay, gametype }) {
             />
           </div>
           <div className="select-btn-container">
-            <div onClick={() => setDisplay("B2")} className="display-select">
-              <FormattedMessage
-                id={`${intlPrefix}.levelB2`}
-                defaultMessage="B2"
-              />
-            </div>
-            <div onClick={() => setDisplay("C1")} className="display-select">
-              <FormattedMessage
-                id={`${intlPrefix}.levelC1`}
-                defaultMessage="C1"
-              />
-            </div>
+            {levels.map((level) => (
+              <div
+                key={level.value}
+                onClick={() => setDisplay(level.value)}
+                className="display-select"
+              >
+                <FormattedMessage
+                  id={`${intlPrefix}.${level.messageKey}`}
+                  defaultMessage={level.value}
+                />
+              </div>
+            ))}
           </div>
 
           <p>

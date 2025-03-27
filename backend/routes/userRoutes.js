@@ -7,7 +7,7 @@ import {
   searchUsers,
   deleteUser,
   learnWord,
-  getRanking,
+  getRankingFlashcard,
   autoSave,
   autoLoad,
   autoDelete,
@@ -47,6 +47,6 @@ router.post("/auto-load", authenticateToken, autoLoad);
 
 router.post("/auto-delete", authenticateToken, autoDelete);
 
-router.get("/ranking", getRanking);
+router.get("/ranking-flashcard", getRankingFlashcard);
 
 export default router;

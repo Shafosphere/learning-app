@@ -30,7 +30,7 @@ export default function RankingTableContent() {
   useEffect(() => {
     async function getData() {
       try {
-        const newData = await api.get("/user/ranking");
+        const newData = await api.get("/user//ranking-flashcard");
         setData(newData.data);
         setHasMore(false);
       } catch (error) {

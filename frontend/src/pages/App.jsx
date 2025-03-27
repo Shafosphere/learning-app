@@ -9,6 +9,7 @@ import AdminPanel from "./admin/admin";
 import PrivateRoute from "../utils/privateroute";
 import Account from "./account/account";
 import RankingTable from "./rankingTable/rankingTable";
+import RankingTableSelect from "./rankingTable/selectTable";
 import RankingGame from "./rankingGame/rankingGame";
 import About from "./about/about";
 import NotFound from "./notfound/notfound";
@@ -75,7 +76,7 @@ const AppWrapper = () => {
             element={isLoggedIn ? <Account /> : <Login />}
           />
           <Route path="/vocabulary" element={<Vocabulary />} />
-          <Route path="/rankingtable" element={<RankingTable />} />
+          <Route path="/rankingtable" element={<RankingTableSelect />} />
           <Route path="/rankinggame" element={<RankingGame />} />
           <Route path="/about" element={<About />} />
           <Route

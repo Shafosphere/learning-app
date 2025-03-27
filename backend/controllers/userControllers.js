@@ -8,12 +8,13 @@ import {
   getUserIdFromProgress,
   insertWordIntoUserProgress,
   userRankingUpdate,
-  getTopRankingUsers,
+  getTopRankingUsersFlashcard,
   insertOrUpdateUserAutosave,
   getAutosaveData,
   getBatchWordTranslations,
   resetPatchNumberByUserID,
   deleteDataUserByUserID,
+  getTopRankingGameUsers,
 } from "../models/userModel.js";
 
 import pool from "../dbClient.js";
@@ -141,9 +142,21 @@ export const learnWord = async (req, res) => {
   }
 };
 
-export const getRanking = async (req, res) => {
+export const getRankingFlashcard = async (req, res) => {
   try {
-    const topUsers = await getTopRankingUsers(10);
+    const topUsers = await getTopRankingUsersFlashcard(10);
+    res.status(200).json(topUsers);
+  } catch (error) {
+    console.error("Błąd podczas pobierania rankingu:", error);
+    res
+      .status(500)
+      .json({ message: "Błąd serwera podczas pobierania rankingu." });
+  }
+};
+
+export const getRankingGame = async (req, res) => {
+  try {
+    const topUsers = await getTopRankingGameUsers(10);
     res.status(200).json(topUsers);
   } catch (error) {
     console.error("Błąd podczas pobierania rankingu:", error);
@@ -157,9 +170,9 @@ export const autoSave = async (req, res) => {
   const username = req.user.username;
   const userId = req.user.id;
   const { level, deviceId, words, patchNumber } = req.body;
-  console.log("Username:", username);
-  console.log("Data:", level, deviceId);
-  console.log("Data:", words);
+  // console.log("Username:", username);
+  // console.log("Data:", level, deviceId);
+  // console.log("Data:", words);
 
   try {
     const client = await pool.connect();

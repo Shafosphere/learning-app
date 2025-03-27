@@ -148,14 +148,14 @@
     width: 70rem;
   }
   .tablehead {
-    font-size: 3em;
+    font-size: 2.5em;
   }
   .firstrow {
-    font-size: 2em;
+    font-size: 1.5em;
     font-weight: 900;
   }
   .row td {
-    padding: 1.5rem 0rem 1rem 0rem;
+    padding: 1.25rem 0rem 0.75rem 0rem;
     font-weight: 600;
   }
   .medal {
