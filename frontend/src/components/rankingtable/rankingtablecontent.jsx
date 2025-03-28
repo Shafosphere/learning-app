@@ -13,7 +13,9 @@ import avatar2 from "../../data/avatars/man_1.png";
 import avatar3 from "../../data/avatars/woman.png";
 import avatar4 from "../../data/avatars/woman_1.png";
 
-export default function RankingTableContent() {
+import { FaBook, FaTrophy } from "react-icons/fa";
+
+export default function RankingTableContent({ setDisplay, lvl }) {
   const [data, setData] = useState(null);
   const [hasMore, setHasMore] = useState(true);
 
@@ -30,8 +32,14 @@ export default function RankingTableContent() {
   useEffect(() => {
     async function getData() {
       try {
-        const newData = await api.get("/user//ranking-flashcard");
-        setData(newData.data);
+        const endpoint =
+          lvl === "Flashcards"
+            ? "/user/ranking-flashcard"
+            : "/user/ranking-rankinggame";
+
+        const response = await api.get(endpoint);
+
+        setData(response.data);
         setHasMore(false);
       } catch (error) {
         console.error(
@@ -43,6 +51,7 @@ export default function RankingTableContent() {
         );
       }
     }
+
     getData();
   }, [intl]);
 
@@ -53,6 +62,10 @@ export default function RankingTableContent() {
   return (
     <div className={styles.container}>
       <div className={styles.window}>
+        <h1 className={styles.title}>
+          {/* {lvl} */}
+          <FormattedMessage id={`${lvl}table.title`} defaultMessage="" />
+        </h1>
         <InfiniteScroll
           dataLength={data.length}
           hasMore={hasMore}
@@ -147,13 +160,17 @@ export default function RankingTableContent() {
                         <div>{item.username}</div>
                       </div>
                     </td>
-                    <td>{item.flashcard_points}</td>
+                    <td>{item.points}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
         </InfiniteScroll>
+      </div>
+
+      <div className="return-btn-voca" onClick={() => setDisplay("default")}>
+        <h1>{lvl === "Flashcards" ? <FaBook /> : <FaTrophy />}</h1>
       </div>
     </div>
   );

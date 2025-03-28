@@ -123,12 +123,12 @@
   "logoutSuccessful": "Wylogowano pomyślnie",
   "logoutError": "Wystąpił błąd podczas wylogowywania",
 
-  "sidebar.learn": "Ucz się",
+  "sidebar.learn": "Fiszki",
   "sidebar.vocabularyTests": "Testy słownictwa",
   "sidebar.settings": "Ustawienia",
   "sidebar.account": "Konto",
   "sidebar.ranking": "Tablica Wyników",
-  "sidebar.rankinggame": "Rywalizacja",
+  "sidebar.rankinggame": "Arena",
   "sidebar.adminPanel": "Panel administratora",
   "sidebar.reportBug": "Zgłoś błąd",
   "sidebar.logout": "Wyloguj",
@@ -211,5 +211,10 @@
   "ERR_RESET_PASSWORD_UPPERCASE": "Hasło musi zawierać przynajmniej jedną wielką literę.",
   "ERR_RESET_PASSWORD_LOWERCASE": "Hasło musi zawierać przynajmniej jedną małą literę.",
   "ERR_RESET_PASSWORD_DIGIT": "Hasło musi zawierać przynajmniej jedną cyfrę.",
-  "ERR_RESET_PASSWORD_SPECIAL": "Hasło musi zawierać przynajmniej jeden znak specjalny."
+  "ERR_RESET_PASSWORD_SPECIAL": "Hasło musi zawierać przynajmniej jeden znak specjalny.",
+  "ranking.gametype": "wyników",
+  "ranking.chooseLevel":"Wybierz tablice",
+  "ranking.chooseTest": "z jakiej gry chcesz zobaczyc tablice wyników?",
+  "Rankingtable.title": "Wyniki z areny",
+  "Flashcardstable.title": "Wyniki z fiszek"
 }

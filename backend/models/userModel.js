@@ -719,7 +719,9 @@ export const userRankingUpdate = async (userId, username) => {
 
 export const getTopRankingUsersFlashcard = async (limit) => {
   const query = `
-    SELECT users.username, users.avatar, ranking.flashcard_points
+    SELECT users.username,
+    users.avatar,
+    ranking.flashcard_points AS points
     FROM ranking
     JOIN users ON ranking.user_id = users.id
     WHERE ranking.ban = false
@@ -736,7 +738,7 @@ export const getTopRankingGameUsers = async (limit) => {
     SELECT
       users.username,
       users.avatar,
-      ranking_game.current_points
+      ranking_game.current_points AS points
     FROM ranking_game
     JOIN users ON ranking_game.user_id = users.id
     JOIN ranking ON ranking.user_id = users.id
@@ -750,7 +752,6 @@ export const getTopRankingGameUsers = async (limit) => {
 
   return result.rows;
 };
-
 
 // Zmodyfikowana funkcja insertOrUpdateUserAutosave
 export const insertOrUpdateUserAutosave = async (

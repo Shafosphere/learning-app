@@ -17,10 +17,17 @@
 
 .window {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   border-right: 10px solid var(--border);
   border-left: 10px solid var(--border);
+}
+
+.title{
+  font-size: 3rem;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .gold {

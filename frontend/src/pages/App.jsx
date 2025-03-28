@@ -8,7 +8,6 @@ import Sidebar from "../components/sidebar/sidebar";
 import AdminPanel from "./admin/admin";
 import PrivateRoute from "../utils/privateroute";
 import Account from "./account/account";
-import RankingTable from "./rankingTable/rankingTable";
 import RankingTableSelect from "./rankingTable/selectTable";
 import RankingGame from "./rankingGame/rankingGame";
 import About from "./about/about";

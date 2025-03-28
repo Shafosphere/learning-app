@@ -129,7 +129,7 @@ export default function Sidebar() {
                 <div className="link-text">
                   <FormattedMessage
                     id="sidebar.rankinggame"
-                    defaultMessage="Ranking Game"
+                    defaultMessage="arena"
                   />
                 </div>
               </span>

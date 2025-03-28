@@ -11,6 +11,7 @@ export default function SelectLvl({
   setDisplay,
   gametype,
   levels = DEFAULT_LEVELS,
+  onlyIcons = false,
 }) {
   const intlPrefix = gametype || "select";
 
@@ -26,11 +27,9 @@ export default function SelectLvl({
           </h1>
 
           <div className="select-gametype">
-            <FormattedMessage
-              id={`${intlPrefix}.gametype`}
-              defaultMessage=" "
-            />
+            <FormattedMessage id={`${intlPrefix}.gametype`} defaultMessage="" />
           </div>
+
           <div className="select-btn-container">
             {levels.map((level) => (
               <div
@@ -38,10 +37,18 @@ export default function SelectLvl({
                 onClick={() => setDisplay(level.value)}
                 className="display-select"
               >
-                <FormattedMessage
-                  id={`${intlPrefix}.${level.messageKey}`}
-                  defaultMessage={level.value}
-                />
+                {/* Warunkowe wyświetlanie: jeśli onlyIcons === true, pokaż tylko ikonę */}
+                {onlyIcons ? (
+                  level.icon
+                ) : (
+                  <>
+                    {level.icon && level.icon}{" "}
+                    <FormattedMessage
+                      id={`${intlPrefix}.${level.messageKey}`}
+                      defaultMessage={level.value}
+                    />
+                  </>
+                )}
               </div>
             ))}
           </div>
