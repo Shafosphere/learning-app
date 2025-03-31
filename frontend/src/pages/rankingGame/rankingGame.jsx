@@ -11,12 +11,12 @@ const RankingGameContent = React.lazy(() =>
 
 export default function RankingGame() {
   const [gameStarted, setGameStarted] = useState(false);
-  const {isLoggedIn} = useContext(SettingsContext)
+  const { isLoggedIn } = useContext(SettingsContext);
   const navigate = useNavigate();
   const location = useLocation();
-  function start(){
-    if(!isLoggedIn){
-      navigate(`/login?redirectTo=${encodeURIComponent(location.pathname)}`)
+  function start() {
+    if (!isLoggedIn) {
+      navigate(`/login?redirectTo=${encodeURIComponent(location.pathname)}`);
     } else {
       setGameStarted(true);
     }
@@ -26,20 +26,16 @@ export default function RankingGame() {
     <div className="rankinggame-container">
       <div className="rankinggame-select-window">
         {!gameStarted && (
-          <div className="rankinggame-trophy">
+          <div className="rankinggame-select-main">
+            <span className="rankinggame-select-title">arena </span>
+            <div className="rankinggame-custom-button" onClick={() => start()}>
+              start gry
+            </div>
+            <p>
+              gra rywalizacyjna, na punkty, nie mozna poppełniac błedów, tylko
+              dla zalogowanych uzytkowników
+            </p>
             <FaTrophy className="icon-rankinggame" />
-            <div className="rankinggame-trophy-text">
-              <span>gra </span>
-              <span>rywalizacyjna</span>
-            </div>
-            <div className="rankinggame-trophy-button">
-              <span>(tylko dla zalogowanych)</span>
-              <MyButton
-                message="start gry"
-                color="green"
-                onClick={() => start()}
-              />
-            </div>
           </div>
         )}
 
