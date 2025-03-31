@@ -6,7 +6,7 @@ import polandFlag from "../../data/poland-small.png";
 import usaFlag from "../../data/united-states-small.png";
 import ScrambledText from "./ScrambledText";
 import { useWindowWidth } from "../../hooks/window_width/windowWidth";
-export default function RankingGameContent() {
+export default function ArenaContent() {
   const [data, setData] = useState([]);
   const [userWord, setUserWord] = useState("");
   const [startTime, setStartTime] = useState(Date.now());
@@ -234,12 +234,12 @@ export default function RankingGameContent() {
     <>
       <div className="game">
         <div className="main-game">
-          <div className="main-rankinggame">
-            <div className="answer-rankinggame">
+          <div className="main-arena">
+            <div className="answer-arena">
               {correctTranslations.length > 0 && (
                 <div
                   className={`answer-feedback ${
-                    lastAnswerStatus ? "good-rankinggame" : "wrong-rankinggame"
+                    lastAnswerStatus ? "good-arena" : "wrong-arena"
                   }`}
                 >
                   {correctTranslations.map((t, index) => (
@@ -255,8 +255,8 @@ export default function RankingGameContent() {
               )}
             </div>
             <div
-              className={`points-rankinggame ${
-                lastAnswerStatus ? "good-rankinggame" : "wrong-rankinggame"
+              className={`points-arena ${
+                lastAnswerStatus ? "good-arena" : "wrong-arena"
               }`}
             >
               {userPoints !== undefined && (
@@ -267,25 +267,25 @@ export default function RankingGameContent() {
                 />
               )}
             </div>
-            <div className="left-rankinggame">
-              <div className="flag-rankinggame">
+            <div className="left-arena">
+              <div className="flag-arena">
                 <div className="flags">
                   {data[2] === "pl" && <img alt="english" src={usaFlag} />}
                   {data[2] === "en" && <img alt="polish" src={polandFlag} />}
                 </div>
               </div>
-              <div className="input-rankinggame">
+              <div className="input-arena">
                 <input
                   value={userWord}
                   onKeyDown={handleKeyDown}
                   onChange={(e) => setUserWord(e.target.value)}
-                  className="rankinggame-input"
+                  className="arena-input"
                   disabled={isLoading}
                   ref={inputRef}
                 />
               </div>
             </div>
-            <div className="right-rankinggame">
+            <div className="right-arena">
               <div className="deck">
                 {cards.map((item, index) => (
                   <div
@@ -308,7 +308,7 @@ export default function RankingGameContent() {
                 ))}
               </div>
             </div>
-            <div className="button-rankinggame">
+            <div className="button-arena">
               <MyButton
                 message="Confirm"
                 color="green"
@@ -316,7 +316,7 @@ export default function RankingGameContent() {
                 disabled={isLoading}
               />
             </div>
-            <div className="placeholder-rankinggame"></div>
+            <div className="placeholder-arena"></div>
           </div>
         </div>
         <div className="chart">

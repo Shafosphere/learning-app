@@ -9,7 +9,7 @@ import AdminPanel from "./admin/admin";
 import PrivateRoute from "../utils/privateroute";
 import Account from "./account/account";
 import RankingTableSelect from "./rankingTable/selectTable";
-import RankingGame from "./rankingGame/rankingGame";
+import Arena from "./arena/arena";
 import About from "./about/about";
 import NotFound from "./notfound/notfound";
 import { SettingsProvider, SettingsContext } from "./settings/properties";
@@ -76,7 +76,7 @@ const AppWrapper = () => {
           />
           <Route path="/vocabulary" element={<Vocabulary />} />
           <Route path="/rankingtable" element={<RankingTableSelect />} />
-          <Route path="/rankinggame" element={<RankingGame />} />
+          <Route path="/arena" element={<Arena />} />
           <Route path="/about" element={<About />} />
           <Route
             path="/admin"

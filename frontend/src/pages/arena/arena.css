@@ -1,4 +1,4 @@
-.rankinggame-container {
+.arena-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -13,7 +13,7 @@
   );
 }
 
-.rankinggame-select-window {
+.arena-select-window {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -24,7 +24,7 @@
   border-right: 10px solid var(--border);
 }
 
-.rankinggame-select-main {
+.arena-select-main {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,7 +33,7 @@
   gap: 1rem;
 }
 
-.rankinggame-select-main p {
+.arena-select-main p {
   text-transform: uppercase;
   text-align: center;
   font-size: 0.85rem;
@@ -42,7 +42,7 @@
   margin: 10px auto;
   line-height: 1.4;
 }
-.rankinggame-custom-button {
+.arena-custom-button {
   font-weight: 900;
   color: var(--headline);
   border: 10px solid var(--border);
@@ -56,15 +56,15 @@
   width: 100%;
   text-align: center;
 }
-.rankinggame-select-title {
+.arena-select-title {
   font-size: 4rem;
   text-transform: uppercase;
   font-weight: 900;
 }
-.rankinggame-custom-button:hover {
+.arena-custom-button:hover {
   border-color: var(--tertiary);
 }
-.icon-rankinggame {
+.icon-arena {
   font-size: 6rem;
 }
 
@@ -88,19 +88,19 @@
   grid-area: chart;
 }
 
-.main-rankinggame {
+.main-arena {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 
-.answer-rankinggame {
+.answer-arena {
   grid-area: answer;
   display: flex;
   font-weight: 800;
   text-transform: uppercase;
 }
 
-.points-rankinggame {
+.points-arena {
   grid-area: points;
   display: flex;
   align-items: end;
@@ -108,7 +108,7 @@
   text-transform: uppercase;
 }
 
-.left-rankinggame {
+.left-arena {
   display: grid;
   grid-template-rows: 1fr;
   gap: 1rem;
@@ -117,29 +117,29 @@
   grid-area: left;
 }
 
-.flag-rankinggame {
+.flag-arena {
   grid-area: flag;
   display: flex;
   justify-content: center;
 }
 
-.input-rankinggame {
+.input-arena {
   grid-area: input;
 }
 
-.right-rankinggame {
+.right-arena {
   grid-area: right;
 }
 
-.button-rankinggame {
+.button-arena {
   grid-area: button;
 }
 
-.placeholder-rankinggame {
+.placeholder-arena {
   grid-area: placeholder;
 }
 
-.rankinggame-input {
+.arena-input {
   background-color: var(--lightbg);
   padding: 1rem;
   border: solid 7px var(--tertiary);
@@ -220,16 +220,16 @@
   fill: var(--secondary);
 }
 
-.good-rankinggame {
+.good-arena {
   color: var(--highlight);
 }
 
 @media (max-width: 479px) {
-  .rankinggame-container {
+  .arena-container {
     gap: 1rem;
     padding-top: 5rem;
   }
-  .rankinggame-select-window {
+  .arena-select-window {
     width: 100%;
     max-width: 70rem;
   }
@@ -241,7 +241,7 @@
   .main-game {
     width: 100%;
   }
-  .main-rankinggame {
+  .main-arena {
     grid-template-rows: 0.25fr 0.5fr 1fr 1fr 1fr;
     gap: 0.5rem;
     grid-template-areas:
@@ -251,27 +251,27 @@
       "left   left"
       "placeholder button";
   }
-  .answer-rankinggame {
+  .answer-arena {
     justify-content: center;
     align-items: center;
     font-size: 1rem;
   }
-  .points-rankinggame {
+  .points-arena {
     justify-content: center;
     font-size: 1.25rem;
   }
-  .left-rankinggame {
+  .left-arena {
     grid-template-columns: 0.1fr 1.9fr;
   }
-  .flag-rankinggame {
+  .flag-arena {
     position: relative;
     align-items: center;
     padding: 0.5rem;
   }
-  .button-rankinggame button {
+  .button-arena button {
     width: 100%;
   }
-  .rankinggame-input {
+  .arena-input {
     width: 100%;
     height: 4rem;
   }
@@ -279,24 +279,24 @@
     width: 100%;
     height: 4rem;
   }
-  .rankinggame-select-main {
+  .arena-select-main {
     padding: 0rem 2rem 0rem 2rem;
   }
 
-  .rankinggame-custom-button {
+  .arena-custom-button {
     padding: 2rem;
   }
-  .rankinggame-custom-button:hover {
+  .arena-custom-button:hover {
     padding: 2.5rem;
   }
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
-  .rankinggame-container {
+  .arena-container {
     gap: 3rem;
     padding-top: 5rem;
   }
-  .rankinggame-select-window {
+  .arena-select-window {
     width: 100%;
     max-width: 70rem;
   }
@@ -304,7 +304,7 @@
   .game {
     grid-template-rows: 0.5fr 1.1fr 1.1fr;
   }
-  .main-rankinggame {
+  .main-arena {
     grid-template-rows: 1fr 1fr 1fr;
     gap: 1rem;
     grid-auto-flow: row;
@@ -314,23 +314,23 @@
       "left left"
       "placeholder button";
   }
-  .answer-rankinggame {
+  .answer-arena {
     justify-content: right;
     align-items: end;
     font-size: 1.5rem;
   }
-  .points-rankinggame {
+  .points-arena {
     justify-content: left;
     font-size: 1.5rem;
   }
-  .left-rankinggame {
+  .left-arena {
     grid-template-columns: 0.1fr 1fr;
   }
-  .button-rankinggame {
+  .button-arena {
     display: flex;
     justify-content: right;
   }
-  .rankinggame-input {
+  .arena-input {
     width: 20rem;
     height: 5rem;
   }
@@ -338,23 +338,23 @@
     width: 24.5rem;
     height: 5rem;
   }
-  .rankinggame-select-main {
+  .arena-select-main {
     padding: 0rem 4rem 0rem 4rem;
   }
-  .rankinggame-custom-button {
+  .arena-custom-button {
     padding: 2rem;
   }
-  .rankinggame-custom-button:hover {
+  .arena-custom-button:hover {
     padding: 2.5rem;
   }
 }
 
 @media (min-width: 769px) and (max-width: 1450px) {
-  .rankinggame-container {
+  .arena-container {
     gap: 3rem;
     padding-top: 5rem;
   }
-  .rankinggame-select-window {
+  .arena-select-window {
     width: 100%;
     max-width: 70rem;
   }
@@ -362,7 +362,7 @@
   .game {
     grid-template-rows: 0.8fr 1.1fr 1.1fr;
   }
-  .main-rankinggame {
+  .main-arena {
     grid-template-rows: 1fr 1fr 1fr;
     gap: 1rem;
     grid-auto-flow: row;
@@ -371,23 +371,23 @@
       "left right"
       "button placeholder";
   }
-  .answer-rankinggame {
+  .answer-arena {
     justify-content: right;
     align-items: end;
     font-size: 1.5rem;
   }
-  .points-rankinggame {
+  .points-arena {
     justify-content: left;
     font-size: 1.5rem;
   }
-  .left-rankinggame {
+  .left-arena {
     grid-template-columns: 0.1fr 1fr;
   }
-  .button-rankinggame {
+  .button-arena {
     display: flex;
     justify-content: right;
   }
-  .rankinggame-input {
+  .arena-input {
     width: 20rem;
     height: 5rem;
   }
@@ -398,29 +398,29 @@
   .card {
     transition: all 1s ease;
   }
-  .rankinggame-select-main {
+  .arena-select-main {
     padding: 0rem 6rem 0rem 6rem;
   }
-  .rankinggame-custom-button {
+  .arena-custom-button {
     padding: 3rem;
   }
-  .rankinggame-custom-button:hover {
+  .arena-custom-button:hover {
     padding: 3.5rem;
   }
 }
 
 @media (min-width: 1450px) {
-  .rankinggame-container {
+  .arena-container {
     gap: 3rem;
   }
-  .rankinggame-select-window {
+  .arena-select-window {
     width: 70rem;
   }
 
   .game {
     grid-template-rows: 1fr 1fr 1fr;
   }
-  .main-rankinggame {
+  .main-arena {
     grid-template-rows: 1fr 1fr 1fr;
     gap: 1rem;
     grid-auto-flow: row;
@@ -429,23 +429,23 @@
       "left right"
       "button placeholder";
   }
-  .answer-rankinggame {
+  .answer-arena {
     justify-content: right;
     align-items: end;
     font-size: 1.5rem;
   }
-  .points-rankinggame {
+  .points-arena {
     justify-content: left;
     font-size: 1.5rem;
   }
-  .left-rankinggame {
+  .left-arena {
     grid-template-columns: 0.1fr 1fr;
   }
-  .button-rankinggame {
+  .button-arena {
     display: flex;
     justify-content: right;
   }
-  .rankinggame-input {
+  .arena-input {
     width: 20rem;
     height: 5rem;
   }
@@ -456,20 +456,20 @@
   .card {
     transition: all 1s ease;
   }
-  .rankinggame-select-main {
+  .arena-select-main {
     padding: 0rem 8rem 0rem 8rem;
   }
-  .rankinggame-custom-button {
+  .arena-custom-button {
     padding: 3rem;
   }
-  .rankinggame-custom-button:hover {
+  .arena-custom-button:hover {
     padding: 3.5rem;
   }
 }
 
-.good-rankinggame {
+.good-arena {
   color: var(--highlight);
 }
-.wrong-rankinggame {
+.wrong-arena {
   color: var(--secondary);
 }

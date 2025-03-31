@@ -121,7 +121,7 @@ export default function Sidebar() {
               </span>
             </Link>
 
-            <Link className="link-container" to="/rankinggame">
+            <Link className="link-container" to="/arena">
               <span className="sidebar-initial link-icon">
                 <FaTrophy />
               </span>

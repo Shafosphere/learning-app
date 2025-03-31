@@ -738,12 +738,12 @@ export const getTopRankingGameUsers = async (limit) => {
     SELECT
       users.username,
       users.avatar,
-      ranking_game.current_points AS points
-    FROM ranking_game
-    JOIN users ON ranking_game.user_id = users.id
+      arena.current_points AS points
+    FROM arena
+    JOIN users ON arena.user_id = users.id
     JOIN ranking ON ranking.user_id = users.id
     WHERE ranking.ban = false
-    ORDER BY ranking_game.current_points DESC
+    ORDER BY arena.current_points DESC
     LIMIT $1;
   `;
 
@@ -842,14 +842,14 @@ export const checkBan = async (userId) => {
 
 export const ranking_init = async (userId) => {
   await pool.query(
-    "INSERT INTO ranking_game (user_id, current_points) VALUES ($1, 1000) ON CONFLICT (user_id) DO NOTHING",
+    "INSERT INTO arena (user_id, current_points) VALUES ($1, 1000) ON CONFLICT (user_id) DO NOTHING",
     [userId]
   );
 };
 
 export const getUserRankingPoints = async (userId) => {
   const result = await pool.query(
-    "SELECT current_points FROM ranking_game WHERE user_id = $1",
+    "SELECT current_points FROM arena WHERE user_id = $1",
     [userId]
   );
   return result;
@@ -874,7 +874,7 @@ export const getLanguageWordTranslations = async (wordId) => {
 export const updateUserRankingGame = async (pointsAfter, newStreak, userId) => {
   await pool.query(
     `
-    UPDATE ranking_game SET
+    UPDATE arena SET
       current_points = $1,
       current_streak = $2,
       last_answered = NOW()

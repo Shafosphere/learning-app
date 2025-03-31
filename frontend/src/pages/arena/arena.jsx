@@ -1,15 +1,14 @@
 import React, { Suspense, useContext, useState } from "react";
 import Loading from "../../components/loading/loading";
-import MyButton from "../../components/button/button";
-import "./rankinggmae.css";
+import "./arena.css";
 import { FaTrophy } from "react-icons/fa";
 import { SettingsContext } from "../settings/properties";
 import { useNavigate, useLocation } from "react-router-dom";
-const RankingGameContent = React.lazy(() =>
-  import("../../components/rankinggame/rankinggame")
+const ArenaContent = React.lazy(() =>
+  import("../../components/arena/arena")
 );
 
-export default function RankingGame() {
+export default function Arena() {
   const [gameStarted, setGameStarted] = useState(false);
   const { isLoggedIn } = useContext(SettingsContext);
   const navigate = useNavigate();
@@ -23,25 +22,25 @@ export default function RankingGame() {
   }
 
   return (
-    <div className="rankinggame-container">
-      <div className="rankinggame-select-window">
+    <div className="arena-container">
+      <div className="arena-select-window">
         {!gameStarted && (
-          <div className="rankinggame-select-main">
-            <span className="rankinggame-select-title">arena </span>
-            <div className="rankinggame-custom-button" onClick={() => start()}>
+          <div className="arena-select-main">
+            <span className="arena-select-title">arena </span>
+            <div className="arena-custom-button" onClick={() => start()}>
               start gry
             </div>
             <p>
               gra rywalizacyjna, na punkty, nie mozna poppełniac błedów, tylko
               dla zalogowanych uzytkowników
             </p>
-            <FaTrophy className="icon-rankinggame" />
+            <FaTrophy className="icon-arena" />
           </div>
         )}
 
         {gameStarted && (
           <Suspense fallback={<Loading />}>
-            <RankingGameContent />
+            <ArenaContent />
           </Suspense>
         )}
       </div>

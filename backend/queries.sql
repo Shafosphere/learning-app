@@ -132,7 +132,7 @@ ADD COLUMN patch_number_c1 INT DEFAULT 1;
 ALTER TABLE ranking 
   RENAME COLUMN weekly_points TO flashcard_points
 
-CREATE TABLE ranking_game (
+CREATE TABLE arena (
   user_id INT PRIMARY KEY,
   current_points INT NOT NULL DEFAULT 1000 CHECK (current_points BETWEEN 0 AND 9999),
   current_streak INT NOT NULL DEFAULT 0,
