@@ -5,9 +5,11 @@
   justify-content: center;
   align-items: center;
   color: var(--headline);
-  background-color: var(--f2f4f6);
-  background-image: radial-gradient(var(--border) 2px, var(--background) 2px);
-  background-size: 40px 40px;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--background-rgba), 1) 0%,
+    rgba(var(--border-rgba), 1) 100%
+  );
 }
 
 .window-logg {
@@ -136,13 +138,13 @@
   }
   .input-login {
     font-size: 15px;
-    height: 2rem;
+    height: 2.5rem;
   }
   .btn-pass {
-    height: 2rem;
-    width: 2rem;
+    height: 2.5rem;
+    width: 2.5rem;
   }
-  .icon-lock{
+  .icon-lock {
     font-size: 20px;
   }
 }
@@ -173,7 +175,7 @@
     height: 3rem;
     width: 3rem;
   }
-  .icon-lock{
+  .icon-lock {
     font-size: 25px;
   }
 }
@@ -206,7 +208,7 @@
     height: 3.5rem;
     width: 3rem;
   }
-  .icon-lock{
+  .icon-lock {
     font-size: 35px;
   }
 }
@@ -234,7 +236,7 @@
     height: 3.5rem;
     width: 3rem;
   }
-  .icon-lock{
+  .icon-lock {
     font-size: 35px;
   }
 }

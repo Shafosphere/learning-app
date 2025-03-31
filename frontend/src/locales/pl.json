@@ -128,7 +128,7 @@
   "sidebar.settings": "Ustawienia",
   "sidebar.account": "Konto",
   "sidebar.ranking": "Tablica Wyników",
-  "sidebar.rankinggame": "Arena",
+  "sidebar.arena": "Arena",
   "sidebar.adminPanel": "Panel administratora",
   "sidebar.reportBug": "Zgłoś błąd",
   "sidebar.logout": "Wyloguj",
@@ -213,8 +213,11 @@
   "ERR_RESET_PASSWORD_DIGIT": "Hasło musi zawierać przynajmniej jedną cyfrę.",
   "ERR_RESET_PASSWORD_SPECIAL": "Hasło musi zawierać przynajmniej jeden znak specjalny.",
   "ranking.gametype": "wyników",
-  "ranking.chooseLevel":"Wybierz tablice",
+  "ranking.chooseLevel": "Wybierz tablice",
   "ranking.chooseTest": "z jakiej gry chcesz zobaczyc tablice wyników?",
   "Rankingtable.title": "Wyniki z areny",
-  "Flashcardstable.title": "Wyniki z fiszek"
+  "Flashcardstable.title": "Wyniki z fiszek",
+  "arena.title": "arena",
+  "arena.start": "start gry",
+  "arena.description": "gra rywalizacyjna, na punkty, nie można popełniać błędów, tylko dla zalogowanych użytkowników"
 }

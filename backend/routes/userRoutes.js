@@ -11,7 +11,7 @@ import {
   autoSave,
   autoLoad,
   autoDelete,
-  getRankingGame,
+  getArena,
 } from "../controllers/userControllers.js";
 
 import { deleteUserValidator } from "../middleware/validators/users/delete-deleteuser-vali.js";
@@ -50,6 +50,6 @@ router.post("/auto-delete", authenticateToken, autoDelete);
 
 router.get("/ranking-flashcard", getRankingFlashcard);
 
-router.get("/ranking-rankinggame", getRankingGame);
+router.get("/ranking-arena", getArena);
 
 export default router;

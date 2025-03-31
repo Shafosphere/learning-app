@@ -131,7 +131,7 @@
   "sidebar.login": "Login",
   "sidebar.github": "GitHub",
   "sidebar.about": "About",
-  "sidebar.rankinggame": "Arena",
+  "sidebar.arena": "Arena",
   "confirm.no": "No",
   "confirm.yes": "Yes",
   "resetForm.title": "RESET PASSWORD",
@@ -208,8 +208,11 @@
   "ERR_RESET_PASSWORD_DIGIT": "Password must contain at least one digit.",
   "ERR_RESET_PASSWORD_SPECIAL": "Password must contain at least one special character.",
   "ranking.gametype": "Scoreboards",
-  "ranking.chooseLevel":"Select a Game",
+  "ranking.chooseLevel": "Select a Game",
   "ranking.chooseTest": "Please select a game to view its scoreboard.",
   "Rankingtable.title": "Arena scores",
-  "Flashcardstable.title": "Flashcards scores"
+  "Flashcardstable.title": "Flashcards scores",
+  "arena.title": "Arena",
+  "arena.start": "Start game",
+  "arena.description": "Competitive game mode with points – no mistakes allowed. Only available for logged-in users."
 }

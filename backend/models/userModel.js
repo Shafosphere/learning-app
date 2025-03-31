@@ -733,7 +733,7 @@ export const getTopRankingUsersFlashcard = async (limit) => {
   return result.rows;
 };
 
-export const getTopRankingGameUsers = async (limit) => {
+export const getTopArenaUsers = async (limit) => {
   const query = `
     SELECT
       users.username,
@@ -871,7 +871,7 @@ export const getLanguageWordTranslations = async (wordId) => {
   return result.rows; // Zwracamy już same wiersze
 };
 
-export const updateUserRankingGame = async (pointsAfter, newStreak, userId) => {
+export const updateUserArena = async (pointsAfter, newStreak, userId) => {
   await pool.query(
     `
     UPDATE arena SET

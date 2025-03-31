@@ -14,7 +14,7 @@ import {
   getBatchWordTranslations,
   resetPatchNumberByUserID,
   deleteDataUserByUserID,
-  getTopRankingGameUsers,
+  getTopArenaUsers,
 } from "../models/userModel.js";
 
 import pool from "../dbClient.js";
@@ -154,9 +154,9 @@ export const getRankingFlashcard = async (req, res) => {
   }
 };
 
-export const getRankingGame = async (req, res) => {
+export const getArena = async (req, res) => {
   try {
-    const topUsers = await getTopRankingGameUsers(10);
+    const topUsers = await getTopArenaUsers(10);
     res.status(200).json(topUsers);
   } catch (error) {
     console.error("Błąd podczas pobierania rankingu:", error);

@@ -35,7 +35,7 @@ export default function RankingTableContent({ setDisplay, lvl }) {
         const endpoint =
           lvl === "Flashcards"
             ? "/user/ranking-flashcard"
-            : "/user/ranking-rankinggame";
+            : "/user/ranking-arena";
 
         const response = await api.get(endpoint);
 

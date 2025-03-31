@@ -22,7 +22,7 @@ import {
   getUserRankingPoints,
   getRandomWord,
   getLanguageWordTranslations,
-  updateUserRankingGame,
+  updateUserArena,
   updateUserRankingHistory,
   getRankingHistoryById,
 } from "../models/userModel.js";
@@ -434,7 +434,7 @@ export const submitAnswer = async (req, res) => {
     let newStreak = isCorrect ? streakBefore + 1 : 0;
 
     // 7. Aktualizuj ranking
-    await updateUserRankingGame(pointsAfter, newStreak, userId);
+    await updateUserArena(pointsAfter, newStreak, userId);
 
     // 8. Zapisz historię
     const tier = getDifficultyTier(pointsBefore);
