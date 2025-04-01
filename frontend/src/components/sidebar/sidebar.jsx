@@ -8,11 +8,10 @@ import {
   MdLogin,
 } from "react-icons/md";
 import { IoBug, IoLogoGithub } from "react-icons/io5";
-import { FaBook, FaScroll, FaTrophy} from "react-icons/fa";
+import { FaScroll, FaTrophy} from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
-import { FaRankingStar } from "react-icons/fa6";
+import { FaRankingStar, FaBoxOpen } from "react-icons/fa6";
 import { useIntl, FormattedMessage } from "react-intl";
-
 import api from "../../utils/api";
 import ReportPopup from "../report/report-popup";
 import { PopupContext } from "../popup/popupcontext";
@@ -98,7 +97,7 @@ export default function Sidebar() {
           <div>
             <Link className="link-container" to="/maingame">
               <span className="sidebar-initial link-icon">
-                <FaBook />
+                <FaBoxOpen />
               </span>
               <span className="sidebar-full">
                 <div className="link-text">

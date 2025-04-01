@@ -1,4 +1,6 @@
-import { FaBook, FaTrophy } from "react-icons/fa";
+import { FaTrophy } from "react-icons/fa";
+import { FaBoxOpen } from "react-icons/fa6";
+
 import { useState } from "react";
 import SelectLvl from "../../components/selectlvl/selectlvl";
 import RankingTableContent from "../../components/rankingtable/rankingtablecontent";
@@ -21,7 +23,7 @@ export default function RankingTableSelect() {
               {
                 value: "Flashcards",
                 messageKey: "levelFlashcards",
-                icon: <FaBook />,
+                icon: <FaBoxOpen />,
               },
               {
                 value: "Ranking",

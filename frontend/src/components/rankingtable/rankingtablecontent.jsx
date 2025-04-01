@@ -13,8 +13,8 @@ import avatar2 from "../../data/avatars/man_1.png";
 import avatar3 from "../../data/avatars/woman.png";
 import avatar4 from "../../data/avatars/woman_1.png";
 
-import { FaBook, FaTrophy } from "react-icons/fa";
-
+import { FaTrophy } from "react-icons/fa";
+import { FaBoxOpen } from "react-icons/fa6";
 export default function RankingTableContent({ setDisplay, lvl }) {
   const [data, setData] = useState(null);
   const [hasMore, setHasMore] = useState(true);
@@ -170,7 +170,7 @@ export default function RankingTableContent({ setDisplay, lvl }) {
       </div>
 
       <div className="return-btn-voca" onClick={() => setDisplay("default")}>
-        <h1>{lvl === "Flashcards" ? <FaBook /> : <FaTrophy />}</h1>
+        <h1>{lvl === "Flashcards" ? <FaBoxOpen /> : <FaTrophy />}</h1>
       </div>
     </div>
   );

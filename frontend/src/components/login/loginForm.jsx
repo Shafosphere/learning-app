@@ -14,7 +14,7 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
 
   const { setPopup } = useContext(PopupContext);
 
@@ -23,10 +23,12 @@ export default function LoginForm() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    const trimmedUsername = username.trimEnd();
+    const trimmedPassword = password.trimEnd();
     try {
       const response = await api.post("/auth/login", {
-        username,
-        password,
+        username: trimmedUsername,
+        password: trimmedPassword,
       });
       if (response.data.success) {
         setPopup({
@@ -100,7 +102,7 @@ export default function LoginForm() {
               )}
             </button>
           </div>
-          {error && <p className="login-error">{error}</p>}
+          {/* {error && <p className="login-error">{error}</p>} */}
         </div>
         <button
           style={{ "--buttonColor": "var(--highlight)", width: "100%" }}

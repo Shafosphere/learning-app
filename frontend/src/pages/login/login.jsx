@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import LoginForm from "../../components/login/loginForm";
 import RegiForm from "../../components/login/regiForm";
 import MyButton from "../../components/button/button";
 import ResetForm from "../../components/login/resetForm";
 import "./login.css";
+import { useLocation } from "react-router-dom";
 
 export default function Login() {
   const [display, setDisplay] = useState("login");
+  const location = useLocation();
 
   // Funkcja pomocnicza do renderowania przycisków
   const renderButtons = (buttons) => (
@@ -23,6 +25,12 @@ export default function Login() {
       ))}
     </div>
   );
+
+  useEffect(() => {
+    if (location.state?.display) {
+      setDisplay(location.state.display);
+    }
+  }, [location.state]);
 
   return (
     <div className="container-logging">

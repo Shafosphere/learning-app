@@ -258,7 +258,28 @@ export const updateUserById = async (userId, updates) => {
 };
 
 export const deleteUserByID = async (userId) => {
-  await pool.query("DELETE FROM users WHERE id = $1", [userId]);
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    await client.query(
+      `
+      DELETE FROM user_word_progress WHERE user_id = $1;
+      DELETE FROM user_autosave WHERE user_id = $1;
+      DELETE FROM ranking WHERE user_id = $1;
+      DELETE FROM arena WHERE user_id = $1;
+      DELETE FROM users WHERE id = $1;
+    `,
+      [userId]
+    );
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
 };
 
 export const getWordsWithPagination = async (limit, offset) => {

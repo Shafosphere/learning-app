@@ -20,7 +20,10 @@ export default function About() {
                 <FormattedMessage id="about.login" defaultMessage="Log in" />
               </span>
             </Link>
-            <Link className="link" to="/login">
+            <Link
+              to="/login"
+              state={{ display: "register" }}
+            >
               <span>
                 <FormattedMessage
                   id="about.register"

@@ -245,6 +245,7 @@ input:focus + .slider {
   .container-resets {
     flex-direction: row;
     justify-content: space-between;
+    gap: 1rem;
     padding: 0.5rem 0.75rem 0.5rem 0.75rem;
   }
   .resets-buttons button {
