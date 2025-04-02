@@ -1,37 +1,42 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  test: {
+    environment: "jsdom", // Emulacja przeglądarki (DOM) dla testów React
+    globals: true, // Możliwość używania np. test, expect bez importu
+    setupFiles: ["./setupTests.js"], // Plik z dodatkowymi ustawieniami
+  },
   server: {
     proxy: {
-      '/auth': {
-        target: 'http://192.168.0.113:8080',
+      "/auth": {
+        target: "http://192.168.0.113:8080",
         changeOrigin: true,
         secure: false,
       },
-      '/report': {
-        target: 'http://192.168.0.113:8080',
+      "/report": {
+        target: "http://192.168.0.113:8080",
         changeOrigin: true,
         secure: false,
       },
-      '/word': {
-        target: 'http://192.168.0.113:8080',
+      "/word": {
+        target: "http://192.168.0.113:8080",
         changeOrigin: true,
         secure: false,
       },
-      '/admin': {
-        target: 'http://192.168.0.113:8080',
+      "/admin": {
+        target: "http://192.168.0.113:8080",
         changeOrigin: true,
         secure: false,
       },
-      '/user': {
-        target: 'http://192.168.0.113:8080',
+      "/user": {
+        target: "http://192.168.0.113:8080",
         changeOrigin: true,
         secure: false,
       },
-      '/analytics': {
-        target: 'http://192.168.0.113:8080',
+      "/analytics": {
+        target: "http://192.168.0.113:8080",
         changeOrigin: true,
         secure: false,
       },

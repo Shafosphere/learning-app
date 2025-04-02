@@ -27,8 +27,17 @@ export default function Login() {
   );
 
   useEffect(() => {
-    if (location.state?.display) {
+    if (!location.state?.display) {
+      // Brak state.display? Ustaw na login
+      setDisplay("login");
+    } else if (
+      ["login", "register", "reset"].includes(location.state.display)
+    ) {
+      // Jeśli display jest jednym z dozwolonych wartości
       setDisplay(location.state.display);
+    } else {
+      // Wszelkie inne wartości (np. 'invalid') -> ustaw domyślnie login
+      setDisplay("login");
     }
   }, [location.state]);
 
