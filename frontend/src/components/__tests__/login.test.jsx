@@ -4,7 +4,6 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { IntlProvider } from "react-intl";
 import Login from "../../pages/login/login";
-import MyButton from "../button/button";
 
 // Mockowanie komponentów formularzy
 vi.mock("../../components/login/loginForm", () => ({
