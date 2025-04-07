@@ -1,4 +1,3 @@
-
 import { addWord, getAllWords } from "../../utils/indexedDB";
 
 export default function useMoveWord({
@@ -13,7 +12,7 @@ export default function useMoveWord({
   calculateTotalPercent,
   isLoggedIn,
   sendLearnedWordToServer,
-  setAutoSave
+  setAutoSave,
 }) {
   const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
 
@@ -31,13 +30,21 @@ export default function useMoveWord({
     // Gdy słowo trafia do piątego boxa i nie jest cofane do pierwszego
     if (activeBox === "boxFive" && !moveToFirst) {
       const newid = randomWord.id;
-      const wordIds = await getAllWords(lvl);
+
+      let wordIds;
+      try {
+        wordIds = await getAllWords(lvl);
+      } catch (err) {
+        console.error(err);
+        return; 
+      }
 
       if (!wordIds.some((word) => word.id === newid)) {
         await addWord(newid, lvl);
         calculatePercent(lvl);
         calculateTotalPercent(lvl);
         confettiShow();
+
         if (isLoggedIn) {
           await sendLearnedWordToServer(newid);
         }
@@ -85,9 +92,9 @@ export default function useMoveWord({
         };
       });
     }
+
     setAutoSave(true);
   }
 
-  // hook zwraca obiekt z funkcją moveWord
   return { moveWord };
 }
