@@ -19,6 +19,40 @@ export default function useSpellchecking() {
       .replace(/ż/g, "z");
   }
 
+  // Implementacja algorytmu Levenshteina
+  function levenshtein(a, b) {
+    const matrix = [];
+
+    // Jeżeli jedno z słów jest puste, odległość to długość drugiego słowa
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+
+    // Inicjalizacja pierwszego wiersza i kolumny
+    for (let i = 0; i <= b.length; i++) {
+      matrix[i] = [i];
+    }
+    for (let j = 0; j <= a.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    // Wypełnianie macierzy
+    for (let i = 1; i <= b.length; i++) {
+      for (let j = 1; j <= a.length; j++) {
+        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1, // usunięcie
+            matrix[i][j - 1] + 1, // wstawienie
+            matrix[i - 1][j - 1] + 1 // substytucja
+          );
+        }
+      }
+    }
+
+    return matrix[b.length][a.length];
+  }
+
   function checkSpelling(userForm, correctForm) {
     console.log("diacritical jest: " + diacritical);
     const processedUserWord = diacritical ? userForm : normalizeText(userForm);
@@ -41,43 +75,20 @@ export default function useSpellchecking() {
     }
 
     const userWord = processedUserWord.trim().toLowerCase();
-    const correctWord = processedCorrectAnswer.toLowerCase();
+    const correctWord = processedCorrectAnswer.trim().toLowerCase();
 
     if (spellChecking) {
-      // Tolerujemy jeden błąd
+      // Tryb tolerancyjny: akceptujemy jeden błąd
       if (userWord === correctWord) {
         return true;
       }
-
-      function countDifferences(word1, word2) {
-        const len1 = word1.length;
-        const len2 = word2.length;
-        const maxLength = Math.max(len1, len2);
-        let differences = 0;
-
-        for (let i = 0; i < maxLength; i++) {
-          if (word1[i] !== word2[i]) {
-            differences++;
-            if (differences > 1) {
-              // Jeśli różnic jest więcej niż 1, przerywamy pętlę
-              break;
-            }
-          }
-        }
-
-        return differences;
-      }
-
-      const differences = countDifferences(userWord, correctWord);
-
+      const differences = levenshtein(userWord, correctWord);
       return differences <= 1;
     } else {
-      // Wymagamy dokładnego dopasowania
+      // Tryb ścisły: wymagamy dokładnego dopasowania
       return userWord === correctWord;
     }
   }
 
   return checkSpelling;
 }
-
-//dodac: jezeli spellchecking off = telorowanie 1 błedu (litery)
