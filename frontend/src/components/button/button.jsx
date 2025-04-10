@@ -1,6 +1,12 @@
 import "./button.css";
 
-export default function MyButton({ message, color, onClick, width = "12rem" }) {
+export default function MyButton({
+  message,
+  color,
+  onClick,
+  disabled,
+  width = "12rem",
+}) {
   const colorMapping = {
     red: "var(--secondary)",
     yellow: "var(--tertiary)",
@@ -14,10 +20,11 @@ export default function MyButton({ message, color, onClick, width = "12rem" }) {
       className="button"
       style={{
         "--buttonColor": buttonColor,
-        width: width ? `${width}rem` : null, // Ustawienie szerokości, jeśli przekazano
+        width: width ? `${width}rem` : null,
       }}
       onClick={onClick}
-      type="button" 
+      disabled={disabled} // <-- Kluczowy atrybut
+      type="button"
     >
       {message}
     </button>
