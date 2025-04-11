@@ -39,18 +39,19 @@ export default function MyCustomChart({ ranks = [] }) {
     const p2 = pointsWithIndex[i + 1];
     const delta = ranks[p2.rankIndex] - ranks[p1.rankIndex];
 
-    // Nazwa klasy zależna od delta:
+    // Dynamiczna klasa zależna od zmiany wartości
     const lineClass = delta >= 0 ? "line-up" : "line-down";
     segmentColors.push(lineClass);
 
     lines.push(
       <line
         key={i}
+        data-testid="chart-line" // dodano do testów
         x1={p1.x}
         y1={p1.y}
         x2={p2.x}
         y2={p2.y}
-        className={lineClass} /* dynamiczna klasa, reszta stylu w CSS */
+        className={lineClass}
       />
     );
   }
@@ -66,12 +67,12 @@ export default function MyCustomChart({ ranks = [] }) {
 
   return (
     <div className="chart-container">
-
       <svg width={chartWidth} height={chartHeight} className="my-svg">
         {/* Linie pionowe w tle */}
         {[50, 100, 150, 200, 250, 300, 350].map((xVal) => (
           <line
             key={xVal}
+            data-testid="grid-line" // dodano do testów
             x1={xVal}
             y1={0}
             x2={xVal}
@@ -79,19 +80,17 @@ export default function MyCustomChart({ ranks = [] }) {
             className="chart-grid-line"
           />
         ))}
-
         {/* Segmenty linii */}
         {lines}
-
         {/* Kółko z kolorem zależnym od ostatniego segmentu */}
         {lastPoint && (
           <circle
             cx={lastPoint.x}
             cy={lastPoint.y}
             className={`chart-circle ${lastCircleClass}`}
+            data-testid="chart-circle" // dodano do testów
           />
         )}
-
       </svg>
     </div>
   );

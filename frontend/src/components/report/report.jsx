@@ -95,44 +95,6 @@ export default function ReportForm() {
               />
             </div>
           )}
-          {/* {reportType === "word_issue" && (
-            <div className="language-field">
-              <span className="question-form">
-                <label htmlFor="language">
-                  <FormattedMessage
-                    id="reportForm.language"
-                    defaultMessage="Language:"
-                  />
-                </label>
-                <FaRegQuestionCircle
-                  className="question-icon"
-                  title={intl.formatMessage({
-                    id: "reportForm.languageHint",
-                    defaultMessage: "What language is the word in?",
-                  })}
-                />
-              </span>
-              <select
-                id="language"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-              >
-                <option value=""></option>
-                <option value="pl">
-                  {intl.formatMessage({
-                    id: "reportForm.languagePolish",
-                    defaultMessage: "Polish",
-                  })}
-                </option>
-                <option value="en">
-                  {intl.formatMessage({
-                    id: "reportForm.languageEnglish",
-                    defaultMessage: "English",
-                  })}
-                </option>
-              </select>
-            </div>
-          )} */}
           <div className="description-report-containter">
             <label htmlFor="description">
               <FormattedMessage
