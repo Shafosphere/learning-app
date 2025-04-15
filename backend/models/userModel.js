@@ -262,16 +262,15 @@ export const deleteUserByID = async (userId) => {
   try {
     await client.query("BEGIN");
 
-    await client.query(
-      `
-      DELETE FROM user_word_progress WHERE user_id = $1;
-      DELETE FROM user_autosave WHERE user_id = $1;
-      DELETE FROM ranking WHERE user_id = $1;
-      DELETE FROM arena WHERE user_id = $1;
-      DELETE FROM users WHERE id = $1;
-    `,
-      [userId]
-    );
+    await client.query("DELETE FROM user_word_progress WHERE user_id = $1", [
+      userId,
+    ]);
+    await client.query("DELETE FROM user_autosave WHERE user_id = $1", [
+      userId,
+    ]);
+    await client.query("DELETE FROM ranking WHERE user_id = $1", [userId]);
+    await client.query("DELETE FROM arena WHERE user_id = $1", [userId]);
+    await client.query("DELETE FROM users WHERE id = $1", [userId]);
 
     await client.query("COMMIT");
   } catch (err) {

@@ -257,7 +257,7 @@ export const updateUserAccount = async (req, res) => {
 
 export const deleteUserAccount = async (req, res) => {
   const userId = req.user.id;
-
+  console.log(userId)
   try {
     await deleteUserByID(userId);
 
