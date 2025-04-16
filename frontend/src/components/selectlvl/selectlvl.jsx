@@ -34,10 +34,11 @@ export default function SelectLvl({
             {levels.map((level) => (
               <div
                 key={level.value}
+                role="button"
+                tabIndex={0}
                 onClick={() => setDisplay(level.value)}
                 className="display-select"
               >
-                {/* Warunkowe wyświetlanie: jeśli onlyIcons === true, pokaż tylko ikonę */}
                 {onlyIcons ? (
                   level.icon
                 ) : (
