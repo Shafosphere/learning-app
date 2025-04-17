@@ -7,6 +7,12 @@ export default defineConfig({
     environment: "jsdom", // Emulacja przeglądarki (DOM) dla testów React
     globals: true, // Możliwość używania np. test, expect bez importu
     setupFiles: ["./setupTests.js"], // Plik z dodatkowymi ustawieniami
+    exclude: [
+      "**/*.skip.test.jsx", // Ignoruj pliki z .skip.test.jsx
+      "node_modules/**", // Ignoruj wszystkie pliki w node_modules
+      "dist/**", // Ignoruj pliki w folderze dist
+      "coverage/**", // Ignoruj pliki w folderze coverage
+    ],
   },
   server: {
     proxy: {
