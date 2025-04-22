@@ -178,11 +178,3 @@ export default function MainPanel() {
     </>
   );
 }
-
-{
-  /* <MyButton
-            message="re-draw patch system "
-            color="red"
-            onClick={() => handleGeneratePatches()}
-          /> */
-}
