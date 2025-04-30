@@ -1,6 +1,6 @@
 // tests/accountUpdateValidationRules.test.js
-import VALIDATION_RULES from "../middleware/validators/validationConfig.js";
-import { accountUpdateValidationRules } from "../middleware/validators/auth/patch-userUpdate-vali.js";
+import VALIDATION_RULES from "../src/middleware/validationConfig.js";
+import { accountUpdateValidationRules } from "../src/middleware/validators/auth/patch-userUpdate-vali.js";
 
 describe("accountUpdateValidationRules", () => {
   let req, res, next;

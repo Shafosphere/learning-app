@@ -2,8 +2,8 @@
 jest.mock("../models/userModel.js", () => ({
   getReportById: jest.fn(),
 }));
-import { getReportById } from "../models/userModel.js";
-import { deleteReportValidator } from "../middleware/validators/report/delete-deletereport-vali.js";
+import { getReportById } from "../src/repositories/userModel.js";
+import { deleteReportValidator } from "../src/middleware/validators/report/delete-deletereport-vali.js";
 describe("deleteReportValidator", () => {
   let req, res, next;
   const [idValidator, customValidator, errorHandler] = deleteReportValidator;

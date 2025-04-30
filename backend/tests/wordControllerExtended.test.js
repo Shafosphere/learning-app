@@ -11,7 +11,7 @@ import {
   getRankingHistory,
 } from "../controllers/wordController.js";
 
-import * as model from "../models/userModel.js";
+import * as model from "../src/repositories/userModel.js";
 
 describe("wordController", () => {
   let req, res;

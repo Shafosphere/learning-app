@@ -2,8 +2,8 @@
 jest.mock("../models/userModel.js", () => ({
   getReportById: jest.fn(),
 }));
-import { getReportById } from "../models/userModel.js";
-import { getDetailReportValidator } from "../middleware/validators/report/post-getdetail-vali.js";
+import { getReportById } from "../src/repositories/userModel.js";
+import { getDetailReportValidator } from "../src/middleware/validators/report/post-getdetail-vali.js";
 describe("getDetailReportValidator", () => {
   let req, res, next;
   const [idValidator, customValidator, errorHandler] = getDetailReportValidator;

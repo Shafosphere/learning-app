@@ -1,5 +1,5 @@
 // tests/pageNameValidator.test.js
-import { pageNameValidator } from "../middleware/validators/analytics/post-visit-vali";
+import { pageNameValidator } from "../src/middleware/validators/analytics/post-visit-vali";
 
 describe("pageNameValidator middleware", () => {
   let req, res, next;

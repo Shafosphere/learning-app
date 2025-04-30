@@ -1,5 +1,5 @@
 // tests/middleware/authorizePatchAndLevel.test.js
-import authorizePatchAndLevel from "../middleware/validators/word/post-patchdata-vali";
+import authorizePatchAndLevel from "../src/middleware/validators/word/post-patchdata-vali";
 describe("authorizePatchAndLevel middleware", () => {
   let req, res, next;
 

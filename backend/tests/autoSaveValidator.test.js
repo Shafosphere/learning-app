@@ -1,5 +1,5 @@
 // tests/autoSaveValidator.test.js
-import { autoSaveValidator } from "../middleware/validators/users/post-autosave-vali";
+import { autoSaveValidator } from "../src/middleware/validators/users/post-autosave-vali";
 describe("autoSaveValidator", () => {
   let req, res, next;
   const [

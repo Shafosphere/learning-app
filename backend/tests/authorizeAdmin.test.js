@@ -1,5 +1,5 @@
 // tests/authorizeAdmin.test.js
-import authorizeAdmin from "../middleware/validators/admin_and_token/authorizeAdmin";
+import authorizeAdmin from "../src/middleware/validators/admin_token/authorizeAdmin";
 
 describe("authorizeAdmin middleware", () => {
   let req;

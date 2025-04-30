@@ -4,8 +4,8 @@
 jest.mock("../middleware/validators/sanitize-html.js", () => ({
     sanitizeInput: jest.fn(),
   }));
-  import authorizeAddReport from "../middleware/validators/report/post-addreport-vali.js";
-  import { sanitizeInput } from "../middleware/validators/sanitize-html.js";
+  import authorizeAddReport from "../src/middleware/validators/report/post-addreport-vali.js";
+  import { sanitizeInput } from "../src/middleware/sanitize-html.js";
   
   describe("authorizeAddReport middleware", () => {
     let req, res, next;

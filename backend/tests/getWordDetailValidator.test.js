@@ -1,5 +1,5 @@
 // tests/getWordDetailValidator.test.js
-import { getWordDetailValidator } from "../middleware/validators/word/post-getworddetail-vali";
+import { getWordDetailValidator } from "../src/middleware/validators/word/post-getworddetail-vali";
 describe("getWordDetailValidator", () => {
   let req, res, next;
   // express-validator’s `body()` returns a middleware object

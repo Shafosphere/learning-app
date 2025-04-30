@@ -2,8 +2,8 @@
 jest.mock("../models/userModel.js", () => ({
   searchWordById: jest.fn(),
 }));
-import { searchWordById } from "../models/userModel.js";
-import { learnWordValidator } from "../middleware/validators/users/post-learnword-vali.js";
+import { searchWordById } from "../src/repositories/userModel.js";
+import { learnWordValidator } from "../src/middleware/validators/users/post-learnword-vali.js";
 describe("learnWordValidator", () => {
   let req, res, next;
   const [idValidator, customValidator, errorHandler] = learnWordValidator;

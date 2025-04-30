@@ -2,10 +2,10 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
-import VALIDATION_RULES from "../middleware/validators/validationConfig.js";
-import * as model from "../models/userModel.js";
-import * as emailService from "../emailService.js";
-import { config } from "../config.js";
+import VALIDATION_RULES from "../src/middleware/validationConfig.js";
+import * as model from "../src/repositories/userModel.js";
+import * as emailService from "../src/services/email.service.js";
+import { config } from "../src/config/config.js";
 import {
   getRequirements,
   registerUser,

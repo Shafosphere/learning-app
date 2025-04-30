@@ -1,5 +1,5 @@
 // tests/authorizeList.test.js
-import authorizeList from "../middleware/validators/word/get-list-vali";
+import authorizeList from "../src/middleware/validators/word/get-list-vali";
 
 describe("authorizeList middleware", () => {
   let req, res, next;

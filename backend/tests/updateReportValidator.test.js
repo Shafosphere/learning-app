@@ -2,8 +2,8 @@
 jest.mock("../models/userModel.js", () => ({
   searchWordById: jest.fn(),
 }));
-import { searchWordById } from "../models/userModel.js";
-import { updateReportValidator } from "../middleware/validators/report/patch-updatereporttrans-vali.js";
+import { searchWordById } from "../src/repositories/userModel.js";
+import { updateReportValidator } from "../src/middleware/validators/report/patch-updatereporttrans-vali.js";
 describe("updateReportValidator", () => {
   let req, res, next;
   const validators = updateReportValidator;

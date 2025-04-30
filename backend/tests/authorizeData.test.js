@@ -1,5 +1,5 @@
 // tests/authorizeData.test.js
-import authorizeData from "../middleware/validators/word/post-data-vali";
+import authorizeData from "../src/middleware/validators/word/post-data-vali";
 describe("authorizeData middleware", () => {
   let req, res, next;
 

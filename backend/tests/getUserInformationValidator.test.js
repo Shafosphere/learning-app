@@ -5,8 +5,8 @@ jest.mock("../models/userModel.js", () => ({
   getUserByUserName: jest.fn(),
 }));
 
-import { getUserByUserName } from "../models/userModel.js";
-import { getUserInformationValidator } from "../middleware/validators/auth/post-information-vali.js";
+import { getUserByUserName } from "../src/repositories/userModel.js";
+import { getUserInformationValidator } from "../src/middleware/validators/auth/post-information-vali.js";
 describe("getUserInformationValidator middleware", () => {
   let req, res, next;
   const [validator] = getUserInformationValidator;

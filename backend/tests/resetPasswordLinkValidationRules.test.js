@@ -11,9 +11,9 @@ jest.mock("../middleware/getErrorParams.js", () => ({
   getErrorParams: jest.fn(),
 }));
 
-import VALIDATION_RULES from "../middleware/validators/validationConfig.js";
-import { getErrorParams } from "../middleware/getErrorParams.js";
-import { resetPasswordLinkValidationRules } from "../middleware/validators/auth/post-resetLink-vali.js";
+import VALIDATION_RULES from "../src/middleware/validationConfig.js";
+import { getErrorParams } from "../src/middleware/getErrorParams.js";
+import { resetPasswordLinkValidationRules } from "../src/middleware/validators/auth/post-resetLink-vali.js";
 describe("resetPasswordLinkValidationRules", () => {
   let req, res, next;
   const [emailValidator, languageValidator, errorHandler] =

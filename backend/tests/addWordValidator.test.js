@@ -1,6 +1,6 @@
 // tests/addWordValidator.test.js
 import { validationResult } from "express-validator";
-import { addWordValidator } from "../middleware/validators/word/post-addword-vali";
+import { addWordValidator } from "../src/middleware/validators/word/post-addword-vali";
 describe("addWordValidator", () => {
   let req, res, next;
 

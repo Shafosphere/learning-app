@@ -1,5 +1,5 @@
 // tests/updateTranslationsValidator.test.js
-import { updateTranslationsValidator } from "../middleware/validators/word/patch-updatetranslation-vali";
+import { updateTranslationsValidator } from "../src/middleware/validators/word/patch-updatetranslation-vali";
 describe("updateTranslationsValidator", () => {
   let req, res, next;
   const validators = updateTranslationsValidator;

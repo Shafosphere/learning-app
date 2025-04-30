@@ -19,7 +19,7 @@ jest.mock("../models/userModel.js", () => ({
   getWordsWithPagination: jest.fn(),
 }));
 
-import * as model from "../models/userModel.js";
+import * as model from "../src/repositories/userModel.js";
 
 describe("wordController", () => {
   // helper do tworzenia fałszywego `res`

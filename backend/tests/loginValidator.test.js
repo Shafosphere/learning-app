@@ -12,9 +12,9 @@ jest.mock("../middleware/getErrorParams.js", () => ({
   getErrorParams: jest.fn(),
 }));
 
-import VALIDATION_RULES from "../middleware/validators/validationConfig.js";
-import { getErrorParams } from "../middleware/getErrorParams.js";
-import { loginValidator } from "../middleware/validators/auth/post-loginUser-vali.js";
+import VALIDATION_RULES from "../src/middleware/validationConfig.js";
+import { getErrorParams } from "../src/middleware/getErrorParams.js";
+import { loginValidator } from "../src/middleware/validators/auth/post-loginUser-vali.js";
 
 describe("loginValidator", () => {
   let req, res, next;

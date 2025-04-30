@@ -5,7 +5,7 @@ import {
     getUserActivityData,
     generatePatches,
   } from "../controllers/adminController.js";
-  import * as model from "../models/userModel.js";
+  import * as model from "../src/repositories/userModel.js";
   import { format, eachDayOfInterval } from "date-fns";
   
   jest.mock("../models/userModel.js");

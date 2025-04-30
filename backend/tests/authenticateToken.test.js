@@ -1,7 +1,7 @@
 // tests/authenticateToken.test.js
-import authenticateToken from "../middleware/validators/admin_and_token/authenticateToken.js";
+import authenticateToken from "../src/middleware/validators/admin_token/authenticateToken.js";
 import jwt from "jsonwebtoken";
-import { config } from "../config.js"; // adjust path as needed
+import { config } from "../src/config/config.js"; // adjust path as needed
 
 jest.mock("jsonwebtoken");
 

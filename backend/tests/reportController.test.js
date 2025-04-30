@@ -6,7 +6,7 @@ import {
   deleteReportData,
   createReport,
 } from "../controllers/reportController.js";
-import * as model from "../models/userModel.js";
+import * as model from "../src/repositories/userModel.js";
 
 describe("reportController", () => {
   let req, res;

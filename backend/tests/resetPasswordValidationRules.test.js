@@ -21,7 +21,7 @@ jest.mock("../middleware/getErrorParams.js", () => ({
 }));
 
 
-import { resetPasswordValidationRules } from "../middleware/validators/auth/post-resetPass-vali.js";
+import { resetPasswordValidationRules } from "../src/middleware/validators/auth/post-resetPass-vali.js";
 import { getErrorParams } from "../middleware/getErrorParams.js";
 
 describe("resetPasswordValidationRules", () => {

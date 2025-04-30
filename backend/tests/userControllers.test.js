@@ -1,7 +1,7 @@
 // tests/userControllers.test.js
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
-import * as model from "../models/userModel.js";
-import pool from "../dbClient.js";
+import * as model from "../src/repositories/userModel.js";
+import pool from "../src/db/dbClient.js";
 import {
   getUsersList,
   updateUsers,

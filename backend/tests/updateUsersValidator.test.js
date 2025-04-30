@@ -20,7 +20,7 @@ jest.mock("../middleware/validators/validationConfig.js", () => ({
 }));
 
 
-import { updateUsersValidator } from "../middleware/validators/users/patch-updateuser-vali";
+import { updateUsersValidator } from "../src/middleware/validators/users/patch-updateuser-vali";
 
 describe("updateUsersValidator", () => {
   let req, res, next;
