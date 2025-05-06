@@ -1,4 +1,5 @@
-import { increasingEntrances } from "../repositories/userModel.js";
+// import { increasingEntrances } from "../repositories/userModel.js";
+import { increasingEntrances } from "../repositories/stats.repo.js";
 
 export const countingEntries = async (req, res) => {
   try {

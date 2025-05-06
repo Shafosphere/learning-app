@@ -1,13 +1,28 @@
 // Obsługa raportów
+// import {
+//   getReportById,
+//   getReports,
+//   deleteReport,
+//   insertReport,
+//   getWordTranslations,
+//   getWordByTranslation,
+//   updateReport,
+// } from "../repositories/userModel.js";
+
+// Raporty
 import {
   getReportById,
   getReports,
-  deleteReport,
   insertReport,
+  updateReport,
+  deleteReport,
+} from "../repositories/report.repo.js";
+
+// Tłumaczenia słów
+import {
   getWordTranslations,
   getWordByTranslation,
-  updateReport,
-} from "../repositories/userModel.js";
+} from "../repositories/translation.repo.js";
 
 export const getDetailReport = async (req, res) => {
   try {

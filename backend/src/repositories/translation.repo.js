@@ -1,3 +1,5 @@
+import pool from "../db/dbClient.js";
+
 // Funkcja pobierająca słowo na podstawie tłumaczenia i języka
 export const getWordByTranslation = async (translation) => {
   const result = await pool.query(

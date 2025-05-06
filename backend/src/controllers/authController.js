@@ -3,19 +3,39 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import VALIDATION_RULES from "../middleware/validationConfig.js";
+// import {
+//   createUser,
+//   getUserByUsername,
+//   updateLastLogin,
+//   getUserById,
+//   updateUserById,
+//   deleteUserByID,
+//   incrementUserActivity,
+//   getUserByEmail,
+//   userRankingUpdate,
+// } from "../repositories/userModel.js";
+
+// Obsługa użytkowników
 import {
   createUser,
   getUserByUsername,
-  updateLastLogin,
-  getUserByUserName,
   getUserById,
+  getUserByEmail,
   updateUserById,
   deleteUserByID,
   incrementUserActivity,
-  getUserByEmail,
-  userRankingUpdate,
-} from "../repositories/userModel.js";
-import { sendEmail, generateResetPasswordEmail } from "../services/email.service.js";
+} from "../repositories/user.repo.js";
+
+// Statystyki (ruch / logowanie)
+import { updateLastLogin } from "../repositories/stats.repo.js";
+
+// Ranking użytkowników
+import { userRankingUpdate } from "../repositories/ranking.repo.js";
+
+import {
+  sendEmail,
+  generateResetPasswordEmail,
+} from "../services/email.service.js";
 import { config } from "../config/config.js";
 
 const generateToken = (user) => {
@@ -257,7 +277,7 @@ export const updateUserAccount = async (req, res) => {
 
 export const deleteUserAccount = async (req, res) => {
   const userId = req.user.id;
-  console.log(userId)
+  console.log(userId);
   try {
     await deleteUserByID(userId);
 

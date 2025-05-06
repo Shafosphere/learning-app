@@ -1,5 +1,6 @@
 import { body, validationResult } from "express-validator";
-import { searchWordById } from "../../../repositories/userModel.js";
+// import { searchWordById } from "../../../repositories/userModel.js";
+import { searchWordById } from "../../../repositories/word.repo.js";
 export const updateReportValidator = [
   // Sprawdzamy, czy `report` istnieje i jest obiektem
   body("report")

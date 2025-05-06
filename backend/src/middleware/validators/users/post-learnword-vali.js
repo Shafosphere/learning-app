@@ -1,6 +1,6 @@
 import { body, validationResult } from "express-validator";
-import { searchWordById } from "../../../repositories/userModel.js";
-
+// import { searchWordById } from "../../../repositories/userModel.js";
+import { searchWordById } from "../../../repositories/word.repo.js";
 export const learnWordValidator = [
   // Sprawdzamy, czy wordId istnieje i jest poprawną liczbą całkowitą
   body("wordId")

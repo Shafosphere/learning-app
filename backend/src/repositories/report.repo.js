@@ -1,3 +1,5 @@
+import pool from "../db/dbClient.js";
+
 export const getReportById = async (report_id) => {
   const result = await pool.query(
     `SELECT reports.*, users.username 

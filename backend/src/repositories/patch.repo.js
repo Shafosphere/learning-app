@@ -1,3 +1,5 @@
+import pool from "../db/dbClient.js";
+
 export const getPatchWordsByLevel = async (patchNumber, level) => {
   let table;
 

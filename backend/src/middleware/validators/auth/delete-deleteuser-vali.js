@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import { getUserById } from "../../../repositories/userModel.js";
+import { getUserById } from "../../../repositories/user.repo.js";
 export const deleteUserValidator = [
   // Middleware do sprawdzenia, czy użytkownik istnieje
   async (req, res, next) => {

@@ -1,3 +1,23 @@
+// import {
+//   searchUserById,
+//   searchUserByEmail,
+//   searchUserByUsername,
+//   getUsersWithPagination,
+//   updateUserInDb,
+//   deleteUserByID,
+//   getUserIdFromProgress,
+//   insertWordIntoUserProgress,
+//   userRankingUpdate,
+//   getTopRankingUsersFlashcard,
+//   insertOrUpdateUserAutosave,
+//   getAutosaveData,
+//   getBatchWordTranslations,
+//   resetPatchNumberByUserID,
+//   deleteDataUserByUserID,
+//   getTopArenaUsers,
+// } from "../repositories/userModel.js";
+
+// Obsługa użytkowników
 import {
   searchUserById,
   searchUserByEmail,
@@ -6,16 +26,32 @@ import {
   updateUserInDb,
   deleteUserByID,
   getUserIdFromProgress,
-  insertWordIntoUserProgress,
+  deleteDataUserByUserID,
+} from "../repositories/user.repo.js";
+
+// Postęp użytkownika ze słowami
+import { insertWordIntoUserProgress } from "../repositories/word.repo.js";
+
+// Ranking użytkowników
+import {
   userRankingUpdate,
   getTopRankingUsersFlashcard,
+} from "../repositories/ranking.repo.js";
+
+// Autosave użytkownika
+import {
   insertOrUpdateUserAutosave,
   getAutosaveData,
-  getBatchWordTranslations,
-  resetPatchNumberByUserID,
-  deleteDataUserByUserID,
-  getTopArenaUsers,
-} from "../repositories/userModel.js";
+} from "../repositories/autosave.repo.js";
+
+// Tłumaczenia słów
+import { getBatchWordTranslations } from "../repositories/translation.repo.js";
+
+// Reset patchy dla użytkownika
+import { resetPatchNumberByUserID } from "../repositories/patch.repo.js";
+
+// Arena użytkowników
+import { getTopArenaUsers } from "../repositories/arena.repo.js";
 
 import pool from "../db/dbClient.js";
 

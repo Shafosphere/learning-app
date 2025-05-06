@@ -1,3 +1,5 @@
+import pool from "../db/dbClient.js";
+
 export const getTopArenaUsers = async (limit) => {
   const query = `
       SELECT

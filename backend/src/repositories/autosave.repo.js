@@ -1,4 +1,6 @@
 // Zmodyfikowana funkcja insertOrUpdateUserAutosave
+import pool from "../db/dbClient.js";
+
 export const insertOrUpdateUserAutosave = async (
   client,
   userId,

@@ -1,6 +1,6 @@
 import { body, validationResult } from "express-validator";
-import { getReportById } from "../../../repositories/userModel.js";
-
+// import { getReportById } from "../../../repositories/userModel.js";
+import { getReportById } from "../../../repositories/report.repo.js";
 export const getDetailReportValidator = [
   // Sprawdzamy, czy `id` istnieje i jest poprawną liczbą całkowitą
   body("id")

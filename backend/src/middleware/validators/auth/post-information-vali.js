@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator";
-import { getUserByUserName } from "../../../repositories/userModel.js";
+// import { getUserByUserName } from "../../../repositories/userModel.js";
+import { getUserByUserName } from "../../../repositories/user.repo.js";
 export const getUserInformationValidator = [
   // Middleware do sprawdzenia, czy użytkownik istnieje
   async (req, res, next) => {

@@ -1,31 +1,73 @@
 // Obsługa słów i nauki
+// import {
+//   getPatchWords,
+//   getWordTranslations,
+//   getMaxPatchId,
+//   getWordsWithPagination,
+//   getTranslationsByWordId,
+//   updateTranslation,
+//   searchWordById,
+//   searchWordByText,
+//   insertWord,
+//   insertTranslations,
+//   deleteWordById,
+//   patchLength,
+//   getAllMaxPatchId,
+//   getPatchWordsByLevel,
+//   getAllPatchLength,
+//   getNumberOfWords,
+//   getRandomWordsByNumber,
+//   checkBan,
+//   ranking_init,
+//   getUserRankingPoints,
+//   getRandomWord,
+//   getLanguageWordTranslations,
+//   updateUserArena,
+//   updateUserRankingHistory,
+//   getRankingHistoryById,
+// } from "../repositories/userModel.js";
+
+// Obsługa słów i nauki
 import {
   getPatchWords,
-  getWordTranslations,
   getMaxPatchId,
-  getWordsWithPagination,
+  getAllMaxPatchId,
+  getAllPatchLength,
+  getPatchWordsByLevel,
+  patchLength
+} from "../repositories/patch.repo.js";
+
+import {
+  getWordTranslations,
   getTranslationsByWordId,
   updateTranslation,
+  insertTranslations,
+  getLanguageWordTranslations
+} from "../repositories/translation.repo.js";
+
+import {
+  getWordsWithPagination,
   searchWordById,
   searchWordByText,
   insertWord,
-  insertTranslations,
   deleteWordById,
-  patchLength,
-  getAllMaxPatchId,
-  getPatchWordsByLevel,
-  getAllPatchLength,
   getNumberOfWords,
   getRandomWordsByNumber,
-  checkBan,
+  getRandomWord
+} from "../repositories/word.repo.js";
+
+import { checkBan } from "../repositories/stats.repo.js";
+
+import {
   ranking_init,
   getUserRankingPoints,
-  getRandomWord,
-  getLanguageWordTranslations,
-  updateUserArena,
   updateUserRankingHistory,
-  getRankingHistoryById,
-} from "../repositories/userModel.js";
+  getRankingHistoryById
+} from "../repositories/ranking.repo.js";
+
+import { updateUserArena } from "../repositories/arena.repo.js";
+
+
 
 //information about patch
 export const getPatchesInfo = async (req, res) => {
@@ -462,7 +504,6 @@ export const submitAnswer = async (req, res) => {
       streak: newStreak,
       correctTranslations: filteredTranslations,
     });
-
   } catch (error) {
     console.error("Error submitting answer:", error);
     res.status(500).json({ error: "Server error" });

@@ -1,5 +1,6 @@
 import { param, validationResult } from "express-validator";
-import { getReportById } from "../../../repositories/userModel.js";
+// import { getReportById } from "../../../repositories/userModel.js";
+import { getReportById } from "../../../repositories/report.repo.js";
 export const deleteReportValidator = [
   // Sprawdzamy, czy id istnieje i jest poprawną liczbą całkowitą
   param("id")

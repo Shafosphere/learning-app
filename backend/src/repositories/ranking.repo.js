@@ -1,3 +1,5 @@
+import pool from "../db/dbClient.js";
+
 export const userRankingUpdate = async (userId, username) => {
   await pool.query(
     `

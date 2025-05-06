@@ -1,3 +1,5 @@
+import pool from "../db/dbClient.js";
+
 export const createUser = async (username, email, hashedPassword) => {
   const result = await pool.query(
     "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, 'user') RETURNING id",

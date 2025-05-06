@@ -1,3 +1,5 @@
+import pool from "../db/dbClient.js";
+
 export const updateLastLogin = async (userId) => {
   await pool.query(
     "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1",

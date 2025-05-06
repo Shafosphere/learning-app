@@ -1,3 +1,5 @@
+import pool from "../db/dbClient.js";
+
 export const getRandomWordsByNumber = async (count) => {
   const reults = await pool.query(
     "SELECT id FROM word ORDER BY RANDOM() LIMIT $1",
