@@ -3,17 +3,6 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import VALIDATION_RULES from "../middleware/validationConfig.js";
-// import {
-//   createUser,
-//   getUserByUsername,
-//   updateLastLogin,
-//   getUserById,
-//   updateUserById,
-//   deleteUserByID,
-//   incrementUserActivity,
-//   getUserByEmail,
-//   userRankingUpdate,
-// } from "../repositories/userModel.js";
 
 // Obsługa użytkowników
 import {

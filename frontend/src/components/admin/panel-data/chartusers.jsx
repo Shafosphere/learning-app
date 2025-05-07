@@ -27,7 +27,7 @@ export default function UserChart() {
   useEffect(() => {
     async function getData() {
       try {
-        const response = await api.get(`/admin/user-activiti-data`);
+        const response = await api.get(`/admin/user-activity-data`);
         setChartData(response.data);
       } catch (error) {
         console.error("Error fetching visits data:", error);

@@ -1,10 +1,3 @@
-// import {
-//   fetchGlobalData,
-//   fetchVisitsData,
-//   generateNewPatchesBatch,
-//   deleteOldNeWPatches,
-//   fetchUserActivityData,
-// } from "../repositories/userModel.js";
 
 // Statystyki (globalne)
 import {

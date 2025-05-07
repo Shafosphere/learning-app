@@ -8,7 +8,6 @@ import {
   getVisitsData,
   getUserActivityData,
 } from "../controllers/adminController.js";
-
 const router = express.Router();
 
 // Endpoint do pobierania globalnych danych (tylko dla administratorów)
@@ -17,7 +16,7 @@ router.get("/global-data", authenticateToken, authorizeAdmin, getGlobalData);
 router.get("/visits-data", authenticateToken, authorizeAdmin, getVisitsData);
 
 router.get(
-  "/user-activiti-data",
+  "/user-activity-data",
   authenticateToken,
   authorizeAdmin,
   getUserActivityData
