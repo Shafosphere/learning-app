@@ -1,8 +1,9 @@
-// tests/deleteReportValidator.test.js
-jest.mock("../models/userModel.js", () => ({
+// mockujemy ten sam plik, którego używa validator:
+jest.mock("../src/repositories/report.repo.js", () => ({
   getReportById: jest.fn(),
 }));
-import { getReportById } from "../src/repositories/userModel.js";
+import { getReportById } from "../src/repositories/report.repo.js";
+
 import { deleteReportValidator } from "../src/middleware/validators/report/delete-deletereport-vali.js";
 describe("deleteReportValidator", () => {
   let req, res, next;

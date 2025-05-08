@@ -1,9 +1,13 @@
 // tests/getDetailReportValidator.test.js
-jest.mock("../models/userModel.js", () => ({
+
+// 1) Mockujemy dokładnie ten plik, którego używa validator:
+jest.mock("../src/repositories/report.repo.js", () => ({
   getReportById: jest.fn(),
 }));
-import { getReportById } from "../src/repositories/userModel.js";
+
+import { getReportById } from "../src/repositories/report.repo.js";
 import { getDetailReportValidator } from "../src/middleware/validators/report/post-getdetail-vali.js";
+
 describe("getDetailReportValidator", () => {
   let req, res, next;
   const [idValidator, customValidator, errorHandler] = getDetailReportValidator;

@@ -1,9 +1,11 @@
 // tests/deleteUserValidator.test.js
-jest.mock("../models/userModel.js", () => ({
+
+jest.mock("../src/repositories/user.repo.js", () => ({
   getUserById: jest.fn(),
 }));
-import { getUserById } from "../src/repositories/userModel.js";
+import { getUserById } from "../src/repositories/user.repo.js";
 import { deleteUserValidator } from "../src/middleware/validators/users/delete-deleteuser-vali.js";
+
 describe("deleteUserValidator", () => {
   let req, res, next;
   const [idValidator, customValidator, errorHandler] = deleteUserValidator;

@@ -3,7 +3,8 @@ import express from "express";
 import request from "supertest";
 
 // 1) Mockujemy kontrolery tak, by zwracały 200 OK
-jest.mock("../controllers/userControllers.js", () => ({
+jest.mock("../src/controllers/userControllers.js", () => ({
+  __esModule: true,
   getUsersList: jest.fn((req, res) => res.sendStatus(200)),
   updateUsers: jest.fn((req, res) => res.sendStatus(200)),
   searchUsers: jest.fn((req, res) => res.sendStatus(200)),
@@ -17,28 +18,30 @@ jest.mock("../controllers/userControllers.js", () => ({
 }));
 
 // 2) Mockujemy middleware, żeby od razu przechodziły dalej
-jest.mock("../middleware/validators/admin_and_token/authenticateToken.js", () =>
+jest.mock("../src/middleware/validators/admin_token/authenticateToken.js", () =>
   jest.fn((req, res, next) => next())
 );
-jest.mock("../middleware/validators/admin_and_token/authorizeAdmin.js", () =>
+jest.mock("../src/middleware/validators/admin_token/authorizeAdmin.js", () =>
   jest.fn((req, res, next) => next())
 );
-jest.mock("../middleware/validators/users/patch-updateuser-vali.js", () => ({
-  updateUsersValidator: jest.fn((req, res, next) => next()),
-}));
-jest.mock("../middleware/validators/users/post-learnword-vali.js", () => ({
+jest.mock(
+  "../src/middleware/validators/users/patch-updateuser-vali.js",
+  () => ({ updateUsersValidator: jest.fn((req, res, next) => next()) })
+);
+jest.mock("../src/middleware/validators/users/post-learnword-vali.js", () => ({
   learnWordValidator: jest.fn((req, res, next) => next()),
 }));
-jest.mock("../middleware/validators/users/delete-deleteuser-vali.js", () => ({
-  deleteUserValidator: jest.fn((req, res, next) => next()),
-}));
-jest.mock("../middleware/validators/users/post-autosave-vali.js", () => ({
+jest.mock(
+  "../src/middleware/validators/users/delete-deleteuser-vali.js",
+  () => ({ deleteUserValidator: jest.fn((req, res, next) => next()) })
+);
+jest.mock("../src/middleware/validators/users/post-autosave-vali.js", () => ({
   autoSaveValidator: jest.fn((req, res, next) => next()),
 }));
 
-// 3) Importujemy router
-import userRoutes from "../routes/userRoutes.js";
-import * as controllers from "../controllers/userControllers.js";
+// 3) Importujemy router i kontrolery
+import userRoutes from "../src/routes/userRoutes.js";
+import * as controllers from "../src/controllers/userControllers.js";
 
 describe("userRoutes", () => {
   let app;

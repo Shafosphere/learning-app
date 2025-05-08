@@ -1,13 +1,3 @@
-// Obsługa raportów
-// import {
-//   getReportById,
-//   getReports,
-//   deleteReport,
-//   insertReport,
-//   getWordTranslations,
-//   getWordByTranslation,
-//   updateReport,
-// } from "../repositories/userModel.js";
 
 // Raporty
 import {

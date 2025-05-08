@@ -1,19 +1,20 @@
 // tests/resetPasswordLinkValidationRules.test.js
 
-// Mock validationConfig and getErrorParams before importing the validator
-jest.mock("../middleware/validators/validationConfig.js", () => ({
+// 1) Mockujemy dokładnie te pliki, których używa validator:
+jest.mock("../src/middleware/validationConfig.js", () => ({
   __esModule: true,
   default: {
     EMAIL: { MAX_LENGTH: 255 },
   },
 }));
-jest.mock("../middleware/getErrorParams.js", () => ({
+jest.mock("../src/middleware/getErrorParams.js", () => ({
   getErrorParams: jest.fn(),
 }));
 
 import VALIDATION_RULES from "../src/middleware/validationConfig.js";
 import { getErrorParams } from "../src/middleware/getErrorParams.js";
 import { resetPasswordLinkValidationRules } from "../src/middleware/validators/auth/post-resetLink-vali.js";
+
 describe("resetPasswordLinkValidationRules", () => {
   let req, res, next;
   const [emailValidator, languageValidator, errorHandler] =

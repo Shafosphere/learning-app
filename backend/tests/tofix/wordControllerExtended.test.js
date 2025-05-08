@@ -344,7 +344,7 @@ describe("wordController", () => {
         .mockResolvedValue({
           rows: [{ points_after: 1 }, { points_after: 2 }, { points_after: 3 }],
         });
-      await getRankingHistory(req, res);
+      await getRankingHistozry(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith([3, 2, 1]);
     });

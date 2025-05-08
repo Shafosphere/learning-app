@@ -1,9 +1,13 @@
 // tests/learnWordValidator.test.js
-jest.mock("../models/userModel.js", () => ({
+
+// 1) Mockujemy dokładnie ten plik, którego używa validator:
+jest.mock("../src/repositories/word.repo.js", () => ({
   searchWordById: jest.fn(),
 }));
-import { searchWordById } from "../src/repositories/userModel.js";
+import { searchWordById } from "../src/repositories/word.repo.js";
+
 import { learnWordValidator } from "../src/middleware/validators/users/post-learnword-vali.js";
+
 describe("learnWordValidator", () => {
   let req, res, next;
   const [idValidator, customValidator, errorHandler] = learnWordValidator;

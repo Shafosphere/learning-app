@@ -18,16 +18,33 @@ import {
   deleteUserAccount,
   sendUserResetLink,
   resetPassword,
-} from "../controllers/authController.js";
+} from "../src/controllers/authController.js";
 
 jest.mock("express-validator", () => ({
   validationResult: jest.fn(),
 }));
-jest.mock("../models/userModel.js");
-jest.mock("../emailService.js");
+ jest.mock("../src/repositories/userModel.js", () => ({
+     __esModule: true,         // ← ważne przy ESM
+     createUser:             jest.fn(),
+     userRankingUpdate:      jest.fn(),
+    incrementUserActivity:  jest.fn(),
+     getUserByUsername:      jest.fn(),
+     updateLastLogin:        jest.fn(),
+    getUserByUserName:      jest.fn(),
+    getUserById:            jest.fn(),
+    updateUserById:         jest.fn(),
+    deleteUserByID:         jest.fn(),
+    getUserByEmail:         jest.fn(),
+    default: {},            // jeżeli ktoś importuje „default”
+  }));
+  jest.mock("../src/services/email.service.js", () => ({
+    __esModule: true,
+    sendEmail: jest.fn(),
+    generateResetPasswordEmail: jest.fn(),
+  }));
 jest.mock("jsonwebtoken");
 jest.mock("bcrypt");
-jest.mock("../config.js", () => ({
+jest.mock("../src/config/config.js", () => ({
   config: { tokenKey: "test-key" },
 }));
 

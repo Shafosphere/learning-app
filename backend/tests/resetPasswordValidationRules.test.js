@@ -1,7 +1,7 @@
 // tests/resetPasswordValidationRules.test.js
 
-// Mock validationConfig and getErrorParams before importing the validator
-jest.mock("../middleware/validators/validationConfig.js", () => ({
+// 1) Mockujemy dokładnie te pliki, których używa validator:
+jest.mock("../src/middleware/validationConfig.js", () => ({
   __esModule: true,
   default: {
     PASSWORD: {
@@ -16,13 +16,12 @@ jest.mock("../middleware/validators/validationConfig.js", () => ({
     },
   },
 }));
-jest.mock("../middleware/getErrorParams.js", () => ({
+jest.mock("../src/middleware/getErrorParams.js", () => ({
   getErrorParams: jest.fn(),
 }));
 
-
+import { getErrorParams } from "../src/middleware/getErrorParams.js";
 import { resetPasswordValidationRules } from "../src/middleware/validators/auth/post-resetPass-vali.js";
-import { getErrorParams } from "../middleware/getErrorParams.js";
 
 describe("resetPasswordValidationRules", () => {
   let req, res, next;
@@ -90,6 +89,7 @@ describe("resetPasswordValidationRules", () => {
         expect.objectContaining({ msg: "ERR_RESET_PASSWORD_UPPERCASE" }),
       ])
     );
+    expect(next).not.toHaveBeenCalled();
   });
 
   it("400 when password missing lowercase", async () => {
@@ -98,6 +98,7 @@ describe("resetPasswordValidationRules", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(getErrorParams).toHaveBeenCalledWith("ERR_RESET_PASSWORD_LOWERCASE");
+    expect(next).not.toHaveBeenCalled();
   });
 
   it("400 when password missing digit", async () => {
@@ -106,6 +107,7 @@ describe("resetPasswordValidationRules", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(getErrorParams).toHaveBeenCalledWith("ERR_RESET_PASSWORD_DIGIT");
+    expect(next).not.toHaveBeenCalled();
   });
 
   it("400 when password missing special char", async () => {
@@ -114,6 +116,7 @@ describe("resetPasswordValidationRules", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(getErrorParams).toHaveBeenCalledWith("ERR_RESET_PASSWORD_SPECIAL");
+    expect(next).not.toHaveBeenCalled();
   });
 
   it("calls next() when token and password are valid", async () => {

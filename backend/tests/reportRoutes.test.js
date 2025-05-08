@@ -1,44 +1,45 @@
-// backend/tests/reportRoutes.test.js
+// tests/reportRoutes.test.js
 import express from "express";
 import request from "supertest";
 
 // 1) Stubujemy wszystkie middleware, żeby zawsze wołały next()
+//    Używamy dokładnie tych ścieżek, których używa Twój router:
 jest.mock(
-  "../middleware/validators/admin_and_token/authenticateToken.js",
+  "../src/middleware/validators/admin_token/authenticateToken.js",
   () => ({
     __esModule: true,
     default: (req, res, next) => next(),
   })
 );
-jest.mock("../middleware/validators/admin_and_token/authorizeAdmin.js", () => ({
+jest.mock("../src/middleware/validators/admin_token/authorizeAdmin.js", () => ({
   __esModule: true,
   default: (req, res, next) => next(),
 }));
-jest.mock("../middleware/validators/report/post-addreport-vali.js", () => ({
+jest.mock("../src/middleware/validators/report/post-addreport-vali.js", () => ({
   __esModule: true,
   default: (req, res, next) => next(),
 }));
 jest.mock(
-  "../middleware/validators/report/delete-deletereport-vali.js",
+  "../src/middleware/validators/report/delete-deletereport-vali.js",
   () => ({
     __esModule: true,
     deleteReportValidator: (req, res, next) => next(),
   })
 );
 jest.mock(
-  "../middleware/validators/report/patch-updatereporttrans-vali.js",
+  "../src/middleware/validators/report/patch-updatereporttrans-vali.js",
   () => ({
     __esModule: true,
     updateReportValidator: (req, res, next) => next(),
   })
 );
-jest.mock("../middleware/validators/report/post-getdetail-vali.js", () => ({
+jest.mock("../src/middleware/validators/report/post-getdetail-vali.js", () => ({
   __esModule: true,
   getDetailReportValidator: (req, res, next) => next(),
 }));
 
 // 2) Mockujemy kontrolery, żeby nie wymagały bazy ani logiki biznesowej
-jest.mock("../controllers/reportController.js", () => ({
+jest.mock("../src/controllers/reportController.js", () => ({
   __esModule: true,
   getDetailReport: (req, res) => {
     return res.json({ ok: true, id: req.body.id });
@@ -57,8 +58,8 @@ jest.mock("../controllers/reportController.js", () => ({
   },
 }));
 
-// Importujemy router
-import reportRoutes from "../routes/reportRoutes.js";
+// 3) Importujemy router z właściwej ścieżki:
+import reportRoutes from "../src/routes/reportRoutes.js";
 
 describe("reportRoutes", () => {
   let app;
@@ -70,7 +71,6 @@ describe("reportRoutes", () => {
 
   it("POST /report/details → getDetailReport", async () => {
     const res = await request(app).post("/report/details").send({ id: 42 });
-
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({ ok: true, id: 42 });
   });
@@ -84,7 +84,6 @@ describe("reportRoutes", () => {
   it("PATCH /report/update → updateReportTranslations", async () => {
     const payload = { foo: "bar" };
     const res = await request(app).patch("/report/update").send(payload);
-
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({ updated: true, payload });
   });
@@ -98,7 +97,6 @@ describe("reportRoutes", () => {
   it("POST /report/add → createReport", async () => {
     const body = { why: "test" };
     const res = await request(app).post("/report/add").send(body);
-
     expect(res.statusCode).toBe(201);
     expect(res.body).toEqual({ created: true, body });
   });

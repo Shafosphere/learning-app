@@ -2,8 +2,9 @@
 import express from "express";
 import request from "supertest";
 
-// Mockujemy wszystkie kontrolery, żeby zwracały 200 OK
-jest.mock("../controllers/wordController.js", () => ({
+// 1) Mockujemy kontrolery, żeby zwracały 200 OK
+jest.mock("../src/controllers/wordController.js", () => ({
+  __esModule: true,
   getWordData: jest.fn((req, res) => res.sendStatus(200)),
   getWordsByPatchAndLevel: jest.fn((req, res) => res.sendStatus(200)),
   getPatchesInfo: jest.fn((req, res) => res.sendStatus(200)),
@@ -19,46 +20,47 @@ jest.mock("../controllers/wordController.js", () => ({
   deleteWord: jest.fn((req, res) => res.sendStatus(200)),
 }));
 
-// Mockujemy wszystkie middleware, żeby od razu przechodziły dalej
-jest.mock("../middleware/validators/admin_and_token/authenticateToken.js", () =>
+// 2) Mockujemy middleware, żeby od razu przechodziły dalej
+jest.mock("../src/middleware/validators/admin_token/authenticateToken.js", () =>
   jest.fn((req, res, next) => next())
 );
-jest.mock("../middleware/validators/admin_and_token/authorizeAdmin.js", () =>
+jest.mock("../src/middleware/validators/admin_token/authorizeAdmin.js", () =>
   jest.fn((req, res, next) => next())
 );
-jest.mock("../middleware/validators/word/post-data-vali.js", () =>
+jest.mock("../src/middleware/validators/word/post-data-vali.js", () =>
   jest.fn((req, res, next) => next())
 );
-jest.mock("../middleware/validators/word/post-patchdata-vali.js", () =>
+jest.mock("../src/middleware/validators/word/post-patchdata-vali.js", () =>
   jest.fn((req, res, next) => next())
 );
-jest.mock("../middleware/validators/word/get-list-vali.js", () =>
+jest.mock("../src/middleware/validators/word/get-list-vali.js", () =>
   jest.fn((req, res, next) => next())
 );
-jest.mock("../middleware/validators/word/post-addword-vali.js", () => ({
+jest.mock("../src/middleware/validators/word/post-addword-vali.js", () => ({
   addWordValidator: jest.fn((req, res, next) => next()),
 }));
-jest.mock("../middleware/validators/word/delete-deleteword-vali.js", () => ({
-  deleteWordValidator: jest.fn((req, res, next) => next()),
-}));
 jest.mock(
-  "../middleware/validators/word/patch-updatetranslation-vali.js",
+  "../src/middleware/validators/word/delete-deleteword-vali.js",
+  () => ({ deleteWordValidator: jest.fn((req, res, next) => next()) })
+);
+jest.mock(
+  "../src/middleware/validators/word/patch-updatetranslation-vali.js",
   () => ({ updateTranslationsValidator: jest.fn((req, res, next) => next()) })
 );
-jest.mock("../middleware/validators/word/post-getworddetail-vali.js", () => ({
-  getWordDetailValidator: jest.fn((req, res, next) => next()),
-}));
+jest.mock(
+  "../src/middleware/validators/word/post-getworddetail-vali.js",
+  () => ({ getWordDetailValidator: jest.fn((req, res, next) => next()) })
+);
 
-// Teraz importujemy moduł z trasami
-import wordRoutes from "../routes/wordRoutes.js";
-import * as controllers from "../controllers/wordController.js";
+// 3) Import router i kontrolery
+import wordRoutes from "../src/routes/wordRoutes.js";
+import * as controllers from "../src/controllers/wordController.js";
 
 describe("wordRoutes", () => {
   let app;
   beforeAll(() => {
     app = express();
     app.use(express.json());
-    // montujemy router pod /word
     app.use("/word", wordRoutes);
   });
 

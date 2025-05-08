@@ -1,7 +1,7 @@
 // tests/updateUsersValidator.test.js
-// import VALIDATOR_RULES from "../middleware/validators/validationConfig.js";
-// 1. Mockujemy validationConfig.js z katalogu głównego
-jest.mock("../middleware/validators/validationConfig.js", () => ({
+
+// 1) Mockujemy validationConfig.js, którego używa validator:
+jest.mock("../src/middleware/validationConfig.js", () => ({
   __esModule: true,
   default: {
     USERNAME: { MIN_LENGTH: 4, MAX_LENGTH: 20, REGEX: /^[a-zA-Z0-9_]+$/ },
@@ -19,8 +19,7 @@ jest.mock("../middleware/validators/validationConfig.js", () => ({
   },
 }));
 
-
-import { updateUsersValidator } from "../src/middleware/validators/users/patch-updateuser-vali";
+import { updateUsersValidator } from "../src/middleware/validators/users/patch-updateuser-vali.js";
 
 describe("updateUsersValidator", () => {
   let req, res, next;

@@ -1,14 +1,14 @@
 // tests/loginValidator.test.js
 
-// Mock validationConfig and getErrorParams before importing the validator
-jest.mock("../middleware/validators/validationConfig.js", () => ({
+// 1) Mockujemy dokładnie te moduły, których używa validator:
+jest.mock("../src/middleware/validationConfig.js", () => ({
   __esModule: true,
   default: {
     USERNAME: { MIN_LENGTH: 4, MAX_LENGTH: 20, REGEX: /^[a-zA-Z0-9_]+$/ },
     PASSWORD: { MIN_LENGTH: 8, MAX_LENGTH: 50 },
   },
 }));
-jest.mock("../middleware/getErrorParams.js", () => ({
+jest.mock("../src/middleware/getErrorParams.js", () => ({
   getErrorParams: jest.fn(),
 }));
 

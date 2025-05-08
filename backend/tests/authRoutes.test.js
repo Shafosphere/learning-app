@@ -3,7 +3,7 @@ import express from "express";
 import request from "supertest";
 
 // 1) Mockujemy wszystkie kontrolery tak, by zwracały 200 OK
-jest.mock("../controllers/authController.js", () => ({
+jest.mock("../src/controllers/authController.js", () => ({
   registerUser: jest.fn((req, res) => res.sendStatus(200)),
   adminWelcome: jest.fn((req, res) => res.sendStatus(200)),
   userWelcome: jest.fn((req, res) => res.sendStatus(200)),
@@ -17,41 +17,52 @@ jest.mock("../controllers/authController.js", () => ({
   getRequirements: jest.fn((req, res) => res.sendStatus(200)),
 }));
 
+import authenticateToken from "../src/middleware/validators/admin_token/authenticateToken.js";
 // 2) Mockujemy middleware na proste next()
-jest.mock("../middleware/validators/auth/post-registeruser-vali.js", () => ({
-  registerValidator: jest.fn((req, res, next) => next()),
-}));
-jest.mock("../middleware/rateLimiter.js", () => ({
+jest.mock(
+  "../src/middleware/validators/auth/post-registeruser-vali.js",
+  () => ({
+    registerValidator: jest.fn((req, res, next) => next()),
+  })
+);
+jest.mock("../src/middleware/rateLimiter.js", () => ({
   loginRateLimiter: jest.fn((req, res, next) => next()),
 }));
-jest.mock("../middleware/validators/auth/post-loginUser-vali.js", () => ({
+jest.mock("../src/middleware/validators/auth/post-loginUser-vali.js", () => ({
   loginValidator: jest.fn((req, res, next) => next()),
 }));
-jest.mock("../middleware/validators/admin_and_token/authenticateToken.js", () =>
+jest.mock("../src/middleware/validators/admin_token/authenticateToken.js", () =>
   jest.fn((req, res, next) => next())
 );
-jest.mock("../middleware/validators/admin_and_token/authorizeAdmin.js", () =>
+jest.mock("../src/middleware/validators/admin_token/authenticateToken.js", () =>
   jest.fn((req, res, next) => next())
 );
-jest.mock("../middleware/validators/auth/patch-userUpdate-vali.js", () => ({
+jest.mock("../src/middleware/validators/auth/patch-userUpdate-vali.js", () => ({
   accountUpdateValidationRules: jest.fn((req, res, next) => next()),
 }));
-jest.mock("../middleware/validators/auth/delete-deleteuser-vali.js", () => ({
-  deleteUserValidator: jest.fn((req, res, next) => next()),
-}));
-jest.mock("../middleware/validators/auth/post-information-vali.js", () => ({
+jest.mock(
+  "../src/middleware/validators/auth/delete-deleteuser-vali.js",
+  () => ({
+    deleteUserValidator: jest.fn((req, res, next) => next()),
+  })
+);
+jest.mock("../src/middleware/validators/auth/post-information-vali.js", () => ({
   getUserInformationValidator: jest.fn((req, res, next) => next()),
 }));
-jest.mock("../middleware/validators/auth/post-resetLink-vali.js", () => ({
+jest.mock("../src/middleware/validators/auth/post-resetLink-vali.js", () => ({
   resetPasswordLinkValidationRules: jest.fn((req, res, next) => next()),
 }));
-jest.mock("../middleware/validators/auth/post-resetPass-vali.js", () => ({
+jest.mock("../src/middleware/validators/auth/post-resetPass-vali.js", () => ({
   resetPasswordValidationRules: jest.fn((req, res, next) => next()),
 }));
 
+jest.mock("../src/middleware/validators/admin_token/authorizeAdmin.js", () =>
+  jest.fn((req, res, next) => next())
+);
+
 // 3) Importujemy router po mockowaniu wszystkiego
-import authRoutes from "../routes/authRoutes.js";
-import * as controllers from "../controllers/authController.js";
+import authRoutes from "../src/routes/authRoutes.js";
+import * as controllers from "../src/controllers/authController.js";
 
 describe("authRoutes", () => {
   let app;

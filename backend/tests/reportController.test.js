@@ -1,18 +1,33 @@
 // tests/reportControllerExtended.test.js
+
+// 1) Mockujemy repozytoria, których używa kontroler:
+jest.mock("../src/repositories/report.repo.js", () => ({
+  getReportById: jest.fn(),
+  getReports: jest.fn(),
+  insertReport: jest.fn(),
+  updateReport: jest.fn(),
+  deleteReport: jest.fn(),
+}));
+jest.mock("../src/repositories/translation.repo.js", () => ({
+  getWordTranslations: jest.fn(),
+  getWordByTranslation: jest.fn(),
+}));
+
+// 2) Importujemy kontrolery i zmockowane moduły:
 import {
   getDetailReport,
   getDataReports,
   updateReportTranslations,
   deleteReportData,
   createReport,
-} from "../controllers/reportController.js";
-import * as model from "../src/repositories/userModel.js";
+} from "../src/controllers/reportController.js";
+import * as reportModel from "../src/repositories/report.repo.js";
+import * as translationModel from "../src/repositories/translation.repo.js";
 
 describe("reportController", () => {
   let req, res;
 
   beforeEach(() => {
-    // Przygotuj świeże req/res i wycisz console.error
     req = { body: {}, params: {}, user: {} };
     res = {
       status: jest.fn().mockReturnThis(),
@@ -25,32 +40,29 @@ describe("reportController", () => {
 
   describe("getDetailReport", () => {
     it("404 when report not found", async () => {
-      model.getReportById = jest.fn().mockResolvedValue(null);
+      reportModel.getReportById.mockResolvedValue(null);
       req.body.id = 7;
 
       await getDetailReport(req, res);
 
-      expect(model.getReportById).toHaveBeenCalledWith(7);
+      expect(reportModel.getReportById).toHaveBeenCalledWith(7);
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ message: "Report not found" });
     });
 
     it("500 on translations-fetch error", async () => {
-      // raport typu word_issue, ale fetch tłumaczeń rzuca
-      model.getReportById = jest.fn().mockResolvedValue({
+      reportModel.getReportById.mockResolvedValue({
         id: 1,
         report_type: "word_issue",
         word_id: 42,
         description: "X",
       });
-      model.getWordTranslations = jest
-        .fn()
-        .mockRejectedValue(new Error("fail"));
+      translationModel.getWordTranslations.mockRejectedValue(new Error("fail"));
       req.body.id = 1;
 
       await getDetailReport(req, res);
 
-      expect(model.getWordTranslations).toHaveBeenCalledWith(42);
+      expect(translationModel.getWordTranslations).toHaveBeenCalledWith(42);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({
         message: "Error fetching translations.",
@@ -59,13 +71,12 @@ describe("reportController", () => {
 
     it("200 returns plain report if not word_issue", async () => {
       const report = { id: 2, report_type: "other", description: "OK" };
-      model.getReportById = jest.fn().mockResolvedValue(report);
+      reportModel.getReportById.mockResolvedValue(report);
       req.body.id = 2;
 
       await getDetailReport(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      // zwrócony obiekt powinien być taki sam jak modelowy
       expect(res.json).toHaveBeenCalledWith(report);
     });
 
@@ -77,13 +88,13 @@ describe("reportController", () => {
         foo: "bar",
       };
       const translations = [{ language: "en", translation: "t" }];
-      model.getReportById = jest.fn().mockResolvedValue(report);
-      model.getWordTranslations = jest.fn().mockResolvedValue(translations);
+      reportModel.getReportById.mockResolvedValue(report);
+      translationModel.getWordTranslations.mockResolvedValue(translations);
       req.body.id = 3;
 
       await getDetailReport(req, res);
 
-      expect(model.getWordTranslations).toHaveBeenCalledWith(99);
+      expect(translationModel.getWordTranslations).toHaveBeenCalledWith(99);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ ...report, translations });
     });
@@ -92,17 +103,17 @@ describe("reportController", () => {
   describe("getDataReports", () => {
     it("200 returns array from model", async () => {
       const data = [{ id: 1 }, { id: 2 }];
-      model.getReports = jest.fn().mockResolvedValue(data);
+      reportModel.getReports.mockResolvedValue(data);
 
       await getDataReports(req, res);
 
-      expect(model.getReports).toHaveBeenCalled();
+      expect(reportModel.getReports).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(data);
     });
 
     it("500 on model error", async () => {
-      model.getReports = jest.fn().mockRejectedValue(new Error("db"));
+      reportModel.getReports.mockRejectedValue(new Error("db"));
       await getDataReports(req, res);
 
       expect(res.status).toHaveBeenCalledWith(500);
@@ -112,15 +123,15 @@ describe("reportController", () => {
 
   describe("updateReportTranslations", () => {
     it("200 on happy path", async () => {
-      // przygotuj trzy tłumaczenia
       const translations = [{ id: 1 }, { id: 2 }];
       req.body.report = { translations };
-      model.updateReport = jest.fn().mockResolvedValue();
+      reportModel.updateReport.mockResolvedValue();
 
       await updateReportTranslations(req, res);
 
-      // każdy updateReport powinien być wywołany
-      expect(model.updateReport).toHaveBeenCalledTimes(translations.length);
+      expect(reportModel.updateReport).toHaveBeenCalledTimes(
+        translations.length
+      );
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         success: true,
@@ -130,7 +141,7 @@ describe("reportController", () => {
 
     it("500 on model error", async () => {
       req.body.report = { translations: [{ id: 1 }] };
-      model.updateReport = jest.fn().mockRejectedValue(new Error("err"));
+      reportModel.updateReport.mockRejectedValue(new Error("err"));
 
       await updateReportTranslations(req, res);
 
@@ -145,18 +156,18 @@ describe("reportController", () => {
   describe("deleteReportData", () => {
     it("200 on delete", async () => {
       req.params.id = "55";
-      model.deleteReport = jest.fn().mockResolvedValue();
+      reportModel.deleteReport.mockResolvedValue();
 
       await deleteReportData(req, res);
 
-      expect(model.deleteReport).toHaveBeenCalledWith("55");
+      expect(reportModel.deleteReport).toHaveBeenCalledWith("55");
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.send).toHaveBeenCalledWith("Report has been deleted.");
     });
 
     it("500 on model error", async () => {
       req.params.id = "77";
-      model.deleteReport = jest.fn().mockRejectedValue(new Error("oops"));
+      reportModel.deleteReport.mockRejectedValue(new Error("oops"));
 
       await deleteReportData(req, res);
 
@@ -172,11 +183,16 @@ describe("reportController", () => {
 
     it("201 for non-word_issue", async () => {
       req.body = { reportType: "other", word: "x", description: "d" };
-      model.insertReport = jest.fn().mockResolvedValue(999);
+      reportModel.insertReport.mockResolvedValue(999);
 
       await createReport(req, res);
 
-      expect(model.insertReport).toHaveBeenCalledWith(123, "other", null, "d");
+      expect(reportModel.insertReport).toHaveBeenCalledWith(
+        123,
+        "other",
+        null,
+        "d"
+      );
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({
         success: true,
@@ -187,11 +203,11 @@ describe("reportController", () => {
 
     it("404 when word_issue but no word found", async () => {
       req.body = { reportType: "word_issue", word: "foo", description: "d" };
-      model.getWordByTranslation = jest.fn().mockResolvedValue(null);
+      translationModel.getWordByTranslation.mockResolvedValue(null);
 
       await createReport(req, res);
 
-      expect(model.getWordByTranslation).toHaveBeenCalledWith("foo");
+      expect(translationModel.getWordByTranslation).toHaveBeenCalledWith("foo");
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
@@ -201,12 +217,12 @@ describe("reportController", () => {
 
     it("201 for word_issue and word found", async () => {
       req.body = { reportType: "word_issue", word: "foo", description: "d" };
-      model.getWordByTranslation = jest.fn().mockResolvedValue({ word_id: 77 });
-      model.insertReport = jest.fn().mockResolvedValue(888);
+      translationModel.getWordByTranslation.mockResolvedValue({ word_id: 77 });
+      reportModel.insertReport.mockResolvedValue(888);
 
       await createReport(req, res);
 
-      expect(model.insertReport).toHaveBeenCalledWith(
+      expect(reportModel.insertReport).toHaveBeenCalledWith(
         123,
         "word_issue",
         77,
@@ -222,7 +238,8 @@ describe("reportController", () => {
 
     it("500 on getWordByTranslation throw", async () => {
       req.body = { reportType: "word_issue", word: "foo", description: "d" };
-      model.getWordByTranslation = jest.fn().mockRejectedValue(new Error("x"));
+      translationModel.getWordByTranslation.mockRejectedValue(new Error("x"));
+
       await createReport(req, res);
 
       expect(res.status).toHaveBeenCalledWith(500);
@@ -234,7 +251,8 @@ describe("reportController", () => {
 
     it("500 on insertReport throw", async () => {
       req.body = { reportType: "other", word: "x", description: "d" };
-      model.insertReport = jest.fn().mockRejectedValue(new Error("x"));
+      reportModel.insertReport.mockRejectedValue(new Error("x"));
+
       await createReport(req, res);
 
       expect(res.status).toHaveBeenCalledWith(500);

@@ -4,25 +4,33 @@ import {
   getWordsByPatchAndLevel,
   getWordData,
   getWordsList,
-} from "../controllers/wordController.js";
+} from "../src/controllers/wordController.js";
 
-// mockujemy całą warstwę modeli
-jest.mock("../models/userModel.js", () => ({
+// 1) Mockujemy dokładnie te moduły, których używa kontroler:
+jest.mock("../src/repositories/patch.repo.js", () => ({
   getAllMaxPatchId: jest.fn(),
   getAllPatchLength: jest.fn(),
-  getNumberOfWords: jest.fn(),
   getPatchWordsByLevel: jest.fn(),
-  getWordTranslations: jest.fn(),
   getPatchWords: jest.fn(),
   getMaxPatchId: jest.fn(),
   patchLength: jest.fn(),
+}));
+
+jest.mock("../src/repositories/word.repo.js", () => ({
+  getNumberOfWords: jest.fn(),
   getWordsWithPagination: jest.fn(),
 }));
 
-import * as model from "../src/repositories/userModel.js";
+jest.mock("../src/repositories/translation.repo.js", () => ({
+  getWordTranslations: jest.fn(),
+}));
+
+// 2) Importujemy zmockowane modele:
+import * as patchModel from "../src/repositories/patch.repo.js";
+import * as wordModel from "../src/repositories/word.repo.js";
+import * as translationModel from "../src/repositories/translation.repo.js";
 
 describe("wordController", () => {
-  // helper do tworzenia fałszywego `res`
   const mockRes = () => {
     const res = {};
     res.status = jest.fn().mockReturnValue(res);
@@ -35,26 +43,24 @@ describe("wordController", () => {
 
   describe("getPatchesInfo", () => {
     it("powinno zwrócić poprawne statystyki", async () => {
-      model.getAllMaxPatchId.mockResolvedValue({
+      patchModel.getAllMaxPatchId.mockResolvedValue({
         totalB2Patches: 2,
         totalC1Patches: 3,
       });
-      model.getAllPatchLength.mockResolvedValue({
+      patchModel.getAllPatchLength.mockResolvedValue({
         lengthB2patch: 20,
         lengthC1patch: 30,
       });
-      model.getNumberOfWords
+      wordModel.getNumberOfWords
         .mockResolvedValueOnce(100) // B2
         .mockResolvedValueOnce(200); // C1
 
-      const req = {};
       const res = mockRes();
+      await getPatchesInfo({}, res);
 
-      await getPatchesInfo(req, res);
-
-      expect(model.getAllMaxPatchId).toHaveBeenCalled();
-      expect(model.getAllPatchLength).toHaveBeenCalled();
-      expect(model.getNumberOfWords).toHaveBeenCalledTimes(2);
+      expect(patchModel.getAllMaxPatchId).toHaveBeenCalled();
+      expect(patchModel.getAllPatchLength).toHaveBeenCalled();
+      expect(wordModel.getNumberOfWords).toHaveBeenCalledTimes(2);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         totalB2Patches: 2,
@@ -67,12 +73,9 @@ describe("wordController", () => {
     });
 
     it("powinno obsłużyć błąd i zwrócić 500", async () => {
-      model.getAllMaxPatchId.mockRejectedValue(new Error("fail"));
-      const req = {};
+      patchModel.getAllMaxPatchId.mockRejectedValue(new Error("fail"));
       const res = mockRes();
-
-      await getPatchesInfo(req, res);
-
+      await getPatchesInfo({}, res);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.send).toHaveBeenCalledWith("Server Error");
     });
@@ -80,7 +83,7 @@ describe("wordController", () => {
 
   describe("getWordsByPatchAndLevel", () => {
     it("gdy patch nie istnieje → 404", async () => {
-      model.getPatchWordsByLevel.mockResolvedValue(null);
+      patchModel.getPatchWordsByLevel.mockResolvedValue(null);
       const req = { body: { patchNumber: 5, level: "B2" } };
       const res = mockRes();
 
@@ -94,9 +97,8 @@ describe("wordController", () => {
 
     it("gdy patch istnieje → sformatowane dane", async () => {
       const ids = [1, 2];
-      // każde wywołanie zwraca parę tłumaczeń [en,pl]
-      model.getPatchWordsByLevel.mockResolvedValue(ids);
-      model.getWordTranslations
+      patchModel.getPatchWordsByLevel.mockResolvedValue(ids);
+      translationModel.getWordTranslations
         .mockResolvedValueOnce([
           {
             language: "en",
@@ -131,8 +133,8 @@ describe("wordController", () => {
 
       await getWordsByPatchAndLevel(req, res);
 
-      expect(model.getPatchWordsByLevel).toHaveBeenCalledWith(5, "C1");
-      expect(model.getWordTranslations).toHaveBeenCalledTimes(2);
+      expect(patchModel.getPatchWordsByLevel).toHaveBeenCalledWith(5, "C1");
+      expect(translationModel.getWordTranslations).toHaveBeenCalledTimes(2);
       expect(res.json).toHaveBeenCalledWith({
         message: "working",
         data: [
@@ -151,8 +153,8 @@ describe("wordController", () => {
     });
 
     it("obsługa błędu → 500", async () => {
-      model.getPatchWordsByLevel.mockResolvedValue([1]);
-      model.getWordTranslations.mockRejectedValue(new Error("oops"));
+      patchModel.getPatchWordsByLevel.mockResolvedValue([1]);
+      translationModel.getWordTranslations.mockRejectedValue(new Error("oops"));
       const req = { body: { patchNumber: 1, level: "B2" } };
       const res = mockRes();
 
@@ -167,7 +169,7 @@ describe("wordController", () => {
 
   describe("getWordData", () => {
     it("patchNumber>0 i patch nie istnieje → 404", async () => {
-      model.getPatchWords.mockResolvedValue(null);
+      patchModel.getPatchWords.mockResolvedValue(null);
       const req = { body: { patchNumber: 2 } };
       const res = mockRes();
 
@@ -180,13 +182,13 @@ describe("wordController", () => {
     });
 
     it("patchNumber>0 → zwraca data, isThisLastOne i totalPatches", async () => {
-      model.getPatchWords.mockResolvedValue([10]);
-      model.getWordTranslations.mockResolvedValueOnce([
+      patchModel.getPatchWords.mockResolvedValue([10]);
+      translationModel.getWordTranslations.mockResolvedValueOnce([
         { language: "en", word_id: 10, translation: "x", description: "y" },
         { language: "pl", word_id: 10, translation: "xPL", description: "yPL" },
       ]);
-      model.getMaxPatchId.mockResolvedValue(2);
-      model.patchLength.mockResolvedValue(5);
+      patchModel.getMaxPatchId.mockResolvedValue(2);
+      patchModel.patchLength.mockResolvedValue(5);
 
       const req = { body: { patchNumber: 2 } };
       const res = mockRes();
@@ -208,7 +210,7 @@ describe("wordController", () => {
     });
 
     it("bez patchNumber → zwraca tylko message i data", async () => {
-      model.getWordTranslations.mockResolvedValueOnce([
+      translationModel.getWordTranslations.mockResolvedValueOnce([
         { language: "en", word_id: 7, translation: "e", description: "d" },
         { language: "pl", word_id: 7, translation: "p", description: "q" },
       ]);
@@ -231,8 +233,8 @@ describe("wordController", () => {
     });
 
     it("obsługuje błąd → 500", async () => {
-      model.getPatchWords.mockResolvedValue([1]);
-      model.getWordTranslations.mockRejectedValue(new Error("fail"));
+      patchModel.getPatchWords.mockResolvedValue([1]);
+      translationModel.getWordTranslations.mockRejectedValue(new Error("fail"));
       const req = { body: { patchNumber: 1 } };
       const res = mockRes();
 
@@ -248,21 +250,20 @@ describe("wordController", () => {
   describe("getWordsList", () => {
     it("zwraca paginowaną listę słów i status 200", async () => {
       const fakeWords = [{ id: 1 }, { id: 2 }];
-      model.getWordsWithPagination.mockResolvedValue(fakeWords);
+      wordModel.getWordsWithPagination.mockResolvedValue(fakeWords);
 
       const req = { query: { page: "2", limit: "10" } };
       const res = mockRes();
 
       await getWordsList(req, res);
 
-      // offset = (2-1)*10 = 10
-      expect(model.getWordsWithPagination).toHaveBeenCalledWith(10, 10);
+      expect(wordModel.getWordsWithPagination).toHaveBeenCalledWith(10, 10);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(fakeWords);
     });
 
     it("obsługuje błąd → 500", async () => {
-      model.getWordsWithPagination.mockRejectedValue(new Error("db"));
+      wordModel.getWordsWithPagination.mockRejectedValue(new Error("db"));
       const req = { query: {} };
       const res = mockRes();
 

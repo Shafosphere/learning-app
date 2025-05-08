@@ -1,12 +1,12 @@
 // tests/getUserInformationValidator.test.js
 
-// Mock the userModel before importing the validator
-jest.mock("../models/userModel.js", () => ({
+// 1) Mockujemy dokładnie ten plik, którego używa validator:
+jest.mock("../src/repositories/user.repo.js", () => ({
   getUserByUserName: jest.fn(),
 }));
-
-import { getUserByUserName } from "../src/repositories/userModel.js";
+import { getUserByUserName } from "../src/repositories/user.repo.js";
 import { getUserInformationValidator } from "../src/middleware/validators/auth/post-information-vali.js";
+
 describe("getUserInformationValidator middleware", () => {
   let req, res, next;
   const [validator] = getUserInformationValidator;
@@ -65,7 +65,7 @@ describe("getUserInformationValidator middleware", () => {
     req.user.username = "errorUser";
     const error = new Error("DB failure");
     getUserByUserName.mockRejectedValue(error);
-    // Spy on console.error to suppress logs
+    // Suppress console.error
     const consoleErrorSpy = jest
       .spyOn(console, "error")
       .mockImplementation(() => {});

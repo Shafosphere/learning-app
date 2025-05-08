@@ -1,9 +1,13 @@
 // tests/updateReportValidator.test.js
-jest.mock("../models/userModel.js", () => ({
+
+// 1) Mockujemy dokładnie ten plik, którego używa validator:
+jest.mock("../src/repositories/word.repo.js", () => ({
   searchWordById: jest.fn(),
 }));
-import { searchWordById } from "../src/repositories/userModel.js";
+import { searchWordById } from "../src/repositories/word.repo.js";
+
 import { updateReportValidator } from "../src/middleware/validators/report/patch-updatereporttrans-vali.js";
+
 describe("updateReportValidator", () => {
   let req, res, next;
   const validators = updateReportValidator;
