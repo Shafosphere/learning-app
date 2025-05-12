@@ -13,10 +13,10 @@ let audioInstances;
 let playMock;
 
 beforeEach(() => {
-  // Fake timers
+  // Use fake timers for timing-related tests
   vi.useFakeTimers();
 
-  // Mock Audio, tak by play() zwracało Promise.resolve()
+  // Mock Audio so that play() returns a resolved Promise
   audioInstances = [];
   playMock = vi.fn(() => Promise.resolve());
   global.Audio = vi.fn().mockImplementation((src) => {
@@ -25,19 +25,20 @@ beforeEach(() => {
     return instance;
   });
 
-  // Stub createPortal
+  // Stub ReactDOM.createPortal to return the node directly
   vi.spyOn(ReactDOM, "createPortal").mockImplementation((node) => node);
 
-  // Portal-root w DOM
+  // Add portal-root element to document body
   document.body.innerHTML = '<div id="portal-root"></div>';
 });
 
 afterEach(() => {
+  // Restore real timers and mocks
   vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
-describe("NewPopup", () => {
+describe("NewPopup Component", () => {
   const renderWithContext = (props, contextValue) =>
     render(
       <IntlProvider locale="en">
@@ -47,10 +48,10 @@ describe("NewPopup", () => {
       </IntlProvider>
     );
 
-  it("wyświetla przekazany message gdy nie jest kodem błędu", () => {
+  it("displays the provided message when it is not an error code", () => {
     renderWithContext(
       {
-        message: "Cześć!",
+        message: "Hello!",
         emotion: "default",
         duration: 2000,
         onClose: () => {},
@@ -58,10 +59,10 @@ describe("NewPopup", () => {
       { isSoundEnabled: "false" }
     );
     const alert = screen.getByRole("alert");
-    expect(alert).toHaveTextContent("Cześć!");
+    expect(alert).toHaveTextContent("Hello!");
   });
 
-  it('renderuje <FormattedMessage /> gdy message zaczyna się od "ERR_"', () => {
+  it("renders <FormattedMessage /> when the message starts with 'ERR_'", () => {
     renderWithContext(
       {
         message: "ERR_TEST",
@@ -74,7 +75,7 @@ describe("NewPopup", () => {
     expect(screen.getByText("Unknown error")).toBeInTheDocument();
   });
 
-  it("dobiera odpowiedni kolor tła według emotion", () => {
+  it("applies the correct background color based on emotion", () => {
     renderWithContext(
       {
         message: "Test",
@@ -89,7 +90,7 @@ describe("NewPopup", () => {
     });
   });
 
-  it("ukrywa popup po upływie duration i wywołuje onClose po dodatkowych 250 ms", () => {
+  it("hides the popup after duration and calls onClose after an additional 250ms", () => {
     const onClose = vi.fn();
     renderWithContext(
       { message: "Test", emotion: "default", duration: 3000, onClose },
@@ -97,23 +98,23 @@ describe("NewPopup", () => {
     );
     const alert = screen.getByRole("alert");
 
-    // początkowo ma klasę show
+    // Initially it should have the "show" class
     expect(alert).toHaveClass(styles.show);
 
-    // po duration
+    // After the duration has elapsed
     act(() => {
       vi.advanceTimersByTime(3000);
     });
     expect(alert).toHaveClass(styles.hide);
 
-    // po dodatkowych 250 ms
+    // After an additional 250ms
     act(() => {
       vi.advanceTimersByTime(250);
     });
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('odtwarza odpowiedni dźwięk gdy isSoundEnabled="true"', () => {
+  it("plays the correct sound when isSoundEnabled='true'", () => {
     renderWithContext(
       {
         message: "Test",
@@ -123,14 +124,14 @@ describe("NewPopup", () => {
       },
       { isSoundEnabled: "true" }
     );
-    // Trzy instancje Audio (positive, negative, warning)
+    // Three Audio instances are created (default, negative, warning)
     expect(audioInstances).toHaveLength(3);
-    // dla "negative" to druga instancja (indeks 1)
+    // The second instance corresponds to "negative"
     expect(audioInstances[1].volume).toBe(0.4);
     expect(playMock).toHaveBeenCalledTimes(1);
   });
 
-  it('nie odtwarza dźwięku gdy isSoundEnabled="false"', () => {
+  it("does not play sound when isSoundEnabled='false'", () => {
     renderWithContext(
       {
         message: "Test",
@@ -143,7 +144,7 @@ describe("NewPopup", () => {
     expect(playMock).not.toHaveBeenCalled();
   });
 
-  it("renderuje w portal-root", () => {
+  it("renders into the portal-root element", () => {
     const portalSpy = vi.spyOn(ReactDOM, "createPortal");
     renderWithContext(
       { message: "X", emotion: "default", duration: 1000, onClose: () => {} },

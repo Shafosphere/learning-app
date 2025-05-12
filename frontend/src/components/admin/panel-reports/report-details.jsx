@@ -6,12 +6,13 @@ import MyButton from "../../button/button";
 
 import "./panel-reports.css";
 
+// Component to view and edit details of a user report
 export default function ReportDetails({ reportID, reloadData }) {
-  const [report, setReport] = useState(null); // Początkowy stan ustawiony na null
+  const [report, setReport] = useState(null); // Initial state set to null
 
   const { setPopup } = useContext(PopupContext);
 
-  // confirm
+  // Confirmation dialog state
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState(null);
 
@@ -23,17 +24,19 @@ export default function ReportDetails({ reportID, reloadData }) {
     setConfirmCallback(null);
   };
 
-  function showConfirm(text, callback) {
-    setConfirmMessage(text);
+  function showConfirm(message, callback) {
+    setConfirmMessage(message);
     setConfirmCallback(() => callback);
   }
 
+  // Handle in-place translation edits
   const handleInputChange = (index, field, value) => {
     const newTranslations = [...report.translations];
     newTranslations[index][field] = value;
     setReport({ ...report, translations: newTranslations });
   };
 
+  // Fetch report data when reportID changes
   useEffect(() => {
     const getData = async () => {
       try {
@@ -41,10 +44,10 @@ export default function ReportDetails({ reportID, reloadData }) {
         if (response.data) {
           setReport(response.data);
         } else {
-          console.error("Niepoprawna odpowiedź z serwera", response);
+          console.error("Invalid response from server", response);
         }
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching report details:", error);
       }
     };
     if (reportID) {
@@ -56,9 +59,10 @@ export default function ReportDetails({ reportID, reloadData }) {
     return <div>Loading...</div>;
   }
 
+  // Send updated report data to server
   const updateData = async () => {
     try {
-      const response = await api.patch("/report/update", { report: report });
+      const response = await api.patch("/report/update", { report });
       setPopup({
         message: response.data,
         emotion: "positive",
@@ -68,13 +72,14 @@ export default function ReportDetails({ reportID, reloadData }) {
         message: error.response?.data || "An error occurred",
         emotion: "negative",
       });
-      console.error("Error updating data:", error);
+      console.error("Error updating report:", error);
     }
   };
 
+  // Delete report on confirmation
   const deleteData = async () => {
     try {
-      const response = await api.delete(`/report/delete/${report.id}`); // Przekazanie ID w ścieżce
+      const response = await api.delete(`/report/delete/${report.id}`); // Pass ID in path
       setPopup({
         message: response.data,
         emotion: "positive",
@@ -85,12 +90,13 @@ export default function ReportDetails({ reportID, reloadData }) {
         message: error.response?.data || "An error occurred",
         emotion: "negative",
       });
-      console.error("Error deleting data:", error);
+      console.error("Error deleting report:", error);
     }
   };
 
   return (
     <div className="report-details">
+      {/* Header with Report ID and metadata */}
       <div className="report-header">
         <h2>Report ID: {report.id}</h2>
         <p>
@@ -99,6 +105,7 @@ export default function ReportDetails({ reportID, reloadData }) {
         </p>
       </div>
 
+      {/* Description section */}
       <div className="report-description">
         <h3>Description</h3>
         <textarea
@@ -109,6 +116,7 @@ export default function ReportDetails({ reportID, reloadData }) {
         />
       </div>
 
+      {/* Translation edits for word_issue reports */}
       {report.report_type === "word_issue" && report.translations && (
         <>
           {report.translations.map((translation, index) => (
@@ -137,29 +145,30 @@ export default function ReportDetails({ reportID, reloadData }) {
         </>
       )}
 
+      {/* Action buttons */}
       <div className="buttons-reports">
         <MyButton
-          message="delete report"
+          message="Delete Report"
           color="red"
           onClick={() =>
-            showConfirm("Do you really want to delete these report?", () =>
-              deleteData()
-            )
+            showConfirm("Do you really want to delete this report?", deleteData)
           }
         />
         {report.report_type === "word_issue" && report.translations && (
           <MyButton
-            message="update changes"
+            message="Update Changes"
             color="green"
             onClick={() =>
-              showConfirm("Are you sure you want to update your data?", () =>
-                updateData()
+              showConfirm(
+                "Are you sure you want to apply these changes?",
+                updateData
               )
             }
           />
         )}
       </div>
 
+      {/* Confirmation modal */}
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}

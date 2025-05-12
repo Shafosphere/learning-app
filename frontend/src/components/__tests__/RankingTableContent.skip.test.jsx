@@ -5,7 +5,7 @@ import RankingTableContent from "../rankingtable/rankingtablecontent";
 import { IntlProvider } from "react-intl";
 import api from "../../utils/api";
 
-// Mocki
+// Mocks
 vi.mock("../../utils/api", () => ({
   default: {
     get: vi.fn(),
@@ -31,7 +31,7 @@ describe("RankingTableContent Component", () => {
     api.get.mockReset();
   });
 
-  it("powinien pobierać dane i renderować tabelę", async () => {
+  it("should fetch data and render the table", async () => {
     api.get.mockResolvedValue({ data: mockData });
     render(<Wrapper />);
 
@@ -42,7 +42,7 @@ describe("RankingTableContent Component", () => {
     });
   });
 
-  it("powinien używać odpowiedniego endpointu dla Areny", async () => {
+  it("should use the correct endpoint for Arena", async () => {
     api.get.mockResolvedValue({ data: mockData });
     render(<Wrapper lvl="Arena" />);
 
@@ -51,21 +51,21 @@ describe("RankingTableContent Component", () => {
     });
   });
 
-  it("powinien wyświetlać medale dla pierwszych trzech pozycji", async () => {
+  it("should display medals for the top three positions", async () => {
     api.get.mockResolvedValue({ data: mockData });
     const { container } = render(<Wrapper />);
 
     await waitFor(() => {
       const medals = container.querySelectorAll('img[alt*="medal"]');
       expect(medals).toHaveLength(3);
-      // Sprawdzamy, że klasa zawiera oczekiwaną frazę
+      // Verify class names include expected medal types
       expect(medals[0].className).toMatch(/gold/);
       expect(medals[1].className).toMatch(/silver/);
       expect(medals[2].className).toMatch(/bronze/);
     });
   });
 
-  it("powinien renderować poprawne awatary", async () => {
+  it("should render correct avatars", async () => {
     api.get.mockResolvedValue({ data: mockData });
     render(<Wrapper />);
 
@@ -78,7 +78,7 @@ describe("RankingTableContent Component", () => {
     });
   });
 
-  it("powinien wyświetlać odpowiednią ikonę powrotu", async () => {
+  it("should display the appropriate return icon", async () => {
     api.get.mockResolvedValue({ data: mockData });
 
     const { rerender } = render(<Wrapper />);
@@ -86,14 +86,14 @@ describe("RankingTableContent Component", () => {
       expect(screen.getByTestId("FaBoxOpen")).toBeInTheDocument();
     });
 
-    // Rerender z nowym lvl; również opakowujemy asercję w waitFor, aby dać czas na przetworzenie zmian.
+    // Rerender with new lvl; wrap assertion in waitFor to allow updates
     rerender(<Wrapper lvl="Arena" />);
     await waitFor(() => {
       expect(screen.getByTestId("FaTrophy")).toBeInTheDocument();
     });
   });
 
-  it("powinien renderować nagłówki tabeli z tłumaczeniami", async () => {
+  it("should render table headers with translations", async () => {
     api.get.mockResolvedValue({ data: mockData });
     render(<Wrapper />);
 
@@ -104,7 +104,7 @@ describe("RankingTableContent Component", () => {
     });
   });
 
-  it("powinien obsługiwać błędy pobierania danych", async () => {
+  it("should handle data fetch errors", async () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     api.get.mockRejectedValue(new Error("API error"));
     render(<Wrapper />);

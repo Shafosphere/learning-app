@@ -164,7 +164,7 @@ export const generatePatches = async (req, res) => {
     // Generuj nowe patche
     await generateNewPatchesBatch(30); // Rozmiar patcha można modyfikować
 
-    res.status(200).send("Patches have been generated successfully.");
+    res.status(200).json({ success: true });
   } catch (error) {
     console.error("Error while generating patches:", error);
     res.status(500).send("An error occurred while generating patches.");

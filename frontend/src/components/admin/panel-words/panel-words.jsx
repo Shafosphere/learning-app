@@ -12,7 +12,7 @@ export default function WordsPanel() {
   // const [activeID, setActiveId] = useState(null);
   const [word, setWord] = useState("");
   const [level, setLevel] = useState();
-  const [searchTerm, setSearchTerm] = useState(""); // Dodanie searchTerm
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [focus, setFocus] = useState("");
 
@@ -75,7 +75,7 @@ export default function WordsPanel() {
       try {
         const response = await api.get(`/word/search?query=${value}`);
         if (response.data.length > 0) {
-          setSearchResults(response.data.slice(0, 10)); // Limitowanie wyników do 10
+          setSearchResults(response.data.slice(0, 10));
         } else {
           setSearchResults([]);
         }
@@ -106,7 +106,7 @@ export default function WordsPanel() {
                     key={result.id}
                     className={index % 2 === 0 ? "even" : "odd"}
                     onClick={() => {
-                      clickedWord(result.id ,result.level);
+                      clickedWord(result.id, result.level);
                     }}
                   >
                     <span className="id-span">{result.id}</span>

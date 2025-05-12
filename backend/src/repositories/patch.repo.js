@@ -1,4 +1,5 @@
 import pool from "../db/dbClient.js";
+import { getAvailableWords } from "./word.repo.js";
 
 export const getPatchWordsByLevel = async (patchNumber, level) => {
   let table;

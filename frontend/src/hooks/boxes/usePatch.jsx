@@ -14,17 +14,17 @@ export default function usePatch({
   activeBox,
   selectRandomWord,
 }) {
+  // Fetch the next patch of words
   async function getNextPatch() {
     try {
-      let levelToFetch = lvl;
-
-      let patchNumber = levelToFetch === "B2" ? patchNumberB2 : patchNumberC1;
-      let totalPatches =
+      const levelToFetch = lvl;
+      const patchNumber = levelToFetch === "B2" ? patchNumberB2 : patchNumberC1;
+      const totalPatches =
         levelToFetch === "B2" ? totalB2Patches : totalC1Patches;
 
       if (patchNumber > totalPatches) {
         setPopup({
-          message: "Pobrales wszystkie słowa z tego poziomu!",
+          message: "You've fetched all words for this level!",
           emotion: "positive",
         });
         return;
@@ -32,7 +32,7 @@ export default function usePatch({
 
       const response = await requestPatch(levelToFetch, patchNumber);
 
-      if (response && response.data && response.data.data) {
+      if (response?.data?.data) {
         const newWords = response.data.data;
 
         setBoxes((prevBoxes) => ({
@@ -42,7 +42,7 @@ export default function usePatch({
 
         setAutoSave(true);
 
-        // Aktualizuj numery patchy i typ następnego patcha
+        // Update patch numbers and storage for next patch
         if (levelToFetch === "B2") {
           setB2Patch(patchNumber + 1);
           localStorage.setItem("currentB2Patch-voca", patchNumber + 1);
@@ -50,6 +50,7 @@ export default function usePatch({
           setC1Patch(patchNumber + 1);
           localStorage.setItem("currentC1Patch-voca", patchNumber + 1);
         }
+
         if (activeBox === "boxOne") {
           selectRandomWord("boxOne");
         }
@@ -59,11 +60,12 @@ export default function usePatch({
     }
   }
 
+  // Request a specific patch from the backend
   async function requestPatch(level, patchNumber) {
     try {
       const response = await api.post("/word/patch-data", {
-        level: level,
-        patchNumber: patchNumber,
+        level,
+        patchNumber,
       });
       return response;
     } catch (error) {

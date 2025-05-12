@@ -8,25 +8,25 @@ import { SettingsContext } from "../../pages/settings/properties";
 import { PopupContext } from "../../components/popup/popupcontext";
 import api from "../../utils/api";
 
-// Ustawienie minimalnego stubu dla indexedDB
+// Provide a minimal stub for indexedDB
 global.indexedDB = {
   open: () => ({
     onupgradeneeded: () => {},
-    onsuccess: () => {}
-  })
+    onsuccess: () => {},
+  }),
 };
 
-// Mockowanie komponentów potomnych, aby uprościć drzewo renderowania
+// Mock child components to simplify the render tree
 vi.mock("../../components/maingame/card/flashcard", () => ({
   default: (props) => (
     <div data-testid="flashcard">
       Flashcard: {props.data ? props.data.word : "no-data"}
     </div>
-  )
+  ),
 }));
 
 vi.mock("../../components/maingame/card/empty-flashcard", () => ({
-  default: () => <div data-testid="empty-flashcard">Empty Flashcard</div>
+  default: () => <div data-testid="empty-flashcard">Empty Flashcard</div>,
 }));
 
 vi.mock("../../components/maingame/boxex/boxex", () => ({
@@ -45,7 +45,7 @@ vi.mock("../../components/maingame/boxex/boxex", () => ({
         Add New Words
       </button>
     </div>
-  )
+  ),
 }));
 
 vi.mock("../../components/progress_bar/progressbar", () => ({
@@ -53,13 +53,11 @@ vi.mock("../../components/progress_bar/progressbar", () => ({
     <div data-testid="progressbar">
       {text}: {percent}
     </div>
-  )
+  ),
 }));
 
 vi.mock("../../components/confetti/confetti", () => ({
-  default: ({ generateConfetti }) => (
-    <div data-testid="confetti">Confetti</div>
-  )
+  default: ({ generateConfetti }) => <div data-testid="confetti">Confetti</div>,
 }));
 
 vi.mock("../../components/confirm/confirm", () => ({
@@ -67,10 +65,10 @@ vi.mock("../../components/confirm/confirm", () => ({
     <button data-testid="confirm-window" onClick={() => onClose(true)}>
       Confirm
     </button>
-  )
+  ),
 }));
 
-// Mockowanie hooków – dzięki temu nie wykonujemy operacji związanych np. z IndexedDB czy network
+// Mock hooks to avoid side effects (IndexedDB, network calls, etc.)
 const mockBoxes = {
   boxOne: [{ id: 1, word: "test" }],
   boxTwo: [],
@@ -83,61 +81,55 @@ vi.mock("../../hooks/boxes/useBoxesDB", () => ({
   default: () => ({
     boxes: mockBoxes,
     setBoxes: vi.fn(),
-    setAutoSave: vi.fn()
-  })
+    setAutoSave: vi.fn(),
+  }),
 }));
 
 vi.mock("../../hooks/localstorage/usePersistedState", () => ({
-  default: () => [1, vi.fn()]
+  default: () => [1, vi.fn()],
 }));
 
 vi.mock("../../hooks/spellchecking/spellchecking", () => ({
-  default: () => (user, correct) => user === correct
+  default: () => (user, correct) => user === correct,
 }));
 
 vi.mock("../../hooks/activity/countingentries", () => ({
-  default: () => {} // Nie wykonujemy logiki liczenia odwiedzin
+  default: () => {}, // No-op for visit count logic
 }));
 
 const moveWordMock = vi.fn();
 vi.mock("../../hooks/boxes/useMoveWord", () => ({
-  default: () => ({
-    moveWord: moveWordMock
-  })
+  default: () => ({ moveWord: moveWordMock }),
 }));
 
 const getNextPatchMock = vi.fn();
 vi.mock("../../hooks/boxes/usePatch", () => ({
-  default: () => ({
-    getNextPatch: getNextPatchMock
-  })
+  default: () => ({ getNextPatch: getNextPatchMock }),
 }));
 
-// Mockowanie api, aby get i post zwracały obietnice z danymi
+// Mock API get and post methods to return promises with data
 vi.mock("../../utils/api", () => ({
   default: {
-    get: vi.fn().mockResolvedValue({
-      data: { totalB2Patches: 5, totalC1Patches: 3 }
-    }),
-    post: vi.fn().mockResolvedValue({ data: { success: true } })
-  }
+    get: vi
+      .fn()
+      .mockResolvedValue({ data: { totalB2Patches: 5, totalC1Patches: 3 } }),
+    post: vi.fn().mockResolvedValue({ data: { success: true } }),
+  },
 }));
 
-// Ustawienia kontekstowe używane w komponencie
+// Context values used by MainGame component
 const mockSettings = {
   isSoundEnabled: "true",
   calculatePercent: vi.fn(),
-  calculateTotalPercent: vi.fn(), // teraz już nie oczekujemy jej wywołania
+  calculateTotalPercent: vi.fn(),
   totalPercentB2: 50,
   totalPercentC1: 30,
   procentC1: 40,
   procentB2: 60,
-  isLoggedIn: true
+  isLoggedIn: true,
 };
 
-const mockPopup = {
-  setPopup: vi.fn()
-};
+const mockPopup = { setPopup: vi.fn() };
 
 const Wrapper = ({ children }) => (
   <IntlProvider locale="en" messages={enMessages}>
@@ -149,28 +141,27 @@ const Wrapper = ({ children }) => (
   </IntlProvider>
 );
 
-// Testy komponentu MainGame
+// Tests for MainGame component
 describe("MainGame Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should render initial layout", async () => {
+  it("should render the initial layout", async () => {
     render(<MainGame setDisplay={vi.fn()} lvl="B2" />, { wrapper: Wrapper });
-    
-    // Sprawdzamy czy przycisk powrotu (zawierający poziom B2) jest renderowany
+
+    // Check that the return button (showing the 'B2' level) is rendered
     expect(screen.getByText("B2")).toBeInTheDocument();
-    
-    // Sprawdzamy obecność kontenera boxów
+
+    // Check for the boxes container
     expect(screen.getByTestId("boxes-container")).toBeInTheDocument();
 
-    // Sprawdzamy, czy pasek postępu został wyrenderowany.
-    // Używamy wyrażeń regularnych, aby dopasować dowolny tekst zawierający fragment "daily progress"
+    // Check that the progress bars are rendered with the correct labels
     const progressBars = screen.getAllByTestId("progressbar");
     expect(progressBars[0]).toHaveTextContent(/daily progress/i);
     expect(progressBars[1]).toHaveTextContent(/total progress/i);
-    
-    // Oczekujemy, że zostanie wywołane pobranie informacji o patchach
+
+    // Expect a call to fetch patch info
     await waitFor(() => {
       expect(api.get).toHaveBeenCalledWith("/word/patch-info");
     });
@@ -187,9 +178,11 @@ describe("MainGame Component", () => {
 
   it("should handle return button click", () => {
     const setDisplayMock = vi.fn();
-    render(<MainGame setDisplay={setDisplayMock} lvl="B2" />, { wrapper: Wrapper });
-    
-    // Znajdujemy przycisk powrotu poprzez selektor CSS
+    render(<MainGame setDisplay={setDisplayMock} lvl="B2" />, {
+      wrapper: Wrapper,
+    });
+
+    // Find the return button by its CSS selector
     const returnButton = document.querySelector(".return-btn-voca");
     fireEvent.click(returnButton);
     expect(setDisplayMock).toHaveBeenCalledWith("default");

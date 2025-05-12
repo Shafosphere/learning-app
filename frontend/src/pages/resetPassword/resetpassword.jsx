@@ -8,7 +8,6 @@ import { PopupContext } from "../../components/popup/popupcontext";
 import { useIntl } from "react-intl";
 import { SettingsContext } from "../settings/properties";
 
-
 export default function ResetPassword() {
   const intl = useIntl();
   const [password, setPassword] = useState("");
@@ -20,7 +19,7 @@ export default function ResetPassword() {
   const { language } = useContext(SettingsContext);
 
   async function handleSubmit() {
-    // Sprawdzenie zgodności haseł
+    // Check if passwords match
     if (password !== confirmPassword) {
       setPopup({
         message: intl.formatMessage({
@@ -33,7 +32,7 @@ export default function ResetPassword() {
     }
 
     try {
-      // Wysyłanie żądania POST do backendu
+      // Send POST request to the backend
       const response = await api.post("/auth/reset-password", {
         token,
         password,

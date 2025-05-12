@@ -1,224 +1,238 @@
 // src/components/__tests__/arena.test.jsx
 
-import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import {
+  render,
+  screen,
+  waitFor,
+  act,
+  fireEvent,
+} from "@testing-library/react";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 
-// Testowany komponent
-import ArenaContent from '../arena/arena';
+// Component under test
+import ArenaContent from "../arena/arena";
 
-// Mockowane moduły
-import api from '../../utils/api';
-import { useWindowWidth } from '../../hooks/window_width/windowWidth';
+// Mocked modules
+import api from "../../utils/api";
+import { useWindowWidth } from "../../hooks/window_width/windowWidth";
 
-// 1) Mock do zapytań API
-vi.mock('../../utils/api');
+// Mock API module for GET and POST requests
+vi.mock("../../utils/api");
 
-// 2) Mock hooka szerokości okna
-vi.mock('../../hooks/window_width/windowWidth', () => ({
+// Mock window width hook for responsive behavior
+vi.mock("../../hooks/window_width/windowWidth", () => ({
   useWindowWidth: vi.fn(),
 }));
 
-// 3) Mock ScrambledText – brak animacji, od razu wyświetla otrzymany tekst
-vi.mock('../arena/ScrambledText', () => ({
+// Mock ScrambledText component to display text immediately without animation
+vi.mock("../arena/ScrambledText", () => ({
   default: ({ text }) => <span>{text}</span>,
 }));
 
-// 4) Mock wykresu
-vi.mock('../arena/chart', () => ({
+// Mock chart component
+vi.mock("../arena/chart", () => ({
   default: () => <div data-testid="chart" />,
 }));
 
-// Funkcja pomocnicza do ustawiania szerokości okna
+// Helper to set window width for tests
 const mockWindowWidth = (width) => {
   useWindowWidth.mockReturnValue(width);
 };
 
-describe('ArenaContent', () => {
+describe("ArenaContent Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockWindowWidth(1024);
 
-    // Domyślne GET-y
+    // Default GET responses
     api.get.mockImplementation((url) => {
-      if (url === '/word/history') {
+      if (url === "/word/history") {
         return Promise.resolve({ data: [10, 20, 30] });
       }
-      if (url === '/word/random-words?count=10') {
-        return Promise.resolve({
-          data: Array(10).fill({ content: 'test' }),
-        });
+      if (url === "/word/random-words?count=10") {
+        return Promise.resolve({ data: Array(10).fill({ content: "test" }) });
       }
-      if (url === '/word/ranking-word') {
-        return Promise.resolve({
-          data: [1, 'test', 'pl'], // [wordId, "test", lang]
-        });
+      if (url === "/word/ranking-word") {
+        return Promise.resolve({ data: [1, "test", "pl"] }); // [wordId, text, lang]
       }
       return Promise.resolve({ data: [] });
     });
 
-    // Domyślny POST (szybkie rozwiązywanie)
+    // Default POST response for answers
     api.post.mockResolvedValue({
       data: {
         success: true,
         newPoints: 40,
-        correctTranslations: [{ translation: 'przetłumaczone' }],
+        correctTranslations: [{ translation: "przetłumaczone" }],
         isCorrect: true,
       },
     });
   });
 
-  it('powinien pobierać dane początkowe', async () => {
+  it("fetches initial data on mount", async () => {
     render(<ArenaContent />);
-    
+
     await waitFor(() => {
-      expect(api.get).toHaveBeenCalledWith('/word/history');
-      expect(api.get).toHaveBeenCalledWith('/word/random-words?count=10');
-      expect(api.get).toHaveBeenCalledWith('/word/ranking-word');
+      expect(api.get).toHaveBeenCalledWith("/word/history");
+      expect(api.get).toHaveBeenCalledWith("/word/random-words?count=10");
+      expect(api.get).toHaveBeenCalledWith("/word/ranking-word");
     });
   });
 
-  it('powinien obsługiwać poprawne przesłanie odpowiedzi', async () => {
+  it("handles correct answer submission", async () => {
     render(<ArenaContent />);
-    
-    // Czekamy aż input się pojawi
-    await waitFor(() => screen.getByRole('textbox'));
-    
-    const input = screen.getByRole('textbox');
-    const button = screen.getByRole('button', { name: /confirm/i });
-    
+
+    // Wait for the input to appear
+    await waitFor(() => screen.getByRole("textbox"));
+
+    const input = screen.getByRole("textbox");
+    const button = screen.getByRole("button", { name: /confirm/i });
+
+    // Fill and submit answer
     await act(async () => {
-      fireEvent.change(input, { target: { value: 'test' } });
+      fireEvent.change(input, { target: { value: "test" } });
       fireEvent.click(button);
     });
-    
+
+    // Verify POST request parameters
     await waitFor(() => {
-      expect(api.post).toHaveBeenCalledWith('/word/submit-answer', {
+      expect(api.post).toHaveBeenCalledWith("/word/submit-answer", {
         wordId: 1,
-        userAnswer: 'test',
-        lang: 'en',
+        userAnswer: "test",
+        lang: "en",
         startTime: expect.any(Number),
       });
     });
-    
-    expect(screen.getByText('przetłumaczone')).toBeInTheDocument();
-    
-    const points = await screen.findByText('40', {}, { timeout: 2000 });
+
+    // Check correct translation and points display
+    expect(screen.getByText("przetłumaczone")).toBeInTheDocument();
+    const points = await screen.findByText("40");
     expect(points).toBeInTheDocument();
   });
-  
-  it('powinien aktualizować animacje kart', async () => {
+
+  it("updates card animations after submission", async () => {
     render(<ArenaContent />);
-    
-    await waitFor(() => screen.getByRole('textbox'));
-    
-    const input = screen.getByRole('textbox');
+
+    // Wait for the textbox
+    await waitFor(() => screen.getByRole("textbox"));
+
+    const input = screen.getByRole("textbox");
     await act(async () => {
-      fireEvent.change(input, { target: { value: 'test' } });
-      fireEvent.keyDown(input, { key: 'Enter' });
+      fireEvent.change(input, { target: { value: "test" } });
+      fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
     });
-    
+
+    // Expect both scrambled and translated texts to appear in cards
     await waitFor(() => {
       const cards = screen.getAllByText(/test|przetłumaczone/);
       expect(cards.length).toBeGreaterThan(5);
     });
   });
-  
-  it('powinien dostosowywać animacje dla małych ekranów', async () => {
+
+  it("adjusts card animations for narrow screens", async () => {
     mockWindowWidth(500);
     render(<ArenaContent />);
-    
-    await waitFor(() => screen.getByRole('textbox'));
-    
-    const input = screen.getByRole('textbox');
+
+    // Wait for textbox
+    await waitFor(() => screen.getByRole("textbox"));
+
+    const input = screen.getByRole("textbox");
     await act(async () => {
-      fireEvent.change(input, { target: { value: 'test' } });
-      fireEvent.keyDown(input, { key: 'Enter' });
+      fireEvent.change(input, { target: { value: "test" } });
+      fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
     });
-    
+
+    // First card should have no transform on narrow screens
     const cards = screen.getAllByText(/test/);
-    expect(cards[0]).toHaveStyle('transform: translateY(0rem) rotate(0deg)');
+    expect(cards[0]).toHaveStyle("transform: translateY(0rem) rotate(0deg)");
   });
-  
-  it('powinien obsługiwać błędy API', async () => {
-    api.post.mockRejectedValue(new Error('API error'));
+
+  it("handles API errors gracefully", async () => {
+    api.post.mockRejectedValue(new Error("API error"));
     console.error = vi.fn();
-    
+
     render(<ArenaContent />);
-    
-    await waitFor(() => screen.getByRole('textbox'));
-    
-    const input = screen.getByRole('textbox');
+
+    // Wait for the textbox
+    await waitFor(() => screen.getByRole("textbox"));
+
+    const input = screen.getByRole("textbox");
     await act(async () => {
-      fireEvent.change(input, { target: { value: 'test' } });
-      fireEvent.keyDown(input, { key: 'Enter' });
+      fireEvent.change(input, { target: { value: "test" } });
+      fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
     });
-    
+
+    // Verify console.error is called
     await waitFor(() => {
       expect(console.error).toHaveBeenCalled();
     });
   });
-  
-  it('powinien wyświetlać odpowiednie flagi', async () => {
+
+  it("displays correct flag icons before and after submission", async () => {
     render(<ArenaContent />);
-    
+
     await waitFor(() => {
-      expect(screen.getByAltText('english')).toBeInTheDocument();
+      expect(screen.getByAltText("english")).toBeInTheDocument();
     });
-    
+
+    // Change mock ranking response language to English
     api.get.mockImplementationOnce(() =>
-      Promise.resolve({ data: [1, 'test', 'en'] })
+      Promise.resolve({ data: [1, "test", "en"] })
     );
-    
+
+    // Submit answer
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+      fireEvent.click(screen.getByRole("button", { name: /confirm/i }));
     });
-    
+
     await waitFor(() => {
-      expect(screen.getByAltText('polish')).toBeInTheDocument();
+      expect(screen.getByAltText("polish")).toBeInTheDocument();
     });
   });
-  
-  // ==================== TEST BLOKOWANIA PRZYCISKU ====================
-  
-  it('powinien blokować przycisk podczas ładowania', async () => {
-    // Upewnij się, że dane są pobrane (np. flaga "english" jest widoczna)
+
+  it("disables confirm button during loading state", async () => {
     render(<ArenaContent />);
-    await waitFor(() => expect(screen.getByAltText('english')).toBeInTheDocument());
-    
-    // Ręcznie sterowana obietnica dla POST
-    let resolvePost;
-    api.post.mockImplementation(() =>
-      new Promise((resolve) => {
-        resolvePost = resolve;
-      })
+    await waitFor(() =>
+      expect(screen.getByAltText("english")).toBeInTheDocument()
     );
-    
-    const button = screen.getByRole('button', { name: /confirm/i });
+
+    // Control POST promise resolution manually
+    let resolvePost;
+    api.post.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolvePost = resolve;
+        })
+    );
+
+    const button = screen.getByRole("button", { name: /confirm/i });
     expect(button).not.toBeDisabled();
-    
+
+    // Click to start loading
     await act(async () => {
       fireEvent.click(button);
-      // Pauza, aby React zdążył zrenderować isLoading=true
+      // Allow state update for loading
       await new Promise((r) => setTimeout(r, 50));
     });
-    
-    // Czekamy, aż przycisk stanie się disabled
+
+    // Button should now be disabled
     await waitFor(() => {
       expect(button).toBeDisabled();
     });
-    
+
+    // Resolve POST, loading should end
     act(() => {
       resolvePost({
         data: {
           success: true,
           newPoints: 40,
-          correctTranslations: [{ translation: 'przetłumaczone' }],
+          correctTranslations: [{ translation: "przetłumaczone" }],
           isCorrect: true,
         },
       });
     });
-    
-    // Po rozwiązaniu obietnicy, przycisk powinien wrócić do stanu enabled
+
+    // Button returns to enabled state
     await waitFor(() => {
       expect(button).not.toBeDisabled();
     });

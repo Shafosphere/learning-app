@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect} from "react";
+import React, { createContext, useState, useEffect } from "react";
 import NewPopup from "./newpopup";
 import { registerPopupHandler } from "../../utils/popupManager";
 
@@ -7,7 +7,7 @@ export const PopupContext = createContext();
 export const PopupProvider = ({ children }) => {
   const [popup, setPopup] = useState(null);
 
-  // Rejestrujemy funkcję setPopup w managerze
+  // Register the setPopup function with the popup manager
   useEffect(() => {
     registerPopupHandler((params) => {
       setPopup(params);
@@ -29,18 +29,21 @@ export const PopupProvider = ({ children }) => {
   );
 };
 
-//instalacja -->
+/* Installation and usage examples:
 
-// useContext
+// To use in a component:
 // import { PopupContext } from "../popup/popupcontext";
 // const { setPopup } = useContext(PopupContext);
 
+// Trigger a negative popup (e.g., on error):
 // setPopup({
-//     message: error.response?.data || "An error occurred",
-//     emotion: "negative",
-//   });
+//   message: error.response?.data || "An error occurred",
+//   emotion: "negative",
+// });
 
+// Trigger a positive popup (e.g., on success):
 // setPopup({
-//     message: response.data,
-//     emotion: "positive",
-//   });
+//   message: response.data,
+//   emotion: "positive",
+// });
+*/

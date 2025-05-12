@@ -23,7 +23,7 @@ export default function MyButton({
         width: width ? `${width}rem` : null,
       }}
       onClick={onClick}
-      disabled={disabled} // <-- Kluczowy atrybut
+      disabled={disabled}
       type="button"
     >
       {message}

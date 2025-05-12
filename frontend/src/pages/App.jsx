@@ -21,17 +21,18 @@ import Vocabulary from "./voca/vocabulary";
 import ResetPassword from "./resetPassword/resetpassword";
 import { v4 as uuidv4 } from "uuid";
 import { registerIntl } from "../utils/intlManager";
-// Obiekt zawierający tłumaczenia dla różnych języków
+
+// Object containing translations for different languages
 const messages = {
   en: enMessages,
   pl: plMessages,
 };
 
-// Komponent do owijania całej aplikacji z `IntlProvider`
+// Component that wraps the entire application with `IntlProvider`
 const AppWrapper = () => {
   const { language, isLoggedIn } = useContext(SettingsContext);
 
-  // Nowy komponent do rejestracji intl
+  // New component for registering intl instance
   const IntlRegistry = () => {
     const intl = useIntl();
 

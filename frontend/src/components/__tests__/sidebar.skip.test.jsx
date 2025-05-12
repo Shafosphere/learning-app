@@ -8,7 +8,7 @@ import { SettingsContext } from "../../pages/settings/properties";
 import { PopupContext } from "../popup/popupcontext";
 import api from "../../utils/api";
 
-// Mockowanie całego modułu API
+// Mocking the entire API module
 vi.mock("../../utils/api", () => ({
   default: {
     get: vi.fn(() => Promise.resolve({ data: {} })),
@@ -19,13 +19,13 @@ vi.mock("../../utils/api", () => ({
   },
 }));
 
-// Mockowanie ikon
+// Mocking icons
 vi.mock("react-icons/io5", () => ({
   IoBug: () => <div data-testid="bug-icon" />,
   IoLogoGithub: () => <div data-testid="github-icon" />,
 }));
 
-// Mockowanie popupu
+// Mocking the popup
 vi.mock("../report/report-popup", () => ({
   default: vi.fn(() => <div data-testid="report-popup" />),
 }));

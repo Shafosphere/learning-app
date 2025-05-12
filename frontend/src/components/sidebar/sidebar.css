@@ -1,4 +1,4 @@
-/* Bazowe style niezależne od rozdzielczości */
+
 .container-sidebar {
   position: fixed;
   z-index: 1000;
@@ -83,7 +83,7 @@
 }
 
 
-/* Dla małych ekranów (max 950px) */
+
 @media (min-width: 480px) and  (max-width: 950px) {
   .container-sidebar {
     height: 5rem;
@@ -127,7 +127,6 @@
   }
 }
 
-/* Średnie ekrany (951px - 1450px) */
 @media (min-width: 951px) and (max-width: 1450px) {
   .container-sidebar {
     height: 5rem;
@@ -171,7 +170,7 @@
   }
 }
 
-/* Duże ekrany (min-width: 1450px) */
+
 @media (min-width: 1450px) {
   .container-sidebar {
     height: 100%;

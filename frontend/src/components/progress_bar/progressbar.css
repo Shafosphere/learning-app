@@ -73,7 +73,6 @@
   border-radius: 2px;
 }
 
-/* --- Nowe style dla wersji pionowej --- */
 .progress-container-vertical {
   position: relative;
   height: 100%;
@@ -92,7 +91,7 @@
   font-weight: 900;
   color: var(--headline);
   font-size: 25px;
-  writing-mode: vertical-rl; /* pionowe pisanie od dołu do góry */
+  writing-mode: vertical-rl;
   text-orientation: sideways;
 }
 

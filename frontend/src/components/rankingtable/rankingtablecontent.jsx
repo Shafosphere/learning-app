@@ -1,22 +1,22 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import styles from "./ranking.module.css";
 import api from "../../utils/api";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from "../loading/loading";
 
-// Importy medali
+// Medal images
 import gold from "../../data/medal/gold.png";
 import silver from "../../data/medal/silver.png";
 import bronze from "../../data/medal/bronze.png";
 
-// Importy awatarów
+// Avatar images
 import avatar1 from "../../data/avatars/man.png";
 import avatar2 from "../../data/avatars/man_1.png";
 import avatar3 from "../../data/avatars/woman.png";
 import avatar4 from "../../data/avatars/woman_1.png";
 
-// Import ikon - pamiętaj, aby nadać data-testid
+// Icon imports (remember to add data-testid)
 import { FaTrophy } from "react-icons/fa";
 import { FaBoxOpen } from "react-icons/fa6";
 
@@ -25,31 +25,26 @@ export default function RankingTableContent({ setDisplay, lvl }) {
   const [hasMore, setHasMore] = useState(true);
   const intl = useIntl();
 
-  // Mapa awatarów
-  const avatarImages = {
-    1: avatar1,
-    2: avatar2,
-    3: avatar3,
-    4: avatar4,
-  };
+  // Map of avatars by id
+  const avatarImages = { 1: avatar1, 2: avatar2, 3: avatar3, 4: avatar4 };
 
   useEffect(() => {
     async function getData() {
       try {
+        // Choose endpoint based on level
         const endpoint =
           lvl === "Flashcards"
             ? "/user/ranking-flashcard"
             : "/user/ranking-arena";
 
         const response = await api.get(endpoint);
-
         setData(response.data);
         setHasMore(false);
       } catch (error) {
         console.error(
           intl.formatMessage({
             id: "ranking.error",
-            defaultMessage: "ranking.error",
+            defaultMessage: "Error loading ranking",
           }),
           error
         );
@@ -85,19 +80,19 @@ export default function RankingTableContent({ setDisplay, lvl }) {
                 <th>
                   <FormattedMessage
                     id="ranking.position"
-                    defaultMessage="ranking.position"
+                    defaultMessage="Position"
                   />
                 </th>
                 <th>
                   <FormattedMessage
                     id="ranking.nickname"
-                    defaultMessage="ranking.nickname"
+                    defaultMessage="Nickname"
                   />
                 </th>
                 <th>
                   <FormattedMessage
                     id="ranking.points"
-                    defaultMessage="ranking.points"
+                    defaultMessage="Points"
                   />
                 </th>
               </tr>
@@ -111,7 +106,7 @@ export default function RankingTableContent({ setDisplay, lvl }) {
                     <img
                       alt={intl.formatMessage({
                         id: "ranking.medal.gold",
-                        defaultMessage: "ranking.medal.gold",
+                        defaultMessage: "Gold medal",
                       })}
                       className={`${styles.gold} ${styles.medal}`}
                       src={gold}
@@ -122,7 +117,7 @@ export default function RankingTableContent({ setDisplay, lvl }) {
                     <img
                       alt={intl.formatMessage({
                         id: "ranking.medal.silver",
-                        defaultMessage: "ranking.medal.silver",
+                        defaultMessage: "Silver medal",
                       })}
                       className={`${styles.silver} ${styles.medal}`}
                       src={silver}
@@ -133,7 +128,7 @@ export default function RankingTableContent({ setDisplay, lvl }) {
                     <img
                       alt={intl.formatMessage({
                         id: "ranking.medal.bronze",
-                        defaultMessage: "ranking.medal.bronze",
+                        defaultMessage: "Bronze medal",
                       })}
                       className={`${styles.bronze} ${styles.medal}`}
                       src={bronze}
@@ -149,21 +144,19 @@ export default function RankingTableContent({ setDisplay, lvl }) {
                     }`}
                   >
                     <td>
-                      {index + 1}.{medal && medal}
+                      {index + 1}.{medal}
                     </td>
                     <td>
                       <div className={styles.userInfo}>
-                        <div>
-                          <img
-                            alt={intl.formatMessage({
-                              id: "ranking.user.avatar",
-                              defaultMessage: "ranking.user.avatar",
-                            })}
-                            className={styles.avatar}
-                            src={avatarImages[item.avatar]}
-                          />
-                        </div>
-                        <div>{item.username}</div>
+                        <img
+                          alt={intl.formatMessage({
+                            id: "ranking.user.avatar",
+                            defaultMessage: "User avatar",
+                          })}
+                          className={styles.avatar}
+                          src={avatarImages[item.avatar]}
+                        />
+                        <span>{item.username}</span>
                       </div>
                     </td>
                     <td>{item.points}</td>

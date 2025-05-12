@@ -1,4 +1,5 @@
-// LoginForm.test.jsx
+// src/components/__tests__/LoginForm.test.jsx
+
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
@@ -8,10 +9,10 @@ import LoginForm from "../login/loginForm";
 import { SettingsContext } from "../../pages/settings/properties";
 import { PopupContext } from "../../components/popup/popupcontext";
 
-// 1. Definiujemy zmienną mockNavigate na poziomie modułu:
+// Define mockNavigate at module scope
 let mockNavigate = vi.fn();
 
-// 2. Mockujemy react-router-dom. Musi być wykonane przed importami zależnymi.
+// Mock react-router-dom before other imports
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
@@ -20,7 +21,7 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-// 3. Mock modułu api
+// Mock API module
 vi.mock("../../utils/api", () => ({
   default: {
     post: vi.fn(),
@@ -39,23 +40,19 @@ describe("LoginForm component", () => {
     mockSetUser = vi.fn();
     mockSetPopup = vi.fn();
 
-    // Pobieramy nasz zmockowany moduł
+    // Import mocked API
     api = (await import("../../utils/api")).default;
     api.post.mockClear();
   });
 
   /**
-   * Funkcja renderująca testowany komponent.
-   * Dodajemy IntlProvider, by wstrzyknąć `intl` dla react-intl.
+   * Helper to render the component with IntlProvider and context
    */
   function renderComponent(initialPath = "/") {
     return render(
       <IntlProvider locale="en">
         <SettingsContext.Provider
-          value={{
-            setIsLoggedIn: mockSetIsLoggedIn,
-            setUser: mockSetUser,
-          }}
+          value={{ setIsLoggedIn: mockSetIsLoggedIn, setUser: mockSetUser }}
         >
           <PopupContext.Provider value={{ setPopup: mockSetPopup }}>
             <MemoryRouter initialEntries={[initialPath]}>
@@ -69,7 +66,7 @@ describe("LoginForm component", () => {
     );
   }
 
-  it("renderuje pola login i hasło oraz przycisk logowania", () => {
+  it("renders username and password fields and a login button", () => {
     renderComponent();
 
     const usernameInput = screen.getByPlaceholderText(/Username/i);
@@ -81,7 +78,7 @@ describe("LoginForm component", () => {
     expect(loginButton).toBeInTheDocument();
   });
 
-  it("domyślnie hasło jest ukryte i można je wyświetlić", () => {
+  it("hides the password by default and can toggle visibility", () => {
     renderComponent();
 
     const passwordInput = screen.getByPlaceholderText(/password/i);
@@ -93,10 +90,8 @@ describe("LoginForm component", () => {
     expect(passwordInput).toHaveAttribute("type", "text");
   });
 
-  it("po wprowadzeniu loginu i hasła formularz wysyła request do API i ustawia stan aplikacji", async () => {
-    api.post.mockResolvedValueOnce({
-      data: { success: true },
-    });
+  it("submits credentials to API and updates app state on success", async () => {
+    api.post.mockResolvedValueOnce({ data: { success: true } });
 
     renderComponent();
 
@@ -120,8 +115,8 @@ describe("LoginForm component", () => {
     });
   });
 
-  it("jeśli API zwróci błąd, nie ustawia stanu aplikacji, a w konsoli pojawia się błąd", async () => {
-    api.post.mockRejectedValueOnce(new Error("Błąd logowania"));
+  it("logs an error and does not update state when API returns an error", async () => {
+    api.post.mockRejectedValueOnce(new Error("Login error"));
     const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     renderComponent();
@@ -145,7 +140,7 @@ describe("LoginForm component", () => {
     consoleSpy.mockRestore();
   });
 
-  it("przekierowuje do ścieżki z parametru redirectTo, jeśli istnieje", async () => {
+  it("redirects to the redirectTo path if provided in the URL", async () => {
     api.post.mockResolvedValueOnce({ data: { success: true } });
     renderComponent("/?redirectTo=%2Fdashboard");
 

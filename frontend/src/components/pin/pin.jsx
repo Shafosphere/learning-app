@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./pin.css";
 import PinInput from "./pinInput";
 
+// Modal dialog for PIN entry
 export default function PinWindow({ onClose }) {
   const dialogRef = useRef(null);
   const [pin, setPin] = useState("");
@@ -13,8 +14,8 @@ export default function PinWindow({ onClose }) {
       if (typeof dialog.showModal === "function") {
         dialog.showModal();
       } else {
-        // Fallback dla przeglądarek nie wspierających <dialog>
-        console.error("Przeglądarka nie wspiera elementu <dialog>.");
+        // Fallback for browsers that do not support the <dialog> element
+        console.error("Browser does not support the <dialog> element.");
       }
     }
   }, []);
@@ -32,7 +33,7 @@ export default function PinWindow({ onClose }) {
 
   return ReactDOM.createPortal(
     <dialog ref={dialogRef} className="pin-dialog">
-      <p>Podaj PIN</p>
+      <p>Enter PIN</p>
       <PinInput
         length={4}
         onComplete={(pin) => {
@@ -40,11 +41,11 @@ export default function PinWindow({ onClose }) {
         }}
       />
       <button
-        style={{ "--buttonColor": "var(--tertiary)"}}
+        style={{ "--buttonColor": "var(--tertiary)" }}
         className="button"
-        onClick={() => onClose(null)}
+        onClick={handleCancel}
       >
-        Anuluj
+        Cancel
       </button>
     </dialog>,
     document.getElementById("portal-root")

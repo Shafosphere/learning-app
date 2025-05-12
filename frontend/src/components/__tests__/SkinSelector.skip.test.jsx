@@ -1,16 +1,16 @@
-// src/components/__tests__/SkinSelector.test.jsx
+import React from "react";
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import SkinSelector from "../maingame/boxex/skinselector";
+import { SettingsContext } from "../../pages/settings/properties";
+import empty from "../../data/resized_box.png";
+import some from "../../data/resized_box_some.png";
+import half from "../../data/resized_box_half.png";
+import full from "../../data/resized_box_full.png";
 
-import React from 'react';
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import SkinSelector from '../maingame/boxex/skinselector';
-import { SettingsContext } from '../../pages/settings/properties';
-import empty from '../../data/resized_box.png';
-import some from '../../data/resized_box_some.png';
-import half from '../../data/resized_box_half.png';
-import full from '../../data/resized_box_full.png';
-
-describe('SkinSelector Component', () => {
+// Tests for SkinSelector component, verifying both new and legacy skin rendering
+describe("SkinSelector Component", () => {
+  // Helper to render the component with a given skinstatus value
   const renderWithSkin = (skinstatus, props) =>
     render(
       <SettingsContext.Provider value={{ skinstatus }}>
@@ -18,20 +18,20 @@ describe('SkinSelector Component', () => {
       </SettingsContext.Provider>
     );
 
-  it('renders CuteBoxSkin when new skin (skinstatus=false)', () => {
+  it("renders CuteBoxSkin when new skin is active (skinstatus=false)", () => {
     renderWithSkin(false, {
-      boxName: 'testBox',
-      activeBox: 'testBox',
+      boxName: "testBox",
+      activeBox: "testBox",
       boxes: { testBox: [1, 2, 3] },
     });
-    // CuteBoxSkin renders its own markup: look for topBox image
-    const topImg = screen.getByAltText('topBox');
+    // Expect the CuteBoxSkin markup: look for the topBox image
+    const topImg = screen.getByAltText("topBox");
     expect(topImg).toBeInTheDocument();
-    // old skin image should not render
-    expect(screen.queryByAltText('box')).toBeNull();
+    // Ensure the legacy skin image is not rendered
+    expect(screen.queryByAltText("box")).toBeNull();
   });
 
-  describe('old skin (skinstatus=true) image rendering', () => {
+  describe("Legacy skin rendering (skinstatus=true)", () => {
     const cases = [
       { count: 0, expected: empty },
       { count: 10, expected: some },
@@ -40,27 +40,27 @@ describe('SkinSelector Component', () => {
     ];
 
     cases.forEach(({ count, expected }) => {
-      it(`shows src="${expected}" for ${count} words`, () => {
+      it(`uses src="${expected}" for box size ${count}`, () => {
         renderWithSkin(true, {
-          boxName: 'b',
-          activeBox: 'b',
+          boxName: "b",
+          activeBox: "b",
           boxes: { b: Array(count).fill(null) },
         });
-        const img = screen.getByAltText('box');
+        const img = screen.getByAltText("box");
         expect(img).toBeInTheDocument();
-        expect(img).toHaveAttribute('src', expected);
-        expect(img).toHaveClass('active');
+        expect(img).toHaveAttribute("src", expected);
+        expect(img).toHaveClass("active");
       });
     });
 
-    it('applies notactive class when box is not active', () => {
+    it('applies the "notactive" class when the box is inactive', () => {
       renderWithSkin(true, {
-        boxName: 'b',
-        activeBox: 'other',
+        boxName: "b",
+        activeBox: "other",
         boxes: { b: Array(5).fill(null) },
       });
-      const img = screen.getByAltText('box');
-      expect(img).toHaveClass('notactive');
+      const img = screen.getByAltText("box");
+      expect(img).toHaveClass("notactive");
     });
   });
 });

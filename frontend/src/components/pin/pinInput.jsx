@@ -1,14 +1,15 @@
 import React, { useState, useRef } from "react";
 import "./pin.css";
 
+// Component for entering a fixed-length numeric PIN
 export default function PinInput({ length = 4, onComplete }) {
   const [values, setValues] = useState(Array(length).fill(""));
   const inputs = useRef([]);
 
   const handleChange = (e, index) => {
     const val = e.target.value;
+    // Allow only digits
     if (!/^\d*$/.test(val)) {
-      // Pozwalamy tylko na cyfry
       return;
     }
 
@@ -16,18 +17,19 @@ export default function PinInput({ length = 4, onComplete }) {
     newValues[index] = val;
     setValues(newValues);
 
+    // Move focus to the next input if not the last one
     if (val && index < length - 1) {
-      // Przechodzimy do następnego inputu
       inputs.current[index + 1].focus();
     }
 
+    // If all fields are filled, trigger the onComplete callback
     if (newValues.every((num) => num !== "")) {
-      // Jeśli wszystkie pola są wypełnione, wywołujemy callback
       onComplete(newValues.join(""));
     }
   };
 
   const handleBackspace = (e, index) => {
+    // On Backspace in an empty field, clear previous and focus it
     if (e.key === "Backspace" && !values[index] && index > 0) {
       const newValues = [...values];
       newValues[index - 1] = "";

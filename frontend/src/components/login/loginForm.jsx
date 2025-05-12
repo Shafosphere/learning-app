@@ -6,6 +6,7 @@ import api from "../../utils/api";
 import { SettingsContext } from "../../pages/settings/properties";
 import { PopupContext } from "../popup/popupcontext";
 
+// Login form component with internationalization and popup notifications
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,13 +15,12 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-  // const [error, setError] = useState("");
 
   const { setPopup } = useContext(PopupContext);
-
-  const { setIsLoggedIn, setUser } = useContext(SettingsContext); // Uzyskaj funkcje z kontekstu
+  const { setIsLoggedIn, setUser } = useContext(SettingsContext); // Functions from Settings context
   const intl = useIntl();
 
+  // Handle form submission for login
   async function handleSubmit(event) {
     event.preventDefault();
     const trimmedUsername = username.trimEnd();
@@ -31,6 +31,7 @@ export default function LoginForm() {
         password: trimmedPassword,
       });
       if (response.data.success) {
+        // Show a success popup
         setPopup({
           message: intl.formatMessage({
             id: "loginSuccessful",
@@ -40,13 +41,14 @@ export default function LoginForm() {
         });
         setIsLoggedIn(true);
         setUser({ username });
+        // Redirect to original page or default
         const redirectTo = new URLSearchParams(location.search).get(
           "redirectTo"
         );
         navigate(redirectTo || "/about");
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error during login:", error);
       return;
     }
   }
@@ -102,7 +104,6 @@ export default function LoginForm() {
               )}
             </button>
           </div>
-          {/* {error && <p className="login-error">{error}</p>} */}
         </div>
         <button
           style={{ "--buttonColor": "var(--highlight)", width: "100%" }}

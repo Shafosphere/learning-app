@@ -51,10 +51,10 @@ export default function VisitChart() {
     },
     scales: {
       x: {
-        stacked: true, // Włączenie stosowania dla osi X
+        stacked: true, 
       },
       y: {
-        stacked: true, // Włączenie stosowania dla osi Y
+        stacked: true, 
       },
     },
   };

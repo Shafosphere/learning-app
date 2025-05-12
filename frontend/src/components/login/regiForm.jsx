@@ -6,7 +6,8 @@ import api from "../../utils/api";
 
 export default function RegiForm({ setDisplay }) {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");``
+  const [email, setEmail] = useState("");
+  ``;
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);

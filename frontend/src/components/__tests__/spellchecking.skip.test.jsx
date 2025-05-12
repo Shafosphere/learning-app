@@ -1,10 +1,10 @@
-import { renderHook } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
-import useSpellchecking from '../../hooks/spellchecking/spellchecking';
-import { PopupContext } from '../popup/popupcontext';
-import { SettingsContext } from '../../pages/settings/properties';
+import { renderHook } from "@testing-library/react";
+import { vi, describe, it, expect, beforeEach } from "vitest";
+import useSpellchecking from "../../hooks/spellchecking/spellchecking";
+import { PopupContext } from "../popup/popupcontext";
+import { SettingsContext } from "../../pages/settings/properties";
 
-// Mockowanie kontekstów
+// Mocking contexts for Settings and Popup
 const mockSettings = {
   diacritical: false,
   spellChecking: false,
@@ -16,108 +16,107 @@ const mockPopup = {
 
 const wrapper = ({ children }) => (
   <SettingsContext.Provider value={mockSettings}>
-    <PopupContext.Provider value={mockPopup}>
-      {children}
-    </PopupContext.Provider>
+    <PopupContext.Provider value={mockPopup}>{children}</PopupContext.Provider>
   </SettingsContext.Provider>
 );
 
-describe('useSpellchecking', () => {
+describe("useSpellchecking hook", () => {
   beforeEach(() => {
+    // Reset mocks before each test
     vi.clearAllMocks();
     mockSettings.diacritical = false;
     mockSettings.spellChecking = false;
   });
 
-  describe('Normalizacja tekstu', () => {
-    it('powinna usunąć polskie znaki diakrytyczne gdy diacritical=false', () => {
+  describe("Text normalization", () => {
+    it("should remove Polish diacritical marks when diacritical=false", () => {
       const { result } = renderHook(() => useSpellchecking(), { wrapper });
-      
-      expect(result.current('łąka', 'laka')).toBe(true);
-      expect(result.current('śćżźń', 'sczzn')).toBe(true);
+
+      expect(result.current("łąka", "laka")).toBe(true);
+      expect(result.current("śćżźń", "sczzn")).toBe(true);
     });
 
-    it('nie powinna zmieniać znaków gdy diacritical=true', () => {
+    it("should not modify characters when diacritical=true", () => {
       mockSettings.diacritical = true;
       const { result } = renderHook(() => useSpellchecking(), { wrapper });
-      
-      expect(result.current('łąka', 'łąka')).toBe(true);
-      expect(result.current('łąka', 'laka')).toBe(false);
+
+      expect(result.current("łąka", "łąka")).toBe(true);
+      expect(result.current("łąka", "laka")).toBe(false);
     });
   });
 
-  describe('Walidacja pustych inputów', () => {
-    it('powinna zwrócić false i pokazać popup dla pustej odpowiedzi użytkownika', () => {
+  describe("Empty input validation", () => {
+    it("should return false and show popup for empty user input", () => {
       const { result } = renderHook(() => useSpellchecking(), { wrapper });
-      
-      expect(result.current('', 'test')).toBe(false);
+
+      expect(result.current("", "test")).toBe(false);
       expect(mockPopup.setPopup).toHaveBeenCalledWith({
-        message: "Chyba nic nie wpisałeś?",
+        message: "You didn't type anything?",
         emotion: "warning",
       });
     });
 
-    it('powinna zwrócić false i pokazać popup dla brakującej poprawnej odpowiedzi', () => {
+    it("should return false and show popup for missing correct answer", () => {
       const { result } = renderHook(() => useSpellchecking(), { wrapper });
-      
-      expect(result.current('test', '')).toBe(false);
+
+      expect(result.current("test", "")).toBe(false);
       expect(mockPopup.setPopup).toHaveBeenCalledWith({
-        message: "Niepoprawnie załadowane słówko",
+        message: "Incorrectly loaded word",
         emotion: "warning",
       });
     });
   });
 
-  describe('Tryb ścisły (spellChecking=false)', () => {
-    it('powinna zwracać true tylko dla dokładnych dopasowań', () => {
+  describe("Strict mode (spellChecking=false)", () => {
+    it("should return true only for exact matches", () => {
       mockSettings.spellChecking = false;
       const { result } = renderHook(() => useSpellchecking(), { wrapper });
-      
-      expect(result.current('test', 'test')).toBe(true);
-      expect(result.current('Test', 'test')).toBe(true); // case insensitive
-      expect(result.current('tes', 'test')).toBe(false);
-      expect(result.current('test ', 'test')).toBe(true); // trim
+
+      expect(result.current("test", "test")).toBe(true);
+      expect(result.current("Test", "test")).toBe(true);
+      expect(result.current("tes", "test")).toBe(false);
+      expect(result.current("test ", "test")).toBe(true);
     });
   });
 
-  describe('Tryb tolerancyjny (spellChecking=true)', () => {
+  describe("Tolerant mode (spellChecking=true)", () => {
     beforeEach(() => {
       mockSettings.spellChecking = true;
     });
 
-    it('powinna akceptować 1 błąd', () => {
+    it("should allow one error", () => {
       const { result } = renderHook(() => useSpellchecking(), { wrapper });
-      
-      expect(result.current('test', 'test')).toBe(true); // 0 błędów
-      expect(result.current('tast', 'test')).toBe(true); // 1 błąd
-      expect(result.current('tbst', 'test')).toBe(true); // 1 błąd
-      expect(result.current('tes', 'test')).toBe(true); // różna długość
-      expect(result.current('txx', 'test')).toBe(false); // 2 błędy
+
+      expect(result.current("test", "test")).toBe(true);
+      expect(result.current("tast", "test")).toBe(true);
+      expect(result.current("tbst", "test")).toBe(true);
+      expect(result.current("tes", "test")).toBe(true);
+      expect(result.current("txx", "test")).toBe(false);
     });
 
-    it('powinna liczyć różnice w różnych długościach', () => {
+    it("should count differences for different lengths", () => {
       const { result } = renderHook(() => useSpellchecking(), { wrapper });
-      
-      expect(result.current('telefon', 'telefony')).toBe(true); // +1 znak
-      expect(result.current('telegony', 'telefony')).toBe(true);
-    });
-  });
 
-  describe('Obsługa białych znaków', () => {
-    it('powinna trimować białe znaki', () => {
-      const { result } = renderHook(() => useSpellchecking(), { wrapper });
-      
-      expect(result.current('  test  ', 'test')).toBe(true);
-      expect(result.current('\ttest\n', 'test')).toBe(true);
+      expect(result.current("telefon", "telefony")).toBe(true);
+      expect(result.current("telegony", "telefony")).toBe(true);
     });
   });
 
-  describe('Case sensitivity', () => {
-    it('powinna ignorować wielkość liter', () => {
+  describe("Whitespace handling", () => {
+    it("should trim whitespace", () => {
       const { result } = renderHook(() => useSpellchecking(), { wrapper });
-      
-      expect(result.current('TEST', 'test')).toBe(true);
-      expect(result.current('Test', 'tESt')).toBe(true);
+
+      expect(result.current("  test  ", "test")).toBe(true);
+      expect(result.current("\ttest\n", "test")).toBe(true);
+    });
+  });
+
+  describe("Case sensitivity", () => {
+    it("should ignore letter case", () => {
+      const { result } = renderHook(() => useSpellchecking(), { wrapper });
+
+      expect(result.current("TEST", "test")).toBe(true);
+      expect(result.current("Test", "tESt")).toBe(true);
     });
   });
 });

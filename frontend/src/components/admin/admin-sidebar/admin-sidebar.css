@@ -6,9 +6,6 @@
     width: 12.5rem;
     flex: 0 0 12.5rem;
     padding: 2rem 0rem 2rem 0rem;
-/* 
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 }
 .plate {
     display: flex;

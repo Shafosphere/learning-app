@@ -34,16 +34,16 @@ export default function Settings() {
     isLoggedIn,
   } = useContext(SettingsContext);
 
-  // popup
+  // Popup context
   const { setPopup } = useContext(PopupContext);
   const [activePage, setPage] = useState("1");
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
 
-  // confirm
+  // Confirm dialog
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState(null);
 
-  // span management
+  // Span tooltip tracking
   const [activeSpan, setSpan] = useState("");
 
   function handleDailyGoalChange(e) {
@@ -114,7 +114,7 @@ export default function Settings() {
     }
   }
 
-  // Funkcja resetująca progres w Vocabulary (localStorage)
+  // Function to reset progress in Vocabulary (localStorage)
   function resetProgressVoca(lvl) {
     const keysToRemove = [
       `carouselItems-${lvl}`,
@@ -129,11 +129,11 @@ export default function Settings() {
     keysToRemove.forEach((key) => localStorage.removeItem(key));
   }
 
-  // Funkcja resetująca progres w Flashcards (localStorage + IndexedDB)
+  // Function to reset progress in Flashcards (localStorage + IndexedDB)
   async function resetProgressFlashcards(level) {
-    // Reset numeru paczki
+    // Reset pack number
     localStorage.setItem(`patchNumber${level}-maingame`, 1);
-    // Czyścimy store w IndexedDB
+    // Clear store in IndexedDB
 
     const request = indexedDB.open("SavedBoxes", 2);
     request.onsuccess = (event) => {
@@ -160,9 +160,9 @@ export default function Settings() {
     if (isLoggedIn) {
       try {
         await api.post("/user/auto-delete", { level });
-        console.log("Progres zresetowany na serwerze");
+        console.log("Progress reset on the server");
       } catch (error) {
-        console.error("Błąd resetowania na serwerze:", error);
+        console.error("Error resetting progress on the server:", error);
         throw error;
       }
     }

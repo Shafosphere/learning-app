@@ -6,7 +6,7 @@
   height: 100vh;
   overflow: hidden;
   pointer-events: none;
-  z-index: 2; /* Zapewnia, że konfetti jest widoczne nad innymi elementami */
+  z-index: 2; 
 }
 
 
@@ -33,7 +33,6 @@
   border-left: none;
 }
 
-/* Odwrócenie co drugiego elementu */
 .confetti:nth-child(even) {
   transform: scale(-1, 1);
   left: auto;

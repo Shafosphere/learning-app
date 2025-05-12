@@ -22,6 +22,7 @@ export default function useBoxesDB(
   const [autoSave, setAutoSave] = useState(false);
   const deviceId = localStorage.getItem("deviceId");
 
+  // Update the local patch number based on level
   const updateLocalPatchNumber = useCallback(
     (newValue) => {
       if (lvl === "B2") setB2Patch(newValue);
@@ -30,8 +31,9 @@ export default function useBoxesDB(
     [lvl, setB2Patch, setC1Patch]
   );
 
+  // Overwrite IndexedDB store with server-side words data
   const updateIndexedDBFromServer = useCallback(
-    async (serverData) => {
+    async (wordsData) => {
       return new Promise((resolve, reject) => {
         const request = indexedDB.open("SavedBoxes", 2);
 
@@ -42,17 +44,16 @@ export default function useBoxesDB(
 
         request.onsuccess = (event) => {
           const db = event.target.result;
-          if (!db.objectStoreNames.contains(`boxes${lvl}`)) {
-            reject(new Error(`Object store boxes${lvl} not found`));
+          const storeName = `boxes${lvl}`;
+          if (!db.objectStoreNames.contains(storeName)) {
+            reject(new Error(`Object store ${storeName} not found`));
             return;
           }
-          const transaction = db.transaction([`boxes${lvl}`], "readwrite");
-          const store = transaction.objectStore(`boxes${lvl}`);
+          const tx = db.transaction([storeName], "readwrite");
+          const store = tx.objectStore(storeName);
 
           store.clear().onsuccess = () => {
-            serverData.forEach((item) => {
-              store.add(item);
-            });
+            wordsData.forEach((item) => store.add(item));
             resolve();
           };
         };
@@ -63,11 +64,12 @@ export default function useBoxesDB(
     [lvl]
   );
 
-  const serwerAutoload = useCallback(async () => {
+  // 1. Use useCallback for server-side load
+  const serverAutoload = useCallback(async () => {
     try {
       const response = await api.post("/user/auto-load", {
         level: lvl,
-        deviceId: deviceId,
+        deviceId,
       });
       const serverData = response.data;
 
@@ -79,18 +81,22 @@ export default function useBoxesDB(
       }
 
       if (serverData.patchNumber) {
-        localStorage.setItem(`patchNumber${lvl}-maingame`, serverData.patchNumber);
+        localStorage.setItem(
+          `patchNumber${lvl}-maingame`,
+          serverData.patchNumber
+        );
       }
 
-      await updateIndexedDBFromServer(response.data.words);
-      console.log("Dane z serwera wczytane i zapisane w IndexedDB");
+      await updateIndexedDBFromServer(serverData.words);
+      console.log("Server data loaded and saved to IndexedDB");
       return response;
     } catch (error) {
-      console.error("Błąd autoload:", error);
+      console.error("Error during auto-load:", error);
       return null;
     }
   }, [lvl, deviceId, updateIndexedDBFromServer]);
 
+  // 2. Resolve conflicts between guest and server data
   const resolveSaveConflict = async () => {
     const guestTimestamp = localStorage.getItem(`guestTimestamp_${lvl}`);
     if (!guestTimestamp) return;
@@ -98,27 +104,26 @@ export default function useBoxesDB(
     try {
       const response = await api.post("/user/auto-load", {
         level: lvl,
-        deviceId: deviceId,
+        deviceId,
       });
       const serverData = response.data;
 
       if (!serverData.last_saved) {
-        await serwerAutosave();
+        await serverAutosave();
         return;
       }
 
       const serverTimestamp = new Date(serverData.last_saved).getTime();
-      const guestTimeNumber = parseInt(guestTimestamp);
+      const guestTimeNumber = parseInt(guestTimestamp, 10);
 
       if (guestTimeNumber > serverTimestamp) {
-        // Przekazujemy timestampy zamiast gotowego tekstu
         const userConfirmed = await showConfirm(
           guestTimeNumber,
           serverTimestamp
         );
 
         if (userConfirmed) {
-          await serwerAutosave();
+          await serverAutosave();
         } else {
           await updateIndexedDBFromServer(serverData.words);
           if (serverData.patchNumber) {
@@ -131,103 +136,86 @@ export default function useBoxesDB(
 
       localStorage.removeItem(`guestTimestamp_${lvl}`);
     } catch (error) {
-      console.error("Błąd konfliktu:", error);
+      console.error("Error resolving conflict:", error);
     }
   };
 
-  // 1. Użycie useCallback dla funkcji serwerowych
-  const serwerAutosave = useCallback(async () => {
-    // Generowanie dynamicznych danych z boxów
+  // 3. Automatically send data to server or save guest timestamp
+  const serverAutosave = useCallback(async () => {
     const currentPatch = lvl === "B2" ? patchNumberB2 : patchNumberC1;
     const words = Object.entries(boxes).flatMap(([boxName, items]) =>
       items.map(({ id }) => ({ id, boxName }))
     );
 
-    const data = {
+    const payload = {
       level: lvl,
-      deviceId: deviceId,
+      deviceId,
       words,
       patchNumber: currentPatch,
     };
-    console.log(data);
+    console.log("Auto-save payload:", payload);
     try {
-      const response = await api.post("/user/auto-save", data); // Usunięto zbędne {data}
-      console.log("autozapis wykonany", response.data);
+      const response = await api.post("/user/auto-save", payload);
+      console.log("Auto-save completed:", response.data);
     } catch (error) {
-      console.error("Błąd autozapisu:", error);
+      console.error("Error during auto-save:", error);
     }
   }, [boxes, lvl, deviceId, patchNumberB2, patchNumberC1]);
 
-  const initializeDB = (db, lvl) => {
-    if (!db.objectStoreNames.contains(`boxes${lvl}`)) {
-      db.createObjectStore(`boxes${lvl}`, { keyPath: "id" });
+  // Initialize IndexedDB store for the given level
+  const initializeDB = (db, level) => {
+    const storeName = `boxes${level}`;
+    if (!db.objectStoreNames.contains(storeName)) {
+      db.createObjectStore(storeName, { keyPath: "id" });
     }
   };
 
-  // 4. Poprawiony efekt ładowania danych
+  // 4. Updated data loading effect
   useEffect(() => {
     const loadData = async () => {
-      // Najpierw sprawdź czy jest zalogowany
       if (isLoggedIn) {
-        // 1. Rozwiąż konflikt i wczytaj dane z serwera
         await resolveSaveConflict();
-        const response = await serwerAutoload();
-
-        // 2. Aktualizuj patch number z serwera
+        const response = await serverAutoload();
         if (response?.data?.patchNumber) {
           updateLocalPatchNumber(response.data.patchNumber);
         }
       }
 
-      // Następnie zawsze ładuj z IndexedDB
+      // Then always load from IndexedDB
       const dbData = await new Promise((resolve, reject) => {
         const request = indexedDB.open("SavedBoxes", 2);
 
         request.onupgradeneeded = (event) => {
           const db = event.target.result;
-          // Utwórz wszystkie możliwe object stores
-          ["B2", "C1"].forEach((level) => {
-            if (!db.objectStoreNames.contains(`boxes${level}`)) {
-              db.createObjectStore(`boxes${level}`, { keyPath: "id" });
-            }
-          });
+          ["B2", "C1"].forEach((level) => initializeDB(db, level));
         };
 
         request.onsuccess = (event) => {
           const db = event.target.result;
-
-          // Sprawdź czy istnieje store dla aktualnego poziomu
-          if (!db.objectStoreNames.contains(`boxes${lvl}`)) {
+          const storeName = `boxes${lvl}`;
+          if (!db.objectStoreNames.contains(storeName)) {
             const version = db.version + 1;
             db.close();
-
-            // Wymuś aktualizację wersji bazy
             const upgradeRequest = indexedDB.open("SavedBoxes", version);
-            upgradeRequest.onupgradeneeded = (e) => {
-              const newDB = e.target.result;
-              newDB.createObjectStore(`boxes${lvl}`, { keyPath: "id" });
-            };
-
-            upgradeRequest.onsuccess = (e) => {
-              const newDB = e.target.result;
-              const transaction = newDB.transaction(
-                [`boxes${lvl}`],
-                "readonly"
-              );
-              const store = transaction.objectStore(`boxes${lvl}`);
-              store.getAll().onsuccess = (e) => resolve(e.target.result);
-            };
+            upgradeRequest.onupgradeneeded = (e) =>
+              initializeDB(e.target.result, lvl);
+            upgradeRequest.onsuccess = (e) =>
+              (e.target.result
+                .transaction([storeName], "readonly")
+                .objectStore(storeName)
+                .getAll().onsuccess = (e) => resolve(e.target.result));
           } else {
-            const transaction = db.transaction([`boxes${lvl}`], "readonly");
-            const store = transaction.objectStore(`boxes${lvl}`);
-            store.getAll().onsuccess = (e) => resolve(e.target.result);
+            db
+              .transaction([storeName], "readonly")
+              .objectStore(storeName)
+              .getAll().onsuccess = (e) => resolve(e.target.result);
           }
         };
 
         request.onerror = reject;
       });
 
-      // Aktualizacja stanu
+      // Update state with IndexedDB data
       const newBoxesState = {
         boxOne: [],
         boxTwo: [],
@@ -237,75 +225,66 @@ export default function useBoxesDB(
       };
       dbData.forEach((item) => {
         const { boxName, ...rest } = item;
-        if (newBoxesState[boxName]) {
-          newBoxesState[boxName].push(rest);
-        }
+        if (newBoxesState[boxName]) newBoxesState[boxName].push(rest);
       });
       setBoxes(newBoxesState);
 
       if (!isLoggedIn) {
         const localPatch = localStorage.getItem(`patchNumber${lvl}-maingame`);
         if (localPatch) {
-          if (lvl === `B2`) {
-            setB2Patch(Number(localPatch));
-          } else {
-            setC1Patch(Number(localPatch));
-          }
+          const parsed = Number(localPatch);
+          if (lvl === "B2") setB2Patch(parsed);
+          else setC1Patch(parsed);
         }
       }
     };
 
     loadData();
-  }, [lvl, isLoggedIn, serwerAutoload, setB2Patch, setC1Patch]);
+  }, [
+    lvl,
+    isLoggedIn,
+    resolveSaveConflict,
+    serverAutoload,
+    updateLocalPatchNumber,
+  ]);
 
-  // 6. Poprawiony efekt zapisu
+  // 6. Updated save effect
   useEffect(() => {
     const saveData = async () => {
       if (!autoSave) return;
 
-      // Zawsze zapisuj do IndexedDB, niezależnie od logowania
       try {
-        // Dla zalogowanych: wyślij do serwera
         if (isLoggedIn) {
-          await serwerAutosave();
+          await serverAutosave();
         } else {
-          // Dla gości: zapisz timestamp
           localStorage.setItem(`guestTimestamp_${lvl}`, Date.now());
         }
 
-        // Zawsze zapisz do IndexedDB
+        // Always write to IndexedDB
         await new Promise((resolve, reject) => {
-          const request = indexedDB.open("SavedBoxes", 2); // Zmiana wersji na 2
-
+          const request = indexedDB.open("SavedBoxes", 2);
           request.onsuccess = (event) => {
             const db = event.target.result;
-            const transaction = db.transaction([`boxes${lvl}`], "readwrite");
-            const store = transaction.objectStore(`boxes${lvl}`);
-
+            const tx = db.transaction([`boxes${lvl}`], "readwrite");
+            const store = tx.objectStore(`boxes${lvl}`);
             store.clear().onsuccess = async () => {
-              const promises = [];
-              Object.entries(boxes).forEach(([boxName, items]) => {
-                items.forEach((item) => {
-                  promises.push(store.put({ ...item, boxName }));
-                });
-              });
-
-              await Promise.all(promises);
+              for (const [boxName, items] of Object.entries(boxes)) {
+                for (const item of items) await store.put({ ...item, boxName });
+              }
               resolve();
             };
           };
-
           request.onerror = reject;
         });
 
         setAutoSave(false);
       } catch (error) {
-        console.error("Błąd zapisu:", error);
+        console.error("Error saving data:", error);
       }
     };
 
     saveData();
-  }, [autoSave, boxes, lvl, isLoggedIn, serwerAutosave]);
+  }, [autoSave, boxes, lvl, isLoggedIn, serverAutosave]);
 
   return { boxes, setBoxes, autoSave, setAutoSave };
 }

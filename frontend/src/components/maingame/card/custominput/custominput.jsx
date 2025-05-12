@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import "./custominput.css";
 
-export default function LearingInput({
+// Custom input component with a persistent placeholder for flashcards
+export default function LearningInput({
   placeholder,
   maxLength,
   value,
   correctWordChange,
   correctWordRef,
-  autoFocus // Dodajemy nową prop
+  autoFocus, // Whether to auto-focus this input
 }) {
   const [scroll, setScroll] = useState(0);
 
+  // Track horizontal scroll to adjust placeholder position
   const handleScroll = (e) => {
     setScroll(e.target.scrollLeft);
   };
@@ -22,7 +24,7 @@ export default function LearingInput({
         value={value}
         onChange={correctWordChange}
         onScroll={handleScroll}
-        className={`custom-input-flashcard`}
+        className="custom-input-flashcard"
         maxLength={maxLength}
         ref={correctWordRef}
         autoComplete="off"
@@ -30,7 +32,7 @@ export default function LearingInput({
         spellCheck="false"
         name="wordInput"
         autoCapitalize="off"
-        autoFocus={autoFocus} // Używamy nowej propsy
+        autoFocus={autoFocus} // Use the autoFocus prop
       />
       <span
         className="persistent-placeholder"

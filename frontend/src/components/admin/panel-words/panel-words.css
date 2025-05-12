@@ -5,8 +5,6 @@
   background-color: var(--secondBackground);
   padding: 2rem 2rem 2rem 2rem;
   flex: 0 0 25rem;
-  /* border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 }
 .words-table {
   overflow-y: auto;
@@ -60,9 +58,6 @@
   height: 100%;
   margin: auto;
   padding: 2rem;
-  /* border: 1px solid var(--border);
-  border-radius: 5px; */
-  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
   background-color: var(--secondBackground);
   color: var(--headline);
   display: flex;
@@ -162,9 +157,8 @@
   overflow: hidden;
   width: 21rem;
   z-index: 1000;
-  top: 3.5rem; /* Przesuń w dół o 50px */
-  left: 0rem; /* Przesuń w prawo o 10px */
-  /* Możesz również użyć right i bottom */
+  top: 3.5rem; 
+  left: 0rem;
 }
 
 .searchbar:focus-within .search-results {
@@ -214,7 +208,7 @@
   justify-content: center;
   align-items: center;
   background-color: var(--tertiary);
-  bottom: 2rem; /* Odległość od dołu kontenera */
+  bottom: 2rem; 
   left: 2rem;
 }
 .level-container{
@@ -228,7 +222,6 @@
   align-items: center;
   justify-content: center;
 
-  border: none; /* usuń standardowy border */
   box-shadow: inset 0 0 0 2px var(--tertiary); 
   
   cursor: pointer;

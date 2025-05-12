@@ -19,15 +19,15 @@ export default function useSpellchecking() {
       .replace(/ż/g, "z");
   }
 
-  // Implementacja algorytmu Levenshteina
+  // Implementation of the Levenshtein algorithm
   function levenshtein(a, b) {
     const matrix = [];
 
-    // Jeżeli jedno z słów jest puste, odległość to długość drugiego słowa
+    // If one of the words is empty, distance is the length of the other word
     if (a.length === 0) return b.length;
     if (b.length === 0) return a.length;
 
-    // Inicjalizacja pierwszego wiersza i kolumny
+    // Initialize first row and column
     for (let i = 0; i <= b.length; i++) {
       matrix[i] = [i];
     }
@@ -35,16 +35,16 @@ export default function useSpellchecking() {
       matrix[0][j] = j;
     }
 
-    // Wypełnianie macierzy
+    // Fill the matrix
     for (let i = 1; i <= b.length; i++) {
       for (let j = 1; j <= a.length; j++) {
         if (b.charAt(i - 1) === a.charAt(j - 1)) {
           matrix[i][j] = matrix[i - 1][j - 1];
         } else {
           matrix[i][j] = Math.min(
-            matrix[i - 1][j] + 1, // usunięcie
-            matrix[i][j - 1] + 1, // wstawienie
-            matrix[i - 1][j - 1] + 1 // substytucja
+            matrix[i - 1][j] + 1, // deletion
+            matrix[i][j - 1] + 1, // insertion
+            matrix[i - 1][j - 1] + 1 // substitution
           );
         }
       }
@@ -54,7 +54,7 @@ export default function useSpellchecking() {
   }
 
   function checkSpelling(userForm, correctForm) {
-    console.log("diacritical jest: " + diacritical);
+    console.log("diacritical is: " + diacritical);
     const processedUserWord = diacritical ? userForm : normalizeText(userForm);
     const processedCorrectAnswer = diacritical
       ? correctForm
@@ -62,13 +62,13 @@ export default function useSpellchecking() {
 
     if (userForm.length <= 0) {
       setPopup({
-        message: "Chyba nic nie wpisałeś?",
+        message: "You didn't enter anything.",
         emotion: "warning",
       });
       return false;
     } else if (correctForm.length <= 0) {
       setPopup({
-        message: "Niepoprawnie załadowane słówko",
+        message: "Failed to load the correct word.",
         emotion: "warning",
       });
       return false;
@@ -78,14 +78,14 @@ export default function useSpellchecking() {
     const correctWord = processedCorrectAnswer.trim().toLowerCase();
 
     if (spellChecking) {
-      // Tryb tolerancyjny: akceptujemy jeden błąd
+      // Tolerant mode: accept a single error
       if (userWord === correctWord) {
         return true;
       }
       const differences = levenshtein(userWord, correctWord);
       return differences <= 1;
     } else {
-      // Tryb ścisły: wymagamy dokładnego dopasowania
+      // Strict mode: require exact match
       return userWord === correctWord;
     }
   }

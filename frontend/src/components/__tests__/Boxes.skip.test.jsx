@@ -1,3 +1,5 @@
+// src/components/__tests__/Boxes.test.jsx
+
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Boxes from "../maingame/boxex/boxex";
@@ -10,7 +12,7 @@ vi.mock("react-intl", () => ({
   FormattedMessage: ({ id }) => <span>{id}</span>,
 }));
 
-vi.mock("../../button/button", () => ({
+vi.mock("../button/button", () => ({
   __esModule: true,
   default: ({ message, color, onClick }) => (
     <button onClick={onClick} data-color={color}>
@@ -45,7 +47,7 @@ describe("Boxes Component", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders five boxes with correct counts", () => {
+  it("renders five boxes displaying correct item counts", () => {
     const { container } = render(
       <Boxes
         boxes={boxesData}
@@ -61,7 +63,7 @@ describe("Boxes Component", () => {
     });
   });
 
-  it("calls handleSetBox on box click", () => {
+  it("invokes handleSetBox when a box is clicked", () => {
     render(
       <Boxes
         boxes={boxesData}
@@ -77,7 +79,7 @@ describe("Boxes Component", () => {
     expect(handleSetBox).toHaveBeenCalledWith("boxOne");
   });
 
-  it("cycles activeBox on ArrowRight and ArrowLeft", () => {
+  it("cycles activeBox with ArrowRight and ArrowLeft keys", () => {
     render(
       <Boxes
         boxes={boxesData}
@@ -92,7 +94,7 @@ describe("Boxes Component", () => {
     expect(handleSetBox).toHaveBeenCalledWith("boxFour");
   });
 
-  it("calls addWords when enabled via buttons", () => {
+  it("calls addWords when add buttons are enabled and clicked", () => {
     render(
       <Boxes
         boxes={boxesData}
@@ -106,7 +108,7 @@ describe("Boxes Component", () => {
     expect(addWords).toHaveBeenCalledTimes(2);
   });
 
-  it("does not call addWords when disabled", () => {
+  it("does not call addWords when box is disabled", () => {
     const disabledBoxes = { ...boxesData, boxOne: Array(61).fill(0) };
     render(
       <Boxes

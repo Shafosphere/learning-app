@@ -15,16 +15,16 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
-    const errorCode = error.response?.data?.code; // Poprawione: używamy errorCode zamiast code
+    const errorCode = error.response?.data?.code; // Fixed: using errorCode instead of code
 
-    // Specjalna obsługa błędów autentykacji
+    // Special handling for authentication errors
     if (errorCode === "ERR_TOKEN_NOT_FOUND") {
       return Promise.reject(error);
     }
 
-    // Ekstrakcja wiadomości
-    let rawMsg,
-      params = {};
+    // Extracting the error message
+    let rawMsg;
+    let params = {};
     if (status === 400 && error.response?.data?.errors) {
       const firstError = error.response.data.errors[0];
       rawMsg = firstError.msg;
@@ -33,7 +33,7 @@ api.interceptors.response.use(
       rawMsg = error.response?.data?.message || "ERR_UNKNOWN_ERROR";
     }
 
-    // Tłumaczenie komunikatów
+    // Translating messages
     let finalMsg;
     if (isErrorCode(rawMsg)) {
       finalMsg = translate(rawMsg, "An unknown error occurred", params);
@@ -41,7 +41,7 @@ api.interceptors.response.use(
       finalMsg = rawMsg;
     }
 
-    // Wyświetlanie popupu
+    // Displaying popup
     showPopup({
       message: finalMsg,
       emotion: status >= 500 ? "warning" : "negative",

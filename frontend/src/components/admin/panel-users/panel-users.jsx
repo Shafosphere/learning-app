@@ -1,5 +1,3 @@
-import "./panel-users.css";
-import api from "../../../utils/api";
 import React, { useState, useEffect, useRef, useContext } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { MdEdit } from "react-icons/md";
@@ -7,21 +5,29 @@ import { IoIosTrash } from "react-icons/io";
 import { FaCheck } from "react-icons/fa6";
 import { FaUndoAlt } from "react-icons/fa";
 import { PopupContext } from "../../popup/popupcontext";
-
 import ConfirmWindow from "../../confirm/confirm";
 import MyButton from "../../button/button";
+import api from "../../../utils/api";
+import "./panel-users.css";
 
+// Admin panel for managing users with infinite scroll, search, edit, undo, and delete features
 export default function UsersPanel() {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [searchTerm, setSearchTerm] = useState(""); // Dodanie searchTerm
-  const [searchResults, setSearchResults] = useState([]);
-  const [editingRowId, setEditingRowId] = useState(null);
 
+  // Search bar state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  // Row editing state
+  const [editingRowId, setEditingRowId] = useState(null);
   const [editedRows, setEditedRows] = useState({});
+
+  // Stack of undo operations
   const [undoValues, setUndoValues] = useState([]);
 
+  // Current values being edited
   const [editValues, setEditValues] = useState({
     username: "",
     email: "",
@@ -31,11 +37,10 @@ export default function UsersPanel() {
 
   const userRef = useRef(null);
 
-  // confirm
+  // Confirmation dialog state
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState(null);
 
-  // popup
   const { setPopup } = useContext(PopupContext);
 
   const handleConfirmClose = (result) => {
@@ -46,16 +51,16 @@ export default function UsersPanel() {
     setConfirmCallback(null);
   };
 
-  function showConfirm(text, callback) {
-    setConfirmMessage(text);
+  // Show confirmation dialog with message and callback
+  function showConfirm(message, callback) {
+    setConfirmMessage(message);
     setConfirmCallback(() => callback);
   }
-  ////
 
-  //data
-  async function getUsers(page) {
+  // Fetch users list, paginated
+  async function getUsers(pageNumber) {
     try {
-      const response = await api.get(`/user/list?page=${page}&limit=50`);
+      const response = await api.get(`/user/list?page=${pageNumber}&limit=50`);
       return response.data;
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -63,6 +68,7 @@ export default function UsersPanel() {
     }
   }
 
+  // Initial load
   useEffect(() => {
     const loadInitialUsers = async () => {
       const initialUsers = await getUsers(1);
@@ -70,58 +76,48 @@ export default function UsersPanel() {
       setPage(1);
       setHasMore(initialUsers.length > 0);
     };
-
     loadInitialUsers();
   }, []);
 
+  // Load more users for infinite scroll
   async function getMoreUsers() {
     const newPage = page + 1;
     const newUsers = await getUsers(newPage);
     if (newUsers.length > 0) {
-      setUsers((prevUsers) => [...prevUsers, ...newUsers]);
+      setUsers((prev) => [...prev, ...newUsers]);
       setPage(newPage);
     }
     setHasMore(newUsers.length > 0);
   }
 
+  // Send edited rows to server
   async function sendData() {
     if (Object.keys(editedRows).length === 0) {
-      console.log("Brak zmian do wysłania");
+      console.log("No changes to send");
       return;
     }
 
     try {
       const response = await api.patch("/user/update", { editedRows });
-
       if (response.status === 200) {
-        setPopup({
-          message: response.data.message,
-          emotion: "positive",
-        });
-
-        const updatedUsers = [...users].map((user) =>
-          editedRows[user.id]
-            ? { ...user, ...editedRows[user.id], isEdited: false }
-            : user
+        setPopup({ message: response.data.message, emotion: "positive" });
+        // Apply updates locally and clear edit flags
+        const updated = users.map((u) =>
+          editedRows[u.id] ? { ...u, ...editedRows[u.id], isEdited: false } : u
         );
-
-        setUsers(updatedUsers);
+        setUsers(updated);
         setEditedRows({});
       }
     } catch (error) {
       setPopup({
-        message: error.response?.data?.message || "Wystąpił błąd",
+        message: error.response?.data?.message || "An error occurred",
         emotion: "negative",
       });
-      console.error(
-        "Update error:",
-        error.response?.data?.errors || error
-      );
+      console.error("Update error:", error.response?.data?.errors || error);
     }
   }
-  ////
 
-  ///searchbar
+  // Handle search input changes
   const handleSearchChange = async (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -129,13 +125,9 @@ export default function UsersPanel() {
     if (value.length > 0) {
       try {
         const response = await api.get(`/user/search?query=${value}`);
-        if (response.data.length > 0) {
-          setSearchResults(response.data.slice(0, 10)); // Limitowanie wyników do 10
-        } else {
-          setSearchResults([]);
-        }
+        setSearchResults(response.data.slice(0, 10)); // Limit to 10 results
       } catch (error) {
-        console.error("Error searching words:", error);
+        console.error("Error searching users:", error);
         setSearchResults([]);
       }
     } else {
@@ -143,30 +135,23 @@ export default function UsersPanel() {
     }
   };
 
-  const handleSearchResultClick = (userId) => {
-    scrollToUser(userId);
-  };
+  // Scroll to selected user in list
+  const handleSearchResultClick = (userId) => scrollToUser(userId);
 
   const scrollToUser = async (userId) => {
-    // Sprawdź, czy użytkownik jest już załadowany
-    const userExists = users.find((user) => user.id === userId);
-
-    if (userExists) {
-      const userElement = document.getElementById(`user-${userId}`);
-      if (userElement) {
-        userElement.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+    const exists = users.some((u) => u.id === userId);
+    if (exists) {
+      const el = document.getElementById(`user-${userId}`);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
     } else if (hasMore) {
-      // Jeśli użytkownik nie jest załadowany i są kolejne strony do załadowania
-      await getMoreUsers(); // Załaduj więcej użytkowników
-      scrollToUser(userId); // Sprawdź ponownie
+      await getMoreUsers();
+      scrollToUser(userId);
     } else {
       console.log("User not found.");
     }
   };
-  ////
 
-  ///Table Value Edit
+  // Enable edit mode for a row
   function enableEditMode(user) {
     setEditingRowId(user.id);
     setEditValues({
@@ -177,111 +162,86 @@ export default function UsersPanel() {
     });
   }
 
+  // Track changes in edit inputs
   function handleInputChange(e) {
     const { name, value } = e.target;
-    setEditValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
+    setEditValues((prev) => ({ ...prev, [name]: value }));
   }
 
+  // Confirm edited values and push to undo stack
   function confirm() {
-    const user = users.find((user) => user.id === editingRowId);
+    const user = users.find((u) => u.id === editingRowId);
     if (user) {
-      const updatedUser = { ...user };
-      setUndoValues((prevUndoValues) => [
-        ...prevUndoValues,
-        { id: user.id, previousValues: updatedUser },
+      setUndoValues((prev) => [
+        ...prev,
+        { id: user.id, previousValues: { ...user } },
       ]);
     }
 
-    setUsers((prevUsers) =>
-      prevUsers.map((user) => {
-        if (user.id === editingRowId) {
-          const updatedUser = { ...user, ...editValues };
-          setEditedRows((prevEditedRows) => ({
-            ...prevEditedRows,
-            [user.id]: updatedUser,
-          }));
-          return { ...updatedUser, isEdited: true };
-        }
-        return user;
-      })
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === editingRowId ? { ...u, ...editValues, isEdited: true } : u
+      )
     );
+    setEditedRows((prev) => ({ ...prev, [editingRowId]: editValues }));
     setEditingRowId(null);
   }
 
+  // Undo last edit
   function undo() {
-    const lastEdit = undoValues.pop(); // Pobranie ostatniego wpisu z tablicy
-
-    if (lastEdit) {
-      const { id, previousValues } = lastEdit;
-
-      // Przywrócenie poprzednich wartości do stanu users
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === id
-            ? { ...user, ...previousValues, isEdited: false }
-            : user
-        )
-      );
-
-      // Usunięcie cofniętych zmian z editedRows
-      setEditedRows((prevEditedRows) => {
-        const { [id]: removed, ...rest } = prevEditedRows;
-        return rest; // Usunięcie użytkownika, który cofnął zmiany, z editedRows
-      });
-
-      // Aktualizacja undoValues bez ostatniego elementu (pop automatycznie usuwa)
-      setUndoValues([...undoValues]);
-    }
+    const last = undoValues.pop();
+    if (!last) return;
+    const { id, previousValues } = last;
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === id ? { ...u, ...previousValues, isEdited: false } : u
+      )
+    );
+    setEditedRows((prev) => {
+      const rest = { ...prev };
+      delete rest[id];
+      return rest;
+    });
+    setUndoValues([...undoValues]);
   }
 
+  // Delete user with confirmation
   function deleteUser(userId) {
-    showConfirm("Czy na pewno chcesz usunąć tego użytkownika?", async () => {
+    showConfirm("Are you sure you want to delete this user?", async () => {
       try {
         const response = await api.delete(`/user/delete/${userId}`);
         if (response.status === 200) {
-          // Usuń użytkownika ze stanu
-          setUsers((prevUsers) =>
-            prevUsers.filter((user) => user.id !== userId)
-          );
-
+          setUsers((prev) => prev.filter((u) => u.id !== userId));
           setPopup({
-            message: "Użytkownik został pomyślnie usunięty.",
+            message: "User deleted successfully.",
             emotion: "positive",
           });
         }
       } catch (error) {
-        setPopup({
-          message: "Wystąpił błąd podczas usuwania użytkownika.",
-          emotion: "negative",
-        });
-
+        setPopup({ message: "Error deleting user.", emotion: "negative" });
         console.error("Error deleting user:", error);
       }
     });
   }
 
-  ////
-
   return (
     <>
       <div className="users-container">
+        {/* Search bar */}
         <div className="searchbar" tabIndex="0">
           <input
             type="text"
-            placeholder="Search by ID / username / email"
+            placeholder="Search by ID, username, or email"
             value={searchTerm}
             onChange={handleSearchChange}
           />
           {searchResults.length > 0 && (
             <div className="search-results-users">
               <ul>
-                {searchResults.map((result, index) => (
+                {searchResults.map((result, idx) => (
                   <li
                     key={result.id}
-                    className={index % 2 === 0 ? "even" : "odd"}
+                    className={idx % 2 === 0 ? "even" : "odd"}
                     onClick={() => handleSearchResultClick(result.id)}
                   >
                     <span className="id-span">{result.id}</span>
@@ -293,6 +253,8 @@ export default function UsersPanel() {
             </div>
           )}
         </div>
+
+        {/* Users table with infinite scroll */}
         <div className="users-table">
           <InfiniteScroll
             dataLength={users.length}
@@ -304,14 +266,14 @@ export default function UsersPanel() {
             <table>
               <thead>
                 <tr>
-                  <th>id</th>
-                  <th>username</th>
-                  <th>email</th>
-                  <th>created time</th>
-                  <th>last login</th>
-                  <th>ranking ban</th>
-                  <th>role</th>
-                  <th></th>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Created At</th>
+                  <th>Last Login</th>
+                  <th>Ranking Ban</th>
+                  <th>Role</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -323,7 +285,7 @@ export default function UsersPanel() {
                     className={user.isEdited ? "edited" : ""}
                   >
                     <td>{user.id}</td>
-                    <td className="username">
+                    <td>
                       {editingRowId === user.id ? (
                         <input
                           type="text"
@@ -335,7 +297,7 @@ export default function UsersPanel() {
                         user.username
                       )}
                     </td>
-                    <td className="email">
+                    <td>
                       {editingRowId === user.id ? (
                         <input
                           type="email"
@@ -353,11 +315,13 @@ export default function UsersPanel() {
                       {editingRowId === user.id ? (
                         <select
                           name="ban"
-                          value={editValues.ban}
-                          onChange={(e) => {
-                            const val = e.target.value === "true"; // Konwersja na boolean
-                            setEditValues((prev) => ({ ...prev, ban: val }));
-                          }}
+                          value={String(editValues.ban)}
+                          onChange={(e) =>
+                            setEditValues((prev) => ({
+                              ...prev,
+                              ban: e.target.value === "true",
+                            }))
+                          }
                         >
                           <option value="true">true</option>
                           <option value="false">false</option>
@@ -366,11 +330,9 @@ export default function UsersPanel() {
                         String(user.ban)
                       )}
                     </td>
-
-                    <td className="role">
+                    <td>
                       {editingRowId === user.id ? (
                         <select
-                          id="reportType"
                           name="role"
                           value={editValues.role}
                           onChange={handleInputChange}
@@ -382,20 +344,13 @@ export default function UsersPanel() {
                         user.role
                       )}
                     </td>
-                    <td>
-                      <div className="user-icons">
-                        {editingRowId === user.id ? (
-                          <>
-                            <FaCheck
-                              className="confirm-user"
-                              onClick={() => confirm()}
-                            />
-                          </>
-                        ) : (
-                          <MdEdit onClick={() => enableEditMode(user)} />
-                        )}
-                        <IoIosTrash onClick={() => deleteUser(user.id)} />
-                      </div>
+                    <td className="actions-cell">
+                      {editingRowId === user.id ? (
+                        <FaCheck className="confirm-user" onClick={confirm} />
+                      ) : (
+                        <MdEdit onClick={() => enableEditMode(user)} />
+                      )}
+                      <IoIosTrash onClick={() => deleteUser(user.id)} />
                     </td>
                   </tr>
                 ))}
@@ -403,22 +358,26 @@ export default function UsersPanel() {
             </table>
           </InfiniteScroll>
         </div>
+
+        {/* Confirm and undo buttons */}
         <div className="buttons-users-container">
           <MyButton
-            message="Confirm changes"
+            message="Confirm Changes"
             color="green"
             onClick={() =>
-              showConfirm("Are you sure you want to add these changes?", () =>
-                sendData()
+              showConfirm(
+                "Are you sure you want to apply all changes?",
+                sendData
               )
             }
           />
-
-          <div onClick={() => undo(editingRowId)} className="undo-user button">
+          <div onClick={undo} className="undo-user button">
             <FaUndoAlt />
           </div>
         </div>
       </div>
+
+      {/* Confirmation modal */}
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}

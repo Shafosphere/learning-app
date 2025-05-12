@@ -16,6 +16,7 @@ export default function useMoveWord({
 }) {
   const boxOrder = ["boxOne", "boxTwo", "boxThree", "boxFour", "boxFive"];
 
+  // Move a word to the next box or reset it to the first box
   async function moveWord(chosenWord, moveToFirst = false) {
     const currentBoxIndex = boxOrder.indexOf(activeBox);
     let nextBox = boxOrder[currentBoxIndex + 1];
@@ -27,68 +28,63 @@ export default function useMoveWord({
       return;
     }
 
-    // Gdy słowo trafia do piątego boxa i nie jest cofane do pierwszego
+    // When a word reaches the fifth box and is not reset to the first
     if (activeBox === "boxFive" && !moveToFirst) {
-      const newid = randomWord.id;
+      const newId = randomWord.id;
 
       let wordIds;
       try {
         wordIds = await getAllWords(lvl);
       } catch (err) {
         console.error(err);
-        return; 
+        return;
       }
 
-      if (!wordIds.some((word) => word.id === newid)) {
-        await addWord(newid, lvl);
+      // If the word is not already recorded as learned, add it
+      if (!wordIds.some((word) => word.id === newId)) {
+        await addWord(newId, lvl);
         calculatePercent(lvl);
         calculateTotalPercent(lvl);
         confettiShow();
 
         if (isLoggedIn) {
-          await sendLearnedWordToServer(newid);
+          await sendLearnedWordToServer(newId);
         }
       }
 
-      setBoxes((prevBoxes) => {
-        const updatedBoxFive = prevBoxes[activeBox].filter(
-          (obiekt) =>
-            obiekt.wordPl.word !== chosenWord &&
-            obiekt.wordEng.word !== chosenWord
+      // Remove the word from the fifth box
+      setBoxes((prev) => {
+        const updatedBoxFive = prev[activeBox].filter(
+          (item) =>
+            item.wordPl.word !== chosenWord && item.wordEng.word !== chosenWord
         );
 
         if (updatedBoxFive.length === 0) {
           setRandom(null);
         }
 
-        return {
-          ...prevBoxes,
-          [activeBox]: updatedBoxFive,
-        };
+        return { ...prev, [activeBox]: updatedBoxFive };
       });
     }
 
-    // Przeniesienie do nextBox lub cofnięcie do boxOne
+    // Move the word to the next box or reset it to the first box
     if (moveToFirst || currentBoxIndex < boxOrder.length - 1) {
-      const find_word = boxes[activeBox].filter(
-        (obiekt) =>
-          obiekt.wordPl.word === chosenWord ||
-          obiekt.wordEng.word === chosenWord
+      const matchingWord = boxes[activeBox].filter(
+        (item) =>
+          item.wordPl.word === chosenWord || item.wordEng.word === chosenWord
       );
 
-      setBoxes((prevBoxes) => {
-        const updatedCurrentBox = prevBoxes[activeBox].filter(
-          (obiekt) =>
-            obiekt.wordPl.word !== chosenWord &&
-            obiekt.wordEng.word !== chosenWord
+      setBoxes((prev) => {
+        const updatedCurrent = prev[activeBox].filter(
+          (item) =>
+            item.wordPl.word !== chosenWord && item.wordEng.word !== chosenWord
         );
-
-        const updatedNextBox = [...prevBoxes[nextBox], ...find_word];
+        const updatedNext = [...prev[nextBox], ...matchingWord];
 
         return {
-          ...prevBoxes,
-          [activeBox]: updatedCurrentBox,
-          [nextBox]: updatedNextBox,
+          ...prev,
+          [activeBox]: updatedCurrent,
+          [nextBox]: updatedNext,
         };
       });
     }

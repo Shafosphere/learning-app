@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useIntl } from "react-intl"; // Importujemy hook
+import { useIntl } from "react-intl";
 import "./summary.css";
 import TableResults from "./tables";
 import NewProgressBar from "../../progress_bar/progressbar";
@@ -13,30 +13,30 @@ export default function ResultsSummary({ lvl, setDisplay, resetProgress }) {
   const intl = useIntl();
   const windowWidth = useWindowWidth();
 
-  const isMobileRange = windowWidth <= 479; // poniżej 480
-  const isTabletRange = windowWidth >= 480 && windowWidth <= 768; // od 480 do 768
-  const isSmallScreen = windowWidth >= 769 && windowWidth <= 1450; // od 769 do 1450
-  const isBigScreen = windowWidth > 1450; // powyżej 1450
+  const isMobileRange = windowWidth <= 479; // below 480px
+  const isTabletRange = windowWidth >= 480 && windowWidth <= 768; // 480–768px
+  const isSmallScreen = windowWidth >= 769 && windowWidth <= 1450; // 769–1450px
+  const isBigScreen = windowWidth > 1450; // above 1450px
 
-  // Zamiast stałej tablicy – wywołujemy `intl.formatMessage`:
+  // Prepare messages with intl
   const messages = useMemo(
     () => [
       intl.formatMessage({
         id: "summary.congrats",
-        defaultMessage: "Gratulacje!",
+        defaultMessage: "Congratulations!",
       }),
       intl.formatMessage({
         id: "summary.finishedAllParts",
-        defaultMessage: "Ukończyłeś wszystkie części! :D",
+        defaultMessage: "You have completed all parts! :D",
       }),
-      intl.formatMessage({ id: "summary.results", defaultMessage: "wyniki" }),
+      intl.formatMessage({ id: "summary.results", defaultMessage: "results" }),
     ],
     [intl]
   );
 
   const [skipLoad, setSkipLoad] = useState(() => {
     const savedValue = localStorage.getItem("skipLoad-words");
-    return savedValue === "false"; //zmień na true, jeśli chcesz pominąć
+    return savedValue === "false";
   });
 
   useEffect(() => {
@@ -50,12 +50,12 @@ export default function ResultsSummary({ lvl, setDisplay, resetProgress }) {
   const [percent, setPercent] = useState(0);
   const [displayedResults, setResults] = useState("good");
 
-  // Stany przechowujące dane wyników
+  // States for result words
   const [goodWords, setGoodWords] = useState([]);
   const [wrongWords, setWrongWords] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
-  // Efekt pisania tekstu
+  // Typing effect for messages
   useEffect(() => {
     if (skipLoad) return;
 
@@ -68,14 +68,10 @@ export default function ResultsSummary({ lvl, setDisplay, resetProgress }) {
         }, 100);
         return () => clearTimeout(timeout);
       } else {
-        // Po zakończeniu pisania danego stringa
         const timeout = setTimeout(() => {
           setDisplayedText("");
           setCharIndex(0);
           setCurrentMessageIndex((prev) => prev + 1);
-
-          // Jeśli wyświetliliśmy już trzecią wiadomość (index = 2),
-          // to pokazujemy wyniki i wyłączamy tryb pisania
           if (currentMessageIndex === 2) {
             setShowResults(true);
             setSkipLoad(false);
@@ -86,14 +82,14 @@ export default function ResultsSummary({ lvl, setDisplay, resetProgress }) {
     }
   }, [charIndex, currentMessageIndex, messages, skipLoad]);
 
-  // Jeżeli pominęliśmy typing:
+  // Skip typing to show results immediately
   useEffect(() => {
     if (skipLoad) {
       setShowResults(true);
     }
   }, [skipLoad]);
 
-  // Pobieranie danych z bazy i obliczanie procentu
+  // Fetch words and calculate percentage
   useEffect(() => {
     async function fetchData() {
       const ids = await getAllMinigameWords(lvl);
@@ -144,11 +140,9 @@ export default function ResultsSummary({ lvl, setDisplay, resetProgress }) {
                     {displayedResults === "good" && (
                       <TableResults goodWords={goodWords} wrongWords={[]} />
                     )}
-
                     {displayedResults === "wrong" && (
                       <TableResults goodWords={[]} wrongWords={wrongWords} />
                     )}
-
                     <SmallButtons setResults={setResults} />
                   </>
                 )}
@@ -156,12 +150,11 @@ export default function ResultsSummary({ lvl, setDisplay, resetProgress }) {
                 {isTabletRange && (
                   <>
                     <div className="summaryProgressbar">
-                      <NewProgressBar percent={percent} text={`${percent} %`} />
+                      <NewProgressBar percent={percent} text={`${percent}%`} />
                     </div>
                     {displayedResults === "good" && (
                       <TableResults goodWords={goodWords} wrongWords={[]} />
                     )}
-
                     {displayedResults === "wrong" && (
                       <TableResults goodWords={[]} wrongWords={wrongWords} />
                     )}
@@ -176,7 +169,7 @@ export default function ResultsSummary({ lvl, setDisplay, resetProgress }) {
                 {isSmallScreen && (
                   <>
                     <div className="summaryProgressbar">
-                      <NewProgressBar percent={percent} text={`${percent} %`} />
+                      <NewProgressBar percent={percent} text={`${percent}%`} />
                     </div>
                     <TableResults
                       goodWords={goodWords}
@@ -188,7 +181,7 @@ export default function ResultsSummary({ lvl, setDisplay, resetProgress }) {
                 {isBigScreen && (
                   <>
                     <div className="summaryProgressbar">
-                      <NewProgressBar percent={percent} text={`${percent} %`} />
+                      <NewProgressBar percent={percent} text={`${percent}%`} />
                     </div>
                     <TableResults
                       goodWords={goodWords}

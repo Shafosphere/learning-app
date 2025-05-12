@@ -1,4 +1,3 @@
-// RegiForm.test.jsx
 import React from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
@@ -7,7 +6,7 @@ import RegiForm from "../login/regiForm";
 import { PopupContext } from "../popup/popupcontext";
 import api from "../../utils/api";
 
-// Mockujemy cały moduł api:
+// Mock the entire API module
 vi.mock("../../utils/api", () => ({
   default: {
     get: vi.fn(),
@@ -15,12 +14,12 @@ vi.mock("../../utils/api", () => ({
   },
 }));
 
-describe("RegiForm", () => {
+describe("RegiForm Component", () => {
   let mockSetPopup;
 
   beforeEach(() => {
     mockSetPopup = vi.fn();
-    // Czyścimy mocki w każdym teście, aby zaczynać od “czystego” stanu:
+    // Clear API mocks before each test to start from a clean state
     api.get.mockClear();
     api.post.mockClear();
   });
@@ -31,8 +30,7 @@ describe("RegiForm", () => {
   });
 
   /**
-   * Funkcja renderująca testowany komponent – 
-   * otaczamy go IntlProvider oraz PopupContext.
+   * Helper function to render the component within IntlProvider and PopupContext
    */
   function renderComponent() {
     return render(
@@ -44,8 +42,8 @@ describe("RegiForm", () => {
     );
   }
 
-  it("pobiera reguły walidacji przy pierwszym renderowaniu (useEffect)", async () => {
-    // Załóżmy, że back-end zwraca takie zasady:
+  it("should fetch validation rules on initial render (useEffect)", async () => {
+    // Assume the backend returns these validation rules
     api.get.mockResolvedValueOnce({
       data: {
         validationRules: {
@@ -57,49 +55,54 @@ describe("RegiForm", () => {
 
     renderComponent();
 
-    // Oczekujemy, że uruchomiono zapytanie do /auth/requirements
+    // Expect a request to /auth/requirements
     await waitFor(() => {
       expect(api.get).toHaveBeenCalledWith("/auth/requirements");
     });
   });
 
-  it("renderuje pola input i przycisk rejestracji", () => {
+  it("should render input fields and the Sign up button", () => {
     renderComponent();
 
-    // Sprawdzamy, czy są odpowiednie pola:
     expect(screen.getByPlaceholderText(/Username/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Email/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/^Password$/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/^Confirm the password$/i)).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/^Confirm the password$/i)
+    ).toBeInTheDocument();
 
-    // Oczekujemy, że jest też przycisk "Sign up":
-    expect(screen.getByRole("button", { name: /Sign up/i })).toBeInTheDocument();
+    // Expect the "Sign up" button to be present
+    expect(
+      screen.getByRole("button", { name: /Sign up/i })
+    ).toBeInTheDocument();
   });
 
-  it("po kliknięciu ikonek kłódki ukazuje/ukrywa hasło i potwierdzenie hasła", async () => {
+  it("should toggle password and confirm password visibility when clicking lock icons", async () => {
     renderComponent();
 
     const passwordInput = screen.getByPlaceholderText(/^Password$/i);
     const confirmInput = screen.getByPlaceholderText(/^Confirm the password$/i);
 
-    // Domyślnie oba pola są typu "password"
+    // By default, both fields should be of type "password"
     expect(passwordInput).toHaveAttribute("type", "password");
     expect(confirmInput).toHaveAttribute("type", "password");
 
-    // Pobieramy wszystkie przyciski bez tekstu (dla ikonki)
-    const [togglePassButton, toggleConfirmButton] =
-      screen.getAllByRole("button", { name: "" });
+    // Get all icon-only buttons (for visibility toggle)
+    const [togglePassButton, toggleConfirmButton] = screen.getAllByRole(
+      "button",
+      { name: "" }
+    );
 
-    // Klikamy pierwszy przycisk – typ pola hasła zmienia się na "text"
+    // Click the first button to change password field type to "text"
     fireEvent.click(togglePassButton);
     expect(passwordInput).toHaveAttribute("type", "text");
 
-    // Klikamy drugi przycisk – typ pola potwierdzenia hasła zmienia się na "text"
+    // Click the second button to change confirm password field type to "text"
     fireEvent.click(toggleConfirmButton);
     expect(confirmInput).toHaveAttribute("type", "text");
   });
 
-  it("jeśli hasła nie pasują, ustawia popup z błędem i nie wywołuje rejestracji", async () => {
+  it("should set error popup and not call registration if passwords do not match", async () => {
     renderComponent();
 
     fireEvent.change(screen.getByPlaceholderText(/Username/i), {
@@ -126,8 +129,8 @@ describe("RegiForm", () => {
     });
   });
 
-  it("jeśli hasła pasują, wysyła request i ustawia popup o sukcesie w razie powodzenia", async () => {
-    // Udajemy, że rejestracja się powiodła
+  it("should send registration request and set success popup on successful response", async () => {
+    // Simulate successful registration
     api.post.mockResolvedValueOnce({
       data: { success: true },
     });
@@ -162,7 +165,7 @@ describe("RegiForm", () => {
     });
   });
 
-  it("jeśli API zwróci błąd, wypisuje go w konsoli (i nie ustawia popup success)", async () => {
+  it("should log error to console and not set success popup if API returns error", async () => {
     const error = new Error("registration error");
     api.post.mockRejectedValueOnce(error);
 

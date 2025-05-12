@@ -41,7 +41,6 @@
     text-align: center;
   }
   
-  /* Przyciski i kontenery przycisków */
   .select-btn-container {
     display: flex;
     flex-direction: row;
@@ -71,7 +70,7 @@
   
   @media (max-width: 480px) {
     .select-container {
-      color: white; /* tylko w najmniejszych rozdzielczościach */
+      color: white;
       height: 100%; 
       padding-top: 5rem;
     }

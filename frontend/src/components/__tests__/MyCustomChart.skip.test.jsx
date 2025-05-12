@@ -2,30 +2,30 @@ import { render, screen } from "@testing-library/react";
 import { vi, describe, it, expect } from "vitest";
 import MyCustomChart from "../arena/chart";
 
-describe("MyCustomChart", () => {
-  it("wyświetla komunikat ładowania gdy brak danych", () => {
+describe("MyCustomChart Component", () => {
+  it("should display loading message when no data is provided", () => {
     render(<MyCustomChart ranks={[]} />);
     expect(screen.getByText("Ładowanie danych...")).toBeInTheDocument();
   });
 
-  it("renderuje wykres z poprawną liczbą elementów", () => {
+  it("should render the chart with the correct number of elements", () => {
     const ranks = [1000, 1500, 1200];
     render(<MyCustomChart ranks={ranks} />);
 
-    // Sprawdź linie siatki
+    // Check the grid lines
     const gridLines = screen.getAllByTestId("grid-line");
     expect(gridLines).toHaveLength(7);
 
-    // Sprawdź segmenty linii
+    // Check the chart line segments
     const chartLines = screen.getAllByTestId("chart-line");
     expect(chartLines).toHaveLength(ranks.length - 1);
 
-    // Sprawdź obecność kółka
+    // Check for the presence of the circle point
     const circles = screen.getAllByTestId("chart-circle");
     expect(circles).toHaveLength(1);
   });
 
-  it("poprawnie obsługuje rosnące wartości", () => {
+  it("should correctly handle ascending values", () => {
     const ranks = [100, 200, 300];
     render(<MyCustomChart ranks={ranks} />);
 
@@ -37,7 +37,7 @@ describe("MyCustomChart", () => {
     expect(circle).toHaveClass("circle-up");
   });
 
-  it("poprawnie obsługuje malejące wartości", () => {
+  it("should correctly handle descending values", () => {
     const ranks = [300, 200, 100];
     render(<MyCustomChart ranks={ranks} />);
 
@@ -49,7 +49,7 @@ describe("MyCustomChart", () => {
     expect(circle).toHaveClass("circle-down");
   });
 
-  it("poprawnie obsługuje mieszane wartości", () => {
+  it("should correctly handle mixed values", () => {
     const ranks = [100, 300, 200];
     render(<MyCustomChart ranks={ranks} />);
 
@@ -61,7 +61,7 @@ describe("MyCustomChart", () => {
     expect(circle).toHaveClass("circle-down");
   });
 
-  it("obsługuje pojedynczą wartość", () => {
+  it("should handle a single value correctly", () => {
     const ranks = [500];
     render(<MyCustomChart ranks={ranks} />);
 
@@ -70,10 +70,11 @@ describe("MyCustomChart", () => {
     expect(circle).toHaveClass("circle-up");
   });
 
-  it("filtruje punkty poza zakresem", () => {
+  it("should filter out points outside the visible range", () => {
     const longRanks = Array.from({ length: 20 }, (_, i) => i * 100);
     render(<MyCustomChart ranks={longRanks} />);
 
+    // Only a subset of points should be visible
     const visiblePoints = screen.getAllByTestId("chart-line").length + 1;
     expect(visiblePoints).toBeLessThan(longRanks.length);
   });

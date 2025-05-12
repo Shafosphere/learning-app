@@ -13,7 +13,7 @@ import api from "../../utils/api";
 import { useEffect, useState, useRef, useCallback, useContext } from "react";
 import { useIntl } from "react-intl";
 
-// *** 1. Konteksty i custom hooki ***
+// *** 1. Contexts and custom hooks ***
 import { SettingsContext } from "../settings/properties";
 import { PopupContext } from "../../components/popup/popupcontext";
 import useBoxesDB from "../../hooks/boxes/useBoxesDB";
@@ -26,7 +26,7 @@ import usePatch from "../../hooks/boxes/usePatch";
 export default function MainGame({ setDisplay, lvl }) {
   const intl = useIntl();
 
-  // Patch – numeracja i stany
+  // Patch numbering and state
   const [patchNumberB2, setB2Patch] = usePersistedState(
     "patchNumberB2-maingame",
     1
@@ -38,10 +38,9 @@ export default function MainGame({ setDisplay, lvl }) {
   const [totalB2Patches, setTotalB2] = useState(null);
   const [totalC1Patches, setTotalC1] = useState(null);
 
-  //confirm
+  // Confirm dialog state
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState(null);
-  // const [isConflict, setIsConflict] = useState(false);
   const [confirmParams, setConfirmParams] = useState(null);
 
   const handleConfirmClose = (result) => {
@@ -71,7 +70,7 @@ export default function MainGame({ setDisplay, lvl }) {
     });
   };
 
-  // *** 2. Stany i refy – logika danych ***
+  // *** 2. Data logic: hooks for Word Boxes ***
   const { boxes, setBoxes, setAutoSave } = useBoxesDB(
     lvl,
     patchNumberB2,
@@ -81,7 +80,7 @@ export default function MainGame({ setDisplay, lvl }) {
     showConfirm
   );
 
-  // Ustawienia z kontekstu
+  // Settings from context
   const {
     calculatePercent,
     calculateTotalPercent,
@@ -93,13 +92,13 @@ export default function MainGame({ setDisplay, lvl }) {
     isLoggedIn,
   } = useContext(SettingsContext);
 
-  // Popup z kontekstu
+  // Popup context
   const { setPopup } = useContext(PopupContext);
 
-  // Inicjujemy liczniki odwiedzin strony
+  // Track page visits
   usePageVisit("flashcards");
 
-  // Stan dla wylosowanego słowa i stanu UI
+  // State for current word and UI classes
   const [randomWord, setRandom] = useState(null);
   const [className, setClass] = useState("");
   const [cssClasses, setCssClasses] = useState({
@@ -108,15 +107,14 @@ export default function MainGame({ setDisplay, lvl }) {
     notDisplayReverse: "display",
   });
 
-  // const [showWrongAnswer, setShowWrongAnswer] = useState("not-visible");
   const [activeBox, setActiveBox] = useState("boxOne");
   const [blockSwitch, setBlock] = useState(false);
 
-  // Confetti
+  // Confetti animation state
   const [showConfetti, setShowConfetti] = useState(false);
   const [generateConfetti, setGenerateConfetti] = useState(false);
 
-  // *** 3. Refy ***
+  // *** 3. Refs for timers and elements ***
   const timeoutRef = useRef(null);
   const wordFlashcardRef = useRef(null);
   const idFlashcardRef = useRef(null);
@@ -126,7 +124,7 @@ export default function MainGame({ setDisplay, lvl }) {
   const dingSoundRef = useRef(new Audio(dingSound));
   const dongSoundRef = useRef(new Audio(dongSound));
 
-  // *** 4. Custom hooki i metody z nich wynikające ***
+  // *** 4. Hooks and their methods ***
   const checkSpelling = useSpellchecking();
   const { moveWord } = useMoveWord({
     boxes,
@@ -158,7 +156,7 @@ export default function MainGame({ setDisplay, lvl }) {
     selectRandomWord,
   });
 
-  // *** 5. Funkcje pomocnicze ***
+  // *** 5. Helper functions for checking answers ***
   function check(userWord, word) {
     if (checkAnswer(userWord, word)) {
       setClass("correct");
@@ -174,14 +172,11 @@ export default function MainGame({ setDisplay, lvl }) {
       }, 1500);
     } else {
       setClass("notcorrect");
-
       setCssClasses({
         notVisible: "visible",
         notDisplay: "visible",
         notDisplayReverse: "not-display",
       });
-
-      // correctWordRef.current.focus();
       setBlock(true);
       if (isSoundEnabled === "true") dongSoundRef.current.play();
     }
@@ -191,7 +186,7 @@ export default function MainGame({ setDisplay, lvl }) {
     if (userWord && word) {
       return checkSpelling(userWord, word);
     }
-    console.log("Brak danych do porównania!");
+    console.log("No data to compare!");
     return false;
   }
 
@@ -212,7 +207,6 @@ export default function MainGame({ setDisplay, lvl }) {
       notDisplay: "not-display",
       notDisplayReverse: "display",
     });
-
     setAutoSave(true);
     userWordRef.current.focus();
     setBlock(false);
@@ -232,7 +226,6 @@ export default function MainGame({ setDisplay, lvl }) {
     setBoxes((prevBoxes) => {
       const boxLength = prevBoxes[item].length;
       let randomIndex = 0;
-
       if (boxLength > 1) {
         let newIndex;
         do {
@@ -240,7 +233,6 @@ export default function MainGame({ setDisplay, lvl }) {
         } while (randomWord && prevBoxes[item][newIndex].id === randomWord.id);
         randomIndex = newIndex;
       }
-
       setRandom(prevBoxes[item][randomIndex]);
       return prevBoxes;
     });
@@ -262,13 +254,13 @@ export default function MainGame({ setDisplay, lvl }) {
   async function sendLearnedWordToServer(wordId) {
     try {
       const response = await api.post("/user/learn-word", { wordId });
-      console.log("Słówko zgłoszone do serwera:", response.data);
+      console.log("Word sent to server:", response.data);
     } catch (error) {
-      console.error("Błąd wysyłania słówka:", error);
+      console.error("Error sending word to server:", error);
     }
   }
 
-  // *** 6. Efekty uboczne ***
+  // *** 6. Side effects ***
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
 
   useEffect(() => {
@@ -284,13 +276,13 @@ export default function MainGame({ setDisplay, lvl }) {
         setTotalB2(response.data.totalB2Patches);
         setTotalC1(response.data.totalC1Patches);
       } catch (error) {
-        console.error("Błąd patch info:", error);
+        console.error("Error fetching patch info:", error);
       }
     }
     fetchPatchInfo();
   }, []);
 
-  // *** 7. Render komponentu ***
+  // *** 7. Render component ***
   return (
     <div className="container-maingame">
       <div className="return-btn-voca" onClick={() => setDisplay("default")}>

@@ -16,17 +16,19 @@ export default function NewPopup({
 }) {
   const [isVisible, setIsVisible] = useState(true);
 
+  // Preload audio references
   const dingSoundRef = useMemo(() => new Audio(correctSound), []);
   const dingSadSoundRef = useMemo(() => new Audio(wrongSound), []);
   const errorSoundRef = useMemo(() => new Audio(errorSound), []);
   const { isSoundEnabled } = useContext(SettingsContext);
 
+  // Check if the message is an error code (starts with "ERR_")
   function isErrorCode(msg) {
     return msg?.startsWith("ERR_");
   }
 
   useEffect(() => {
-    // Dźwięk
+    // Play sound based on emotion if sound is enabled
     if (isSoundEnabled === "true") {
       let audio;
       switch (emotion) {
@@ -47,10 +49,11 @@ export default function NewPopup({
           audio.volume = 0.2;
       }
       audio
-        ?.play()
+        .play()
         .catch((error) => console.error("Error playing sound:", error));
     }
 
+    // Hide popup after the specified duration, then call onClose
     const hideTimer = setTimeout(() => setIsVisible(false), duration);
     const closeTimer = setTimeout(onClose, duration + 250);
 
@@ -58,8 +61,17 @@ export default function NewPopup({
       clearTimeout(hideTimer);
       clearTimeout(closeTimer);
     };
-  }, [emotion, duration, isSoundEnabled, onClose]);
+  }, [
+    emotion,
+    duration,
+    isSoundEnabled,
+    onClose,
+    dingSoundRef,
+    dingSadSoundRef,
+    errorSoundRef,
+  ]);
 
+  // Determine background color based on emotion
   const backgroundColor = {
     positive: "var(--highlight)",
     negative: "var(--secondary)",

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import api from "../../utils/api"; // Importuj api do wykonywania zapytań do serwera
+import api from "../../utils/api"; // Import api for making requests to the server
 import { getAllWords } from "../../utils/indexedDB";
 import usePersistedState from "../../hooks/localstorage/usePersistedState";
 
@@ -69,7 +69,7 @@ export const SettingsProvider = ({ children }) => {
     const newLevel = level === "C1" ? "B2" : "C1";
     localStorage.setItem("level", newLevel);
     setLevel(newLevel);
-    console.log("obecny level: " + newLevel);
+    console.log("current level: " + newLevel);
   };
 
   const toggleSound = () => {
@@ -79,12 +79,6 @@ export const SettingsProvider = ({ children }) => {
   };
 
   const checkAuthStatus = async () => {
-    // const token = document.cookie
-
-    // if (!token) {
-    //   setIsLoggedIn(false);
-    //   return;
-    // }
 
     try {
       const response = await api.get("/auth/user");
@@ -101,6 +95,7 @@ export const SettingsProvider = ({ children }) => {
         setUser(response.data.user);
       } else {
         handleLogoutLogic();
+        // Show error popup for expired session
         showPopup({
           message: "ERR_SESSION_EXPIRED",
           emotion: "negative",
@@ -111,13 +106,13 @@ export const SettingsProvider = ({ children }) => {
     }
   };
 
-  // Funkcja do czyszczenia danych
+  // Function to clear data
   const handleLogoutLogic = () => {
     setIsLoggedIn(false);
     setUser(null);
     localStorage.removeItem("token_expires");
 
-    // Usuń guest timestamps tylko jeśli był zalogowany
+    // Remove guest timestamps only if user had a token
     if (localStorage.getItem("token")) {
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("guestTimestamp_")) {
@@ -131,7 +126,7 @@ export const SettingsProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
 
-  // W SettingsProvider
+  // In SettingsProvider: periodically check token validity
   useEffect(() => {
     const checkTokenValidity = () => {
       const expiresAt = localStorage.getItem("token_expires");
@@ -141,7 +136,7 @@ export const SettingsProvider = ({ children }) => {
       }
     };
 
-    // Sprawdzaj co 30 sekund
+    // Check every 30 seconds
     const interval = setInterval(checkTokenValidity, 30_000);
     return () => clearInterval(interval);
   }, []);
@@ -159,6 +154,7 @@ export const SettingsProvider = ({ children }) => {
   }, [lastResetDate]);
 
   const calculatePercent = async (lvl) => {
+    // 1. Fetch learned word IDs from IndexedDB or local database
     const wordIds = await getAllWords(lvl);
     let startIndex = wordIds.findIndex((word) => word.id === lastID);
 
@@ -177,24 +173,24 @@ export const SettingsProvider = ({ children }) => {
   };
 
   const calculateTotalPercent = async (lvl) => {
-    // 1. Pobranie ID wyuczonych słówek (z IndexedDB lub innej bazy lokalnej)
+    // 1. Fetch learned word IDs
     const wordIds = await getAllWords(lvl);
 
     let percent = 0;
     let numberOfWords = 0;
 
     try {
-      // 2. Pobranie informacji z backendu
+      // 2. Fetch patch information from backend
       const response = await api.get("/word/patch-info");
 
-      // 3. Wybór właściwej wartości z obiektu response
+      // 3. Select the correct value from the response object
       if (lvl === "B2") {
         numberOfWords = response.data.numberWordsB2;
       } else if (lvl === "C1") {
         numberOfWords = response.data.numberWordsC1;
       }
 
-      // 4. Obliczenie procentu
+      // 4. Calculate the percentage
       if (numberOfWords > 0) {
         percent = (wordIds.length / numberOfWords) * 100;
       }
@@ -203,10 +199,10 @@ export const SettingsProvider = ({ children }) => {
       return;
     }
 
-    // 5. Zaokrąglenie do dwóch miejsc po przecinku
+    // 5. Round to two decimal places
     const roundedPercentComplete = parseFloat(percent.toFixed(2));
 
-    // 6. Ustawienie stanu w zależności od poziomu
+    // 6. Set state based on level
     if (lvl === "B2") {
       setTotalPercentB2(roundedPercentComplete);
     } else if (lvl === "C1") {

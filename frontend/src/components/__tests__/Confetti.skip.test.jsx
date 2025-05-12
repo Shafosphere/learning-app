@@ -1,15 +1,16 @@
 // src/components/__tests__/Confetti.test.jsx
-import React from 'react';
-import { render } from '@testing-library/react';
-import { vi, describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { act } from 'react-dom/test-utils';
-import Confetti from '../confetti/confetti';
 
-describe('Confetti Component', () => {
+import React from "react";
+import { render } from "@testing-library/react";
+import { vi, describe, it, expect, beforeAll, afterAll } from "vitest";
+import { act } from "react-dom/test-utils";
+import Confetti from "../confetti/confetti";
+
+describe("Confetti Component", () => {
   const TOTAL = 20;
 
   beforeAll(() => {
-    // przełączamy na fake timers, żeby móc przyspieszać setInterval
+    // Switch to fake timers to control setInterval
     vi.useFakeTimers();
   });
 
@@ -17,48 +18,50 @@ describe('Confetti Component', () => {
     vi.useRealTimers();
   });
 
-  it('nie renderuje żadnego konfetti, gdy generateConfetti=false', () => {
+  it("does not render any confetti when generateConfetti is false", () => {
     const { container } = render(<Confetti generateConfetti={false} />);
-    // nawet po dłuższym czasie nic się nie pojawia
+    // Even after some time passes, no confetti appears
     act(() => {
       vi.advanceTimersByTime(1500);
     });
-    expect(container.querySelectorAll('.confetti')).toHaveLength(0);
+    expect(container.querySelectorAll(".confetti")).toHaveLength(0);
   });
 
-  it('dorzuca porcję konfetti co 300ms, gdy generateConfetti=true', () => {
+  it("adds a batch of confetti every 300ms when generateConfetti is true", () => {
     const { container } = render(<Confetti generateConfetti={true} />);
-    // początkowo jeszcze nic
-    expect(container.querySelectorAll('.confetti')).toHaveLength(0);
+    // Initially, no confetti
+    expect(container.querySelectorAll(".confetti")).toHaveLength(0);
 
     act(() => {
       vi.advanceTimersByTime(300);
     });
-    // po pierwszym interwale TOTAL elementów
-    expect(container.querySelectorAll('.confetti')).toHaveLength(TOTAL);
+    // After the first interval, there are TOTAL elements
+    expect(container.querySelectorAll(".confetti")).toHaveLength(TOTAL);
 
     act(() => {
       vi.advanceTimersByTime(300);
     });
-    // po drugim interwale – kolejna porcja
-    expect(container.querySelectorAll('.confetti')).toHaveLength(TOTAL * 2);
+    // After the second interval, another batch appears
+    expect(container.querySelectorAll(".confetti")).toHaveLength(TOTAL * 2);
   });
 
-  it('przestaje generować konfetti, gdy generateConfetti zmieni się na false', () => {
-    const { container, rerender } = render(<Confetti generateConfetti={true} />);
+  it("stops generating confetti when generateConfetti changes to false", () => {
+    const { container, rerender } = render(
+      <Confetti generateConfetti={true} />
+    );
 
     act(() => {
       vi.advanceTimersByTime(300);
     });
-    expect(container.querySelectorAll('.confetti')).toHaveLength(TOTAL);
+    expect(container.querySelectorAll(".confetti")).toHaveLength(TOTAL);
 
-    // wyłączamy generowanie
+    // Turn off generation
     rerender(<Confetti generateConfetti={false} />);
 
     act(() => {
-      // nawet po kolejnych 600ms nie pojawi się nic nowego
+      // Even after another 600ms, no new confetti appears
       vi.advanceTimersByTime(600);
     });
-    expect(container.querySelectorAll('.confetti')).toHaveLength(TOTAL);
+    expect(container.querySelectorAll(".confetti")).toHaveLength(TOTAL);
   });
 });

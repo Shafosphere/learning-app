@@ -4,7 +4,7 @@ import { useState, useContext } from "react";
 import { PopupContext } from "../../popup/popupcontext";
 import MyButton from "../../button/button";
 
-export default function WordDetail({ word, setWord, level, setLevel}) {
+export default function WordDetail({ word, setWord, level, setLevel }) {
   // popup
   const { setPopup } = useContext(PopupContext);
 
@@ -33,7 +33,9 @@ export default function WordDetail({ word, setWord, level, setLevel}) {
 
   const updateData = async () => {
     try {
-      const response = await api.patch("/word/update-translations", { word: word });
+      const response = await api.patch("/word/update-translations", {
+        word: word,
+      });
       setPopup({
         message: response.data,
         emotion: "positive",
@@ -107,10 +109,7 @@ export default function WordDetail({ word, setWord, level, setLevel}) {
             <div className="buttons-reports">
               {word.translations && (
                 <>
-                
-                  <div
-                    className="level-container"
-                  >
+                  <div className="level-container">
                     <label htmlFor="level">update level</label>
                     <select
                       id="level"

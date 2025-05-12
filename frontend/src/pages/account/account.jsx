@@ -22,7 +22,7 @@ import { useWindowWidth } from "../../hooks/window_width/windowWidth";
 export default function Account() {
   const windowWidth = useWindowWidth();
   const navigate = useNavigate();
-  const intl = useIntl(); // Hook do obsługi tłumaczeń
+  const intl = useIntl(); // Hook for handling translations
 
   const [userData, setUserData] = useState({
     username: "",
@@ -43,12 +43,7 @@ export default function Account() {
 
   const { setPopup } = useContext(PopupContext);
 
-  const avatarImages = {
-    1: avatar1,
-    2: avatar2,
-    3: avatar3,
-    4: avatar4,
-  };
+  const avatarImages = { 1: avatar1, 2: avatar2, 3: avatar3, 4: avatar4 };
 
   const handleConfirmClose = (result) => {
     if (result && confirmCallback) {
@@ -99,12 +94,12 @@ export default function Account() {
   }
 
   useEffect(() => {
-    async function getData() {
+    async function fetchUserData() {
       try {
         const response = await api.post("/auth/information");
         const data = response.data;
-        setUserData((prevData) => ({
-          ...prevData,
+        setUserData((prev) => ({
+          ...prev,
           username: data.username,
           email: data.email,
           avatar: data.avatar,
@@ -113,20 +108,12 @@ export default function Account() {
         console.error(error);
       }
     }
-    getData();
+    fetchUserData();
   }, []);
 
   const handleChange = (field, value) => {
-    setUserData((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
-
-    setEditedData((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
-
+    setUserData((prev) => ({ ...prev, [field]: value }));
+    setEditedData((prev) => ({ ...prev, [field]: value }));
     setIsButtonDisabled(false);
   };
 
@@ -153,7 +140,7 @@ export default function Account() {
         });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setPopup({
         message: intl.formatMessage({
           id: "account.generalError",
@@ -164,7 +151,7 @@ export default function Account() {
     }
   };
 
-  // Definicja pól input
+  // Definition of input fields
   const inputFields = [
     {
       labelId: "account.field.username",
@@ -204,22 +191,16 @@ export default function Account() {
   ];
 
   const handleAvatarChange = (direction) => {
-    setUserData((prevData) => {
+    setUserData((prev) => {
       let newAvatar;
       if (direction === "left") {
-        newAvatar = prevData.avatar === 1 ? 4 : prevData.avatar - 1;
-      } else if (direction === "right") {
-        newAvatar = prevData.avatar === 4 ? 1 : prevData.avatar + 1;
+        newAvatar = prev.avatar === 1 ? 4 : prev.avatar - 1;
+      } else {
+        newAvatar = prev.avatar === 4 ? 1 : prev.avatar + 1;
       }
-      setEditedData((prevEditedData) => ({
-        ...prevEditedData,
-        avatar: newAvatar,
-      }));
+      setEditedData((prevEdited) => ({ ...prevEdited, avatar: newAvatar }));
       setIsButtonDisabled(false);
-      return {
-        ...prevData,
-        avatar: newAvatar,
-      };
+      return { ...prev, avatar: newAvatar };
     });
   };
 
@@ -229,18 +210,23 @@ export default function Account() {
         <div className="pageNumbers-account">
           <div
             onClick={() => setPage("1")}
-            className={activePage === "1" ? "tab-account-active" : "tab-account"}
+            className={
+              activePage === "1" ? "tab-account-active" : "tab-account"
+            }
           >
             1
           </div>
           <div
             onClick={() => setPage("2")}
-            className={activePage === "2" ? "tab-account-active" : "tab-account"}
+            className={
+              activePage === "2" ? "tab-account-active" : "tab-account"
+            }
           >
             2
           </div>
         </div>
 
+        {/* Show left panel on page 1 or wide screens */}
         {(activePage === "1" || windowWidth >= 769) && (
           <div className="account-left">
             <div className="account-input-container">
@@ -253,11 +239,15 @@ export default function Account() {
                     />
                   </span>
                   <div
-                    className={input.isPassword ? "custom_input-acc" : undefined}
+                    className={
+                      input.isPassword ? "custom_input-acc" : undefined
+                    }
                     style={{ position: "relative" }}
                   >
                     <input
-                      onChange={(e) => handleChange(input.field, e.target.value)}
+                      onChange={(e) =>
+                        handleChange(input.field, e.target.value)
+                      }
                       className={
                         input.isPassword
                           ? "account-input"
@@ -286,7 +276,6 @@ export default function Account() {
 
             <div className="account-buttons">
               <MyButton
-                // Tekst w przycisku z tłumaczeniami
                 message={intl.formatMessage({
                   id: "account.button.delete",
                   defaultMessage: "DELETE ACCOUNT",
@@ -296,7 +285,8 @@ export default function Account() {
                   showConfirm(
                     intl.formatMessage({
                       id: "account.confirm.delete",
-                      defaultMessage: "Are you sure you want to delete your account?",
+                      defaultMessage:
+                        "Are you sure you want to delete your account?",
                     }),
                     deleteAccount
                   )
@@ -304,7 +294,6 @@ export default function Account() {
               />
 
               <MyButton
-                // Tekst w przycisku z tłumaczeniami
                 message={intl.formatMessage({
                   id: "account.button.save",
                   defaultMessage: "SAVE CHANGES",
@@ -325,11 +314,15 @@ export default function Account() {
           </div>
         )}
 
+        {/* Show right panel on page 2 or wide screens */}
         {(activePage === "2" || windowWidth >= 769) && (
           <div className="account-right">
             <div className="avatar-container">
               <span className="account-text">
-                <FormattedMessage id="account.field.avatar" defaultMessage="Avatar" />
+                <FormattedMessage
+                  id="account.field.avatar"
+                  defaultMessage="Avatar"
+                />
               </span>
               <div className="avatar-slider">
                 <img

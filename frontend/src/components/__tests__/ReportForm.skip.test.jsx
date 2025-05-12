@@ -1,12 +1,12 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import ReportForm from "../report/report";
 import { IntlProvider } from "react-intl";
 import { PopupContext } from "../popup/popupcontext";
 import api from "../../utils/api";
 
-// Mock tłumaczeń
+// Mock translations
 const messages = {
   "reportForm.success": "Report received",
   "reportForm.error": "An error occurred",
@@ -43,7 +43,7 @@ describe("ReportForm Component", () => {
 
   const renderComponent = () => render(<ReportForm />, { wrapper: Wrapper });
 
-  it("powinien poprawnie renderować formularz", () => {
+  it("should render the form correctly", () => {
     renderComponent();
 
     expect(screen.getByLabelText("Report Type:")).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe("ReportForm Component", () => {
     expect(screen.queryByLabelText("Word:")).not.toBeInTheDocument();
   });
 
-  it("powinien wyświetlać pole Word po wybraniu word_issue", () => {
+  it("should display the Word field when 'word_issue' is selected", () => {
     renderComponent();
 
     fireEvent.change(screen.getByLabelText("Report Type:"), {
@@ -64,7 +64,7 @@ describe("ReportForm Component", () => {
     expect(screen.getByLabelText("Word:")).toBeInTheDocument();
   });
 
-  it("powinien wysyłać formularz z poprawnymi danymi", async () => {
+  it("should submit the form with correct data", async () => {
     api.post.mockResolvedValue({ data: { success: true } });
     renderComponent();
 
@@ -96,7 +96,7 @@ describe("ReportForm Component", () => {
     });
   });
 
-  it("powinien obsługiwać błędy API", async () => {
+  it("should handle API errors", async () => {
     api.post.mockRejectedValue(new Error("API Error"));
     renderComponent();
 
@@ -113,7 +113,7 @@ describe("ReportForm Component", () => {
     });
   });
 
-  it("powinien wymagać opisu", async () => {
+  it("should require description", async () => {
     renderComponent();
 
     const textarea = screen.getByLabelText("Description:");
@@ -122,7 +122,7 @@ describe("ReportForm Component", () => {
     expect(textarea).toBeInvalid();
   });
 
-  it("powinien aktualizować stan przy zmianie inputów", () => {
+  it("should update state on input changes", () => {
     renderComponent();
 
     fireEvent.change(screen.getByLabelText("Report Type:"), {

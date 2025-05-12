@@ -11,7 +11,7 @@ export default function Login() {
   const [display, setDisplay] = useState("login");
   const location = useLocation();
 
-  // Funkcja pomocnicza do renderowania przycisków
+  // Helper function to render navigation buttons
   const renderButtons = (buttons) => (
     <div className="bot-logg">
       {buttons.map(({ id, defaultMessage, target }, index) => (
@@ -28,15 +28,15 @@ export default function Login() {
 
   useEffect(() => {
     if (!location.state?.display) {
-      // Brak state.display? Ustaw na login
+      // No display state provided? Default to login
       setDisplay("login");
     } else if (
       ["login", "register", "reset"].includes(location.state.display)
     ) {
-      // Jeśli display jest jednym z dozwolonych wartości
+      // If display state is one of the allowed values
       setDisplay(location.state.display);
     } else {
-      // Wszelkie inne wartości (np. 'invalid') -> ustaw domyślnie login
+      // Any other values (e.g., 'invalid') -> default to login
       setDisplay("login");
     }
   }, [location.state]);

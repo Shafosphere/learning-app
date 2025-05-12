@@ -8,6 +8,7 @@ import VALIDATION_RULES from "../middleware/validationConfig.js";
 import {
   createUser,
   getUserByUsername,
+  getUserByUserName,
   getUserById,
   getUserByEmail,
   updateUserById,

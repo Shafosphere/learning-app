@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../../../utils/api";
-import "./panel-main.css";
-import Block from "./block";
 import ConfirmWindow from "../../confirm/confirm";
 import PinWindow from "../../pin/pin";
 import MyButton from "../../button/button";
+import Block from "./block";
 import VisitChart from "./chartvisits.jsx";
 import UserChart from "./chartusers.jsx";
+import "./panel-main.css";
 
+// Dashboard main panel showing statistics and charts, with patch regeneration protected by PIN
 export default function MainPanel() {
   const [data, setData] = useState({});
 
-  // confirm
+  // Confirmation dialog state
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState(null);
 
@@ -23,13 +24,12 @@ export default function MainPanel() {
     setConfirmCallback(null);
   };
 
-  function showConfirm(text, callback) {
-    setConfirmMessage(text);
+  function showConfirm(message, callback) {
+    setConfirmMessage(message);
     setConfirmCallback(() => callback);
   }
-  ///
 
-  //Pin
+  // PIN entry modal state
   const [isPinVisible, setIsPinVisible] = useState(false);
   const [pinCallback, setPinCallback] = useState(null);
 
@@ -41,12 +41,12 @@ export default function MainPanel() {
     setPinCallback(null);
   };
 
-  const showPin = (callback) => {
+  function showPin(callback) {
     setIsPinVisible(true);
     setPinCallback(() => callback);
-  };
-  ///
+  }
 
+  // Fetch global admin data on mount
   useEffect(() => {
     async function getData() {
       try {
@@ -57,45 +57,35 @@ export default function MainPanel() {
           console.error("Invalid response from server", response);
         }
       } catch (error) {
-        console.error("Error fetching data", error);
+        console.error("Error fetching admin data:", error);
       }
     }
-
     getData();
   }, []);
 
+  // Trigger patch regeneration with confirmation and PIN verification
   function handleGeneratePatches() {
-    showConfirm("Czy chcesz wygenerować nowe wartości w Patch?", () => {
+    showConfirm("Do you want to generate new patch values?", () => {
       showPin(async (pin) => {
         if (pin === null) {
-          // Użytkownik anulował
+          // User cancelled PIN entry
           return;
         }
         try {
-          // Wysyłamy żądanie do /admin/generatepatch z PIN-em w treści
           const response = await api.post("/admin/generatepatch", { pin });
           if (response.data.success) {
-            alert(
-              response.data.message || "Patche zostały wygenerowane pomyślnie."
-            );
+            alert(response.data.message || "Patches generated successfully.");
           } else {
             alert(
-              response.data.message ||
-                "Wystąpił problem podczas generowania patchy."
+              response.data.message || "There was an error generating patches."
             );
           }
         } catch (error) {
-          console.error("Błąd:", error);
-          // Obsługa błędów z odpowiedzi backendu
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.message
-          ) {
-            alert(error.response.data.message);
-          } else {
-            alert("Wystąpił błąd podczas generowania patchy.");
-          }
+          console.error("Error during patch generation:", error);
+          const msg =
+            error.response?.data?.message ||
+            "An error occurred while generating patches.";
+          alert(msg);
         }
       });
     });
@@ -104,61 +94,58 @@ export default function MainPanel() {
   return (
     <>
       <div className="grid-container">
-        {/* Users Blocks (Divs 1-4) */}
+        {/* User statistics blocks */}
         <div className="grid-item item1">
-          <Block number={data.total_users} title={"registered users"} />
+          <Block number={data.total_users} title="Registered Users" />
         </div>
         <div className="grid-item item2">
-          <Block number={data.total_reports} title={"user reports"} />
+          <Block number={data.total_reports} title="User Reports" />
         </div>
         <div className="grid-item item3">
-          <Block
-            number={data.users_logged_in_today}
-            title={"logged in today"}
-          />
+          <Block number={data.users_logged_in_today} title="Logged In Today" />
         </div>
         <div className="grid-item item4">
-          {/* Add another user-related block if needed */}
+          {/* Placeholder for additional user stat */}
         </div>
 
-        {/* Visits Blocks (Divs 5-8) */}
+        {/* Visit statistics blocks */}
         <div className="grid-item item5">
           <Block
             number={data.today_flashcard_visitors}
-            title={"flashcard visits"}
+            title="Flashcard Visits"
           />
         </div>
         <div className="grid-item item6">
           <Block
             number={data.today_vocabulary_b2_visitors}
-            title={"vocabulary B2 visits"}
+            title="Vocabulary B2 Visits"
           />
         </div>
         <div className="grid-item item7">
           <Block
             number={data.today_vocabulary_c1_visitors}
-            title={"vocabulary C1 visits"}
+            title="Vocabulary C1 Visits"
           />
         </div>
         <div className="grid-item item8">
-          {/* Add another visits-related block if needed */}
+          {/* Placeholder for additional visit stat */}
         </div>
 
-        {/* Language Blocks (Divs 9-12) */}
+        {/* Language and word counts blocks */}
         <div className="grid-item item9">
-          <Block number={data.total_languages} title={"languages"} />
+          <Block number={data.total_languages} title="Languages" />
         </div>
         <div className="grid-item item10">
-          <Block number={data.total_words} title={"number of words"} />
+          <Block number={data.total_words} title="Total Words" />
         </div>
         <div className="grid-item item11">
-          <Block number={data.total_b2_words} title={"words B2"} />
+          <Block number={data.total_b2_words} title="B2 Words" />
         </div>
         <div className="grid-item item12">
-          <Block number={data.total_c1_words} title={"words C1"} />
+          <Block number={data.total_c1_words} title="C1 Words" />
         </div>
 
-        {/* Charts (Divs 13-15) */}
+        {/* Charts */}
         <div className="grid-item item13">
           <UserChart />
         </div>
@@ -166,15 +153,26 @@ export default function MainPanel() {
           <VisitChart />
         </div>
         <div className="grid-item item15">
-          {/* <VisitChart /> */}
+          {/* Additional chart placeholder */}
         </div>
       </div>
 
+      {/* Confirmation modal for actions */}
       {confirmMessage && (
         <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
       )}
 
+      {/* PIN entry modal for secure actions */}
       {isPinVisible && <PinWindow onClose={handlePinClose} />}
+
+      {/* Button to trigger patch regeneration */}
+      <div className="generate-patch-button">
+        <MyButton
+          message="Generate Patches"
+          color="blue"
+          onClick={handleGeneratePatches}
+        />
+      </div>
     </>
   );
 }

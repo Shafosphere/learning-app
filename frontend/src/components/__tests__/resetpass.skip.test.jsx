@@ -54,7 +54,7 @@ describe("ResetPassword Component", () => {
       screen.getByRole("button", { name: /Reset Password/i })
     ).toBeInTheDocument();
 
-    // Użycie querySelectorAll do znalezienia przycisków zmiany widoczności hasła
+    // Using querySelectorAll to find password visibility toggle buttons
     const toggleButtons = container.querySelectorAll("button.btn-pass");
     expect(toggleButtons).toHaveLength(2);
   });
@@ -65,14 +65,14 @@ describe("ResetPassword Component", () => {
     const toggleButtons = container.querySelectorAll("button.btn-pass");
     const passwordInput = screen.getByPlaceholderText("New Password");
 
-    // Początkowo typ inputa powinien być "password"
+    // Initially, the input type should be "password"
     expect(passwordInput).toHaveAttribute("type", "password");
 
-    // Kliknięcie pierwszego przycisku powoduje zmianę typu na "text"
+    // Clicking the first button changes the type to "text"
     fireEvent.click(toggleButtons[0]);
     expect(passwordInput).toHaveAttribute("type", "text");
 
-    // Ponowne kliknięcie przywraca typ "password"
+    // Clicking again restores the type to "password"
     fireEvent.click(toggleButtons[0]);
     expect(passwordInput).toHaveAttribute("type", "password");
   });

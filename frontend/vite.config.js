@@ -4,14 +4,14 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: "jsdom", // Emulacja przeglądarki (DOM) dla testów React
-    globals: true, // Możliwość używania np. test, expect bez importu
-    setupFiles: ["./setupTests.js"], // Plik z dodatkowymi ustawieniami
+    environment: "jsdom", // Browser (DOM) emulation for React tests
+    globals: true, // Allows usage of test, expect, etc., without importing them
+    setupFiles: ["./setupTests.js"], // File containing additional setup
     exclude: [
-      "**/*.skip.test.jsx", // Ignoruj pliki z .skip.test.jsx
-      "node_modules/**", // Ignoruj wszystkie pliki w node_modules
-      "dist/**", // Ignoruj pliki w folderze dist
-      "coverage/**", // Ignoruj pliki w folderze coverage
+      "**/*.skip.test.jsx", // Ignore files ending with .skip.test.jsx
+      "node_modules/**", // Ignore all files in node_modules
+      "dist/**", // Ignore files in the dist folder
+      "coverage/**", // Ignore files in the coverage folder
     ],
   },
   server: {

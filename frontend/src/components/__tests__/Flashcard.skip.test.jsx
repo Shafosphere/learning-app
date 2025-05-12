@@ -6,7 +6,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import Flashcard from "../maingame/card/flashcard";
 import { IntlProvider } from "react-intl";
 
-// Scentralizowany zestaw testów dla komponentu Flashcard
+// Centralized test suite for the Flashcard component
 
 describe("Flashcard Component", () => {
   let defaultData;
@@ -51,7 +51,7 @@ describe("Flashcard Component", () => {
     );
   };
 
-  it("wywołuje handleSetWordFlash i handleSetwordId oraz ustawia placeholdery według activeBox", () => {
+  it("calls handleSetWordFlash and handleSetwordId and sets placeholders based on activeBox", () => {
     renderComponent({ activeBox: "boxTwo" });
 
     expect(props.handleSetWordFlash).toHaveBeenCalledWith("english");
@@ -67,7 +67,7 @@ describe("Flashcard Component", () => {
     expect(placeholders).toEqual(["english", "polish"]);
   });
 
-  it("zamienia słowa gdy activeBox !== boxTwo/boxFour", () => {
+  it("switches words when activeBox is not boxTwo or boxFour", () => {
     renderComponent({ activeBox: "boxOne" });
 
     expect(props.handleSetWordFlash).toHaveBeenCalledWith("polish");
@@ -82,7 +82,7 @@ describe("Flashcard Component", () => {
     expect(placeholders).toEqual(["polish", "english"]);
   });
 
-  it("aktualizuje wartość normalnego inputu i wywołuje check po kliknięciu Submit", () => {
+  it("updates the normal input value and calls check on Submit click", () => {
     renderComponent();
     const normalInput = document.querySelector("input.flashcard-input-normal");
 
@@ -97,7 +97,7 @@ describe("Flashcard Component", () => {
     );
   });
 
-  it("wywołuje check po naciśnięciu Enter w normalnym input", () => {
+  it("calls check when Enter key is pressed in normal input", () => {
     renderComponent();
     const normalInput = document.querySelector("input.flashcard-input-normal");
 
@@ -110,7 +110,7 @@ describe("Flashcard Component", () => {
     );
   });
 
-  it("wyświetla podpowiedź pierwszej litery po kliknięciu przycisku", () => {
+  it("shows the first letter hint when the button is clicked", () => {
     renderComponent();
     expect(screen.queryByText("p")).toBeNull();
 
@@ -118,7 +118,7 @@ describe("Flashcard Component", () => {
     expect(screen.getByText("p")).toBeInTheDocument();
   });
 
-  it("oblicza poprawnie styl --wordLength dla normalnego input", () => {
+  it("calculates the --wordLength style correctly for the normal input", () => {
     const customData = {
       id: "1",
       wordEng: { word: "mix", description: "" },
@@ -133,7 +133,7 @@ describe("Flashcard Component", () => {
     expect(length).toBe(customData.wordEng.word.length * 0.5);
   });
 
-  it("nawiguje fokusem za pomocą ArrowDown i ArrowUp", () => {
+  it("navigates focus with ArrowDown and ArrowUp keys", () => {
     renderComponent();
     const customInputs = document.querySelectorAll(
       "input.custom-input-flashcard"
@@ -155,7 +155,7 @@ describe("Flashcard Component", () => {
     expect(document.activeElement).toBe(customInputs[0]);
   });
 
-  it('fokusem przenosi się do correctWordRef gdy notVisible staje się "visible"', () => {
+  it("moves focus to correctWordRef when notVisible becomes visible", () => {
     renderComponent({
       cssClasses: { ...props.cssClasses, notVisible: "visible" },
     });
@@ -169,7 +169,7 @@ describe("Flashcard Component", () => {
     expect(document.activeElement).toBe(customInputs[0]);
   });
 
-  it("resetuje wartość normalnego inputu przy zmianie data.id", () => {
+  it("resets the normal input value when data.id changes", () => {
     const { rerender } = renderComponent();
     const normalInput = document.querySelector("input.flashcard-input-normal");
     fireEvent.change(normalInput, { target: { value: "xyz" } });

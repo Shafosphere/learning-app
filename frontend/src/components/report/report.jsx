@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import { FaRegQuestionCircle } from "react-icons/fa";
 import "./report.css";
 import api from "../../utils/api";
 import { PopupContext } from "../popup/popupcontext";
@@ -22,7 +21,6 @@ export default function ReportForm() {
           reportType,
           word,
           description,
-          // language,
         },
         {
           headers: {

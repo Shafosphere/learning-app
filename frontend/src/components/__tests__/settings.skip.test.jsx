@@ -22,7 +22,7 @@ import { IntlProvider } from "react-intl";
 import enMessages from "../../locales/en.json";
 import "fake-indexeddb/auto";
 
-// Stub dla metod <dialog> – JSDOM nie przypisuje domyślnie roli "dialog"
+// Stub for <dialog> methods – JSDOM doesn't assign the "dialog" role by default
 beforeAll(() => {
   if (!HTMLDialogElement.prototype.showModal) {
     HTMLDialogElement.prototype.showModal = function () {};
@@ -31,19 +31,14 @@ beforeAll(() => {
     HTMLDialogElement.prototype.close = function () {};
   }
 
-  // Zastępujemy window.location, aby stubować reload.
-  // Zapisujemy oryginalny obiekt, aby przywrócić go po testach.
+  // Replace window.location to stub reload.
+  // Save the original object to restore it after tests.
   const originalLocation = window.location;
   delete window.location;
   window.location = {
     ...originalLocation,
     reload: vi.fn(),
   };
-});
-
-afterAll(() => {
-  // Opcjonalnie: przywróć oryginalny window.location, jeśli potrzebne
-  // window.location = originalLocation; // Można przechować oryginał w zmiennej globalnej
 });
 
 // Mock API
@@ -97,7 +92,7 @@ describe("Settings Component", () => {
 
   it("should render all tabs", () => {
     render(<Settings />, { wrapper: Wrapper });
-    // W komponencie nie ma tekstu (np. sidebar.settings), więc oczekujemy jedynie numerów zakładek.
+    // The component has no text labels for tabs, so we expect tab numbers only.
     expect(screen.getByText("1")).toBeInTheDocument();
     expect(screen.getByText("2")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
@@ -107,7 +102,7 @@ describe("Settings Component", () => {
     render(<Settings />, { wrapper: Wrapper });
 
     fireEvent.click(screen.getByText("2"));
-    // Szukamy kontenera zawierającego tekst Daily Progress, a potem input typu spinbutton
+    // Find the container with the "Daily Progress" text, then a spinbutton input inside it.
     const dailyGoalContainer = screen
       .getByText(enMessages["dailyProgress"])
       .closest(".dailyGoal");
@@ -118,10 +113,10 @@ describe("Settings Component", () => {
     expect(screen.getByText(enMessages["resetAll"])).toBeInTheDocument();
   });
 
-  describe("First Bookmark", () => {
+  describe("First Tab", () => {
     it("should toggle sound settings", () => {
       render(<Settings />, { wrapper: Wrapper });
-      // Znajdujemy element z tekstem "Sounds" i input typu checkbox w obrębie kontenera
+      // Find the element with "Sounds" text and the checkbox inside its container.
       const soundContainer = screen
         .getByText(enMessages["sounds"])
         .closest(".switch-container");
@@ -143,12 +138,12 @@ describe("Settings Component", () => {
     });
   });
 
-  describe("Second Bookmark", () => {
+  describe("Second Tab", () => {
     it("should update daily goal and save", async () => {
       render(<Settings />, { wrapper: Wrapper });
       fireEvent.click(screen.getByText("2"));
 
-      // Znajdujemy input w kontenerze Daily Progress
+      // Find the input in the Daily Progress container.
       const dailyGoalContainer = screen
         .getByText(enMessages["dailyProgress"])
         .closest(".dailyGoal");
@@ -158,7 +153,7 @@ describe("Settings Component", () => {
       const saveButton = screen.getByText(enMessages["saveSettings"]);
       fireEvent.click(saveButton);
 
-      // Oczekujemy, że setDailyGoal zostanie wywołany z wartością "30" (string)
+      // Expect setDailyGoal to be called with the string "30".
       expect(mockSettings.setDailyGoal).toHaveBeenCalledWith("30");
       expect(mockPopup.setPopup).toHaveBeenCalledWith({
         message: enMessages["settings.saved"],
@@ -167,20 +162,19 @@ describe("Settings Component", () => {
     });
   });
 
-  describe("Third Bookmark", () => {
+  describe("Third Tab", () => {
     let container;
     beforeEach(() => {
-      // Ustawienia dla testu resetowania
+      // Settings for reset tests
       localStorage.setItem("carouselItems-B2", "test");
       localStorage.setItem("patchNumberB2-maingame", "2");
-      // Renderujemy Settings i zapisujemy container
       const rendered = render(<Settings />, { wrapper: Wrapper });
       container = rendered.container;
     });
 
     it("should reset vocabulary progress", async () => {
       fireEvent.click(screen.getByText("3"));
-      // Znajdujemy przycisk resetu dla vocabulary wewnątrz odpowiedniego kontenera
+      // Find the reset vocabulary button inside its container.
       const vocaContainer = screen
         .getByText(enMessages["switches.resetVoca"])
         .closest(".container-resets");
@@ -189,12 +183,12 @@ describe("Settings Component", () => {
         .closest("button");
       fireEvent.click(vocaButton);
 
-      // Czekamy, aż dialog pojawi się (wyszukujemy go metodą querySelector)
+      // Wait for the dialog to appear.
       await waitFor(() => {
         expect(container.querySelector("dialog")).toBeTruthy();
       });
       const confirmDialog = container.querySelector("dialog");
-      // W dialogu wyszukujemy przycisk "Yes" i klikamy go
+      // Click the "Yes" button inside the dialog.
       const yesButton = within(confirmDialog).getByText(
         enMessages["confirm.yes"]
       );
@@ -250,7 +244,7 @@ describe("Settings Component", () => {
       await waitFor(() => {
         expect(localStorage.length).toBe(0);
       });
-      // Sprawdzamy, czy wywołano reload
+      // Check that reload was called
       expect(window.location.reload).toHaveBeenCalled();
     });
   });
@@ -258,7 +252,7 @@ describe("Settings Component", () => {
   it("should display correct explanations on hover", () => {
     render(<Settings />, { wrapper: Wrapper });
 
-    // Wyjaśnienie dla dźwięku
+    // Explanation for sound
     const soundContainer = screen
       .getByText(enMessages["sounds"])
       .closest(".switch-container");
@@ -267,7 +261,7 @@ describe("Settings Component", () => {
       screen.getByText(enMessages["turnOffSoundEffects"])
     ).toBeInTheDocument();
 
-    // Wyjaśnienie dla dark mode
+    // Explanation for dark mode
     const darkModeContainer = screen
       .getByText(enMessages["darkMode"])
       .closest(".switch-container");

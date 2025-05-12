@@ -4,10 +4,10 @@ import { useWindowWidth } from "../../hooks/window_width/windowWidth";
 
 describe("useWindowWidth", () => {
   beforeEach(() => {
-    // Resetuj wszystkie mocki przed każdym testem
+    // Reset all mocks before each test
     vi.restoreAllMocks();
-    
-    // Ustaw początkową szerokość okna
+
+    // Set initial window width
     Object.defineProperty(window, "innerWidth", {
       writable: true,
       configurable: true,
@@ -15,50 +15,48 @@ describe("useWindowWidth", () => {
     });
   });
 
-  it("powinien zwrócić aktualną szerokość okna", () => {
+  it("should return the current window width", () => {
     const { result } = renderHook(() => useWindowWidth());
     expect(result.current).toBe(1024);
   });
 
-  it("powinien aktualizować szerokość przy zmianie rozmiaru okna", () => {
+  it("should update the width when the window is resized", () => {
     const { result } = renderHook(() => useWindowWidth());
-    
-    // Opakowanie zmiany rozmiaru w act
+
+    // Wrap resize change in act
     act(() => {
       window.innerWidth = 768;
       window.dispatchEvent(new Event("resize"));
     });
-    
+
     expect(result.current).toBe(768);
   });
 
-  it("powinien usunąć listener przy unmouncie", () => {
+  it("should remove the listener on unmount", () => {
     const addSpy = vi.spyOn(window, "addEventListener");
     const removeSpy = vi.spyOn(window, "removeEventListener");
-    
+
     const { unmount } = renderHook(() => useWindowWidth());
-    
-    // Pobierz zarejestrowany handler
-    const handler = addSpy.mock.calls.find(
-      (call) => call[0] === "resize"
-    )[1];
-    
+
+    // Get the registered handler
+    const handler = addSpy.mock.calls.find((call) => call[0] === "resize")[1];
+
     unmount();
-    
+
     expect(removeSpy).toHaveBeenCalledWith("resize", handler);
   });
 
-  it("powinien obsługiwać kolejne zmiany rozmiaru", () => {
+  it("should handle multiple consecutive resizes", () => {
     const { result } = renderHook(() => useWindowWidth());
-    
-    // Pierwsza zmiana
+
+    // First resize
     act(() => {
       window.innerWidth = 800;
       window.dispatchEvent(new Event("resize"));
     });
     expect(result.current).toBe(800);
-    
-    // Druga zmiana
+
+    // Second resize
     act(() => {
       window.innerWidth = 600;
       window.dispatchEvent(new Event("resize"));
@@ -66,17 +64,17 @@ describe("useWindowWidth", () => {
     expect(result.current).toBe(600);
   });
 
-  it("powinien ignorować zmiany po unmouncie", () => {
+  it("should ignore changes after unmount", () => {
     const { result, unmount } = renderHook(() => useWindowWidth());
-    
+
     unmount();
-    
+
     act(() => {
       window.innerWidth = 900;
       window.dispatchEvent(new Event("resize"));
     });
-    
-    // Stan nie powinien się zmienić po unmouncie
+
+    // State should not change after unmount
     expect(result.current).toBe(1024);
   });
 });

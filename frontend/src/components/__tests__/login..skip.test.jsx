@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, useLocation } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import { IntlProvider } from "react-intl";
 import Login from "../../pages/login/login";
 
-// Mockowanie komponentów formularzy
+// Mock form components to isolate Login component logic
 vi.mock("../../components/login/loginForm", () => ({
   default: () => <div data-testid="login-form" />,
 }));
@@ -18,13 +18,14 @@ vi.mock("../../components/login/resetForm", () => ({
   default: () => <div data-testid="reset-form" />,
 }));
 
-// Mockowanie MyButton aby testować tylko logikę
+// Mock MyButton to test only display logic
 vi.mock("../../components/button/button", () => ({
   default: vi.fn(({ message, onClick }) => (
     <button onClick={onClick}>{message}</button>
   )),
 }));
 
+// Wrapper component to provide routing and internationalization
 const Wrapper = ({ children, initialEntries }) => (
   <MemoryRouter initialEntries={initialEntries}>
     <IntlProvider locale="en">{children}</IntlProvider>
@@ -56,7 +57,7 @@ describe("Login component", () => {
     );
 
     await userEvent.click(screen.getByText("Register"));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId("register-form")).toBeInTheDocument();
       expect(screen.getByText("Log In")).toBeInTheDocument();
@@ -72,7 +73,7 @@ describe("Login component", () => {
     );
 
     await userEvent.click(screen.getByText("Reset"));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId("reset-form")).toBeInTheDocument();
       expect(screen.getByText("Log In")).toBeInTheDocument();
@@ -80,7 +81,7 @@ describe("Login component", () => {
     });
   });
 
-  it("renders registration form when initialized with location state", () => {
+  it("renders registration form when initialized via location state", () => {
     render(
       <Wrapper initialEntries={[{ state: { display: "register" } }]}>
         <Login />
@@ -90,7 +91,7 @@ describe("Login component", () => {
     expect(screen.getByTestId("register-form")).toBeInTheDocument();
   });
 
-  it("renders reset form when initialized with location state", () => {
+  it("renders reset form when initialized via location state", () => {
     render(
       <Wrapper initialEntries={[{ state: { display: "reset" } }]}>
         <Login />
@@ -108,20 +109,19 @@ describe("Login component", () => {
     );
 
     await userEvent.click(screen.getByText("Log In"));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId("login-form")).toBeInTheDocument();
     });
   });
 
-  it("handles invalid location state gracefully", () => {
+  it("handles invalid location state gracefully by defaulting to login form", () => {
     render(
       <Wrapper initialEntries={[{ state: { display: "invalid" } }]}>
         <Login />
       </Wrapper>
     );
 
-    // Should default to login
     expect(screen.getByTestId("login-form")).toBeInTheDocument();
   });
 });

@@ -1,3 +1,5 @@
+// src/components/__tests__/ConfirmWindow.test.jsx
+
 import React from "react";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { IntlProvider } from "react-intl";
@@ -8,12 +10,14 @@ describe("ConfirmWindow Component", () => {
   const originalClose = HTMLDialogElement.prototype.close;
 
   beforeEach(() => {
+    // Stub showModal and close methods
     HTMLDialogElement.prototype.showModal = vi.fn();
     HTMLDialogElement.prototype.close = vi.fn();
   });
 
   afterEach(() => {
     cleanup();
+    // Restore original methods
     HTMLDialogElement.prototype.showModal = originalShowModal;
     HTMLDialogElement.prototype.close = originalClose;
     vi.resetAllMocks();
@@ -52,7 +56,7 @@ describe("ConfirmWindow Component", () => {
     expect(onClose).toHaveBeenCalledWith(true);
   });
 
-  it("renders conflict confirmation and displays dates and handles Close", () => {
+  it("renders conflict confirmation, displays dates, and handles Close", () => {
     const onClose = vi.fn();
     const localDate = "2025-04-01";
     const serverDate = "2025-03-20";

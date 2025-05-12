@@ -6,7 +6,7 @@ import { FormattedMessage } from "react-intl";
 export default function TableResults({ goodWords, wrongWords }) {
   return (
     <div className="results">
-      {/* Warunkowe renderowanie dla goodWords */}
+      {/* Conditionally render goodWords section */}
       {goodWords.length > 0 && (
         <div className="good-results">
           <span className="results-title">
@@ -56,7 +56,7 @@ export default function TableResults({ goodWords, wrongWords }) {
         </div>
       )}
 
-      {/* Warunkowe renderowanie dla wrongWords */}
+      {/* Conditionally render wrongWords section */}
       {wrongWords.length > 0 && (
         <div className="wrong-results">
           <span className="results-title">

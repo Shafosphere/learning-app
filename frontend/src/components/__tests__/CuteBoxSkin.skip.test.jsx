@@ -35,7 +35,7 @@ describe("CuteBoxSkin Component", () => {
     vi.clearAllMocks();
   });
 
-  it("renders with active/notactive class based on activeBox", () => {
+  it("renders with 'active' or 'notactive' class based on activeBox prop", () => {
     const { rerender } = render(
       <CuteBoxSkin activeBox="a" boxName="a" words={0} />
     );
@@ -46,7 +46,7 @@ describe("CuteBoxSkin Component", () => {
     expect(container).toHaveClass("notactive");
   });
 
-  it("renders card images based on words count", () => {
+  it("renders correct card images based on the words count", () => {
     const { rerender } = render(
       <CuteBoxSkin activeBox="a" boxName="a" words={0} />
     );
@@ -64,17 +64,17 @@ describe("CuteBoxSkin Component", () => {
     expect(screen.getByAltText("flashcard3")).toBeInTheDocument();
   });
 
-  it("calls gsap.timeline when active", () => {
+  it("calls gsap.timeline when the component is active", () => {
     render(<CuteBoxSkin activeBox="x" boxName="x" words={5} />);
     expect(gsap.timeline).toHaveBeenCalledTimes(1);
   });
 
-  it("does not call gsap.timeline when not active", () => {
+  it("does not call gsap.timeline when the component is not active", () => {
     render(<CuteBoxSkin activeBox="y" boxName="x" words={5} />);
     expect(gsap.timeline).not.toHaveBeenCalled();
   });
 
-  it("calls gsap.set on deactivation", () => {
+  it("calls gsap.set when the component deactivates", () => {
     const { rerender } = render(
       <CuteBoxSkin activeBox="a" boxName="a" words={0} />
     );
