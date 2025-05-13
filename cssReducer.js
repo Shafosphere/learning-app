@@ -1,24 +1,23 @@
 function parseCss(cssText) {
-  // Usuwamy ewentualne komentarze typu /* ... */
+  // Remove any /* ... */ style comments
   let cleanCss = cssText.replace(/\/\*[\s\S]*?\*\//g, "").trim();
 
-  // Rozbijamy na bloki @media
-  // Zakładamy, że każda sekcja @media kończy się znakiem "}" na odpowiednim poziomie
-  let mediaRegex = /@media[^{]+\{([\s\S]*?)\}\s*}/g;
+  // Split into @media blocks
+  // We assume each @media section ends with a matching '}' at the appropriate nesting level
+  let mediaRegex = /@media[^\{]+\{([\s\S]*?)\}\s*\}/g;
   let mediaBlocks = [];
   let match;
 
   while ((match = mediaRegex.exec(cleanCss)) !== null) {
-    // Cały napis @media (max-width: 600px) { ... }
-    // match[0] = zawartość z @media włącznie
-    // match[1] = wszystko między klamrami {} wewnątrz @media
+    // match[0] = full '@media ... { ... }' string
+    // match[1] = content inside the braces {}
     let fullMedia = match[0];
     let content = match[1];
 
-    // Znajdź definicję, np. @media (max-width: 600px)
-    let mediaDefinition = fullMedia.match(/@media[^{]+/)[0].trim();
+    // Find the media definition, e.g., '@media (max-width: 600px)'
+    let mediaDefinition = fullMedia.match(/@media[^\{]+/)[0].trim();
 
-    // Parsowanie reguł w danym media:
+    // Parse rules within this media block:
     let rules = parseRules(content);
 
     mediaBlocks.push({
@@ -30,20 +29,20 @@ function parseCss(cssText) {
   return mediaBlocks;
 }
 
-// Funkcja do parsowania reguł CSS wewnątrz bloku
+// Function to parse CSS rules inside a block
 function parseRules(blockContent) {
-  // Rozbijamy na definicje selektorów np. ".classA {...}"
-  // Bardzo uproszczony rozdział:
+  // Split into selector definitions, e.g., '.classA { ... }'
+  // A very simplified split:
   let ruleRegex = /([^{}]+)\{([^}]*)\}/g;
   let rulesObj = {};
   let match;
 
   while ((match = ruleRegex.exec(blockContent)) !== null) {
-    let selector = match[1].trim(); // np. ".classA"
-    let declarations = match[2].trim(); // np. "display: flex; color: red;"
+    let selector = match[1].trim(); // e.g., '.classA'
+    let declarations = match[2].trim(); // e.g., 'display: flex; color: red;'
     let declObj = {};
 
-    // Rozbijamy deklaracje na pary klucz: wartość
+    // Split declarations into property:value pairs
     let declPairs = declarations.split(";").filter(Boolean);
     for (let pair of declPairs) {
       let [prop, val] = pair.split(":");
@@ -60,43 +59,40 @@ function parseRules(blockContent) {
   return rulesObj;
 }
 
-// Funkcja główna analizująca i wyciągająca wspólne właściwości
+// Main function to analyze and extract common properties across media blocks
 function extractGlobalStyles(mediaBlocks) {
-  // Wyszukujemy unikalną listę wszystkich selektorów
+  // Build a unique list of all selectors
   let allSelectors = new Set();
   for (let block of mediaBlocks) {
     Object.keys(block.rules).forEach((sel) => allSelectors.add(sel));
   }
 
-  let globalRules = {}; // będzie przechowywać wspólne właściwości
+  let globalRules = {};
 
-  // Dla każdego selektora sprawdzamy, czy występuje w każdym media
+  // For each selector, check if it appears in every media block
   for (let sel of allSelectors) {
-    // Sprawdzamy wystąpienie selektora w każdym bloku
     let allHaveSelector = mediaBlocks.every((b) => b.rules[sel]);
-    if (!allHaveSelector) continue; // jeżeli nie występuje wszędzie, pomijamy globalne przenoszenie
+    if (!allHaveSelector) continue;
 
-    // Pobieramy wszystkie właściwości z pierwszego media
+    // Get all properties from the first media block
     let firstDecls = mediaBlocks[0].rules[sel];
     for (let property in firstDecls) {
       let value = firstDecls[property];
 
-      // Sprawdzamy, czy w każdym media jest to samo value
-      let hasSameValueInAll = mediaBlocks.every((b) => {
-        return b.rules[sel][property] === value;
-      });
+      // Check if every media block has the same value
+      let hasSameValueInAll = mediaBlocks.every(
+        (b) => b.rules[sel][property] === value
+      );
 
       if (hasSameValueInAll) {
-        // Dodajemy do global
-        if (!globalRules[sel]) {
-          globalRules[sel] = {};
-        }
+        // Add to global rules
+        if (!globalRules[sel]) globalRules[sel] = {};
         globalRules[sel][property] = value;
       }
     }
   }
 
-  // Usuwamy te globalne właściwości z poszczególnych @media
+  // Remove these global properties from each @media block
   for (let sel in globalRules) {
     for (let property in globalRules[sel]) {
       for (let block of mediaBlocks) {
@@ -110,24 +106,24 @@ function extractGlobalStyles(mediaBlocks) {
   return globalRules;
 }
 
-// Funkcja do generowania finalnego CSS z global + media blocks
+// Function to generate final CSS from global rules and media blocks
 function generateCss(globalRules, mediaBlocks) {
   let lines = [];
 
-  // Najpierw style globalne:
+  // First, global styles:
   for (let sel in globalRules) {
     lines.push(`${sel} {`);
     for (let prop in globalRules[sel]) {
       lines.push(`  ${prop}: ${globalRules[sel][prop]};`);
     }
-    lines.push(`}\n`);
+    lines.push(`}`);
+    lines.push(``);
   }
 
-  // Potem każdy blok @media
+  // Then each @media block
   for (let mb of mediaBlocks) {
     lines.push(`${mb.media} {`);
     for (let sel in mb.rules) {
-      // Jeżeli reguła pusta, pomijamy
       let props = mb.rules[sel];
       let propKeys = Object.keys(props);
       if (!propKeys.length) continue;
@@ -138,13 +134,14 @@ function generateCss(globalRules, mediaBlocks) {
       }
       lines.push(`  }`);
     }
-    lines.push(`}\n`);
+    lines.push(`}`);
+    lines.push(``);
   }
 
   return lines.join("\n");
 }
 
-// ======= paste media here =======
+// ======= Paste media here =======
 let cssText = `
   @media (max-width: 600px) {
     .container-home {
@@ -172,7 +169,5 @@ let mediaBlocks = parseCss(cssText);
 let globalRules = extractGlobalStyles(mediaBlocks);
 let newCss = generateCss(globalRules, mediaBlocks);
 
-// console.log("===== GLOBAL =====");
-// console.log(globalRules);
-console.log("===== NOWY CSS =====");
+console.log("===== NEW CSS =====");
 console.log(newCss);
