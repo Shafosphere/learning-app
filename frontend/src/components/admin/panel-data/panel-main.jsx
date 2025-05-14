@@ -166,13 +166,13 @@ export default function MainPanel() {
       {isPinVisible && <PinWindow onClose={handlePinClose} />}
 
       {/* Button to trigger patch regeneration */}
-      <div className="generate-patch-button">
+      {/* <div className="generate-patch-button">
         <MyButton
           message="Generate Patches"
           color="blue"
           onClick={handleGeneratePatches}
         />
-      </div>
+      </div> */}
     </>
   );
 }

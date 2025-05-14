@@ -74,13 +74,9 @@ export const getPatchesInfo = async (req, res) => {
   console.log("Fetching patch information");
   try {
     const stats = await getAllMaxPatchId();
-    console.log("Fetched patch stats:", stats);
     const length = await getAllPatchLength();
-    console.log("Fetched patch length:", length);
     const number_words_B2 = await getNumberOfWords("B2");
-    console.log("Fetched number of words for B2:", number_words_B2);
     const number_words_C1 = await getNumberOfWords("C1");
-    console.log("Fetched number of words for C1:", number_words_C1);
     const result = {
       totalB2Patches: stats.totalB2Patches,
       totalC1Patches: stats.totalC1Patches,
@@ -89,8 +85,7 @@ export const getPatchesInfo = async (req, res) => {
       numberWordsB2: number_words_B2,
       numberWordsC1: number_words_C1,
     };
-    console.log("Result:", result);
-    res.status(200).json(result); // Zwracanie statystyk
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error getting information:", error);
     res.status(500).send("Server Error");

@@ -1,4 +1,3 @@
-// useBoxesDB.js
 import { useState, useEffect, useContext, useCallback } from "react";
 import { SettingsContext } from "../../pages/settings/properties";
 import api from "../../utils/api";
@@ -22,7 +21,6 @@ export default function useBoxesDB(
   const [autoSave, setAutoSave] = useState(false);
   const deviceId = localStorage.getItem("deviceId");
 
-  // Update the local patch number based on level
   const updateLocalPatchNumber = useCallback(
     (newValue) => {
       if (lvl === "B2") setB2Patch(newValue);
@@ -31,9 +29,8 @@ export default function useBoxesDB(
     [lvl, setB2Patch, setC1Patch]
   );
 
-  // Overwrite IndexedDB store with server-side words data
   const updateIndexedDBFromServer = useCallback(
-    async (wordsData) => {
+    async (serverData) => {
       return new Promise((resolve, reject) => {
         const request = indexedDB.open("SavedBoxes", 2);
 
@@ -44,16 +41,17 @@ export default function useBoxesDB(
 
         request.onsuccess = (event) => {
           const db = event.target.result;
-          const storeName = `boxes${lvl}`;
-          if (!db.objectStoreNames.contains(storeName)) {
-            reject(new Error(`Object store ${storeName} not found`));
+          if (!db.objectStoreNames.contains(`boxes${lvl}`)) {
+            reject(new Error(`Object store boxes${lvl} not found`));
             return;
           }
-          const tx = db.transaction([storeName], "readwrite");
-          const store = tx.objectStore(storeName);
+          const transaction = db.transaction([`boxes${lvl}`], "readwrite");
+          const store = transaction.objectStore(`boxes${lvl}`);
 
           store.clear().onsuccess = () => {
-            wordsData.forEach((item) => store.add(item));
+            serverData.forEach((item) => {
+              store.add(item);
+            });
             resolve();
           };
         };
@@ -64,12 +62,11 @@ export default function useBoxesDB(
     [lvl]
   );
 
-  // 1. Use useCallback for server-side load
   const serverAutoload = useCallback(async () => {
     try {
       const response = await api.post("/user/auto-load", {
         level: lvl,
-        deviceId,
+        deviceId: deviceId,
       });
       const serverData = response.data;
 
@@ -87,16 +84,15 @@ export default function useBoxesDB(
         );
       }
 
-      await updateIndexedDBFromServer(serverData.words);
-      console.log("Server data loaded and saved to IndexedDB");
+      await updateIndexedDBFromServer(response.data.words);
+      console.log("Data from server loaded and saved to IndexedDB");
       return response;
     } catch (error) {
-      console.error("Error during auto-load:", error);
+      console.error("Autoload error:", error);
       return null;
     }
   }, [lvl, deviceId, updateIndexedDBFromServer]);
 
-  // 2. Resolve conflicts between guest and server data
   const resolveSaveConflict = async () => {
     const guestTimestamp = localStorage.getItem(`guestTimestamp_${lvl}`);
     if (!guestTimestamp) return;
@@ -104,7 +100,7 @@ export default function useBoxesDB(
     try {
       const response = await api.post("/user/auto-load", {
         level: lvl,
-        deviceId,
+        deviceId: deviceId,
       });
       const serverData = response.data;
 
@@ -117,6 +113,7 @@ export default function useBoxesDB(
       const guestTimeNumber = parseInt(guestTimestamp, 10);
 
       if (guestTimeNumber > serverTimestamp) {
+        // Ask user to choose based on timestamps
         const userConfirmed = await showConfirm(
           guestTimeNumber,
           serverTimestamp
@@ -136,86 +133,97 @@ export default function useBoxesDB(
 
       localStorage.removeItem(`guestTimestamp_${lvl}`);
     } catch (error) {
-      console.error("Error resolving conflict:", error);
+      console.error("Conflict resolution error:", error);
     }
   };
 
-  // 3. Automatically send data to server or save guest timestamp
   const serverAutosave = useCallback(async () => {
+    // Prepare dynamic data from boxes
     const currentPatch = lvl === "B2" ? patchNumberB2 : patchNumberC1;
     const words = Object.entries(boxes).flatMap(([boxName, items]) =>
       items.map(({ id }) => ({ id, boxName }))
     );
 
-    const payload = {
+    const data = {
       level: lvl,
-      deviceId,
+      deviceId: deviceId,
       words,
       patchNumber: currentPatch,
     };
-    console.log("Auto-save payload:", payload);
+    console.log(data);
+
     try {
-      const response = await api.post("/user/auto-save", payload);
-      console.log("Auto-save completed:", response.data);
+      const response = await api.post("/user/auto-save", data);
+      console.log("Autosave completed", response.data);
     } catch (error) {
-      console.error("Error during auto-save:", error);
+      console.error("Autosave error:", error);
     }
   }, [boxes, lvl, deviceId, patchNumberB2, patchNumberC1]);
 
-  // Initialize IndexedDB store for the given level
-  const initializeDB = (db, level) => {
-    const storeName = `boxes${level}`;
-    if (!db.objectStoreNames.contains(storeName)) {
-      db.createObjectStore(storeName, { keyPath: "id" });
+  const initializeDB = (db, lvl) => {
+    if (!db.objectStoreNames.contains(`boxes${lvl}`)) {
+      db.createObjectStore(`boxes${lvl}`, { keyPath: "id" });
     }
   };
 
-  // 4. Updated data loading effect
+  // Effect to load data initially
   useEffect(() => {
     const loadData = async () => {
       if (isLoggedIn) {
+        // Resolve conflict then autoload from server
         await resolveSaveConflict();
         const response = await serverAutoload();
+
         if (response?.data?.patchNumber) {
           updateLocalPatchNumber(response.data.patchNumber);
         }
       }
 
-      // Then always load from IndexedDB
+      // Always load from IndexedDB
       const dbData = await new Promise((resolve, reject) => {
         const request = indexedDB.open("SavedBoxes", 2);
 
         request.onupgradeneeded = (event) => {
           const db = event.target.result;
-          ["B2", "C1"].forEach((level) => initializeDB(db, level));
+          ["B2", "C1"].forEach((level) => {
+            if (!db.objectStoreNames.contains(`boxes${level}`)) {
+              db.createObjectStore(`boxes${level}`, { keyPath: "id" });
+            }
+          });
         };
 
         request.onsuccess = (event) => {
           const db = event.target.result;
-          const storeName = `boxes${lvl}`;
-          if (!db.objectStoreNames.contains(storeName)) {
+          if (!db.objectStoreNames.contains(`boxes${lvl}`)) {
             const version = db.version + 1;
             db.close();
+
             const upgradeRequest = indexedDB.open("SavedBoxes", version);
-            upgradeRequest.onupgradeneeded = (e) =>
-              initializeDB(e.target.result, lvl);
-            upgradeRequest.onsuccess = (e) =>
-              (e.target.result
-                .transaction([storeName], "readonly")
-                .objectStore(storeName)
-                .getAll().onsuccess = (e) => resolve(e.target.result));
+            upgradeRequest.onupgradeneeded = (e) => {
+              const newDB = e.target.result;
+              newDB.createObjectStore(`boxes${lvl}`, { keyPath: "id" });
+            };
+
+            upgradeRequest.onsuccess = (e) => {
+              const newDB = e.target.result;
+              const transaction = newDB.transaction(
+                [`boxes${lvl}`],
+                "readonly"
+              );
+              const store = transaction.objectStore(`boxes${lvl}`);
+              store.getAll().onsuccess = (e) => resolve(e.target.result);
+            };
           } else {
-            db
-              .transaction([storeName], "readonly")
-              .objectStore(storeName)
-              .getAll().onsuccess = (e) => resolve(e.target.result);
+            const transaction = db.transaction([`boxes${lvl}`], "readonly");
+            const store = transaction.objectStore(`boxes${lvl}`);
+            store.getAll().onsuccess = (e) => resolve(e.target.result);
           }
         };
 
         request.onerror = reject;
       });
 
-      // Update state with IndexedDB data
+      // Update state with loaded data
       const newBoxesState = {
         boxOne: [],
         boxTwo: [],
@@ -225,30 +233,28 @@ export default function useBoxesDB(
       };
       dbData.forEach((item) => {
         const { boxName, ...rest } = item;
-        if (newBoxesState[boxName]) newBoxesState[boxName].push(rest);
+        if (newBoxesState[boxName]) {
+          newBoxesState[boxName].push(rest);
+        }
       });
       setBoxes(newBoxesState);
 
       if (!isLoggedIn) {
         const localPatch = localStorage.getItem(`patchNumber${lvl}-maingame`);
         if (localPatch) {
-          const parsed = Number(localPatch);
-          if (lvl === "B2") setB2Patch(parsed);
-          else setC1Patch(parsed);
+          if (lvl === `B2`) {
+            setB2Patch(Number(localPatch));
+          } else {
+            setC1Patch(Number(localPatch));
+          }
         }
       }
     };
 
     loadData();
-  }, [
-    lvl,
-    isLoggedIn,
-    resolveSaveConflict,
-    serverAutoload,
-    updateLocalPatchNumber,
-  ]);
+  }, [lvl, isLoggedIn, serverAutoload, setB2Patch, setC1Patch]);
 
-  // 6. Updated save effect
+  // Effect to save data when autoSave flag changes
   useEffect(() => {
     const saveData = async () => {
       if (!autoSave) return;
@@ -260,26 +266,34 @@ export default function useBoxesDB(
           localStorage.setItem(`guestTimestamp_${lvl}`, Date.now());
         }
 
-        // Always write to IndexedDB
+        // Always save to IndexedDB
         await new Promise((resolve, reject) => {
           const request = indexedDB.open("SavedBoxes", 2);
+
           request.onsuccess = (event) => {
             const db = event.target.result;
-            const tx = db.transaction([`boxes${lvl}`], "readwrite");
-            const store = tx.objectStore(`boxes${lvl}`);
+            const transaction = db.transaction([`boxes${lvl}`], "readwrite");
+            const store = transaction.objectStore(`boxes${lvl}`);
+
             store.clear().onsuccess = async () => {
-              for (const [boxName, items] of Object.entries(boxes)) {
-                for (const item of items) await store.put({ ...item, boxName });
-              }
+              const promises = [];
+              Object.entries(boxes).forEach(([boxName, items]) => {
+                items.forEach((item) => {
+                  promises.push(store.put({ ...item, boxName }));
+                });
+              });
+
+              await Promise.all(promises);
               resolve();
             };
           };
+
           request.onerror = reject;
         });
 
         setAutoSave(false);
       } catch (error) {
-        console.error("Error saving data:", error);
+        console.error("Save error:", error);
       }
     };
 
