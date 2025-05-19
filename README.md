@@ -107,4 +107,145 @@ Visible only to users with the *admin* role (verified via JWT and route guards).
 
 ---
 
-**Questions or ideas?** Open an *Issue* or send a message on LinkedIn.
+# Backend Documentation – Vocabulary Learning App
+
+---
+
+## 1. Introduction
+
+A short overview of the project, its purpose and what the backend is responsible for (word storage, user authentication, statistics, admin panel, etc.).
+
+## 2. Technology Stack
+
+| Layer             | Technology                                                  | Description                                           |
+| ----------------- | ----------------------------------------------------------- | ----------------------------------------------------- |
+| Runtime           | **Node.js 20 + Express 4**                                  | HTTP server and routing                               |
+| Database          | **PostgreSQL** (library `pg`)                               | Relational database                                   |
+| Authentication    | **JWT** (`jsonwebtoken`)                                    | Token stored in an HTTP‑only cookie                   |
+| Security          | `express-rate-limit`, `cors`, `bcrypt`, `express-validator` | Rate limits, CORS, password hashing, input validation |
+| Dev & CI          | `nodemon`, `jest`, `supertest`, Babel                       | Hot‑reload, unit & integration tests                  |
+| Utility libraries | `dotenv`, `node-cron`, `nodemailer`, `date-fns`             | Config, CRON jobs, e‑mails, date helpers              |
+
+## 3. Environment Configuration
+
+`.env.local` (development) / `.env.production` (production). Key variables:
+
+```dotenv
+_DATABASE=postgres://user:pass@host:5432/db
+_DB_USER=
+_DB_HOST=
+_DB_NAME=
+_DB_PASSWORD=
+_DB_PORT=
+_TOKEN_KEY=
+_ADMIN_PIN=
+_APP_EMAIL_USER=...
+_APP_EMAIL_PASSWORD=
+```
+
+### Missing variables handling
+
+`config.js` throws and stops the server if any critical variable is absent.
+`TODO`: add a friendly console message on startup.
+
+## 4. Application Architecture
+
+```
+┌─────────────┐      JWT cookie      ┌────────────┐
+│ Front‑end   │  ─────────────────▶ │ Express    │
+│ React app   │ ◀────────────────── │ Routers    │
+└─────────────┘     JSON REST        └────┬───────┘
+                                          │
+                                          ▼
+                                 ┌────────────┐
+                                 │ PostgreSQL │
+                                 └────────────┘
+```
+
+**Main routers / modules**: `auth`, `word`, `user`, `report`, `admin`, `analytics`.
+
+`TODO`: insert ERD diagram (export from dbdiagram.io) and a short description of table relations.
+
+## 5. Database
+
+Example tables:
+
+* **users** (id, username, email, password\_hash, role, last\_login\_at)
+* **words** (id, word, translation\_pl, translation\_en, patch, level)
+* **answers\_history** (id, user\_id, word\_id, is\_correct, answered\_at)
+* **reports** (id, user\_id, word\_id, type, description, status)
+
+`TODO`: complete full list with foreign keys.
+
+## 6. API
+
+### Sample endpoint
+
+| Method | Path          | Auth | Validators       | 200 Example                                          |
+| ------ | ------------- | ---- | ---------------- | ---------------------------------------------------- |
+| POST   | `/auth/login` | none | `loginValidator` | `{ "success": true, "message": "Login successful" }` |
+
+The full endpoint list lives in **API\_endpoints.md** (generated from `Backend.md`).
+
+## 7. Authentication Flow
+
+1. Client posts `username`, `password` to `/auth/login`.
+2. Server looks up the user and compares passwords with `bcrypt.compare`.
+3. Generates a 1‑hour JWT: `jwt.sign({ id, username, role }, TOKEN_KEY, { expiresIn: "1h" })`.
+4. Sends back a `token` cookie (**httpOnly**, `secure` in production, `sameSite=lax`).
+5. Every subsequent request goes through `authenticateToken` and, if needed, `authorizeAdmin`.
+
+## 8. Error Handling
+
+JSON format (translated on the front‑end):
+
+```json
+{
+  "success": false,
+  "message": "ERR_TOKEN_NOT_FOUND",
+  "code": "ERR_TOKEN_NOT_FOUND"
+}
+```
+
+`TODO`: centralised error‑handler middleware + a table of all codes.
+
+## 9. Validation & Security
+
+* `express-validator` – specific rules per endpoint.
+* Rate limiting: `express-rate-limit` (e.g. 15 failed logins → IP blocked for 1 h).
+* CORS – allow only `https://your‑domain.com` in production.
+* Password hashing: `bcrypt` (salt 10).
+* `TODO`: add `helmet` and payload sanitisation.
+
+## 10. Testing
+
+* **Jest** + **Supertest** – API tests (login, word CRUD, ...).
+* Script: `npm test`.
+* `TODO`: describe `tests/` folder structure and show an example test.
+
+## 11. Monitoring & Logging (planned)
+
+* **HTTP logs**: `morgan` → file or stdout.
+* **App logs**: `winston` with file transport.
+* **Monitoring**: Prometheus + Grafana or a SaaS (e.g. New Relic).
+
+## 12. Deployment & CI/CD (planned)
+
+
+## 13. Scalability & Growth
+
+| Challenge             | Proposed Solution                                      |
+| --------------------- | ------------------------------------------------------ |
+| Lots of requests      | Load balancer + multiple instances (PM2 cluster / K8s) |
+| Slow DB queries       | Proper indexes, Redis cache                            |
+| Heavy background jobs | Queue system (BullMQ)                                  |
+
+## 14. Roadmap
+
+* [ ] Finish ERD & endpoint list
+* [ ] Add error‑handler + logger
+* [ ] Prepare Docker deploy + CI/CD
+* [ ] Add monitoring and metrics
+
+---
+
