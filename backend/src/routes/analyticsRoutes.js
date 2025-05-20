@@ -1,8 +1,9 @@
 import express from "express";
-import { countingEntries } from "../controllers/analyticsController.js"; 
+import catchAsync from "../errors/catchAsync.js";
+import { countingEntries } from "../controllers/analyticsController.js";
 import { pageNameValidator } from "../middleware/validators/analytics/post-visit-vali.js";
 const router = express.Router();
 
-router.post("/visit", pageNameValidator, countingEntries);
+router.post("/visit", pageNameValidator, catchAsync(countingEntries));
 
 export default router;

@@ -1,16 +1,13 @@
-// import { increasingEntrances } from "../repositories/userModel.js";
 import { increasingEntrances } from "../repositories/stats.repo.js";
+import ApiError from "../errors/ApiError.js";
 
 export const countingEntries = async (req, res) => {
-  try {
-    const { page_name } = req.body;
-    const today = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
-
-    await increasingEntrances({ page_name, today });
-
-    res.status(200).json({ success: true });
-  } catch (error) {
-    console.error("Błąd podczas aktualizacji statystyk wizyt:", error);
-    res.status(500).send("Błąd podczas aktualizacji statystyk wizyt");
+  const { page_name } = req.body;
+  if (!page_name) {
+    // to też przejdzie przez errorHandler
+    throw new ApiError(400, "ERR_INVALID_INPUT", "page_name is required");
   }
+  const today = new Date().toISOString().slice(0, 10);
+  await increasingEntrances({ page_name, today });
+  res.json({ success: true });
 };

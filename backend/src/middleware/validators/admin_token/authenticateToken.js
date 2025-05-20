@@ -1,26 +1,25 @@
 import jwt from "jsonwebtoken";
 import { config } from "../../../config/config.js";
+import ApiError from "../../../errors/ApiError.js";
 
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
-  
   if (!token) {
-    return res.status(403).json({
-      success: true,
-      message: "ERR_TOKEN_NOT_FOUND",
-      code: "ERR_TOKEN_NOT_FOUND"
-    });
+    return next(new ApiError(
+      403,
+      "ERR_TOKEN_NOT_FOUND",
+      "Token not found"
+    ));
   }
 
   jwt.verify(token, config.tokenKey, (err, user) => {
     if (err) {
-      return res.status(403).json({
-        success: true,
-        message: "ERR_INVALID_TOKEN", 
-        code: "ERR_INVALID_TOKEN"
-      });
+      return next(new ApiError(
+        403,
+        "ERR_INVALID_TOKEN",
+        "Invalid token"
+      ));
     }
-    
     req.user = {
       ...user,
       expiresAt: user.exp * 1000

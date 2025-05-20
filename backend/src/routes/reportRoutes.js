@@ -13,6 +13,8 @@ import { deleteReportValidator } from "../middleware/validators/report/delete-de
 import { updateReportValidator } from "../middleware/validators/report/patch-updatereporttrans-vali.js";
 import { getDetailReportValidator } from "../middleware/validators/report/post-getdetail-vali.js";
 
+import catchAsync from "../errors/catchAsync.js";
+
 const router = express.Router();
 
 router.post(
@@ -20,17 +22,22 @@ router.post(
   authenticateToken,
   authorizeAdmin,
   getDetailReportValidator,
-  getDetailReport
+  catchAsync(getDetailReport) 
 );
 
-router.get("/data", authenticateToken, authorizeAdmin, getDataReports);
+router.get(
+  "/data",
+  authenticateToken,
+  authorizeAdmin,
+  catchAsync(getDataReports)
+); 
 
 router.patch(
   "/update",
   authenticateToken,
   authorizeAdmin,
   updateReportValidator,
-  updateReportTranslations
+  catchAsync(updateReportTranslations) 
 );
 
 router.delete(
@@ -38,9 +45,14 @@ router.delete(
   authenticateToken,
   authorizeAdmin,
   deleteReportValidator,
-  deleteReportData
+  catchAsync(deleteReportData)
 );
 
-router.post("/add", authenticateToken, authorizeAddReport, createReport);
+router.post(
+  "/add",
+  authenticateToken,
+  authorizeAddReport,
+  catchAsync(createReport) 
+);
 
 export default router;

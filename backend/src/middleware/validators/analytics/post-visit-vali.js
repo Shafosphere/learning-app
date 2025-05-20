@@ -1,30 +1,31 @@
 import { body, validationResult } from "express-validator";
-
+import ApiError from "../../../errors/ApiError.js";
 const allowedPageNames = ["flashcards", "vocabulary_C1", "vocabulary_B2"];
 
 export const pageNameValidator = [
-  // Sprawdzamy, czy parametr "page_name" istnieje i jest typu string
   body("page_name")
     .exists({ checkFalsy: true })
-    .withMessage("Brakuje parametru 'page_name' w treści żądania.")
+    .withMessage("Brakuje parametru 'page_name'.")
     .isString()
     .withMessage("'page_name' musi być ciągiem znaków.")
     .trim()
-    // Sprawdzamy, czy wartość po przycięciu należy do listy dozwolonych
     .custom((value) => {
       if (!allowedPageNames.includes(value)) {
         throw new Error(
-          `Nieprawidłowa wartość 'page_name'. Dozwolone wartości to: ${allowedPageNames.join(", ")}.`
+          `Nieprawidłowa wartość 'page_name'`
         );
       }
       return true;
     }),
 
-  // Middleware do obsługi błędów walidacji
+  // ten middleware zamiast res.status od razu robi next(ApiError)
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
+      // tworzymy ApiError z details = tablica błędów
+      return next(
+        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
+      );
     }
     next();
   },
