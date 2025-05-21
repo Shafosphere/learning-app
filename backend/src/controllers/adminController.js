@@ -5,6 +5,7 @@ import {
   fetchVisitsData
 } from "../repositories/stats.repo.js";
 
+import ApiError from "../errors/ApiError.js";
 // Patchy
 import {
   generateNewPatchesBatch,
@@ -19,13 +20,8 @@ import {
 import { format, eachDayOfInterval } from "date-fns";
 
 export const getGlobalData = async (req, res) => {
-  try {
-    const globalData = await fetchGlobalData();
-    res.status(200).json(globalData);
-  } catch (error) {
-    console.error("Error fetching global data:", error);
-    res.status(500).send("Server Error");
-  }
+  const globalData = await fetchGlobalData();
+  res.status(200).json(globalData);
 };
 
 function getColor(index) {
@@ -40,133 +36,108 @@ function getColor(index) {
 }
 
 export const getVisitsData = async (req, res) => {
-  try {
-    const rows = await fetchVisitsData();
+  const rows = await fetchVisitsData();
 
-    const endDate = new Date();
-    endDate.setHours(0, 0, 0, 0); // Ustawienie godziny na początek dnia
-    const startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - 6); // 6 dni temu
+  const endDate = new Date();
+  endDate.setHours(0, 0, 0, 0);
+  const startDate = new Date(endDate);
+  startDate.setDate(startDate.getDate() - 6);
 
-    const datesArray = eachDayOfInterval({
-      start: startDate,
-      end: endDate,
-    }).map((date) => format(date, "yyyy-MM-dd"));
+  const datesArray = eachDayOfInterval({
+    start: startDate,
+    end: endDate,
+  }).map((date) => format(date, "yyyy-MM-dd"));
 
-    // Sformatuj daty do etykiet wykresu
-    const formattedDates = datesArray.map((date) =>
-      format(new Date(date), "MMMM d")
-    );
+  const formattedDates = datesArray.map((date) =>
+    format(new Date(date), "MMMM d")
+  );
 
-    const pageNamesSet = new Set(rows.map((row) => row.page_name));
-    const pageNamesArray = Array.from(pageNamesSet);
+  const pageNamesSet = new Set(rows.map((row) => row.page_name));
+  const pageNamesArray = Array.from(pageNamesSet);
 
-    // Inicjalizuj datasets
-    const datasets = pageNamesArray.map((pageName, index) => ({
-      label: pageName,
-      data: [],
-      backgroundColor: getColor(index),
-    }));
+  const datasets = pageNamesArray.map((pageName, index) => ({
+    label: pageName,
+    data: [],
+    backgroundColor: getColor(index),
+  }));
 
-    // Wypełnij datasets liczbami wizyt
-    datesArray.forEach((date) => {
-      pageNamesArray.forEach((pageName, index) => {
-        const row = rows.find(
-          (r) =>
-            format(r.stat_date, "yyyy-MM-dd") === date &&
-            r.page_name === pageName
-        );
-        const visitCount = row ? row.visit_count : 0;
-        datasets[index].data.push(visitCount);
-      });
+  datesArray.forEach((date) => {
+    pageNamesArray.forEach((pageName, index) => {
+      const row = rows.find(
+        (r) =>
+          format(r.stat_date, "yyyy-MM-dd") === date &&
+          r.page_name === pageName
+      );
+      const visitCount = row ? row.visit_count : 0;
+      datasets[index].data.push(visitCount);
     });
+  });
 
-    const chartData = {
-      labels: formattedDates,
-      datasets: datasets,
-    };
+  const chartData = {
+    labels: formattedDates,
+    datasets: datasets,
+  };
 
-    res.status(200).json(chartData);
-  } catch (error) {
-    console.error("Error fetching visits data:", error);
-    res.status(500).send("Server Error");
-  }
+  res.status(200).json(chartData);
 };
 
 export const getUserActivityData = async (req, res) => {
-  try {
-    const rows = await fetchUserActivityData();
+  const rows = await fetchUserActivityData();
 
-    const endDate = new Date();
-    endDate.setHours(0, 0, 0, 0); // Ustawienie godziny na początek dnia
-    const startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - 6); // 6 dni temu
+  const endDate = new Date();
+  endDate.setHours(0, 0, 0, 0);
+  const startDate = new Date(endDate);
+  startDate.setDate(startDate.getDate() - 6);
 
-    // Filtrujemy dane do ostatnich 7 dni
-    const filteredRows = rows.filter((row) => {
-      const rowDate = new Date(row.activity_date);
-      return rowDate >= startDate && rowDate <= endDate;
+  const filteredRows = rows.filter((row) => {
+    const rowDate = new Date(row.activity_date);
+    return rowDate >= startDate && rowDate <= endDate;
+  });
+
+  const datesArray = eachDayOfInterval({
+    start: startDate,
+    end: endDate,
+  }).map((date) => format(date, "yyyy-MM-dd"));
+
+  const formattedDates = datesArray.map((date) =>
+    format(new Date(date), "MMMM d")
+  );
+
+  const activityTypesSet = new Set(
+    filteredRows.map((row) => row.activity_type)
+  );
+  const activityTypesArray = Array.from(activityTypesSet);
+
+  const datasets = activityTypesArray.map((activityType, index) => ({
+    label: activityType,
+    data: [],
+    backgroundColor: getColor(index),
+  }));
+
+  datesArray.forEach((date) => {
+    activityTypesArray.forEach((activityType, index) => {
+      const row = filteredRows.find(
+        (r) =>
+          format(new Date(r.activity_date), "yyyy-MM-dd") === date &&
+          r.activity_type === activityType
+      );
+
+      const activityCount = row ? row.activity_count : 0;
+      datasets[index].data.push(activityCount);
     });
+  });
 
-    const datesArray = eachDayOfInterval({
-      start: startDate,
-      end: endDate,
-    }).map((date) => format(date, "yyyy-MM-dd"));
+  const chartData = {
+    labels: formattedDates,
+    datasets: datasets,
+  };
 
-    // Sformatuj daty do etykiet wykresu
-    const formattedDates = datesArray.map((date) =>
-      format(new Date(date), "MMMM d")
-    );
-
-    const activityTypesSet = new Set(
-      filteredRows.map((row) => row.activity_type)
-    );
-    const activityTypesArray = Array.from(activityTypesSet);
-
-    // Inicjalizuj datasets
-    const datasets = activityTypesArray.map((activityType, index) => ({
-      label: activityType,
-      data: [],
-      backgroundColor: getColor(index),
-    }));
-
-    // Wypełnij datasets liczbami aktywności
-    datesArray.forEach((date) => {
-      activityTypesArray.forEach((activityType, index) => {
-        const row = filteredRows.find(
-          (r) =>
-            format(new Date(r.activity_date), "yyyy-MM-dd") === date &&
-            r.activity_type === activityType
-        );
-
-        const activityCount = row ? row.activity_count : 0;
-        datasets[index].data.push(activityCount);
-      });
-    });
-
-    const chartData = {
-      labels: formattedDates,
-      datasets: datasets,
-    };
-
-    res.status(200).json(chartData);
-  } catch (error) {
-    console.error("Error fetching user activity data:", error);
-    res.status(500).send("Server Error");
-  }
+  res.status(200).json(chartData);
 };
 
 export const generatePatches = async (req, res) => {
-  try {
-    // Usuń stare patche przed generowaniem nowych
-    await deleteOldNeWPatches();
-
-    // Generuj nowe patche
-    await generateNewPatchesBatch(30); // Rozmiar patcha można modyfikować
-
-    res.status(200).json({ success: true });
-  } catch (error) {
-    console.error("Error while generating patches:", error);
-    res.status(500).send("An error occurred while generating patches.");
-  }
+  await deleteOldNeWPatches();
+  await generateNewPatchesBatch(30);
+  res.status(200).json({ success: true });
 };
+

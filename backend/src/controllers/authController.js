@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import VALIDATION_RULES from "../middleware/validationConfig.js";
-
+import ApiError from "../errors/ApiError.js";
 // Obsługa użytkowników
 import {
   createUser,
@@ -50,38 +50,27 @@ export const getRequirements = (req, res) => {
 export const registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    throw new ApiError(400, "ERR_VALIDATION", "Validation failed", errors.array());
   }
 
   const { username, email, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
+  let newUserId;
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Użycie funkcji modelu do tworzenia użytkownika
-    const newUserId = await createUser(username, email, hashedPassword);
-
-    await userRankingUpdate(newUserId, username);
-    // Zwiększ licznik rejestracji
-    const today = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
-    await incrementUserActivity("registration", today);
-
-    res.status(201).json({ success: true, userId: newUserId });
-  } catch (error) {
-    console.error("Registration error:", error);
-    if (error.code === "23505") {
-      // Unikalne naruszenie - np. ten sam email lub nazwa użytkownika
-      res.status(409).json({
-        success: false,
-        message: "Username or email already exists.",
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: "An error occurred during registration.",
-      });
+    newUserId = await createUser(username, email, hashedPassword);
+  } catch (err) {
+    if (err.code === "23505") {
+      throw new ApiError(409, "ERR_USER_EXISTS", "Username or email already exists");
     }
+    throw new ApiError(500, "ERR_REGISTRATION", "An error occurred during registration.");
   }
+
+  await userRankingUpdate(newUserId, username);
+  const today = new Date().toISOString().slice(0, 10);
+  await incrementUserActivity("registration", today);
+
+  res.status(201).json({ success: true, userId: newUserId });
 };
 
 export const adminWelcome = (req, res) => {
@@ -101,57 +90,33 @@ export const userWelcome = (req, res) => {
 export const loginUser = async (req, res) => {
   const { username, password } = req.body;
 
-  try {
-    // Pobieramy użytkownika na podstawie nazwy użytkownika
-    const user = await getUserByUsername(username);
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "ERR_INVALID_CREDENTIALS", // lub np. "ERR_INVALID_EMAIL"
-        code: "ERR_INVALID_CREDENTIALS",
-      });
-    }
-
-    // Sprawdzamy, czy hasło jest poprawne
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: "ERR_INVALID_CREDENTIALS", // lub "ERR_INVALID_PASSWORD"
-        code: "ERR_INVALID_CREDENTIALS",
-      });
-    }
-
-    // Aktualizujemy czas ostatniego logowania
-    await updateLastLogin(user.id);
-
-    // Zwiększ licznik logowań
-    const today = new Date().toISOString().slice(0, 10);
-    await incrementUserActivity("login", today);
-
-    // Generujemy token JWT
-    const token = generateToken(user);
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 3600000, // 1 godzina
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-    });
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred during login.",
-    });
+  const user = await getUserByUsername(username);
+  if (!user) {
+    throw new ApiError(401, "ERR_INVALID_CREDENTIALS", "Invalid credentials");
   }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "ERR_INVALID_CREDENTIALS", "Invalid credentials");
+  }
+
+  await updateLastLogin(user.id);
+  const today = new Date().toISOString().slice(0, 10);
+  await incrementUserActivity("login", today);
+
+  const token = generateToken(user);
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 3600000,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Login successful",
+  });
 };
 
 export const logoutUser = (req, res) => {
@@ -170,177 +135,131 @@ export const logoutUser = (req, res) => {
 
 export const userInformation = async (req, res) => {
   const username = req.user.username;
+  const userResult = await getUserByUserName(username);
 
-  try {
-    const userResult = await getUserByUserName(username);
-
-    if (!userResult) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found.",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Data received",
-      username: req.user.username,
-      email: userResult.email,
-      avatar: userResult.avatar,
-    });
-  } catch (error) {
-    console.error("Error fetching user information:", error);
-    return res.status(500).json({
-      success: false,
-      message: "An error occurred on the server.",
-    });
+  if (!userResult) {
+    throw new ApiError(404, "ERR_USER_NOT_FOUND", "User not found");
   }
+
+  res.status(200).json({
+    success: true,
+    message: "Data received",
+    username: req.user.username,
+    email: userResult.email,
+    avatar: userResult.avatar,
+  });
 };
 
 export const updateUserAccount = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    throw new ApiError(400, "ERR_VALIDATION", "Validation failed", errors.array());
   }
 
   const { username, email, oldPass, newPass, avatar } = req.body;
   const userId = req.user.id;
 
-  try {
-    // Pobierz aktualne dane użytkownika
-    const user = await getUserById(userId);
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(404, "ERR_USER_NOT_FOUND", "User not found");
+  }
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+  if (oldPass) {
+    const isOldPassValid = await bcrypt.compare(oldPass, user.password);
+    if (!isOldPassValid) {
+      throw new ApiError(400, "ERR_INVALID_OLD_PASSWORD", "Old password is incorrect.");
     }
+  }
 
-    // Jeśli podano stare hasło, sprawdź jego poprawność
-    if (oldPass) {
-      const isOldPassValid = await bcrypt.compare(oldPass, user.password);
-      if (!isOldPassValid) {
-        return res.status(400).json({ message: "Old password is incorrect." });
-      }
-    }
+  const hashedPassword = newPass ? await bcrypt.hash(newPass, 10) : undefined;
+  await updateUserById(userId, {
+    username: username || undefined,
+    email: email || undefined,
+    password: hashedPassword,
+    avatar: avatar || undefined,
+  });
 
-    // Jeśli podano nowe hasło, zahaszuj je
-    const hashedPassword = newPass ? await bcrypt.hash(newPass, 10) : undefined;
-
-    // Zaktualizuj dane użytkownika
-    await updateUserById(userId, {
-      username: username || undefined,
-      email: email || undefined,
-      password: hashedPassword,
-      avatar: avatar || undefined,
+  let newToken = null;
+  if (email || hashedPassword) {
+    newToken = generateToken({
+      id: userId,
+      username: username || user.username,
+      email: email || user.email,
     });
 
-    // Generuj nowy token JWT (tylko jeśli zaktualizowano email lub hasło)
-    let newToken = null;
-    if (email || hashedPassword) {
-      newToken = generateToken({
-        id: userId,
-        username: username || user.username,
-        email: email || user.email,
-      });
-
-      // Ustawienie nowego tokena w ciasteczku
-      res.cookie("token", newToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
-        maxAge: 3600000, // 1 godzina
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Account updated successfully!",
-      token: newToken,
-    });
-  } catch (error) {
-    console.error("Error updating account:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while updating your account.",
+    res.cookie("token", newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 3600000,
     });
   }
+
+  res.status(200).json({
+    success: true,
+    message: "Account updated successfully!",
+    token: newToken,
+  });
 };
 
 export const deleteUserAccount = async (req, res) => {
   const userId = req.user.id;
-  console.log(userId);
-  try {
-    await deleteUserByID(userId);
+  await deleteUserByID(userId);
 
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-    });
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+  });
 
-    res.status(200).json({
-      success: true,
-      message: "Account deleted and logged out successfully.",
-    });
-  } catch (error) {
-    console.error("Error deleting account:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete account.",
-    });
-  }
+  res.status(200).json({
+    success: true,
+    message: "Account deleted and logged out successfully.",
+  });
 };
 
 export const sendUserResetLink = async (req, res) => {
   const { email, language = "en" } = req.body;
 
+  const users = await getUserByEmail(email);
+  const responseMessage = "INFO_RESET_EMAIL_SENT";
+
+  if (users.length === 0) {
+    return res.status(200).json({ message: responseMessage });
+  }
+
+  const user = users[0];
+  const token = generateToken(user);
+  const resetLink = `http://localhost:3000/reset-password/${token}`;
+  const htmlContent = generateResetPasswordEmail(resetLink, language);
+  const subject = language === "pl" ? "Resetowanie hasła" : "Password Reset";
+
   try {
-    const users = await getUserByEmail(email);
-
-    // Ukrywamy istnienie użytkownika – zawsze zwracamy ten sam komunikat
-    const responseMessage = "INFO_RESET_EMAIL_SENT"; // Klucz tłumaczenia
-
-    if (users.length === 0) {
-      return res.status(200).json({ message: responseMessage });
-    }
-
-    const user = users[0];
-    const token = generateToken(user);
-    const resetLink = `http://localhost:3000/reset-password/${token}`;
-
-    const htmlContent = generateResetPasswordEmail(resetLink, language);
-    const subject = language === "pl" ? "Resetowanie hasła" : "Password Reset";
-
     await sendEmail({
       to: email,
       subject,
       html: htmlContent,
     });
-
-    res.status(200).json({ message: responseMessage });
-  } catch (error) {
-    console.error("Error sending reset email:", error.message);
-    res.status(500).json({
-      message: "ERR_RESET_SENDING_FAIL", // Kod błędu
-      code: "ERR_RESET_SENDING_FAIL",
-    });
+  } catch (err) {
+    throw new ApiError(500, "ERR_RESET_SENDING_FAIL", "Error sending reset email");
   }
+
+  res.status(200).json({ message: responseMessage });
 };
 
 export const resetPassword = async (req, res) => {
   const { token, password } = req.body;
-  console.log(password);
+
+  let decoded;
   try {
-    const decoded = jwt.verify(token, config.tokenKey);
-    const userId = decoded.id;
-    console.log(userId);
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    await updateUserById(userId, { password: hashedPassword });
-
-    res.status(200).json({ message: "Hasło zostało zmienione." });
-  } catch (error) {
-    console.error("Błąd podczas resetowania hasła:", error);
-    res.status(400).json({ message: "Token wygasł lub jest nieprawidłowy." });
+    decoded = jwt.verify(token, config.tokenKey);
+  } catch (err) {
+    throw new ApiError(400, "ERR_INVALID_TOKEN", "Token expired or invalid");
   }
+
+  const userId = decoded.id;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  await updateUserById(userId, { password: hashedPassword });
+
+  res.status(200).json({ message: "Hasło zostało zmienione." });
 };

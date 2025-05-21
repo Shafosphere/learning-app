@@ -1,4 +1,5 @@
 import express from "express";
+import catchAsync from "../errors/catchAsync.js";
 import authenticateToken from "../middleware/validators/admin_token/authenticateToken.js";
 import authorizeAdmin from "../middleware/validators/admin_token/authorizeAdmin.js";
 import {
@@ -20,36 +21,56 @@ import { updateUsersValidator } from "../middleware/validators/users/patch-updat
 import { autoSaveValidator } from "../middleware/validators/users/post-autosave-vali.js";
 const router = express.Router();
 
-router.get("/list", authenticateToken, authorizeAdmin, getUsersList);
+router.get(
+  "/list",
+  authenticateToken,
+  authorizeAdmin,
+  catchAsync(getUsersList)
+);
 
 router.patch(
   "/update",
   authenticateToken,
   authorizeAdmin,
   updateUsersValidator,
-  updateUsers
+  catchAsync(updateUsers)
 );
 
-router.get("/search", authenticateToken, authorizeAdmin, searchUsers);
+router.get(
+  "/search",
+  authenticateToken,
+  authorizeAdmin,
+  catchAsync(searchUsers)
+);
 
-router.post("/learn-word", authenticateToken, learnWordValidator, learnWord);
+router.post(
+  "/learn-word",
+  authenticateToken,
+  learnWordValidator,
+  catchAsync(learnWord)
+);
 
 router.delete(
   "/delete/:id",
   authenticateToken,
   authorizeAdmin,
   deleteUserValidator,
-  deleteUser
+  catchAsync(deleteUser)
 );
 
-router.post("/auto-save", authenticateToken, autoSaveValidator, autoSave);
+router.post(
+  "/auto-save",
+  authenticateToken,
+  autoSaveValidator,
+  catchAsync(autoSave)
+);
 
-router.post("/auto-load", authenticateToken, autoLoad);
+router.post("/auto-load", authenticateToken, catchAsync(autoLoad));
 
-router.post("/auto-delete", authenticateToken, autoDelete);
+router.post("/auto-delete", authenticateToken, catchAsync(autoDelete));
 
-router.get("/ranking-flashcard", getRankingFlashcard);
+router.get("/ranking-flashcard", catchAsync(getRankingFlashcard));
 
-router.get("/ranking-arena", getArena);
+router.get("/ranking-arena", catchAsync(getArena));
 
 export default router;

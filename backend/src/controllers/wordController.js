@@ -34,7 +34,7 @@ import {
   getAllMaxPatchId,
   getAllPatchLength,
   getPatchWordsByLevel,
-  patchLength
+  patchLength,
 } from "../repositories/patch.repo.js";
 
 import {
@@ -42,7 +42,7 @@ import {
   getTranslationsByWordId,
   updateTranslation,
   insertTranslations,
-  getLanguageWordTranslations
+  getLanguageWordTranslations,
 } from "../repositories/translation.repo.js";
 
 import {
@@ -53,7 +53,7 @@ import {
   deleteWordById,
   getNumberOfWords,
   getRandomWordsByNumber,
-  getRandomWord
+  getRandomWord,
 } from "../repositories/word.repo.js";
 
 import { checkBan } from "../repositories/stats.repo.js";
@@ -62,12 +62,29 @@ import {
   ranking_init,
   getUserRankingPoints,
   updateUserRankingHistory,
-  getRankingHistoryById
+  getRankingHistoryById,
 } from "../repositories/ranking.repo.js";
 
 import { updateUserArena } from "../repositories/arena.repo.js";
 
-
+// Funkcja pomocnicza do formatowania wyników
+const formatWordResults = (results) => {
+  return results.map((wordPair) => {
+    const wordEng = wordPair.find((w) => w.language === "en");
+    const wordPl = wordPair.find((w) => w.language === "pl");
+    return {
+      id: wordEng.word_id,
+      wordEng: {
+        word: wordEng.translation,
+        description: wordEng.description,
+      },
+      wordPl: {
+        word: wordPl.translation,
+        description: wordPl.description,
+      },
+    };
+  });
+};
 
 //information about patch
 export const getPatchesInfo = async (req, res) => {
@@ -94,350 +111,174 @@ export const getPatchesInfo = async (req, res) => {
 
 export const getWordsByPatchAndLevel = async (req, res) => {
   const { level, patchNumber } = req.body;
-  if (patchNumber && patchNumber > 0) {
-    try {
-      // Pobranie listy słów na podstawie patcha
-      const wordIds = await getPatchWordsByLevel(patchNumber, level);
-
-      if (!wordIds) {
-        return res.status(404).json({ message: "Patch nie znaleziony" });
-      }
-
-      // Pobranie tłumaczeń dla każdego `wordId`
-      const results = await Promise.all(
-        wordIds.map(async (id) => {
-          return await getWordTranslations(id);
-        })
-      );
-
-      // Formatowanie wyników
-      const formattedResults = formatWordResults(results);
-
-      res.json({
-        message: "working",
-        data: formattedResults,
-      });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      res
-        .status(500)
-        .json({ message: "Error fetching data", error: error.message });
-    }
+  if (!patchNumber || patchNumber <= 0) {
+    throw new ApiError(400, "ERR_INVALID_PATCH_NUMBER", "Invalid patch number");
   }
+
+  const wordIds = await getPatchWordsByLevel(patchNumber, level);
+  if (!wordIds) {
+    throw new ApiError(404, "ERR_PATCH_NOT_FOUND", "Patch not found");
+  }
+
+  const results = await Promise.all(
+    wordIds.map((id) => getWordTranslations(id))
+  );
+  const formatted = formatWordResults(results);
+
+  res.status(200).json({ message: "working", data: formatted });
 };
 
 export const getWordData = async (req, res) => {
-  const { wordList, patchNumber } = req.body;
+  const { wordList = [], patchNumber } = req.body;
 
   if (patchNumber && patchNumber > 0) {
-    console.log(`Pobieranie danych dla patcha numer ${patchNumber}`);
-    try {
-      // Pobranie listy słów na podstawie patcha
-      const wordIds = await getPatchWords(patchNumber);
+    const wordIds = await getPatchWords(patchNumber);
+    if (!wordIds) {
+      throw new ApiError(404, "ERR_PATCH_NOT_FOUND", "Patch not found");
+    }
+    const results = await Promise.all(
+      wordIds.map((id) => getWordTranslations(id))
+    );
+    const formatted = formatWordResults(results);
+    const maxPatchId = await getMaxPatchId();
+    const totalPatches = await patchLength();
+    const isThisLastOne = patchNumber === maxPatchId;
 
-      if (!wordIds) {
-        return res.status(404).json({ message: "Patch nie znaleziony" });
-      }
-
-      // Pobranie tłumaczeń dla każdego `wordId`
-      const results = await Promise.all(
-        wordIds.map(async (id) => {
-          return await getWordTranslations(id);
-        })
-      );
-
-      // Formatowanie wyników
-      const formattedResults = formatWordResults(results);
-
-      // Pobranie największego patch_id oraz całkowitej liczby patchy
-
-      const maxPatchId = await getMaxPatchId();
-      const totalPatches = await patchLength(); // Zmieniono nazwę zmiennej na totalPatches
-      console.log(totalPatches);
-      const isThisLastOne = patchNumber === maxPatchId;
-
-      res.json({
+    res
+      .status(200)
+      .json({
         message: "working",
-        data: formattedResults,
+        data: formatted,
         isThisLastOne,
-        totalPatches, // Zmieniono nazwę zmiennej na totalPatches
+        totalPatches,
       });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      res
-        .status(500)
-        .json({ message: "Error fetching data", error: error.message });
-    }
   } else {
-    // Obsługa logiki, gdy nie ma podanego `patchNumber`
-    try {
-      const results = await Promise.all(
-        wordList.map(async (id) => {
-          return await getWordTranslations(id);
-        })
-      );
-
-      // Formatowanie wyników
-      const formattedResults = formatWordResults(results);
-
-      res.json({ message: "working", data: formattedResults });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      res
-        .status(500)
-        .json({ message: "Error fetching data", error: error.message });
-    }
+    const results = await Promise.all(
+      wordList.map((id) => getWordTranslations(id))
+    );
+    const formatted = formatWordResults(results);
+    res.status(200).json({ message: "working", data: formatted });
   }
-};
-
-// Funkcja pomocnicza do formatowania wyników
-const formatWordResults = (results) => {
-  return results.map((wordPair) => {
-    const wordEng = wordPair.find((w) => w.language === "en");
-    const wordPl = wordPair.find((w) => w.language === "pl");
-    return {
-      id: wordEng.word_id,
-      wordEng: {
-        word: wordEng.translation,
-        description: wordEng.description,
-      },
-      wordPl: {
-        word: wordPl.translation,
-        description: wordPl.description,
-      },
-    };
-  });
 };
 
 export const getWordsList = async (req, res) => {
-  const { page = 1, limit = 50 } = req.query;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 50;
+  const offset = (page - 1) * limit;
 
-  console.log(`Fetching words for page: ${page}, limit: ${limit}`);
-
-  try {
-    const offset = (page - 1) * limit;
-    console.log(`Calculated offset: ${offset}`);
-
-    // Pobranie słów z modelu
-    const words = await getWordsWithPagination(parseInt(limit), offset);
-    console.log("Fetched words:", words);
-
-    res.status(200).json(words); // Zwracanie statusu 200 z danymi słów
-  } catch (error) {
-    console.error("Error fetching words:", error);
-    res.status(500).send("Server Error");
-  }
+  const words = await getWordsWithPagination(limit, offset);
+  res.status(200).json(words);
 };
 
 export const getWordDetail = async (req, res) => {
   const { id } = req.body;
-  try {
-    // Pobranie tłumaczeń z modelu
-    const translations = await getTranslationsByWordId(id);
-
-    const response_data = {
-      translations: translations,
-    };
-    res.json(response_data);
-  } catch (error) {
-    console.error("Error fetching word details:", error);
-    return res.status(500).send("Internal Server Error");
-  }
+  const translations = await getTranslationsByWordId(id);
+  res.status(200).json({ translations });
 };
 
 export const updateWordTranslations = async (req, res) => {
   const { word } = req.body;
-
-  try {
-    const translations = word.translations;
-
-    // Aktualizowanie tłumaczeń słowa
-    await Promise.all(
-      translations.map(async (translation) => {
-        await updateTranslation(translation);
-      })
-    );
-
-    res.status(200).send("Translations updated successfully.");
-  } catch (error) {
-    console.error("Error updating translations:", error);
-    res.status(500).send("Internal Server Error");
-  }
+  const translations = word.translations;
+  await Promise.all(translations.map((t) => updateTranslation(t)));
+  res.status(200).send("Translations updated successfully.");
 };
 
 export const searchWords = async (req, res) => {
   const { query } = req.query;
+  const result = !isNaN(query)
+    ? await searchWordById(parseInt(query))
+    : await searchWordByText(query);
 
-  try {
-    let result;
-
-    if (!isNaN(query)) {
-      // Jeśli query jest liczbą (wyszukiwanie po ID)
-      result = await searchWordById(parseInt(query));
-    } else {
-      // Jeśli query jest ciągiem znaków (wyszukiwanie po nazwie)
-      result = await searchWordByText(query);
-    }
-
-    res.json(result);
-  } catch (error) {
-    console.error("Error during search:", error);
-    res.status(500).send("Server Error");
-  }
+  res.status(200).json(result);
 };
 
 export const addWord = async (req, res) => {
-  // Wyciągnięcie 'word' z 'req.body'
   const word = req.body;
-  console.log(word);
-  // Sprawdź, czy 'word' jest zdefiniowane i ma 'translations'
   if (!word || !word.translations) {
-    return res.status(400).send("Translations data is missing.");
+    throw new ApiError(
+      400,
+      "ERR_MISSING_TRANSLATIONS",
+      "Translations data is missing"
+    );
+  }
+  const english = word.translations.find((t) => t.language === "en");
+  if (!english) {
+    throw new ApiError(
+      400,
+      "ERR_MISSING_ENGLISH",
+      "English translation is required"
+    );
+  }
+  if (!["B2", "C1"].includes(word.level)) {
+    throw new ApiError(400, "ERR_INVALID_LEVEL", "Wrong level");
   }
 
-  const { translations } = word; // Wyciągnięcie 'translations' z 'word'
-
-  // Znalezienie tłumaczenia angielskiego
-  const englishTranslation = translations.find((t) => t.language === "en");
-  if (!englishTranslation) {
-    return res.status(400).send("English translation is required.");
-  }
-
-  const wordText = englishTranslation.translation;
-
-  //Sprawdzenie poziomu
-  if (word.level !== "B2" && word.level !== "C1") {
-    return res.status(400).send("Wrong level");
-  }
-
-  const wordLevel = word.level;
-
-  try {
-    // Wstawienie słowa i uzyskanie nowego ID słowa
-    const wordId = await insertWord(wordText, wordLevel);
-
-    // Wstawienie tłumaczeń
-    await insertTranslations(wordId, translations);
-
-    res.status(200).send("Word added successfully.");
-  } catch (error) {
-    console.error("Error while adding the word:", error);
-    res.status(500).send("An error occurred while adding the word.");
-  }
+  const wordId = await insertWord(english.translation, word.level);
+  await insertTranslations(wordId, word.translations);
+  res.status(200).send("Word added successfully.");
 };
 
 export const deleteWord = async (req, res) => {
-  const { id } = req.params; // Pobranie ID ze ścieżki
-
-  try {
-    // Usunięcie słowa i jego tłumaczeń
-    await deleteWordById(id);
-
-    res.status(200).send("Word and its translations deleted successfully.");
-  } catch (error) {
-    console.error("Error while deleting the word:", error);
-    res.status(500).send("An error occurred while deleting the word.");
-  }
+  const { id } = req.params;
+  await deleteWordById(id);
+  res.status(200).send("Word and its translations deleted successfully.");
 };
 
 export const getRankingWord = async (req, res) => {
   const userId = req.user.id;
-
-  try {
-    const banCheck = await checkBan(userId);
-
-    if (banCheck.rows[0]?.ban) {
-      return res.status(403).json({ error: "Account banned" });
-    }
-
-    await ranking_init(userId);
-
-    const pointsResult = await getUserRankingPoints(userId);
-
-    const points = pointsResult.rows[0]?.current_points || 1000;
-
-    const probabilityTiers = [
-      { max: 500, B2: 1.0, C1: 0.0 },
-      { max: 1000, B2: 0.9, C1: 0.1 },
-      { max: 1500, B2: 0.7, C1: 0.3 },
-      { max: 2000, B2: 0.5, C1: 0.5 },
-      { max: 2500, B2: 0.4, C1: 0.6 },
-      { max: 3000, B2: 0.1, C1: 0.9 },
-    ];
-
-    const tier = probabilityTiers.find((t) => points <= t.max) || {
-      B2: 0.0,
-      C1: 1.0,
-    };
-    const difficulty = Math.random() <= tier.B2 ? "B2" : "C1";
-
-    const wordResult = await getRandomWord(difficulty);
-
-    if (wordResult.rows.length === 0) {
-      return res.status(404).json({ error: "Words missing" });
-    }
-    const wordId = wordResult.rows[0].id;
-
-    const translationsResult = await getLanguageWordTranslations(wordId);
-
-    console.log(translationsResult);
-    const randomLang = Math.random() < 0.5 ? "en" : "pl";
-    const translation = translationsResult.find(
-      (t) => t.language === randomLang
-    );
-
-    if (!translation) {
-      return res.status(404).json({ error: "Translation is missing" });
-    }
-
-    console.log([wordId, translation.translation, randomLang]);
-
-    res.status(200).json([wordId, translation.translation, randomLang]);
-  } catch (error) {
-    console.error("Error getting information:", error);
-    res.status(500).send("Server Error");
+  const banCheck = await checkBan(userId);
+  if (banCheck.rows[0]?.ban) {
+    throw new ApiError(403, "ERR_ACCOUNT_BANNED", "Account banned");
   }
+
+  await ranking_init(userId);
+  const pointsRes = await getUserRankingPoints(userId);
+  const points = pointsRes.rows[0]?.current_points || 1000;
+
+  const tiers = [
+    { max: 500, B2: 1.0, C1: 0.0 },
+    { max: 1000, B2: 0.9, C1: 0.1 },
+    { max: 1500, B2: 0.7, C1: 0.3 },
+    { max: 2000, B2: 0.5, C1: 0.5 },
+    { max: 2500, B2: 0.4, C1: 0.6 },
+    { max: 3000, B2: 0.1, C1: 0.9 },
+  ];
+  const tier = tiers.find((t) => points <= t.max) || { B2: 0.0, C1: 1.0 };
+  const difficulty = Math.random() <= tier.B2 ? "B2" : "C1";
+
+  const wordRes = await getRandomWord(difficulty);
+  if (wordRes.rows.length === 0) {
+    throw new ApiError(404, "ERR_WORDS_MISSING", "Words missing");
+  }
+  const wordId = wordRes.rows[0].id;
+
+  const translationsRes = await getLanguageWordTranslations(wordId);
+  const randomLang = Math.random() < 0.5 ? "en" : "pl";
+  const translation = translationsRes.find((t) => t.language === randomLang);
+  if (!translation) {
+    throw new ApiError(
+      404,
+      "ERR_TRANSLATION_MISSING",
+      "Translation is missing"
+    );
+  }
+
+  res.status(200).json([wordId, translation.translation, randomLang]);
 };
 
 export const getRandomWords = async (req, res) => {
-  try {
-    const count = parseInt(req.query.count) || 10;
-
-    const randomWordsQuery = await getRandomWordsByNumber(count);
-    const wordIds = randomWordsQuery.rows.map((row) => row.id);
-
-    const wordsData = await Promise.all(
-      wordIds.map((id) => getWordTranslations(id))
-    );
-
-    const result = wordsData.map((translations, index) => {
-      const language = Math.random() < 0.5 ? "pl" : "en";
-      const translation = translations.find((t) => t.language === language);
-      return {
-        id: wordIds[index],
-        content: translation?.translation || "Brak tłumaczenia",
-      };
-    });
-
-    res.status(200).json(result);
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Server error");
-  }
-};
-
-const getDifficultyTier = (points) => {
-  const tiers = [
-    { max: 500, tier: "B2" },
-    { max: 1000, tier: "B2" },
-    { max: 1500, tier: "B2" },
-    { max: 2000, tier: "B2/C1" },
-    { max: 2500, tier: "C1" },
-    { max: 3000, tier: "C1" },
-  ];
-
-  const found = tiers.find((t) => points <= t.max);
-  return found ? found.tier : "C1";
+  const count = parseInt(req.query.count) || 10;
+  const randomWords = await getRandomWordsByNumber(count);
+  const wordIds = randomWords.rows.map((r) => r.id);
+  const wordsData = await Promise.all(
+    wordIds.map((id) => getWordTranslations(id))
+  );
+  const result = wordsData.map((translations, i) => {
+    const lang = Math.random() < 0.5 ? "pl" : "en";
+    const tr = translations.find((t) => t.language === lang);
+    return { id: wordIds[i], content: tr?.translation || "Brak tłumaczenia" };
+  });
+  res.status(200).json(result);
 };
 
 // controllers/rankingController.js
@@ -445,81 +286,55 @@ export const submitAnswer = async (req, res) => {
   const userId = req.user.id;
   const { wordId, userAnswer, lang, startTime } = req.body;
 
-  try {
-    // 1. Sprawdź bana
-    const banCheck = await checkBan(userId);
-    if (banCheck.rows[0]?.ban)
-      return res.status(403).json({ error: "Account banned" });
+  const banCheck = await checkBan(userId);
+  if (banCheck.rows[0]?.ban) {
+    throw new ApiError(403, "ERR_ACCOUNT_BANNED", "Account banned");
+  }
 
-    // 2. Pobierz poprawne tłumaczenia
-    const translations = await getWordTranslations(wordId);
-    const filteredTranslations = translations.filter(
-      (t) => t.language === lang
-    );
-    const correctAnswers = filteredTranslations.map((t) =>
-      t.translation.toLowerCase()
-    );
+  const translations = await getWordTranslations(wordId);
+  const correct = translations
+    .filter((t) => t.language === lang)
+    .map((t) => t.translation.toLowerCase());
 
-    // 3. Oblicz czas odpowiedzi
-    const responseTimeMs = Date.now() - startTime;
+  const responseTimeMs = Date.now() - startTime;
+  const isCorrect = correct.includes(userAnswer.trim().toLowerCase());
 
-    // 4. Sprawdź poprawność
-    const isCorrect = correctAnswers.includes(userAnswer.trim().toLowerCase());
+  const pointsRes = await getUserRankingPoints(userId);
+  const before = pointsRes.rows[0]?.current_points || 1000;
+  const streakBefore = pointsRes.rows[0]?.current_streak || 0;
+  const delta = isCorrect ? 5 : -5;
+  const after = Math.min(Math.max(before + delta, 0), 9999);
+  const newStreak = isCorrect ? streakBefore + 1 : 0;
 
-    // 5. Pobierz aktualny stan
-    const pointsResult = await getUserRankingPoints(userId);
-    const pointsBefore = pointsResult.rows[0]?.current_points || 1000;
-    const streakBefore = pointsResult.rows[0]?.current_streak || 0;
+  await updateUserArena(after, newStreak, userId);
+  const tierLabel =
+    correct.length > 0 ? (after <= 2000 ? "B2/C1" : "C1") : "B2";
+  await updateUserRankingHistory(
+    userId,
+    wordId,
+    userAnswer,
+    isCorrect,
+    before,
+    after,
+    responseTimeMs,
+    tierLabel,
+    newStreak
+  );
 
-    // 6. Oblicz nowe punkty i streak
-    const pointsDelta = isCorrect ? 5 : -5;
-    let pointsAfter = Math.min(Math.max(pointsBefore + pointsDelta, 0), 9999);
-    let newStreak = isCorrect ? streakBefore + 1 : 0;
-
-    // 7. Aktualizuj ranking
-    await updateUserArena(pointsAfter, newStreak, userId);
-
-    // 8. Zapisz historię
-    const tier = getDifficultyTier(pointsBefore);
-    await updateUserRankingHistory(
-      userId,
-      wordId,
-      userAnswer,
-      isCorrect,
-      pointsBefore,
-      pointsAfter,
-      responseTimeMs,
-      tier,
-      newStreak
-    );
-
-    // const allTranslations = translations.map((t) => ({
-    //   language: t.language,
-    //   translation: t.translation,
-    // }));
-
-    res.status(200).json({
+  res
+    .status(200)
+    .json({
       success: true,
       isCorrect,
-      newPoints: pointsAfter,
+      newPoints: after,
       streak: newStreak,
-      correctTranslations: filteredTranslations,
+      correctTranslations: translations.filter((t) => t.language === lang),
     });
-  } catch (error) {
-    console.error("Error submitting answer:", error);
-    res.status(500).json({ error: "Server error" });
-  }
 };
 
 export const getRankingHistory = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const result = await getRankingHistoryById(userId, 10);
-
-    const history = result.rows.map((row) => row.points_after).reverse();
-    res.status(200).json(history);
-  } catch (error) {
-    console.error("Error fetching ranking history:", error);
-    res.status(500).json({ error: "Server error" });
-  }
+  const userId = req.user.id;
+  const result = await getRankingHistoryById(userId, 10);
+  const history = result.rows.map((row) => row.points_after).reverse();
+  res.status(200).json(history);
 };

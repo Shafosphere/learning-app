@@ -14,6 +14,8 @@ import {
   submitAnswer,
   getRankingHistory,
 } from "../controllers/wordController.js";
+
+import catchAsync from "../errors/catchAsync.js";
 import authenticateToken from "../middleware/validators/admin_token/authenticateToken.js";
 import authorizeAdmin from "../middleware/validators/admin_token/authorizeAdmin.js";
 import authorizeData from "../middleware/validators/word/post-data-vali.js";
@@ -25,26 +27,30 @@ import { updateTranslationsValidator } from "../middleware/validators/word/patch
 import { getWordDetailValidator } from "../middleware/validators/word/post-getworddetail-vali.js";
 const router = express.Router();
 
-router.post("/data", authorizeData, getWordData);
+router.post("/data", authorizeData, catchAsync(getWordData));
 
-router.post("/patch-data", authorizePatchAndLevel, getWordsByPatchAndLevel);
+router.post(
+  "/patch-data",
+  authorizePatchAndLevel,
+  catchAsync(getWordsByPatchAndLevel)
+);
 
-router.get("/patch-info", getPatchesInfo);
+router.get("/patch-info", catchAsync(getPatchesInfo));
 
-router.get("/ranking-word", authenticateToken, getRankingWord);
+router.get("/ranking-word", authenticateToken, catchAsync(getRankingWord));
 
-router.get("/random-words", getRandomWords);
+router.get("/random-words", catchAsync(getRandomWords));
 
-router.get('/history', authenticateToken, getRankingHistory);
-// routes/ranking.js
-router.post("/submit-answer", authenticateToken, submitAnswer);
+router.get("/history", authenticateToken, catchAsync(getRankingHistory));
+
+router.post("/submit-answer", authenticateToken, catchAsync(submitAnswer));
 
 router.get(
   "/list",
   authenticateToken,
   authorizeAdmin,
   authorizeList,
-  getWordsList
+  catchAsync(getWordsList)
 );
 
 router.post(
@@ -52,7 +58,7 @@ router.post(
   authenticateToken,
   authorizeAdmin,
   getWordDetailValidator,
-  getWordDetail
+  catchAsync(getWordDetail)
 );
 
 router.patch(
@@ -60,17 +66,22 @@ router.patch(
   authenticateToken,
   authorizeAdmin,
   updateTranslationsValidator,
-  updateWordTranslations
+  catchAsync(updateWordTranslations)
 );
 
-router.get("/search", authenticateToken, authorizeAdmin, searchWords);
+router.get(
+  "/search",
+  authenticateToken,
+  authorizeAdmin,
+  catchAsync(searchWords)
+);
 
 router.post(
   "/add",
   authenticateToken,
   authorizeAdmin,
   addWordValidator,
-  addWord
+  catchAsync(addWord)
 );
 
 router.delete(
@@ -78,7 +89,7 @@ router.delete(
   authenticateToken,
   authorizeAdmin,
   deleteWordValidator,
-  deleteWord
+  catchAsync(deleteWord)
 );
 
 export default router;
