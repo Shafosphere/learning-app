@@ -35,7 +35,7 @@ const generateToken = (user) => {
       username: user.username,
       role: user.role,
     },
-    process.env.REACT_APP_TOKEN_KEY,
+    process.env.TOKEN_KEY,
     { expiresIn: "1h" }
   );
 };

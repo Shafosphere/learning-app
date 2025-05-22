@@ -4,8 +4,8 @@ import nodemailer from "nodemailer";
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.REACT_APP_EMAIL_USER,
-    pass: process.env.REACT_APP_EMAIL_PASSWORD,
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 
@@ -64,7 +64,7 @@ export const generateResetPasswordEmail = (resetLink, language = "en") => {
 // Funkcja wysyłająca e-mail
 export const sendEmail = async ({ to, subject, text, html }) => {
   const mailOptions = {
-    from: process.env.REACT_APP_EMAIL_USER,
+    from: process.env.EMAIL_USER,
     to,
     subject,
     text,
