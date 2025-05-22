@@ -1,6 +1,7 @@
 import { param, validationResult } from "express-validator";
-// import { getReportById } from "../../../repositories/userModel.js";
+import ApiError from "../../../errors/ApiError.js";
 import { getReportById } from "../../../repositories/report.repo.js";
+
 export const deleteReportValidator = [
   // Sprawdzamy, czy id istnieje i jest poprawną liczbą całkowitą
   param("id")
@@ -9,19 +10,22 @@ export const deleteReportValidator = [
     .isInt({ gt: 0 })
     .withMessage("Report ID must be a positive integer."),
 
-  // Opcjonalne: sprawdzamy, czy raport istnieje w bazie
+  // Sprawdzamy, czy raport istnieje w bazie
   param("id").custom(async (value) => {
     const report = await getReportById(value);
     if (!report) {
       throw new Error("Report not found.");
     }
+    return true;
   }),
 
   // Middleware obsługujący błędy walidacji
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
+      return next(
+        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
+      );
     }
     next();
   },

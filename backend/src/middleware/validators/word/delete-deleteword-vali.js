@@ -1,4 +1,5 @@
 import { param, validationResult } from "express-validator";
+import ApiError from "../../../errors/ApiError.js";
 
 export const deleteWordValidator = [
   // Sprawdzamy, czy parametr 'id' istnieje i jest dodatnią liczbą całkowitą
@@ -12,7 +13,10 @@ export const deleteWordValidator = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
+      // Rzucamy ApiError z kodem walidacji i szczegółami
+      return next(
+        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
+      );
     }
     next();
   },

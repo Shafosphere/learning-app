@@ -1,52 +1,63 @@
+import ApiError from "../../../errors/ApiError.js";
 import { sanitizeInput } from "../../sanitize-html.js";
 
 const authorizeAddReport = (req, res, next) => {
   const { reportType, word, description } = req.body;
 
-  // **1. Walidacja reportType**
+  // 1. Walidacja reportType
   if (reportType !== "other" && reportType !== "word_issue") {
-    return res.status(400).json({
-      success: false,
-      message:
-        "Invalid reportType. Allowed values are 'other' and 'word_issue'.",
-    });
+    return next(
+      new ApiError(
+        400,
+        "ERR_INVALID_REPORT_TYPE",
+        "Invalid reportType. Allowed values are 'other' and 'word_issue'."
+      )
+    );
   }
 
+  // 2. Dla reportType === 'other' wymagany description
   if (reportType === "other") {
     if (
       !description ||
       typeof description !== "string" ||
       description.trim().length === 0
     ) {
-      return res.status(400).json({
-        success: false,
-        message: "Description is required for reportType 'other'.",
-      });
+      return next(
+        new ApiError(
+          400,
+          "ERR_MISSING_DESCRIPTION",
+          "Description is required for reportType 'other'."
+        )
+      );
     }
   }
 
-  // **4. Walidacja word dla reportType "word_issue"**
+  // 3. Dla reportType === 'word_issue' wymagane word
   if (reportType === "word_issue") {
     if (!word || typeof word !== "string" || word.trim().length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Word is required for reportType 'word_issue'.",
-      });
+      return next(
+        new ApiError(
+          400,
+          "ERR_MISSING_WORD",
+          "Word is required for reportType 'word_issue'."
+        )
+      );
     }
   }
 
-  // **5. Sanitizacja description (jeśli istnieje)**
+  // 4. Sanitizacja description, jeśli istnieje
   if (description) {
     const sanitizedDescription = sanitizeInput(description);
-
     if (!sanitizedDescription) {
-      return res.status(400).json({
-        success: false,
-        message: "Description cannot be empty after sanitization.",
-      });
+      return next(
+        new ApiError(
+          400,
+          "ERR_INVALID_DESCRIPTION",
+          "Description cannot be empty after sanitization."
+        )
+      );
     }
-
-    req.body.description = sanitizedDescription; // Nadpisujemy oczyszczony opis
+    req.body.description = sanitizedDescription;
   }
 
   next();

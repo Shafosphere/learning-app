@@ -1,4 +1,5 @@
 import { body, validationResult } from "express-validator";
+import ApiError from "../../../errors/ApiError.js";
 import VALIDATION_RULES from "../../validationConfig.js";
 
 export const updateUsersValidator = [
@@ -14,7 +15,7 @@ export const updateUsersValidator = [
     .custom((value) => Object.keys(value).length > 0)
     .withMessage("editedRows cannot be empty."),
 
-  // Sprawdzamy każde pole użytkownika
+  // Walidacja każdego użytkownika
   body("editedRows.*.id")
     .exists()
     .withMessage("User ID is required.")
@@ -61,7 +62,7 @@ export const updateUsersValidator = [
     .isBoolean()
     .withMessage("Ban must be true or false."),
 
-  // (Opcjonalnie) Walidacja hasła, jeśli edytowanie hasła jest możliwe
+  // Walidacja hasła opcjonalnie
   body("editedRows.*.password")
     .optional()
     .isLength({
@@ -84,7 +85,9 @@ export const updateUsersValidator = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
+      return next(
+        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
+      );
     }
     next();
   },

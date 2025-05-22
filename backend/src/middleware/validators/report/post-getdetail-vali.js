@@ -1,6 +1,7 @@
 import { body, validationResult } from "express-validator";
-// import { getReportById } from "../../../repositories/userModel.js";
+import ApiError from "../../../errors/ApiError.js";
 import { getReportById } from "../../../repositories/report.repo.js";
+
 export const getDetailReportValidator = [
   // Sprawdzamy, czy `id` istnieje i jest poprawną liczbą całkowitą
   body("id")
@@ -15,13 +16,16 @@ export const getDetailReportValidator = [
     if (!report) {
       throw new Error("Report not found.");
     }
+    return true;
   }),
 
   // Middleware obsługujący błędy walidacji
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
+      return next(
+        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
+      );
     }
     next();
   },

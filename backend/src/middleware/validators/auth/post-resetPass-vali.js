@@ -1,4 +1,5 @@
 import { body, validationResult } from "express-validator";
+import ApiError from "../../../errors/ApiError.js";
 import VALIDATION_RULES from "../../validationConfig.js";
 import { getErrorParams } from "../../getErrorParams.js";
 
@@ -25,15 +26,17 @@ export const resetPasswordValidationRules = [
 
   // Middleware obsługujący błędy walidacji
   (req, res, next) => {
-    const errors = validationResult(req)
-      .array()
-      .map((error) => ({
-        ...error,
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      // Używamy getErrorParams, aby uzyskać dodatkowe dane do każdego błędu
+      const errors = result.array().map((error) => ({
+        field: error.param,
+        message: error.msg,
         params: getErrorParams(error.msg),
       }));
-
-    if (errors.length > 0) {
-      return res.status(400).json({ errors });
+      return next(
+        new ApiError(400, "ERR_VALIDATION", "Validation error", errors)
+      );
     }
     next();
   },

@@ -1,5 +1,7 @@
 import { body, validationResult } from "express-validator";
 
+import ApiError from "../../../errors/ApiError.js";
+
 export const getWordDetailValidator = [
   // Sprawdzamy, czy id istnieje i jest poprawną liczbą całkowitą
   body("id")
@@ -12,7 +14,10 @@ export const getWordDetailValidator = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
+      // Rzucamy ApiError z kodem walidacji i szczegółami
+      return next(
+        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
+      );
     }
     next();
   },

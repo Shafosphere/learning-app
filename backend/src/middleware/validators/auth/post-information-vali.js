@@ -1,25 +1,32 @@
-import { validationResult } from "express-validator";
-// import { getUserByUserName } from "../../../repositories/userModel.js";
+import ApiError from "../../../errors/ApiError.js";
 import { getUserByUserName } from "../../../repositories/user.repo.js";
-export const getUserInformationValidator = [
-  // Middleware do sprawdzenia, czy użytkownik istnieje
-  async (req, res, next) => {
-    const username = req.user.username;
+import { validationResult } from "express-validator";
 
+// Validator for ensuring authenticated user exists in database
+export const getUserInformationValidator = [
+  async (req, res, next) => {
+    // Ensure username is present on request
+    const username = req.user?.username;
     if (!username) {
-      return res.status(400).json({ success: false, message: "Username is required." });
+      return next(
+        new ApiError(400, "ERR_MISSING_USERNAME", "Username is required.")
+      );
     }
 
     try {
+      // Fetch user data from repository
       const user = await getUserByUserName(username);
       if (!user) {
-        return res.status(404).json({ success: false, message: "User not found." });
+        return next(new ApiError(404, "ERR_USER_NOT_FOUND", "User not found."));
       }
-      req.userData = user; // Przekazujemy dane użytkownika do `req`, aby uniknąć ponownego zapytania do bazy
+      // Attach fetched data for controller use
+      req.userData = user;
       next();
     } catch (error) {
-      console.error("Error validating user:", error.message);
-      res.status(500).json({ success: false, message: "Internal Server Error." });
+      // Unexpected error
+      return next(
+        new ApiError(500, "ERR_INTERNAL_SERVER", "Internal Server Error.")
+      );
     }
-  }
+  },
 ];

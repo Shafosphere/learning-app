@@ -23,14 +23,23 @@ api.interceptors.response.use(
     }
 
     // Extracting the error message
-    let rawMsg;
+    // let rawMsg;
+    // let params = {};
+    // if (status === 400 && error.response?.data?.errors) {
+    //   const firstError = error.response.data.errors[0];
+    //   rawMsg = firstError.msg;
+    //   params = firstError.params || {};
+    // } else {
+    //   rawMsg = error.response?.data?.message || "ERR_UNKNOWN_ERROR";
+    // }
+
+    let rawMsg = error.response?.data?.message || "ERR_UNKNOWN_ERROR";
     let params = {};
-    if (status === 400 && error.response?.data?.errors) {
-      const firstError = error.response.data.errors[0];
-      rawMsg = firstError.msg;
-      params = firstError.params || {};
-    } else {
-      rawMsg = error.response?.data?.message || "ERR_UNKNOWN_ERROR";
+
+    const list = error.response?.data?.details || error.response?.data?.errors;
+    if (status === 400 && Array.isArray(list) && list.length) {
+      rawMsg = list[0].message || list[0].msg || rawMsg;
+      params = list[0].params || {};
     }
 
     // Translating messages

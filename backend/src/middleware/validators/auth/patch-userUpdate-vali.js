@@ -1,5 +1,7 @@
 import { body, validationResult } from "express-validator";
+import ApiError from "../../../errors/ApiError.js";
 import VALIDATION_RULES from "../../validationConfig.js";
+import { getErrorParams } from "../../getErrorParams.js";
 
 export const accountUpdateValidationRules = [
   // Username - optional but must meet length and character requirements
@@ -10,23 +12,17 @@ export const accountUpdateValidationRules = [
       min: VALIDATION_RULES.USERNAME.MIN_LENGTH,
       max: VALIDATION_RULES.USERNAME.MAX_LENGTH,
     })
-    .withMessage(
-      `Username must be between ${VALIDATION_RULES.USERNAME.MIN_LENGTH} and ${VALIDATION_RULES.USERNAME.MAX_LENGTH} characters.`
-    )
+    .withMessage("ERR_USERNAME_LENGTH")
     .matches(VALIDATION_RULES.USERNAME.REGEX)
-    .withMessage(
-      "Username can only contain letters, numbers, and underscores."
-    ),
+    .withMessage("ERR_USERNAME_INVALID_CHARS"),
 
   // Email - optional but must be valid email and max length
   body("email")
     .optional()
     .isEmail()
-    .withMessage("Invalid email format.")
+    .withMessage("ERR_INVALID_EMAIL_FORMAT")
     .isLength({ max: VALIDATION_RULES.EMAIL.MAX_LENGTH })
-    .withMessage(
-      `Email cannot exceed ${VALIDATION_RULES.EMAIL.MAX_LENGTH} characters.`
-    )
+    .withMessage("ERR_EMAIL_TOO_LONG")
     .normalizeEmail(),
 
   // Old password - optional but must meet length requirements
@@ -37,9 +33,7 @@ export const accountUpdateValidationRules = [
       min: VALIDATION_RULES.PASSWORD.MIN_LENGTH,
       max: VALIDATION_RULES.PASSWORD.MAX_LENGTH,
     })
-    .withMessage(
-      `Old password must be between ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} and ${VALIDATION_RULES.PASSWORD.MAX_LENGTH} characters.`
-    ),
+    .withMessage("ERR_PASSWORD_LENGTH"),
 
   // New password - optional but must be secure
   body("newPass")
@@ -49,17 +43,15 @@ export const accountUpdateValidationRules = [
       min: VALIDATION_RULES.PASSWORD.MIN_LENGTH,
       max: VALIDATION_RULES.PASSWORD.MAX_LENGTH,
     })
-    .withMessage(
-      `New password must be between ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} and ${VALIDATION_RULES.PASSWORD.MAX_LENGTH} characters.`
-    )
+    .withMessage("ERR_PASSWORD_LENGTH")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.UPPER)
-    .withMessage("New password must contain at least one uppercase letter.")
+    .withMessage("ERR_PASSWORD_UPPERCASE")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.LOWER)
-    .withMessage("New password must contain at least one lowercase letter.")
+    .withMessage("ERR_PASSWORD_LOWERCASE")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.DIGIT)
-    .withMessage("New password must contain at least one digit.")
+    .withMessage("ERR_PASSWORD_DIGIT")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.SPECIAL)
-    .withMessage("New password must contain at least one special character."),
+    .withMessage("ERR_PASSWORD_SPECIAL_CHAR"),
 
   // Confirm password - optional, trim and must match newPass
   body("confirmPass")
@@ -67,7 +59,7 @@ export const accountUpdateValidationRules = [
     .trim()
     .custom((value, { req }) => {
       if (req.body.newPass && value !== req.body.newPass) {
-        throw new Error("Passwords do not match.");
+        throw new Error("ERR_PASSWORD_MISMATCH");
       }
       return true;
     }),
@@ -76,13 +68,20 @@ export const accountUpdateValidationRules = [
   body("avatar")
     .optional()
     .isInt({ min: 1, max: 4 })
-    .withMessage("Avatar must be a number between 1 and 4."),
+    .withMessage("ERR_INVALID_AVATAR"),
 
-  // Error handler middleware
+  // Middleware obsługujący błędy walidacji
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg,
+        params: getErrorParams(err.msg),
+      }));
+      return next(
+        new ApiError(400, "ERR_VALIDATION", "Validation error", errors)
+      );
     }
     next();
   },

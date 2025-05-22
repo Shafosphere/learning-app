@@ -1,20 +1,21 @@
 import { body, validationResult } from "express-validator";
+import ApiError from "../../../errors/ApiError.js";
 import VALIDATION_RULES from "../../validationConfig.js";
 import { getErrorParams } from "../../getErrorParams.js";
 
 export const loginValidator = [
-  // Username
+  // Username validation
   body("username")
     .isLength({
       min: VALIDATION_RULES.USERNAME.MIN_LENGTH,
       max: VALIDATION_RULES.USERNAME.MAX_LENGTH,
     })
-    .withMessage("ERR_LOGIN_USERNAME_LENGTH") // <-- zamiast zwykłego tekstu
+    .withMessage("ERR_LOGIN_USERNAME_LENGTH")
     .matches(VALIDATION_RULES.USERNAME.REGEX)
-    .withMessage("ERR_LOGIN_USERNAME_INVALID_CHARS") // <-- kolejny kod
+    .withMessage("ERR_LOGIN_USERNAME_INVALID_CHARS")
     .trim(),
 
-  // Password
+  // Password validation
   body("password")
     .isLength({
       min: VALIDATION_RULES.PASSWORD.MIN_LENGTH,
@@ -23,18 +24,18 @@ export const loginValidator = [
     .withMessage("ERR_LOGIN_PASSWORD_LENGTH")
     .trim(),
 
-  // Middleware obsługujący błędy
+  // Middleware for handling validation errors
   (req, res, next) => {
-    // Zbierz wszystkie błędy
-    let errors = validationResult(req).array();
-
-    if (errors.length > 0) {
-      // Dodajemy parametry wg. klucza
-      errors = errors.map((err) => ({
-        ...err,
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg,
         params: getErrorParams(err.msg),
       }));
-      return res.status(400).json({ errors });
+      return next(
+        new ApiError(400, "ERR_VALIDATION", "Validation error", errors)
+      );
     }
     next();
   },

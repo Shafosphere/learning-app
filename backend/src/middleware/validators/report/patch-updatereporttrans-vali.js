@@ -1,6 +1,7 @@
 import { body, validationResult } from "express-validator";
-// import { searchWordById } from "../../../repositories/userModel.js";
+import ApiError from "../../../errors/ApiError.js";
 import { searchWordById } from "../../../repositories/word.repo.js";
+
 export const updateReportValidator = [
   // Sprawdzamy, czy `report` istnieje i jest obiektem
   body("report")
@@ -49,16 +50,17 @@ export const updateReportValidator = [
   // Opcjonalne: sprawdzamy, czy `word_id` istnieje w bazie
   body("report.translations.*.word_id").custom(async (value) => {
     const word = await searchWordById(value);
-    if (!word) {
-      throw new Error("word_id not found in database.");
-    }
+    if (!word) throw new Error("word_id not found in database.");
+    return true;
   }),
 
   // Middleware obsługujący błędy walidacji
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
+      return next(
+        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
+      );
     }
     next();
   },
