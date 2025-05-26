@@ -148,7 +148,7 @@ APP_EMAIL_PASSWORD=
 `config.js` throws and stops the server if any critical variable is absent.
 `TODO`: add a friendly console message on startup.
 
-## 4. Application Architecture
+## 4. Application Architecture / Database
 
 ```
 ┌─────────────┐      JWT cookie      ┌────────────┐
@@ -164,26 +164,114 @@ APP_EMAIL_PASSWORD=
 
 **Main routers / modules**: `auth`, `word`, `user`, `report`, `admin`, `analytics`.
 
-`TODO`: insert ERD diagram (export from dbdiagram.io) and a short description of table relations.
+![diagram](diagram.png)
 
-## 5. Database
+### 5 Database Schema
 
-Example tables:
+A detailed list of tables, key columns, and the designation of primary keys (PK) and foreign keys (FK) follows.
 
-* **users** (id, username, email, password\_hash, role, last\_login\_at)
-* **words** (id, word, translation\_pl, translation\_en, patch, level)
-* **answers\_history** (id, user\_id, word\_id, is\_correct, answered\_at)
-* **reports** (id, user\_id, word\_id, type, description, status)
+#### Tables and Columns
 
-`TODO`: complete full list with foreign keys.
+* **users**
+
+  * `id` (PK)
+  * `username`
+  * `email`
+  * `password_hash`
+  * `role`
+  * `disabled`
+  * `created_at`
+  * `last_login_at`
+
+* **word**
+
+  * `id` (PK)
+  * `word`
+  * `translation_pl`
+  * `translation_en`
+  * `patch`
+  * `level`
+
+* **translation**
+
+  * `id` (PK)
+  * `word_id` (FK → word.id)
+  * `language_code`
+  * `text`
+
+* **word\_patches**
+
+  * `patch_id` (PK)
+  * `description`
+
+* **b2\_patches**
+
+  * `patch_id` (PK, FK → word\_patches.patch\_id)
+  * `word_ids` (JSON)
+
+* **c1\_patches**
+
+  * `patch_id` (PK, FK → word\_patches.patch\_id)
+  * `word_ids` (JSON)
+
+* **user\_word\_progress**
+
+  * `id` (PK)
+  * `user_id` (FK → users.id)
+  * `word_id` (FK → word.id)
+  * `box_number`
+  * `last_answered`
+
+* **answer\_history**
+
+  * `id` (PK)
+  * `user_id` (FK → users.id)
+  * `word_id` (FK → word.id)
+  * `is_correct`
+  * `answered_at`
+
+* **arena**
+
+  * `id` (PK)
+  * `user_id` (FK → users.id)
+  * `current_point`
+  * `answered_at`
+
+* **user\_autosave**
+
+  * `id` (PK)
+  * `user_id` (FK → users.id)
+  * `words` (JSON)
+  * `updated_at`
+
+* **user\_activity\_stats**
+
+  * `activity_date` (part of PK)
+  * `activity_type` (part of PK)
+  * `activity_count`
+
+* **page\_visit\_stats**
+
+  * `visit_date` (part of PK)
+  * `page` (part of PK)
+  * `visit_count`
+
+* **ranking**
+
+  * `user_id` (PK, FK → users.id)
+  * `point`
+  * `updated_at`
+
+* **reports**
+
+  * `id` (PK)
+  * `user_id` (FK → users.id)
+  * `word_id` (FK → word.id)
+  * `type`
+  * `description`
+  * `status`
 
 ## 6. API
-
-### Sample endpoint
-
-| Method | Path          | Auth | Validators       | 200 Example                                          |
-| ------ | ------------- | ---- | ---------------- | ---------------------------------------------------- |
-| POST   | `/auth/login` | none | `loginValidator` | `{ "success": true, "message": "Login successful" }` |
 
 The full endpoint list lives in **API\_endpoints.md**
 
@@ -197,15 +285,160 @@ The full endpoint list lives in **API\_endpoints.md**
 
 ## 8. Error Handling
 
-JSON format (translated on the front‑end):
+### 8.1 Goal
+
+Provide a consistent, debuggable, and i18n‑ready way of conveying errors between **backend (Express)** and **frontend (React + Axios)**.
+
+---
+
+### 8.2 Backend – how an error is created
+
+| Element            | File                             | Role                                                                                                                                                                  |
+| ------------------ | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`ApiError`**     | `src/errors/ApiError.js`         | Base class for all our errors (extends `Error`). Accepts **`statusCode, code, message, details?`**.                                                                   |
+| **`catchAsync`**   | `src/utils/catchAsync.js`        | Higher‑order function that wraps controllers so `async/await` exceptions are forwarded to `next()` as an `ApiError`.                                                  |
+| **Global 404**     | `app.js`                         | When no route matches → `next(new ApiError(404, 'ERR_NOT_FOUND', 'Route not found'))`.                                                                                |
+| **`errorHandler`** | `src/middleware/errorHandler.js` | Last middleware in the stack. Turns any `ApiError` into a JSON response (see 8.3), logs the stack trace, and maps unexpected exceptions to `ERR_UNKNOWN_ERROR (500)`. |
+
+```js
+// example use in a controller
+export const login = catchAsync(async (req, res) => {
+  if (!req.body.email) {
+    throw new ApiError(400, 'ERR_VALIDATION', 'ERR_VALIDATION', [
+      { field: 'email', msg: 'Email is required', value: null }
+    ]);
+  }
+  ...
+});
+```
+
+---
+
+### 8.3 Standard response format
+
+```jsonc
+{
+  "success": false,          // always false for errors
+  "code": "ERR_VALIDATION",  // fixed key starting with ERR_
+  "message": "ERR_VALIDATION", // code or ready‑to‑show string
+  "details": [...]           // optional array/object with extra info
+}
+```
+
+**Examples**
+
+*401 – missing token*
 
 ```json
 {
   "success": false,
-  "message": "ERR_TOKEN_NOT_FOUND",
-  "code": "ERR_TOKEN_NOT_FOUND"
+  "code": "ERR_TOKEN_NOT_FOUND",
+  "message": "ERR_TOKEN_NOT_FOUND"
 }
 ```
+
+*400 – validation error*
+
+```json
+{
+  "success": false,
+  "code": "ERR_VALIDATION",
+  "message": "ERR_VALIDATION",
+  "details": [
+    { "field": "email", "msg": "Email is required", "value": null }
+  ]
+}
+```
+
+---
+
+### 8.4 Error code glossary
+
+| Code                       | HTTP | Meaning                  | Default front‑end action                  |
+| -------------------------- | ---- | ------------------------ | ----------------------------------------- |
+| **ERR\_NOT\_FOUND**        | 404  | Route/resource not found | Popup "Route not found"                   |
+| **ERR\_TOKEN\_NOT\_FOUND** | 401  | Missing JWT              | Interceptor rejects → login redirect      |
+| **ERR\_TOKEN\_EXPIRED**    | 401  | Expired JWT              | Refresh token / re‑login                  |
+| **ERR\_VALIDATION**        | 400  | Invalid input            | First item in `details` is shown          |
+| **ERR\_UNKNOWN\_ERROR**    | 500  | Unhandled server error   | Generic popup "An unknown error occurred" |
+
+> **Tip:** The full list is kept in `errors/codes.js`. Remember to add new entries and translations in `en.json` / `pl.json`.
+
+---
+
+### 8.5 Front‑end interceptor (Axios)
+
+```js
+import axios from 'axios';
+import { showPopup } from './popupManager';
+import { translate } from './intlManager';
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
+  withCredentials: true,
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status    = error.response?.status;
+    const errorCode = error.response?.data?.code;
+
+    // 1) Special path for auth errors
+    if (errorCode === 'ERR_TOKEN_NOT_FOUND') {
+      return Promise.reject(error); // login page takes over
+    }
+
+    // 2) Defaults
+    let rawMsg = error.response?.data?.message || 'ERR_UNKNOWN_ERROR';
+    let params = {};
+
+    // 3) Validation – pick first item
+    const list = error.response?.data?.details || error.response?.data?.errors;
+    if (status === 400 && Array.isArray(list) && list.length) {
+      rawMsg = list[0].message || list[0].msg || rawMsg;
+      params = list[0].params || {};
+    }
+
+    // 4) i18n
+    const finalMsg = rawMsg.startsWith('ERR_')
+      ? translate(rawMsg, 'An unknown error occurred', params)
+      : rawMsg;
+
+    // 5) Popup
+    showPopup({
+      message: finalMsg,
+      emotion: status >= 500 ? 'warning' : 'negative',
+      duration: 5000,
+    });
+
+    return Promise.reject(error);
+  }
+);
+
+export default api;
+```
+
+**Flow**
+
+1. 2xx responses pass through untouched.
+2. On error, read `status`, `code`, `message`, `details`.
+3. `ERR_TOKEN_NOT_FOUND` hands control to routing (logout / redirect).
+4. On 400 validation, the first detail item overrides `message`.
+5. If `message` starts with `ERR_`, it is passed to `translate()` and returned as UI‑language text.
+6. Every error triggers a popup; `status >= 500` uses the "warning" emotion.
+
+---
+
+### 8.6 Checklist – adding a new error
+
+1. Add the `ERR_…` constant in `errors/codes.js`.
+2. Throw `new ApiError(...)` in a controller/service.
+3. Add translations to `pl.json` and `en.json`.
+4. Update the table in section 8.4.
+
+> Thanks to this centralised approach, reporting and displaying errors is **consistent** and **bilingual**, and debugging boils down to searching for a single `ERR_…` code. 🎉
+
 
 ## 9. Validation & Security
 

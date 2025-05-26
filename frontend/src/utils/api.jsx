@@ -22,17 +22,6 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Extracting the error message
-    // let rawMsg;
-    // let params = {};
-    // if (status === 400 && error.response?.data?.errors) {
-    //   const firstError = error.response.data.errors[0];
-    //   rawMsg = firstError.msg;
-    //   params = firstError.params || {};
-    // } else {
-    //   rawMsg = error.response?.data?.message || "ERR_UNKNOWN_ERROR";
-    // }
-
     let rawMsg = error.response?.data?.message || "ERR_UNKNOWN_ERROR";
     let params = {};
 
