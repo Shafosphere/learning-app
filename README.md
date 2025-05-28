@@ -55,9 +55,19 @@ A **“Report Bug”** icon in the sidebar (logged‑in users only). Two report
 
 > Order matches the sidebar navigation.
 
+![Main Page & Level Selection](./gifs/mainpage.gif) 
+
+![Level Selection for Flashcards and Vocab Test](./gifs/chooselevel.gif)  
+Before starting the Vocabulary Test or Flashcards, users choose their proficiency level (B2 or C1) as shown above.
+
 ### 5.1 Flashcards – Core Game
 
 Implements the **Leitner method** with five boxes. Correct translations move a word up; mistakes reset it to box 1. The Levenshtein algorithm tolerates a single typo, and settings let learners ignore Polish diacritics.
+
+
+![Flashcards Demo 1](./gifs/flashcards1.gif)
+
+![Flashcards Demo 2](./gifs/flashcards2.gif)
 
 * **Levels:** B2 (\~3 000 words) and C1 (\~2 000 words).
 * **Progress sync:** once logged in, flashcard progress is stored in the cloud and can be resumed on any device.
@@ -70,9 +80,13 @@ Learners **measure what percentage** of the **3 000 B2** or **2 000 C1** wor
 *The server delivers chunks of 30 words to avoid cognitive overload.*
 Progress is saved locally so the test can be finished later. Levenshtein and typo tolerance still apply.
 
+![Vocabulary Test Demo](./gifs/vocatest.gif)
+
 ### 5.3 Arena (PvP)
 
 Competitive online mode – the server assigns words based on the current rating (0 – 3 000 pts). Each answer instantly updates the score, and a chart visualises the trend.
+
+![Arena Demo](./gifs/arena.gif)
 
 * **Availability:** Arena is restricted to registered users so the leaderboard reflects genuine progress.
 
@@ -86,9 +100,13 @@ Two rankings: *Flashcards* (1 pt = 1 learned word) and *Arena* (PvP rating)
 2. **Gameplay:** ignore diacritics, typo tolerance, daily goal.
 3. **Reset:** restore defaults, reset Flashcard/Test progress (B2/C1 separately).
 
+![App Settings Demo](./gifs/appsettings.gif)
+
 ### 5.6 Account Settings
 
 Change e‑mail, nickname, password and one of four avatars (used in leaderboards). Option for permanent account deletion.
+
+![Account Settings Demo](./gifs/accsettings.gif)
 
 ### 5.7 Admin Panel
 
