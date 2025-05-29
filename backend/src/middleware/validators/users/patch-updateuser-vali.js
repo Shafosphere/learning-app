@@ -3,22 +3,32 @@ import ApiError from "../../../errors/ApiError.js";
 import VALIDATION_RULES from "../../validationConfig.js";
 
 export const updateUsersValidator = [
-  // Sprawdzamy, czy editedRows istnieje i jest obiektem
+  // 1) Zamieniamy obiekt keyed-by-ID na tablicę z polem id:
+  (req, res, next) => {
+    const { editedRows } = req.body;
+    if (
+      editedRows &&
+      typeof editedRows === "object" &&
+      !Array.isArray(editedRows)
+    ) {
+      req.body.editedRows = Object.entries(editedRows).map(
+        ([key, row]) => ({ id: Number(key), ...row })
+      );
+    }
+    next();
+  },
+
+  // 2) Sprawdzamy, czy teraz mamy tablicę i że nie jest pusta:
   body("editedRows")
     .exists({ checkFalsy: true })
     .withMessage("editedRows is required.")
-    .isObject()
-    .withMessage("editedRows must be an object."),
-
-  // Sprawdzamy, czy editedRows nie jest pusty
-  body("editedRows")
-    .custom((value) => Object.keys(value).length > 0)
+    .isArray()
+    .withMessage("editedRows must be an array.")
+    .custom((arr) => arr.length > 0)
     .withMessage("editedRows cannot be empty."),
 
-  // Walidacja każdego użytkownika
+  // 3) ID mamy już jako pole po normalizacji, więc walidujemy dalej:
   body("editedRows.*.id")
-    .exists()
-    .withMessage("User ID is required.")
     .isInt({ gt: 0 })
     .withMessage("User ID must be a positive integer."),
 
@@ -62,7 +72,6 @@ export const updateUsersValidator = [
     .isBoolean()
     .withMessage("Ban must be true or false."),
 
-  // Walidacja hasła opcjonalnie
   body("editedRows.*.password")
     .optional()
     .isLength({
@@ -81,7 +90,7 @@ export const updateUsersValidator = [
     .matches(VALIDATION_RULES.PASSWORD.REGEX.SPECIAL)
     .withMessage("Password must contain at least one special character."),
 
-  // Middleware obsługujący błędy walidacji
+  // 4) Obsługa błędów:
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

@@ -51,6 +51,8 @@ This removes randomization cost from the front‑end and **guarantees consistenc
 
 A **“Report Bug”** icon in the sidebar (logged‑in users only). Two report types: *word issue* and *other*. Server‑side validation blocks spam. 
 
+![Report](./gifs/report.gif)
+
 ## 5. Modules / Pages
 
 > Order matches the sidebar navigation.
@@ -86,9 +88,13 @@ Progress is saved locally so the test can be finished later. Levenshtein and typ
 
 Competitive online mode – the server assigns words based on the current rating (0 – 3 000 pts). Each answer instantly updates the score, and a chart visualises the trend.
 
+Arena is available only to registered users
+
 ![Arena Demo](./gifs/arena.gif)
 
-* **Availability:** Arena is restricted to registered users so the leaderboard reflects genuine progress.
+![Size change](./gifs/size.gif)
+
+* **Availability:** All game modes are available in small windows
 
 ### 5.4 Leaderboard
 
