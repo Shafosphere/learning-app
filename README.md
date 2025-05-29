@@ -92,7 +92,7 @@ Arena is available only to registered users
 
 ![Arena Demo](./gifs/arena.gif)
 
-![Size change](./gifs/size.gif)
+![Size change](./gifs/resize.gif)
 
 * **Availability:** All game modes are available in small windows
 
