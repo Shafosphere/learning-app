@@ -14,32 +14,24 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status = error.response?.status;
-    const errorCode = error.response?.data?.code; // Fixed: using errorCode instead of code
+    console.log("Axios error.response:", error.response);
+    const { status, data } = error.response ?? {};
+    const { code, message, errors: list = [] } = data ?? {};
 
-    // Special handling for authentication errors
-    if (errorCode === "ERR_TOKEN_NOT_FOUND") {
-      return Promise.reject(error);
-    }
+    if (code === "ERR_TOKEN_NOT_FOUND") return Promise.reject(error);
 
-    let rawMsg = error.response?.data?.message || "ERR_UNKNOWN_ERROR";
+    let rawMsg = message || code || "ERR_UNKNOWN_ERROR"; // preferuj tekst, potem kod
     let params = {};
 
-    const list = error.response?.data?.details || error.response?.data?.errors;
-    if (status === 400 && Array.isArray(list) && list.length) {
+    if (status === 400 && list.length) {
       rawMsg = list[0].message || list[0].msg || rawMsg;
       params = list[0].params || {};
     }
 
-    // Translating messages
-    let finalMsg;
-    if (isErrorCode(rawMsg)) {
-      finalMsg = translate(rawMsg, "An unknown error occurred", params);
-    } else {
-      finalMsg = rawMsg;
-    }
+    const finalMsg = isErrorCode(code)
+      ? translate(code, rawMsg, params) // tłumaczymy po kluczu
+      : rawMsg; // albo wyświetlamy surowy tekst
 
-    // Displaying popup
     showPopup({
       message: finalMsg,
       emotion: status >= 500 ? "warning" : "negative",

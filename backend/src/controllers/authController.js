@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import VALIDATION_RULES from "../middleware/validationConfig.js";
-import ApiError from "../errors/ApiError.js";
+import { throwErr } from "../errors/throwErr.js";
 // Obsługa użytkowników
 import {
   createUser,
@@ -50,7 +50,7 @@ export const getRequirements = (req, res) => {
 export const registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new ApiError(400, "ERR_VALIDATION", "Validation failed", errors.array());
+    throwErr("VALIDATION", errors.array());
   }
 
   const { username, email, password } = req.body;
@@ -61,9 +61,9 @@ export const registerUser = async (req, res) => {
     newUserId = await createUser(username, email, hashedPassword);
   } catch (err) {
     if (err.code === "23505") {
-      throw new ApiError(409, "ERR_USER_EXISTS", "Username or email already exists");
+      throwErr("USER_EXISTS");
     }
-    throw new ApiError(500, "ERR_REGISTRATION", "An error occurred during registration.");
+    throwErr("REGISTRATION_FAIL");
   }
 
   await userRankingUpdate(newUserId, username);
@@ -84,20 +84,21 @@ export const userWelcome = (req, res) => {
   res.status(200).json({
     loggedIn: true,
     user: req.user,
-    expiresIn: req.user.expiresAt - Date.now(), // Czas pozostały w ms
+    expiresIn: req.user.expiresAt - Date.now(),
   });
 };
+
 export const loginUser = async (req, res) => {
   const { username, password } = req.body;
 
   const user = await getUserByUsername(username);
   if (!user) {
-    throw new ApiError(401, "ERR_INVALID_CREDENTIALS", "Invalid credentials");
+    throwErr("INVALID_CREDENTIALS");
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
-    throw new ApiError(401, "ERR_INVALID_CREDENTIALS", "Invalid credentials");
+    throwErr("INVALID_CREDENTIALS");
   }
 
   await updateLastLogin(user.id);
@@ -129,7 +130,7 @@ export const logoutUser = (req, res) => {
   res.status(200).json({
     success: true,
     message: "Logged out successfully",
-    token: null, // Dodatkowe zerowanie tokena
+    token: null,
   });
 };
 
@@ -138,7 +139,7 @@ export const userInformation = async (req, res) => {
   const userResult = await getUserByUserName(username);
 
   if (!userResult) {
-    throw new ApiError(404, "ERR_USER_NOT_FOUND", "User not found");
+    throwErr("USER_NOT_FOUND");
   }
 
   res.status(200).json({
@@ -153,7 +154,7 @@ export const userInformation = async (req, res) => {
 export const updateUserAccount = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new ApiError(400, "ERR_VALIDATION", "Validation failed", errors.array());
+    throwErr("VALIDATION", errors.array());
   }
 
   const { username, email, oldPass, newPass, avatar } = req.body;
@@ -161,13 +162,13 @@ export const updateUserAccount = async (req, res) => {
 
   const user = await getUserById(userId);
   if (!user) {
-    throw new ApiError(404, "ERR_USER_NOT_FOUND", "User not found");
+    throwErr("USER_NOT_FOUND");
   }
 
   if (oldPass) {
     const isOldPassValid = await bcrypt.compare(oldPass, user.password);
     if (!isOldPassValid) {
-      throw new ApiError(400, "ERR_INVALID_OLD_PASSWORD", "Old password is incorrect.");
+      throwErr("INVALID_OLD_PASSWORD");
     }
   }
 
@@ -240,8 +241,8 @@ export const sendUserResetLink = async (req, res) => {
       subject,
       html: htmlContent,
     });
-  } catch (err) {
-    throw new ApiError(500, "ERR_RESET_SENDING_FAIL", "Error sending reset email");
+  } catch {
+    throwErr("RESET_SENDING_FAIL");
   }
 
   res.status(200).json({ message: responseMessage });
@@ -253,8 +254,8 @@ export const resetPassword = async (req, res) => {
   let decoded;
   try {
     decoded = jwt.verify(token, config.tokenKey);
-  } catch (err) {
-    throw new ApiError(400, "ERR_INVALID_TOKEN", "Token expired or invalid");
+  } catch {
+    throwErr("INVALID_TOKEN");
   }
 
   const userId = decoded.id;

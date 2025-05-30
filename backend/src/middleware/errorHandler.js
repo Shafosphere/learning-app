@@ -1,19 +1,10 @@
 // src/middleware/errorHandler.js
 export default function errorHandler(err, req, res, next) {
-    console.error(err);
-  
-    const status = err.statusCode || 500;
-    const code   = err.code       || 'ERR_SERVER';
-  
-    const response = {
-      success: false,
-      message: code,
-      code
-    };
-    if (err.details) {
-      response.errors = err.details;
-    }
-  
-    res.status(status).json(response);
-  }
-  
+  console.error(err);
+
+  res.status(err.statusCode || 500).json({
+    code:    err.code       || "ERR_SERVER",          // klucz tłumaczenia
+    message: err.message    || "Unknown error.",      // czytelny tekst (ang.)
+    errors:  err.details    || undefined              // opcjonalna tablica
+  });
+}
