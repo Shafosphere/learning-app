@@ -53,6 +53,41 @@ A **“Report Bug”** icon in the sidebar (logged‑in users only). Two report
 
 ![Report](./gifs/report.gif)
 
+### 4.4 Popup & Feedback Layer
+
+A tiny, self-contained **popup system** handles all transient messages  
+(*success*, *error*, *warning*).
+
+* **React Portal** – every popup is rendered in `#portal-root`, outside the
+  normal DOM tree, so it never collides with flex/grid layouts.
+* **Context API** – wrap the app once in `<PopupProvider>` and call
+  `setPopup({ message, emotion, duration })` from anywhere 
+* **3 predefined colors** – popup color depends on the `emotion`:
+  - `positive` → green  
+  - `negative` → red  
+  - `warning` → yellow
+  *Sound ON/OFF* toggle.
+* **Install in 3 steps**
+
+  ```jsx
+  // 1) index.html
+  <div id="portal-root"></div>
+
+  // 2) main.jsx
+  import { PopupProvider } from "./components/popup/popupcontext";
+  ReactDOM.createRoot(...).render(
+    <PopupProvider>
+      <App />
+    </PopupProvider>
+  );
+
+  // 3) anywhere in code
+  import { useContext } from "react";
+  import { PopupContext } from "./components/popup/popupcontext";
+
+  const { setPopup } = useContext(PopupContext);
+  setPopup({ message: "Saved!", emotion: "positive", duration: 2000 });
+
 ## 5. Modules / Pages
 
 > Order matches the sidebar navigation.
