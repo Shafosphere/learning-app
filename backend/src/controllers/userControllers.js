@@ -1,5 +1,4 @@
-// Obsługa użytkowników
-import ApiError from "../errors/ApiError.js";
+// controllers/userController.js
 import {
   searchUserById,
   searchUserByEmail,
@@ -10,6 +9,7 @@ import {
   getUserIdFromProgress,
   deleteDataUserByUserID,
 } from "../repositories/user.repo.js";
+import { throwErr } from "../errors/throwErr.js";
 
 // Postęp użytkownika ze słowami
 import { insertWordIntoUserProgress } from "../repositories/word.repo.js";
@@ -46,9 +46,13 @@ export const getUsersList = async (req, res) => {
 
 export const updateUsers = async (req, res) => {
   const { editedRows } = req.body;
-  const updatePromises = Object.values(editedRows).map(user => updateUserInDb(user));
+  const updatePromises = Object.values(editedRows).map((user) =>
+    updateUserInDb(user)
+  );
   await Promise.all(updatePromises);
-  res.status(200).json({ success: true, message: "Users updated successfully." });
+  res
+    .status(200)
+    .json({ success: true, message: "Users updated successfully." });
 };
 
 export const searchUsers = async (req, res) => {
@@ -62,7 +66,7 @@ export const searchUsers = async (req, res) => {
     result = await searchUserByUsername(query);
   }
   if (!result || result.length === 0) {
-    throw new ApiError(404, "ERR_NO_RECORDS", "No records found");
+    throwErr("NO_RECORDS");
   }
   res.status(200).json(result);
 };
@@ -70,7 +74,9 @@ export const searchUsers = async (req, res) => {
 export const deleteUser = async (req, res) => {
   const userId = req.params.id;
   await deleteUserByID(userId);
-  res.status(200).json({ success: true, message: "User deleted successfully." });
+  res
+    .status(200)
+    .json({ success: true, message: "User deleted successfully." });
 };
 
 export const learnWord = async (req, res) => {
@@ -82,12 +88,14 @@ export const learnWord = async (req, res) => {
     await client.query("BEGIN");
     const checkResult = await getUserIdFromProgress(client, userId, wordId);
     if (checkResult.rows.length > 0) {
-      throw new ApiError(400, "ERR_ALREADY_LEARNED", "You have already learned this word.");
+      throwErr("ALREADY_LEARNED");
     }
     await insertWordIntoUserProgress(client, userId, wordId);
     await userRankingUpdate(userId, username);
     await client.query("COMMIT");
-    res.status(200).json({ message: "Word added to progress and ranking updated." });
+    res
+      .status(200)
+      .json({ message: "Word added to progress and ranking updated." });
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
@@ -110,7 +118,14 @@ export const autoSave = async (req, res) => {
   const client = await pool.connect();
   const { level, deviceId, words, patchNumber } = req.body;
   try {
-    await insertOrUpdateUserAutosave(client, req.user.id, level, words, deviceId, patchNumber);
+    await insertOrUpdateUserAutosave(
+      client,
+      req.user.id,
+      level,
+      words,
+      deviceId,
+      patchNumber
+    );
     res.status(200).json({ message: "Dane odebrane" });
   } finally {
     client.release();
@@ -120,21 +135,25 @@ export const autoSave = async (req, res) => {
 export const autoLoad = async (req, res) => {
   const client = await pool.connect();
   try {
-    const { level, } = req.body;
+    const { level } = req.body;
     const autosaveData = await getAutosaveData(client, req.user.id, level);
     if (!autosaveData) {
-      throw new ApiError(404, "ERR_NO_AUTOSAVE", "Brak zapisanych danych");
+      throwErr("NO_AUTOSAVE");
     }
     const wordsFromSave = autosaveData.words;
-    const wordIds = [...new Set(wordsFromSave.map(w => w.id))];
+    const wordIds = [...new Set(wordsFromSave.map((w) => w.id))];
     const translations = await getBatchWordTranslations(client, wordIds);
     const formattedWords = wordsFromSave
-      .map(word => {
-        const t = translations.find(tr => tr.word_id === word.id);
-        return t && { id: word.id, boxName: word.boxName,
-          wordEng: { word: t.en_translation, description: t.en_description },
-          wordPl: { word: t.pl_translation, description: t.pl_description }
-        };
+      .map((word) => {
+        const t = translations.find((tr) => tr.word_id === word.id);
+        return (
+          t && {
+            id: word.id,
+            boxName: word.boxName,
+            wordEng: { word: t.en_translation, description: t.en_description },
+            wordPl: { word: t.pl_translation, description: t.pl_description },
+          }
+        );
       })
       .filter(Boolean);
     res.status(200).json({
@@ -149,7 +168,6 @@ export const autoLoad = async (req, res) => {
     client.release();
   }
 };
-
 
 export const autoDelete = async (req, res) => {
   const client = await pool.connect();

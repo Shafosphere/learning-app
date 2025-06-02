@@ -1,7 +1,5 @@
-
-// Raporty
-import ApiError from "../errors/ApiError.js";
-
+// controllers/reportController.js
+import { throwErr } from "../errors/throwErr.js";
 import {
   getReportById,
   getReports,
@@ -9,8 +7,6 @@ import {
   updateReport,
   deleteReport,
 } from "../repositories/report.repo.js";
-
-// Tłumaczenia słów
 import {
   getWordTranslations,
   getWordByTranslation,
@@ -21,8 +17,7 @@ export const getDetailReport = async (req, res) => {
   const report = await getReportById(id);
 
   if (!report) {
-    // jeśli nie ma reportu → 404
-    throw new ApiError(404, "ERR_REPORT_NOT_FOUND", "Report not found");
+    throwErr("REPORT_NOT_FOUND");
   }
 
   const response_data = { ...report };
@@ -30,13 +25,8 @@ export const getDetailReport = async (req, res) => {
   if (report.report_type === "word_issue" && report.word_id) {
     try {
       response_data.translations = await getWordTranslations(report.word_id);
-    } catch (err) {
-      // specyficzny błąd podczas fetchowania tłumaczeń
-      throw new ApiError(
-        500,
-        "ERR_FETCH_TRANSLATIONS",
-        "Error fetching translations"
-      );
+    } catch {
+      throwErr("FETCH_TRANSLATIONS");
     }
   }
 
@@ -51,13 +41,9 @@ export const getDataReports = async (req, res) => {
 export const updateReportTranslations = async (req, res) => {
   const { report } = req.body;
   if (!Array.isArray(report.translations)) {
-    throw new ApiError(
-      400,
-      "ERR_INVALID_INPUT",
-      "translations must be an array"
-    );
+    throwErr("INVALID_INPUT");
   }
-  const promises = report.translations.map(t => updateReport(t));
+  const promises = report.translations.map((t) => updateReport(t));
   await Promise.all(promises);
   res.json({
     success: true,
@@ -79,17 +65,12 @@ export const createReport = async (req, res) => {
   if (reportType === "word_issue") {
     const wordResult = await getWordByTranslation(word);
     if (!wordResult) {
-      throw new ApiError(404, "ERR_WORD_NOT_FOUND", "Word not found");
+      throwErr("WORD_NOT_FOUND");
     }
     wordId = wordResult.word_id;
   }
 
-  const reportId = await insertReport(
-    userId,
-    reportType,
-    wordId,
-    description
-  );
+  const reportId = await insertReport(userId, reportType, wordId, description);
 
   res.status(201).json({
     success: true,
@@ -97,4 +78,3 @@ export const createReport = async (req, res) => {
     reportId,
   });
 };
-

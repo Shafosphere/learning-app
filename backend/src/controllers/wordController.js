@@ -1,33 +1,4 @@
 // Obsługa słów i nauki
-// import {
-//   getPatchWords,
-//   getWordTranslations,
-//   getMaxPatchId,
-//   getWordsWithPagination,
-//   getTranslationsByWordId,
-//   updateTranslation,
-//   searchWordById,
-//   searchWordByText,
-//   insertWord,
-//   insertTranslations,
-//   deleteWordById,
-//   patchLength,
-//   getAllMaxPatchId,
-//   getPatchWordsByLevel,
-//   getAllPatchLength,
-//   getNumberOfWords,
-//   getRandomWordsByNumber,
-//   checkBan,
-//   ranking_init,
-//   getUserRankingPoints,
-//   getRandomWord,
-//   getLanguageWordTranslations,
-//   updateUserArena,
-//   updateUserRankingHistory,
-//   getRankingHistoryById,
-// } from "../repositories/userModel.js";
-
-// Obsługa słów i nauki
 import {
   getPatchWords,
   getMaxPatchId,
@@ -67,6 +38,8 @@ import {
 
 import { updateUserArena } from "../repositories/arena.repo.js";
 
+import { throwErr } from "../errors/throwErr.js";
+
 // Funkcja pomocnicza do formatowania wyników
 const formatWordResults = (results) => {
   return results.map((wordPair) => {
@@ -86,7 +59,7 @@ const formatWordResults = (results) => {
   });
 };
 
-//information about patch
+// information about patch
 export const getPatchesInfo = async (req, res) => {
   console.log("Fetching patch information");
   try {
@@ -112,12 +85,12 @@ export const getPatchesInfo = async (req, res) => {
 export const getWordsByPatchAndLevel = async (req, res) => {
   const { level, patchNumber } = req.body;
   if (!patchNumber || patchNumber <= 0) {
-    throw new ApiError(400, "ERR_INVALID_PATCH_NUMBER", "Invalid patch number");
+    throwErr("INVALID_PATCH_NUMBER");
   }
 
   const wordIds = await getPatchWordsByLevel(patchNumber, level);
   if (!wordIds) {
-    throw new ApiError(404, "ERR_PATCH_NOT_FOUND", "Patch not found");
+    throwErr("PATCH_NOT_FOUND");
   }
 
   const results = await Promise.all(
@@ -134,7 +107,7 @@ export const getWordData = async (req, res) => {
   if (patchNumber && patchNumber > 0) {
     const wordIds = await getPatchWords(patchNumber);
     if (!wordIds) {
-      throw new ApiError(404, "ERR_PATCH_NOT_FOUND", "Patch not found");
+      throwErr("PATCH_NOT_FOUND");
     }
     const results = await Promise.all(
       wordIds.map((id) => getWordTranslations(id))
@@ -144,14 +117,12 @@ export const getWordData = async (req, res) => {
     const totalPatches = await patchLength();
     const isThisLastOne = patchNumber === maxPatchId;
 
-    res
-      .status(200)
-      .json({
-        message: "working",
-        data: formatted,
-        isThisLastOne,
-        totalPatches,
-      });
+    res.status(200).json({
+      message: "working",
+      data: formatted,
+      isThisLastOne,
+      totalPatches,
+    });
   } else {
     const results = await Promise.all(
       wordList.map((id) => getWordTranslations(id))
@@ -195,22 +166,14 @@ export const searchWords = async (req, res) => {
 export const addWord = async (req, res) => {
   const word = req.body;
   if (!word || !word.translations) {
-    throw new ApiError(
-      400,
-      "ERR_MISSING_TRANSLATIONS",
-      "Translations data is missing"
-    );
+    throwErr("MISSING_TRANSLATIONS");
   }
   const english = word.translations.find((t) => t.language === "en");
   if (!english) {
-    throw new ApiError(
-      400,
-      "ERR_MISSING_ENGLISH",
-      "English translation is required"
-    );
+    throwErr("MISSING_ENGLISH");
   }
   if (!["B2", "C1"].includes(word.level)) {
-    throw new ApiError(400, "ERR_INVALID_LEVEL", "Wrong level");
+    throwErr("INVALID_LEVEL");
   }
 
   const wordId = await insertWord(english.translation, word.level);
@@ -228,7 +191,7 @@ export const getRankingWord = async (req, res) => {
   const userId = req.user.id;
   const banCheck = await checkBan(userId);
   if (banCheck.rows[0]?.ban) {
-    throw new ApiError(403, "ERR_ACCOUNT_BANNED", "Account banned");
+    throwErr("ACCOUNT_BANNED");
   }
 
   await ranking_init(userId);
@@ -248,7 +211,7 @@ export const getRankingWord = async (req, res) => {
 
   const wordRes = await getRandomWord(difficulty);
   if (wordRes.rows.length === 0) {
-    throw new ApiError(404, "ERR_WORDS_MISSING", "Words missing");
+    throwErr("WORDS_MISSING");
   }
   const wordId = wordRes.rows[0].id;
 
@@ -256,11 +219,7 @@ export const getRankingWord = async (req, res) => {
   const randomLang = Math.random() < 0.5 ? "en" : "pl";
   const translation = translationsRes.find((t) => t.language === randomLang);
   if (!translation) {
-    throw new ApiError(
-      404,
-      "ERR_TRANSLATION_MISSING",
-      "Translation is missing"
-    );
+    throwErr("TRANSLATION_MISSING");
   }
 
   res.status(200).json([wordId, translation.translation, randomLang]);
@@ -288,7 +247,7 @@ export const submitAnswer = async (req, res) => {
 
   const banCheck = await checkBan(userId);
   if (banCheck.rows[0]?.ban) {
-    throw new ApiError(403, "ERR_ACCOUNT_BANNED", "Account banned");
+    throwErr("ACCOUNT_BANNED");
   }
 
   const translations = await getWordTranslations(wordId);
@@ -321,15 +280,13 @@ export const submitAnswer = async (req, res) => {
     newStreak
   );
 
-  res
-    .status(200)
-    .json({
-      success: true,
-      isCorrect,
-      newPoints: after,
-      streak: newStreak,
-      correctTranslations: translations.filter((t) => t.language === lang),
-    });
+  res.status(200).json({
+    success: true,
+    isCorrect,
+    newPoints: after,
+    streak: newStreak,
+    correctTranslations: translations.filter((t) => t.language === lang),
+  });
 };
 
 export const getRankingHistory = async (req, res) => {
