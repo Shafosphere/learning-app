@@ -1,22 +1,26 @@
 import { param, validationResult } from "express-validator";
-import ApiError from "../../../errors/ApiError.js";
+import { throwErr } from "../../../errors/throwErr.js";
+import { getErrorParams } from "../../getErrorParams.js";
 
 export const deleteWordValidator = [
-  // Sprawdzamy, czy parametr 'id' istnieje i jest dodatnią liczbą całkowitą
+  /* ─────────── ID EXISTS & IS POSITIVE INT ─────────── */
   param("id")
-    .exists()
-    .withMessage("Word id is required.")
+    .exists({ checkFalsy: true })
+    .withMessage("ERR_WORD_ID_REQUIRED")
     .isInt({ gt: 0 })
-    .withMessage("Word id must be a positive integer."),
+    .withMessage("ERR_WORD_ID_INVALID")
+    .toInt(),
 
-  // Middleware obsługujący błędy walidacji
+  /* ─────────── HANDLE VALIDATION ERRORS ─────────── */
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      // Rzucamy ApiError z kodem walidacji i szczegółami
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
-      );
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg, // "ERR_WORD_ID_REQUIRED" or "ERR_WORD_ID_INVALID"
+        params: getErrorParams(err.msg),
+      }));
+      return next(throwErr("VALIDATION", errors));
     }
     next();
   },

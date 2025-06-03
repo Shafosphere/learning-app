@@ -1,32 +1,23 @@
-import ApiError from "../../../errors/ApiError.js";
 import { getUserByUserName } from "../../../repositories/user.repo.js";
-import { validationResult } from "express-validator";
+import { throwErr } from "../../../errors/throwErr.js";
 
-// Validator for ensuring authenticated user exists in database
 export const getUserInformationValidator = [
   async (req, res, next) => {
-    // Ensure username is present on request
     const username = req.user?.username;
     if (!username) {
-      return next(
-        new ApiError(400, "ERR_MISSING_USERNAME", "Username is required.")
-      );
+      return next(throwErr("MISSING_USERNAME")); // 400
     }
 
     try {
-      // Fetch user data from repository
       const user = await getUserByUserName(username);
       if (!user) {
-        return next(new ApiError(404, "ERR_USER_NOT_FOUND", "User not found."));
+        return next(throwErr("USER_NOT_FOUND")); // 404
       }
-      // Attach fetched data for controller use
+
       req.userData = user;
       next();
-    } catch (error) {
-      // Unexpected error
-      return next(
-        new ApiError(500, "ERR_INTERNAL_SERVER", "Internal Server Error.")
-      );
+    } catch (e) {
+      return next(throwErr("INTERNAL_SERVER")); // 500
     }
   },
 ];

@@ -1,9 +1,10 @@
 import { body, validationResult } from "express-validator";
-import ApiError from "../../../errors/ApiError.js";
 import VALIDATION_RULES from "../../validationConfig.js";
 import { getErrorParams } from "../../getErrorParams.js";
+import { throwErr } from "../../../errors/throwErr.js";
 
 export const registerValidator = [
+  /* ─────────── USERNAME ─────────── */
   body("username")
     .isLength({
       min: VALIDATION_RULES.USERNAME.MIN_LENGTH,
@@ -14,6 +15,7 @@ export const registerValidator = [
     .withMessage("ERR_USERNAME_INVALID_CHARS")
     .trim(),
 
+  /* ─────────── EMAIL ─────────── */
   body("email")
     .isEmail()
     .withMessage("ERR_INVALID_EMAIL")
@@ -21,6 +23,7 @@ export const registerValidator = [
     .withMessage("ERR_EMAIL_TOO_LONG")
     .normalizeEmail(),
 
+  /* ─────────── PASSWORD ─────────── */
   body("password")
     .isLength({
       min: VALIDATION_RULES.PASSWORD.MIN_LENGTH,
@@ -37,18 +40,16 @@ export const registerValidator = [
     .withMessage("ERR_PASSWORD_SPECIAL_CHAR")
     .trim(),
 
-  // Middleware obsługujący błędy walidacji
+  /* ─────────── obsługa błędów ─────────── */
   (req, res, next) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
-      const errors = result.array().map((error) => ({
-        field: error.param,
-        message: error.msg,
-        params: getErrorParams(error.msg),
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg, // „ERR_…”
+        params: getErrorParams(err.msg), // {min}/{max} itp.
       }));
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors)
-      );
+      return next(throwErr("VALIDATION", errors)); // ← KLUCZ z mapy ERRORS
     }
     next();
   },

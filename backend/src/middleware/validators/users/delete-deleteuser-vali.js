@@ -1,32 +1,36 @@
 import { param, validationResult } from "express-validator";
-import ApiError from "../../../errors/ApiError.js";
 import { getUserById } from "../../../repositories/user.repo.js";
+import { throwErr } from "../../../errors/throwErr.js";
+import { getErrorParams } from "../../getErrorParams.js";
 
 export const deleteUserValidator = [
-  // Sprawdzamy, czy parametr 'id' istnieje i jest dodatnią liczbą całkowitą mniejszą niż 1 000 000
+  /* ─────────── ID EXISTS & IS INT < 1_000_000 ─────────── */
   param("id")
     .exists({ checkFalsy: true })
-    .withMessage("User ID is required.")
+    .withMessage("ERR_USER_ID_REQUIRED")
     .isInt({ gt: 0, lt: 1000000 })
-    .withMessage("User ID must be a positive integer less than 1,000,000.")
+    .withMessage("ERR_USER_ID_INVALID")
     .toInt(),
 
-  // Sprawdzamy, czy użytkownik istnieje w bazie
+  /* ─────────── USER EXISTS IN DB ─────────── */
   param("id").custom(async (value) => {
     const user = await getUserById(value);
     if (!user) {
-      throw new Error("User not found.");
+      throw new Error("ERR_USER_NOT_FOUND");
     }
     return true;
   }),
 
-  // Middleware obsługujący błędy walidacji
+  /* ─────────── OBSŁUGA BŁĘDÓW WALIDACJI ─────────── */
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
-      );
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg, // np. "ERR_USER_ID_INVALID" lub "ERR_USER_NOT_FOUND"
+        params: getErrorParams(err.msg),
+      }));
+      return next(throwErr("VALIDATION", errors));
     }
     next();
   },

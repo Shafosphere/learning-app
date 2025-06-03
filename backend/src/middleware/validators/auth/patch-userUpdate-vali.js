@@ -4,7 +4,7 @@ import VALIDATION_RULES from "../../validationConfig.js";
 import { getErrorParams } from "../../getErrorParams.js";
 
 export const accountUpdateValidationRules = [
-  // Username - optional but must meet length and character requirements
+  /* ─────────── USERNAME ─────────── */
   body("username")
     .optional()
     .trim()
@@ -16,7 +16,7 @@ export const accountUpdateValidationRules = [
     .matches(VALIDATION_RULES.USERNAME.REGEX)
     .withMessage("ERR_USERNAME_INVALID_CHARS"),
 
-  // Email - optional but must be valid email and max length
+  /* ─────────── EMAIL ─────────── */
   body("email")
     .optional()
     .isEmail()
@@ -25,7 +25,7 @@ export const accountUpdateValidationRules = [
     .withMessage("ERR_EMAIL_TOO_LONG")
     .normalizeEmail(),
 
-  // Old password - optional but must meet length requirements
+  /* ─────────── OLD PASSWORD ─────────── */
   body("oldPass")
     .optional()
     .trim()
@@ -35,7 +35,7 @@ export const accountUpdateValidationRules = [
     })
     .withMessage("ERR_PASSWORD_LENGTH"),
 
-  // New password - optional but must be secure
+  /* ─────────── NEW PASSWORD ─────────── */
   body("newPass")
     .optional()
     .trim()
@@ -53,35 +53,33 @@ export const accountUpdateValidationRules = [
     .matches(VALIDATION_RULES.PASSWORD.REGEX.SPECIAL)
     .withMessage("ERR_PASSWORD_SPECIAL_CHAR"),
 
-  // Confirm password - optional, trim and must match newPass
+  /* ─────────── CONFIRM PASSWORD ─────────── */
   body("confirmPass")
     .optional()
     .trim()
     .custom((value, { req }) => {
       if (req.body.newPass && value !== req.body.newPass) {
-        throw new Error("ERR_PASSWORD_MISMATCH");
+        throw new Error("ERR_PASSWORD_MISMATCH"); // trafia do errors[]
       }
       return true;
     }),
 
-  // Avatar - optional but must be integer between 1 and 4
+  /* ─────────── AVATAR ─────────── */
   body("avatar")
     .optional()
     .isInt({ min: 1, max: 4 })
     .withMessage("ERR_INVALID_AVATAR"),
 
-  // Middleware obsługujący błędy walidacji
+  /* ─────────── OBSŁUGA BŁĘDÓW ─────────── */
   (req, res, next) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       const errors = result.array().map((err) => ({
         field: err.param,
-        message: err.msg,
+        message: err.msg, // np. "ERR_PASSWORD_MISMATCH"
         params: getErrorParams(err.msg),
       }));
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors)
-      );
+      return next(throwErr("VALIDATION", errors)); // klucz mapy ERRORS
     }
     next();
   },

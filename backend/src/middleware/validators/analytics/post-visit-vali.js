@@ -3,29 +3,30 @@ import ApiError from "../../../errors/ApiError.js";
 const allowedPageNames = ["flashcards", "vocabulary_C1", "vocabulary_B2"];
 
 export const pageNameValidator = [
+  /* ─────────── PAGE_NAME ─────────── */
   body("page_name")
     .exists({ checkFalsy: true })
-    .withMessage("Brakuje parametru 'page_name'.")
+    .withMessage("ERR_PAGE_NAME_MISSING")
     .isString()
-    .withMessage("'page_name' musi być ciągiem znaków.")
+    .withMessage("ERR_PAGE_NAME_NOT_STRING")
     .trim()
     .custom((value) => {
       if (!allowedPageNames.includes(value)) {
-        throw new Error(
-          `Nieprawidłowa wartość 'page_name'`
-        );
+        throw new Error("ERR_PAGE_NAME_INVALID");
       }
       return true;
     }),
 
-  // ten middleware zamiast res.status od razu robi next(ApiError)
+  /* ─────────── OBSŁUGA BŁĘDÓW ─────────── */
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      // tworzymy ApiError z details = tablica błędów
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
-      );
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg, // „ERR_…”
+        params: getErrorParams(err.msg), // (brak parametrów – zwróci {})
+      }));
+      return next(throwErr("VALIDATION", errors)); // klucz mapy ERRORS
     }
     next();
   },

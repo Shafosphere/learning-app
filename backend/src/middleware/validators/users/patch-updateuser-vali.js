@@ -1,9 +1,10 @@
 import { body, validationResult } from "express-validator";
-import ApiError from "../../../errors/ApiError.js";
 import VALIDATION_RULES from "../../validationConfig.js";
+import { throwErr } from "../../../errors/throwErr.js";
+import { getErrorParams } from "../../getErrorParams.js";
 
 export const updateUsersValidator = [
-  // 1) Zamieniamy obiekt keyed-by-ID na tablicę z polem id:
+  // 1) Zamieniamy obiekt keyed-by-ID na tablicę z polem id
   (req, res, next) => {
     const { editedRows } = req.body;
     if (
@@ -11,66 +12,59 @@ export const updateUsersValidator = [
       typeof editedRows === "object" &&
       !Array.isArray(editedRows)
     ) {
-      req.body.editedRows = Object.entries(editedRows).map(
-        ([key, row]) => ({ id: Number(key), ...row })
-      );
+      req.body.editedRows = Object.entries(editedRows).map(([key, row]) => ({
+        id: Number(key),
+        ...row,
+      }));
     }
     next();
   },
 
-  // 2) Sprawdzamy, czy teraz mamy tablicę i że nie jest pusta:
+  // 2) Sprawdzamy, czy teraz mamy tablicę i że nie jest pusta
   body("editedRows")
     .exists({ checkFalsy: true })
-    .withMessage("editedRows is required.")
+    .withMessage("ERR_EDITED_ROWS_REQUIRED")
     .isArray()
-    .withMessage("editedRows must be an array.")
+    .withMessage("ERR_EDITED_ROWS_NOT_ARRAY")
     .custom((arr) => arr.length > 0)
-    .withMessage("editedRows cannot be empty."),
+    .withMessage("ERR_EDITED_ROWS_EMPTY"),
 
   // 3) ID mamy już jako pole po normalizacji, więc walidujemy dalej:
-  body("editedRows.*.id")
-    .isInt({ gt: 0 })
-    .withMessage("User ID must be a positive integer."),
+  body("editedRows.*.id").isInt({ gt: 0 }).withMessage("ERR_USER_ID_INVALID"),
 
   body("editedRows.*.username")
     .exists()
-    .withMessage("Username is required.")
+    .withMessage("ERR_USERNAME_REQUIRED")
     .isString()
-    .withMessage("Username must be a string.")
+    .withMessage("ERR_USERNAME_NOT_STRING")
     .isLength({
       min: VALIDATION_RULES.USERNAME.MIN_LENGTH,
       max: VALIDATION_RULES.USERNAME.MAX_LENGTH,
     })
-    .withMessage(
-      `Username must be between ${VALIDATION_RULES.USERNAME.MIN_LENGTH} and ${VALIDATION_RULES.USERNAME.MAX_LENGTH} characters.`
-    )
+    .withMessage("ERR_USERNAME_LENGTH")
     .matches(VALIDATION_RULES.USERNAME.REGEX)
-    .withMessage(
-      "Username can only contain letters, numbers, and underscores."
-    ),
+    .withMessage("ERR_USERNAME_INVALID_CHARS"),
 
   body("editedRows.*.email")
     .exists()
-    .withMessage("Email is required.")
+    .withMessage("ERR_EMAIL_REQUIRED")
     .isEmail()
-    .withMessage("Invalid email format.")
+    .withMessage("ERR_INVALID_EMAIL_FORMAT")
     .isLength({ max: VALIDATION_RULES.EMAIL.MAX_LENGTH })
-    .withMessage(
-      `Email cannot be longer than ${VALIDATION_RULES.EMAIL.MAX_LENGTH} characters.`
-    )
+    .withMessage("ERR_EMAIL_TOO_LONG")
     .normalizeEmail(),
 
   body("editedRows.*.role")
     .exists()
-    .withMessage("Role is required.")
+    .withMessage("ERR_ROLE_REQUIRED")
     .isIn(["admin", "user", "moderator"])
-    .withMessage("Role must be 'admin', 'user' or 'moderator'."),
+    .withMessage("ERR_ROLE_INVALID"),
 
   body("editedRows.*.ban")
     .exists()
-    .withMessage("Ban status is required.")
+    .withMessage("ERR_BAN_REQUIRED")
     .isBoolean()
-    .withMessage("Ban must be true or false."),
+    .withMessage("ERR_BAN_INVALID"),
 
   body("editedRows.*.password")
     .optional()
@@ -78,25 +72,26 @@ export const updateUsersValidator = [
       min: VALIDATION_RULES.PASSWORD.MIN_LENGTH,
       max: VALIDATION_RULES.PASSWORD.MAX_LENGTH,
     })
-    .withMessage(
-      `Password must be between ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} and ${VALIDATION_RULES.PASSWORD.MAX_LENGTH} characters.`
-    )
+    .withMessage("ERR_PASSWORD_LENGTH")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.UPPER)
-    .withMessage("Password must contain at least one uppercase letter.")
+    .withMessage("ERR_PASSWORD_UPPERCASE")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.LOWER)
-    .withMessage("Password must contain at least one lowercase letter.")
+    .withMessage("ERR_PASSWORD_LOWERCASE")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.DIGIT)
-    .withMessage("Password must contain at least one number.")
+    .withMessage("ERR_PASSWORD_DIGIT")
     .matches(VALIDATION_RULES.PASSWORD.REGEX.SPECIAL)
-    .withMessage("Password must contain at least one special character."),
+    .withMessage("ERR_PASSWORD_SPECIAL_CHAR"),
 
-  // 4) Obsługa błędów:
+  // 4) Obsługa błędów
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
-      );
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg,
+        params: getErrorParams(err.msg),
+      }));
+      return next(throwErr("VALIDATION", errors));
     }
     next();
   },

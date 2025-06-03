@@ -1,31 +1,35 @@
 import { param, validationResult } from "express-validator";
-import ApiError from "../../../errors/ApiError.js";
 import { getReportById } from "../../../repositories/report.repo.js";
+import { throwErr } from "../../../errors/throwErr.js";
+import { getErrorParams } from "../../getErrorParams.js";
 
 export const deleteReportValidator = [
-  // Sprawdzamy, czy id istnieje i jest poprawną liczbą całkowitą
+  /* ─────────── REPORT ID EXISTS & IS INT ─────────── */
   param("id")
     .exists()
-    .withMessage("Report ID is required.")
+    .withMessage("ERR_REPORT_ID_REQUIRED")
     .isInt({ gt: 0 })
-    .withMessage("Report ID must be a positive integer."),
+    .withMessage("ERR_REPORT_ID_INVALID"),
 
-  // Sprawdzamy, czy raport istnieje w bazie
+  /* ─────────── REPORT EXISTS IN DB ─────────── */
   param("id").custom(async (value) => {
     const report = await getReportById(value);
     if (!report) {
-      throw new Error("Report not found.");
+      throw new Error("ERR_REPORT_NOT_FOUND");
     }
     return true;
   }),
 
-  // Middleware obsługujący błędy walidacji
+  /* ─────────── OBSŁUGA BŁĘDÓW WALIDACJI ─────────── */
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
-      );
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg, 
+        params: getErrorParams(err.msg),
+      }));
+      return next(throwErr("VALIDATION", errors)); // klucz mapy ERRORS
     }
     next();
   },

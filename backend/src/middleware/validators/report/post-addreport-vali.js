@@ -1,18 +1,13 @@
 import ApiError from "../../../errors/ApiError.js";
 import { sanitizeInput } from "../../sanitize-html.js";
+import { throwErr } from "../../../errors/throwErr.js";
 
 const authorizeAddReport = (req, res, next) => {
   const { reportType, word, description } = req.body;
 
   // 1. Walidacja reportType
   if (reportType !== "other" && reportType !== "word_issue") {
-    return next(
-      new ApiError(
-        400,
-        "ERR_INVALID_REPORT_TYPE",
-        "Invalid reportType. Allowed values are 'other' and 'word_issue'."
-      )
-    );
+    return next(throwErr("INVALID_REPORT_TYPE"));
   }
 
   // 2. Dla reportType === 'other' wymagany description
@@ -22,26 +17,14 @@ const authorizeAddReport = (req, res, next) => {
       typeof description !== "string" ||
       description.trim().length === 0
     ) {
-      return next(
-        new ApiError(
-          400,
-          "ERR_MISSING_DESCRIPTION",
-          "Description is required for reportType 'other'."
-        )
-      );
+      return next(throwErr("MISSING_DESCRIPTION"));
     }
   }
 
   // 3. Dla reportType === 'word_issue' wymagane word
   if (reportType === "word_issue") {
     if (!word || typeof word !== "string" || word.trim().length === 0) {
-      return next(
-        new ApiError(
-          400,
-          "ERR_MISSING_WORD",
-          "Word is required for reportType 'word_issue'."
-        )
-      );
+      return next(throwErr("MISSING_WORD"));
     }
   }
 
@@ -49,13 +32,7 @@ const authorizeAddReport = (req, res, next) => {
   if (description) {
     const sanitizedDescription = sanitizeInput(description);
     if (!sanitizedDescription) {
-      return next(
-        new ApiError(
-          400,
-          "ERR_INVALID_DESCRIPTION",
-          "Description cannot be empty after sanitization."
-        )
-      );
+      return next(throwErr("INVALID_DESCRIPTION"));
     }
     req.body.description = sanitizedDescription;
   }

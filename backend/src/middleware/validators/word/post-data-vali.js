@@ -1,49 +1,33 @@
 import ApiError from "../../../errors/ApiError.js";
+import { throwErr } from "../../../errors/throwErr.js";
+
 const authorizeData = (req, res, next) => {
   const { patchNumber, wordList } = req.body;
 
-  // Musi być przynajmniej jedno: patchNumber lub wordList
+  // 1. Musi być przynajmniej jedno: patchNumber lub wordList
   if (patchNumber === undefined && wordList === undefined) {
-    return next(
-      new ApiError(
-        403,
-        "ERR_MISSING_PARAMS",
-        "Access denied. Either patchNumber or wordList must be provided."
-      )
-    );
+    return next(throwErr("MISSING_PARAMS"));
   }
 
-  // Walidacja patchNumber: całkowity, 1–999999
+  // 2. Walidacja patchNumber: całkowity, 1–999999
   if (patchNumber !== undefined) {
     if (
       !Number.isInteger(patchNumber) ||
       patchNumber <= 0 ||
       patchNumber >= 1000000
     ) {
-      return next(
-        new ApiError(
-          400,
-          "ERR_INVALID_PATCH_NUMBER",
-          "Invalid patchNumber. It must be a positive integer between 1 and 999999."
-        )
-      );
+      return next(throwErr("INVALID_PATCH_NUMBER"));
     }
   }
 
-  // Walidacja wordList: niepusta tablica
+  // 3. Walidacja wordList: niepusta tablica
   if (wordList !== undefined) {
     if (!Array.isArray(wordList) || wordList.length === 0) {
-      return next(
-        new ApiError(
-          400,
-          "ERR_INVALID_WORD_LIST",
-          "Invalid wordList. It must be a non-empty array."
-        )
-      );
+      return next(throwErr("INVALID_WORD_LIST"));
     }
   }
 
-  // Przekaż sterowanie dalej
+  // 4. Przekaż sterowanie dalej
   next();
 };
 

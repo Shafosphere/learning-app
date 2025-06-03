@@ -1,57 +1,63 @@
 import { body, validationResult } from "express-validator";
-import ApiError from "../../../errors/ApiError.js";
+import { throwErr } from "../../../errors/throwErr.js";
+import { getErrorParams } from "../../getErrorParams.js";
 
 export const updateTranslationsValidator = [
-  // Sprawdzamy, czy w ciele żądania znajduje się obiekt "word"
+  /* ─────────── WORD OBJECT ─────────── */
   body("word")
     .exists({ checkFalsy: true })
-    .withMessage("Word object is required.")
+    .withMessage("ERR_WORD_OBJECT_REQUIRED")
     .isObject()
-    .withMessage("Word must be an object."),
+    .withMessage("ERR_WORD_NOT_OBJECT"),
 
-  // Sprawdzamy, czy obiekt "word" ma pole "translations" będące niepustą tablicą
+  /* ─────────── TRANSLATIONS ARRAY ─────────── */
   body("word.translations")
     .exists({ checkFalsy: true })
-    .withMessage("Translations data is required.")
+    .withMessage("ERR_TRANSLATIONS_REQUIRED")
     .isArray({ min: 1 })
-    .withMessage("Translations must be a non-empty array."),
+    .withMessage("ERR_TRANSLATIONS_NOT_ARRAY"),
 
-  // Dla każdego tłumaczenia sprawdzamy, czy są wymagane pola
+  /* ─────────── EACH TRANSLATION.TEXT ─────────── */
   body("word.translations.*.translation")
     .exists({ checkFalsy: true })
-    .withMessage("Each translation must include the translation text.")
+    .withMessage("ERR_TRANSLATION_TEXT_REQUIRED")
     .isString()
-    .withMessage("Translation text must be a string.")
+    .withMessage("ERR_TRANSLATION_TEXT_NOT_STRING")
     .trim(),
 
+  /* ─────────── EACH TRANSLATION.WORD_ID ─────────── */
   body("word.translations.*.word_id")
     .exists({ checkFalsy: true })
-    .withMessage("Each translation must include word_id.")
+    .withMessage("ERR_WORD_ID_REQUIRED")
     .isInt({ gt: 0 })
-    .withMessage("word_id must be a positive integer."),
+    .withMessage("ERR_WORD_ID_INVALID")
+    .toInt(),
 
+  /* ─────────── EACH TRANSLATION.LANGUAGE ─────────── */
   body("word.translations.*.language")
     .exists({ checkFalsy: true })
-    .withMessage("Each translation must include a language.")
+    .withMessage("ERR_LANGUAGE_REQUIRED")
     .isString()
-    .withMessage("Language must be a string.")
+    .withMessage("ERR_LANGUAGE_NOT_STRING")
     .trim(),
 
-  // Description jest opcjonalne, ale jeśli podane, musi być ciągiem znaków
+  /* ─────────── TRANSLATION.DESCRIPTION ─────────── */
   body("word.translations.*.description")
     .optional()
     .isString()
-    .withMessage("Description must be a string.")
+    .withMessage("ERR_DESCRIPTION_NOT_STRING")
     .trim(),
 
-  // Middleware obsługujący błędy walidacji
+  /* ─────────── HANDLE VALIDATION ERRORS ─────────── */
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      // Rzucamy ApiError z kodem walidacji i szczegółami
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
-      );
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg, // e.g. "ERR_TRANSLATION_TEXT_NOT_STRING"
+        params: getErrorParams(err.msg),
+      }));
+      return next(throwErr("VALIDATION", errors));
     }
     next();
   },

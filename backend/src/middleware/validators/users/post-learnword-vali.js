@@ -1,32 +1,36 @@
 import { body, validationResult } from "express-validator";
-import ApiError from "../../../errors/ApiError.js";
 import { searchWordById } from "../../../repositories/word.repo.js";
+import { throwErr } from "../../../errors/throwErr.js";
+import { getErrorParams } from "../../getErrorParams.js";
 
 export const learnWordValidator = [
-  // Sprawdzamy, czy wordId istnieje i jest poprawną liczbą całkowitą
+  /* ─────────── WORD ID ─────────── */
   body("wordId")
     .exists({ checkFalsy: true })
-    .withMessage("Word ID is required.")
+    .withMessage("ERR_WORD_ID_REQUIRED")
     .isInt({ gt: 0 })
-    .withMessage("Word ID must be a positive integer.")
+    .withMessage("ERR_WORD_ID_INVALID")
     .toInt(),
 
-  // Sprawdzamy, czy słowo istnieje w bazie
+  /* ─────────── WORD EXISTS ─────────── */
   body("wordId").custom(async (value) => {
     const word = await searchWordById(value);
     if (!word) {
-      throw new Error("Word not found.");
+      throw new Error("ERR_WORD_NOT_FOUND");
     }
     return true;
   }),
 
-  // Middleware obsługujący błędy walidacji
+  /* ─────────── HANDLE VALIDATION ERRORS ─────────── */
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
-      );
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg, // np. "ERR_WORD_ID_INVALID" lub "ERR_WORD_NOT_FOUND"
+        params: getErrorParams(err.msg),
+      }));
+      return next(throwErr("VALIDATION", errors));
     }
     next();
   },

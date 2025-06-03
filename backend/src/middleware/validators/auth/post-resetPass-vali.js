@@ -1,13 +1,13 @@
 import { body, validationResult } from "express-validator";
-import ApiError from "../../../errors/ApiError.js";
 import VALIDATION_RULES from "../../validationConfig.js";
 import { getErrorParams } from "../../getErrorParams.js";
+import { throwErr } from "../../../errors/throwErr.js";
 
 export const resetPasswordValidationRules = [
-  // Token resetujący jest wymagany
+  /* ─────────── TOKEN ─────────── */
   body("token").notEmpty().withMessage("ERR_RESET_TOKEN_REQUIRED"),
 
-  // Nowe hasło – silna walidacja
+  /* ─────────── NEW PASSWORD ─────────── */
   body("password")
     .isLength({
       min: VALIDATION_RULES.PASSWORD.MIN_LENGTH,
@@ -24,19 +24,16 @@ export const resetPasswordValidationRules = [
     .withMessage("ERR_RESET_PASSWORD_SPECIAL")
     .trim(),
 
-  // Middleware obsługujący błędy walidacji
+  /* ─────────── OBSŁUGA BŁĘDÓW ─────────── */
   (req, res, next) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
-      // Używamy getErrorParams, aby uzyskać dodatkowe dane do każdego błędu
-      const errors = result.array().map((error) => ({
-        field: error.param,
-        message: error.msg,
-        params: getErrorParams(error.msg),
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg, // „ERR_…”
+        params: getErrorParams(err.msg),
       }));
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors)
-      );
+      return next(throwErr("VALIDATION", errors)); // klucz mapy ERRORS
     }
     next();
   },

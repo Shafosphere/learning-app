@@ -25,12 +25,12 @@ export const loginValidator = [
   (req, res, next) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
-      const errors = result.array().map(err => ({
-        field:   err.param,
-        message: err.msg,           // np. "ERR_LOGIN_USERNAME_LENGTH"
-        params:  getErrorParams(err.msg),
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg,
+        params: getErrorParams(err.msg),
       }));
-      return next(throwErr("VALIDATION", errors));   // ← KLUCZ, nie code
+      return next(throwErr("VALIDATION", errors));
     }
     next();
   },

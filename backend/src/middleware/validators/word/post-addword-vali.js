@@ -1,54 +1,66 @@
 import { body, validationResult } from "express-validator";
-import ApiError from "../../../errors/ApiError.js";
+import { throwErr } from "../../../errors/throwErr.js";
+import { getErrorParams } from "../../getErrorParams.js";
 
 export const addWordValidator = [
-  // Sprawdzamy, czy w ciele żądania znajduje się obiekt "word"
+  /* ─────────── WORD OBJECT ─────────── */
   body("word")
     .exists({ checkFalsy: true })
-    .withMessage("Word object is required.")
+    .withMessage("ERR_WORD_OBJECT_REQUIRED")
     .isObject()
-    .withMessage("Word must be an object."),
+    .withMessage("ERR_WORD_NOT_OBJECT"),
 
-  // Sprawdzamy, czy "translations" istnieje i jest tablicą
+  /* ─────────── TRANSLATIONS ARRAY ─────────── */
   body("word.translations")
     .exists({ checkFalsy: true })
-    .withMessage("Translations data is missing.")
+    .withMessage("ERR_TRANSLATIONS_REQUIRED")
     .isArray({ min: 1 })
-    .withMessage("Translations must be a non-empty array."),
+    .withMessage("ERR_TRANSLATIONS_NOT_ARRAY"),
 
-  // Dla każdego tłumaczenia sprawdzamy, czy są właściwe pola
+  /* ─── EACH TRANSLATION.LANGUAGE ─── */
   body("word.translations.*.language")
     .exists({ checkFalsy: true })
-    .withMessage("Each translation must have a language.")
-    .isString(),
+    .withMessage("ERR_TRANSLATION_LANGUAGE_REQUIRED")
+    .isString()
+    .withMessage("ERR_TRANSLATION_LANGUAGE_NOT_STRING")
+    .trim(),
+
+  /* ─── EACH TRANSLATION.TEXT ─── */
   body("word.translations.*.translation")
     .exists({ checkFalsy: true })
-    .withMessage("Each translation must have a translation text.")
-    .isString(),
+    .withMessage("ERR_TRANSLATION_TEXT_REQUIRED")
+    .isString()
+    .withMessage("ERR_TRANSLATION_TEXT_NOT_STRING")
+    .trim(),
 
-  // Sprawdzamy, czy w tłumaczeniach znajduje się tłumaczenie angielskie
+  /* ─── ENGLISH TRANSLATION REQUIRED ─── */
   body("word.translations").custom((translations) => {
-    const hasEnglish = translations.some((t) => t.language === "en");
+    const hasEnglish =
+      Array.isArray(translations) &&
+      translations.some((t) => t.language === "en");
     if (!hasEnglish) {
-      throw new Error("English translation is required.");
+      throw new Error("ERR_ENGLISH_TRANSLATION_REQUIRED");
     }
     return true;
   }),
 
-  // Walidacja poziomu słowa
+  /* ─────────── WORD LEVEL ─────────── */
   body("word.level")
     .exists({ checkFalsy: true })
-    .withMessage("Word level is required.")
+    .withMessage("ERR_WORD_LEVEL_REQUIRED")
     .isIn(["B2", "C1"])
-    .withMessage("Word level must be either 'B2' or 'C1'."),
+    .withMessage("ERR_WORD_LEVEL_INVALID"),
 
-  // Middleware obsługujący błędy walidacji
+  /* ─────────── HANDLE VALIDATION ERRORS ─────────── */
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
-      );
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg, // e.g. "ERR_WORD_NOT_OBJECT"
+        params: getErrorParams(err.msg),
+      }));
+      return next(throwErr("VALIDATION", errors));
     }
     next();
   },

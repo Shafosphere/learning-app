@@ -1,66 +1,75 @@
 import { body, validationResult } from "express-validator";
-import ApiError from "../../../errors/ApiError.js";
 import { searchWordById } from "../../../repositories/word.repo.js";
+import { throwErr } from "../../../errors/throwErr.js";
+import { getErrorParams } from "../../getErrorParams.js";
 
 export const updateReportValidator = [
-  // Sprawdzamy, czy `report` istnieje i jest obiektem
+  /* ─────────── REPORT OBJECT ─────────── */
   body("report")
     .exists({ checkFalsy: true })
-    .withMessage("Report object is required.")
+    .withMessage("ERR_REPORT_OBJECT_REQUIRED")
     .isObject()
-    .withMessage("Report must be an object."),
+    .withMessage("ERR_REPORT_OBJECT_NOT_OBJECT"),
 
-  // Sprawdzamy, czy `report.translations` to niepusta tablica
+  /* ─────────── TRANSLATIONS ARRAY ─────────── */
   body("report.translations")
     .exists({ checkFalsy: true })
-    .withMessage("Translations array is required.")
+    .withMessage("ERR_TRANSLATIONS_REQUIRED")
     .isArray({ min: 1 })
-    .withMessage("Translations must be a non-empty array."),
+    .withMessage("ERR_TRANSLATIONS_NOT_ARRAY"),
 
-  // Sprawdzamy każde pole w `translations`
+  /* ─────────── EACH TRANSLATION.TEXT ─────────── */
   body("report.translations.*.translation")
     .exists({ checkFalsy: true })
-    .withMessage("Each translation must include text.")
+    .withMessage("ERR_TRANSLATION_TEXT_REQUIRED")
     .isString()
-    .withMessage("Translation must be a string.")
+    .withMessage("ERR_TRANSLATION_TEXT_NOT_STRING")
     .isLength({ max: 500 })
-    .withMessage("Translation cannot exceed 500 characters.")
+    .withMessage("ERR_TRANSLATION_TEXT_TOO_LONG")
     .trim(),
 
+  /* ─────────── EACH TRANSLATION.DESCRIPTION ─────────── */
   body("report.translations.*.description")
     .optional()
     .isString()
-    .withMessage("Description must be a string.")
+    .withMessage("ERR_DESCRIPTION_NOT_STRING")
     .isLength({ max: 1000 })
-    .withMessage("Description cannot exceed 1000 characters.")
+    .withMessage("ERR_DESCRIPTION_TOO_LONG")
     .trim(),
 
+  /* ─────────── EACH TRANSLATION.WORD_ID ─────────── */
   body("report.translations.*.word_id")
     .exists()
-    .withMessage("word_id is required.")
+    .withMessage("ERR_WORD_ID_REQUIRED")
     .isInt({ gt: 0 })
-    .withMessage("word_id must be a positive integer."),
+    .withMessage("ERR_WORD_ID_INVALID"),
 
+  /* ─────────── EACH TRANSLATION.LANGUAGE ─────────── */
   body("report.translations.*.language")
     .exists()
-    .withMessage("Language is required.")
+    .withMessage("ERR_LANGUAGE_REQUIRED")
     .isIn(["pl", "en"])
-    .withMessage("Language must be 'pl' or 'en'."),
+    .withMessage("ERR_LANGUAGE_INVALID"),
 
-  // Opcjonalne: sprawdzamy, czy `word_id` istnieje w bazie
+  /* ─────────── WORD_ID EXISTS IN DB ─────────── */
   body("report.translations.*.word_id").custom(async (value) => {
     const word = await searchWordById(value);
-    if (!word) throw new Error("word_id not found in database.");
+    if (!word) {
+      throw new Error("ERR_WORD_ID_NOT_FOUND");
+    }
     return true;
   }),
 
-  // Middleware obsługujący błędy walidacji
+  /* ─────────── HANDLE VALIDATION ERRORS ─────────── */
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(
-        new ApiError(400, "ERR_VALIDATION", "Validation error", errors.array())
-      );
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      const errors = result.array().map((err) => ({
+        field: err.param,
+        message: err.msg,
+        params: getErrorParams(err.msg),
+      }));
+      return next(throwErr("VALIDATION", errors));
     }
     next();
   },
