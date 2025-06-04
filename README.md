@@ -344,160 +344,188 @@ The full endpoint list lives in **API\_endpoints.md**
 
 ## 8. Error Handling
 
-### 8.1 Goal
+### 8.1 Objectives and Design Principles
 
-Provide a consistent, debuggable, and i18n‑ready way of conveying errors between **backend (Express)** and **frontend (React + Axios)**.
+1. **Centralised error handling**
+
+   * All backend errors are thrown via dedicated classes and helpers (`ApiError.js`, `throwErr.js`, `errorCodes.js`, `catchAsync.js`, `errorHandler.js`).
+   * The frontend (file `api.jsx`) intercepts responses from the server and displays them to the user in a unified way via pop‑ups.
+
+2. **Error codes and where to find them**
+
+   * Every possible error is defined in the `ERRORS` object in **`errorCodes.js`** and contains three fields: `code`, `status`, and `message`.
+   * This lets the frontend determine whether the incoming text is a translation key (`ERR_…`) or a plain human‑readable message.
+   * New entries can be added to `ERRORS`, while message translations live in localisation files (folder `intl`).
+
+3. **Throwing exceptions**
+
+   * **`ApiError.js`** creates an error object containing an HTTP status (`statusCode`), error code (`code`), message (`message`), and optional extra details (`details`).
+   * **`throwErr.js`** accepts a key from `ERRORS` (and optional details) and throws a fully‑formed `ApiError` instance.
+   * **`catchAsync.js`** is middleware for Express (or any framework) that captures errors thrown inside asynchronous controllers and forwards them to the central error handler.
+   * **Central error‑handling middleware** (`errorHandler.js`) sends a consistent JSON response to the client.
+
+4. **Presenting errors on the frontend**
+
+   * `api.jsx` defines Axios response interceptors.
+   * When a response contains an error code, the interceptor:
+
+     1. Reads `code` and `message` from the server payload.
+     2. If `code` starts with `ERR_`, it is treated as a translation key and passed to `translate(code, rawMsg, details)`.
+     3. Otherwise the plain `message` string is displayed.
+     4. The pop‑up’s visual style is chosen by HTTP status (≥ 500 → **warning**, < 500 → **negative**).
+   * The helper `showPopup({ message, emotion, duration })` displays the error to the user.
 
 ---
 
-### 8.2 Backend – how an error is created
+### 8.2 Backend – Defining & Throwing Errors
 
-| Element            | File                             | Role                                                                                                                                                                  |
-| ------------------ | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`ApiError`**     | `src/errors/ApiError.js`         | Base class for all our errors (extends `Error`). Accepts **`statusCode, code, message, details?`**.                                                                   |
-| **`catchAsync`**   | `src/utils/catchAsync.js`        | Higher‑order function that wraps controllers so `async/await` exceptions are forwarded to `next()` as an `ApiError`.                                                  |
-| **Global 404**     | `app.js`                         | When no route matches → `next(new ApiError(404, 'ERR_NOT_FOUND', 'Route not found'))`.                                                                                |
-| **`errorHandler`** | `src/middleware/errorHandler.js` | Last middleware in the stack. Turns any `ApiError` into a JSON response (see 8.3), logs the stack trace, and maps unexpected exceptions to `ERR_UNKNOWN_ERROR (500)`. |
+#### 1. `ApiError.js`
 
 ```js
-// example use in a controller
-export const login = catchAsync(async (req, res) => {
-  if (!req.body.email) {
-    throw new ApiError(400, 'ERR_VALIDATION', 'ERR_VALIDATION', [
-      { field: 'email', msg: 'Email is required', value: null }
-    ]);
+// src/errors/ApiError.js
+export default class ApiError extends Error {
+  constructor(statusCode, code, message, details = null) {
+    super(message);
+    this.statusCode = statusCode;
+    this.code       = code;
+    this.details    = details; // optional extra info (e.g. validation array)
   }
-  ...
-});
-```
-
----
-
-### 8.3 Standard response format
-
-```jsonc
-{
-  "success": false,          // always false for errors
-  "code": "ERR_VALIDATION",  // fixed key starting with ERR_
-  "message": "ERR_VALIDATION", // code or ready‑to‑show string
-  "details": [...]           // optional array/object with extra info
 }
 ```
 
-**Examples**
+*Purpose*: Provide a lightweight extension of the native `Error` class that carries an HTTP status code, a unique error code, a user‑facing message, and optional details to be returned in the JSON response.
 
-*401 – missing token*
-
-```json
-{
-  "success": false,
-  "code": "ERR_TOKEN_NOT_FOUND",
-  "message": "ERR_TOKEN_NOT_FOUND"
-}
-```
-
-*400 – validation error*
-
-```json
-{
-  "success": false,
-  "code": "ERR_VALIDATION",
-  "message": "ERR_VALIDATION",
-  "details": [
-    { "field": "email", "msg": "Email is required", "value": null }
-  ]
-}
-```
-
----
-
-### 8.4 Error code glossary
-
-| Code                       | HTTP | Meaning                  | Default front‑end action                  |
-| -------------------------- | ---- | ------------------------ | ----------------------------------------- |
-| **ERR\_NOT\_FOUND**        | 404  | Route/resource not found | Popup "Route not found"                   |
-| **ERR\_TOKEN\_NOT\_FOUND** | 401  | Missing JWT              | Interceptor rejects → login redirect      |
-| **ERR\_TOKEN\_EXPIRED**    | 401  | Expired JWT              | Refresh token / re‑login                  |
-| **ERR\_VALIDATION**        | 400  | Invalid input            | First item in `details` is shown          |
-| **ERR\_UNKNOWN\_ERROR**    | 500  | Unhandled server error   | Generic popup "An unknown error occurred" |
-
-> **Tip:** The full list is kept in `errors/codes.js`. Remember to add new entries and translations in `en.json` / `pl.json`.
-
----
-
-### 8.5 Front‑end interceptor (Axios)
+#### 2. `errorCodes.js`
 
 ```js
-import axios from 'axios';
-import { showPopup } from './popupManager';
-import { translate } from './intlManager';
+// src/errors/errorCodes.js
+export const ERRORS = {
+  INVALID_CREDENTIALS: {
+    code: "ERR_INVALID_CREDENTIALS",
+    status: 401,
+    message: "Invalid credentials",
+  },
+  TOKEN_NOT_FOUND: {
+    code: "ERR_TOKEN_NOT_FOUND",
+    status: 401,
+    message: "Token not found",
+  },
+  // ... more error codes ...
+};
+```
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
-  withCredentials: true,
-});
+*Purpose*: Provide a single source of truth for all error codes, their default messages, and HTTP status codes.
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const status    = error.response?.status;
-    const errorCode = error.response?.data?.code;
+#### 3. `throwErr.js`
 
-    // 1) Special path for auth errors
-    if (errorCode === 'ERR_TOKEN_NOT_FOUND') {
-      return Promise.reject(error); // login page takes over
-    }
+```js
+// src/errors/throwErr.js
+import ApiError from "./ApiError.js";
+import { ERRORS } from "./errorCodes.js";
 
-    // 2) Defaults
-    let rawMsg = error.response?.data?.message || 'ERR_UNKNOWN_ERROR';
-    let params = {};
+/** Throws an ApiError based on a key from ERRORS */
+export function throwErr(key, details) {
+  const def = ERRORS[key];
+  if (!def) {
+    // Fallback: unknown key
+    throw new ApiError(500, "ERR_UNDEFINED", `Undefined error key: ${key}`);
+  }
+  throw new ApiError(def.status, def.code, def.message, details);
+}
+```
 
-    // 3) Validation – pick first item
-    const list = error.response?.data?.details || error.response?.data?.errors;
-    if (status === 400 && Array.isArray(list) && list.length) {
-      rawMsg = list[0].message || list[0].msg || rawMsg;
-      params = list[0].params || {};
-    }
+*Purpose*: Simplify throwing typed errors in controllers without repeating boilerplate.
 
-    // 4) i18n
-    const finalMsg = rawMsg.startsWith('ERR_')
-      ? translate(rawMsg, 'An unknown error occurred', params)
-      : rawMsg;
+#### 4. `catchAsync.js`
 
-    // 5) Popup
+```js
+// src/errors/catchAsync.js
+export default (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+```
+
+*Purpose*: Allow writing `async/await` controllers without manual `try/catch` blocks.
+
+#### 5. `errorHandler.js`
+
+```js
+// src/middleware/errorHandler.js
+export default function errorHandler(err, req, res, next) {
+  console.error(err);
+
+  res.status(err.statusCode || 500).json({
+    code: err.code || "ERR_SERVER",
+    message: err.message || "Unknown error.",
+    errors: err.details || undefined,
+  });
+}
+```
+
+*Purpose*: Centrally capture all errors and return a uniform JSON payload containing the error code, message, and (optional) details.
+
+### 8.3 Frontend – Handling Errors in `api.jsx`
+
+File `api.jsx` is the single place where we configure a global **Axios** instance and attach response interceptors. Every HTTP request made by the UI therefore shares the same error‑handling logic.
+
+#### Key components
+
+1. **Client configuration**
+
+   ```js
+   import axios from "axios";
+
+   export const api = axios.create({
+     baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
+     withCredentials: true,
+   });
+   ```
+
+   *Base URL* is read from an environment variable, and credentials (cookies) are sent automatically.
+
+2. **Response interceptor**
+
+   ```js
+   api.interceptors.response.use(
+     (response) => response,
+     (error) => {
+       const { status, data } = error.response ?? {};
+       const { code, message, errors: list = [] } = data ?? {};
+
+       // Translation, logging, and pop‑up display happen here.
+       return Promise.reject(error);
+     }
+   );
+   ```
+
+   * Runs for *every* HTTP call.
+   * Detects error codes beginning with `ERR_`.
+   * Also processes validation error arrays (`errors`) returned by the backend.
+
+3. **Translation & presentation**
+
+   * `translate(code, rawMsg, details)` maps the error code to a user‑friendly string using the localisation files.
+   * The user sees the message via:
+   ```js
     showPopup({
       message: finalMsg,
-      emotion: status >= 500 ? 'warning' : 'negative',
+      emotion: status >= 500 ? "warning" : "negative",
       duration: 5000,
-    });
+      });
+    ```
 
-    return Promise.reject(error);
-  }
-);
+4. **Propagating errors**
+   After displaying the pop‑up, the interceptor returns `Promise.reject(error)` so React components can still react (e.g. redirect to the login page on 401).
 
-export default api;
-```
+Thanks to this centralisation, UI components stay free of repetitive HTTP‑error boilerplate—developers just call `api.get(...)`, `api.post(...)`, and all errors are intercepted and surfaced consistently.
 
-**Flow**
+### 8.4 Summary
 
-1. 2xx responses pass through untouched.
-2. On error, read `status`, `code`, `message`, `details`.
-3. `ERR_TOKEN_NOT_FOUND` hands control to routing (logout / redirect).
-4. On 400 validation, the first detail item overrides `message`.
-5. If `message` starts with `ERR_`, it is passed to `translate()` and returned as UI‑language text.
-6. Every error triggers a popup; `status >= 500` uses the "warning" emotion.
+With this system:
 
----
-
-### 8.6 Checklist – adding a new error
-
-1. Add the `ERR_…` constant in `errors/codes.js`.
-2. Throw `new ApiError(...)` in a controller/service.
-3. Add translations to `pl.json` and `en.json`.
-4. Update the table in section 8.4.
-
-> Thanks to this centralised approach, reporting and displaying errors is **consistent** and **bilingual**, and debugging boils down to searching for a single `ERR_…` code. 🎉
-
+* **Single source of truth** – all error codes live in `errorCodes.js`.
+* **Unified backend layer** – errors are thrown through `ApiError` and `throwErr`, caught by `catchAsync`, and formatted by `errorHandler`.
+* **Unified frontend layer** – the Axios interceptor translates and shows human‑readable pop‑ups.
 
 ## 9. Validation & Security
 

@@ -1,4 +1,9 @@
 export const ERRORS = {
+  NOT_FOUND: {
+    code: "ERR_NOT_FOUND",
+    status: 404,
+    message: "Route not found",
+  },
   INVALID_CREDENTIALS: {
     code: "ERR_INVALID_CREDENTIALS",
     status: 401,
@@ -6,8 +11,18 @@ export const ERRORS = {
   },
   TOKEN_NOT_FOUND: {
     code: "ERR_TOKEN_NOT_FOUND",
-    status: 401,
+    status: 403,
     message: "Token not found",
+  },
+  INVALID_TOKEN: {
+    code: "ERR_INVALID_TOKEN",
+    status: 403,
+    message: "Invalid token",
+  },
+  USER_NOT_ADMIN: {
+    code: "ERR_USER_NOT_ADMIN",
+    status: 403,
+    message: "User is not an admin",
   },
   USER_EXISTS: {
     code: "ERR_USER_EXISTS",

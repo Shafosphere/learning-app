@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import ApiError from "./errors/ApiError.js";
+import { throwErr } from "./errors/throwErr.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 import reportRoutes from "./routes/reportRoutes.js";
@@ -45,10 +45,10 @@ app.use("/analytics", analyticsRoutes);
 
 // 404 – gdy żaden router nie złapie ścieżki
 app.use((req, res, next) => {
-  next(new ApiError(404, 'ERR_NOT_FOUND', 'Route not found'));
+  next(throwErr("NOT_FOUND"));
 });
 
-// centralny handler – **must be last**
+// centralny handler
 app.use(errorHandler);
 
 // Serwujemy frontend

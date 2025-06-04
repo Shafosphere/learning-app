@@ -46,7 +46,7 @@ router.post(
   authenticateToken,
   getUserInformationValidator,
   catchAsync(userInformation)
-);
+); 
 
 router.get("/requirements", catchAsync(getRequirements));
 
