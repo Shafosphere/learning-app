@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../utils/api";
-import ConfirmWindow from "../../confirm/confirm";
-import PinWindow from "../../pin/pin";
-import MyButton from "../../button/button";
 import Block from "./block";
 import VisitChart from "./chartvisits.jsx";
 import UserChart from "./chartusers.jsx";
@@ -11,40 +8,6 @@ import "./panel-main.css";
 // Dashboard main panel showing statistics and charts, with patch regeneration protected by PIN
 export default function MainPanel() {
   const [data, setData] = useState({});
-
-  // Confirmation dialog state
-  const [confirmMessage, setConfirmMessage] = useState("");
-  const [confirmCallback, setConfirmCallback] = useState(null);
-
-  const handleConfirmClose = (result) => {
-    if (result && confirmCallback) {
-      confirmCallback();
-    }
-    setConfirmMessage("");
-    setConfirmCallback(null);
-  };
-
-  function showConfirm(message, callback) {
-    setConfirmMessage(message);
-    setConfirmCallback(() => callback);
-  }
-
-  // PIN entry modal state
-  const [isPinVisible, setIsPinVisible] = useState(false);
-  const [pinCallback, setPinCallback] = useState(null);
-
-  const handlePinClose = (pin) => {
-    if (pinCallback) {
-      pinCallback(pin);
-    }
-    setIsPinVisible(false);
-    setPinCallback(null);
-  };
-
-  function showPin(callback) {
-    setIsPinVisible(true);
-    setPinCallback(() => callback);
-  }
 
   // Fetch global admin data on mount
   useEffect(() => {
@@ -62,34 +25,6 @@ export default function MainPanel() {
     }
     getData();
   }, []);
-
-  // Trigger patch regeneration with confirmation and PIN verification
-  function handleGeneratePatches() {
-    showConfirm("Do you want to generate new patch values?", () => {
-      showPin(async (pin) => {
-        if (pin === null) {
-          // User cancelled PIN entry
-          return;
-        }
-        try {
-          const response = await api.post("/admin/generatepatch", { pin });
-          if (response.data.success) {
-            alert(response.data.message || "Patches generated successfully.");
-          } else {
-            alert(
-              response.data.message || "There was an error generating patches."
-            );
-          }
-        } catch (error) {
-          console.error("Error during patch generation:", error);
-          const msg =
-            error.response?.data?.message ||
-            "An error occurred while generating patches.";
-          alert(msg);
-        }
-      });
-    });
-  }
 
   return (
     <>
@@ -156,23 +91,6 @@ export default function MainPanel() {
           {/* Additional chart placeholder */}
         </div>
       </div>
-
-      {/* Confirmation modal for actions */}
-      {confirmMessage && (
-        <ConfirmWindow message={confirmMessage} onClose={handleConfirmClose} />
-      )}
-
-      {/* PIN entry modal for secure actions */}
-      {isPinVisible && <PinWindow onClose={handlePinClose} />}
-
-      {/* Button to trigger patch regeneration */}
-      {/* <div className="generate-patch-button">
-        <MyButton
-          message="Generate Patches"
-          color="blue"
-          onClick={handleGeneratePatches}
-        />
-      </div> */}
     </>
   );
 }

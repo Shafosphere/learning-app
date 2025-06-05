@@ -1,35 +1,38 @@
-.container-adminsidebar{
-    display: flex;
-    flex-direction: column;
-    background-color: var(--secondBackground);
-    height: 100%;
-    width: 12.5rem;
-    flex: 0 0 12.5rem;
-    padding: 2rem 0rem 2rem 0rem;
+.container-adminsidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--secondBackground);
+  height: 100%;
+  width: 12.5rem;
+  flex: 0 0 12.5rem;
+  padding: 2rem 0rem 2rem 0rem;
 }
 .plate {
-    display: flex;
-    flex-direction: row;
-    color: var(--headline);
-    gap: 1.5rem;
-    padding: 0.75rem 0.5rem 0.75rem 2rem;
+  display: flex;
+  flex-direction: row;
+  color: var(--headline);
+  gap: 1.5rem;
+  padding: 0.75rem 0.5rem 0.75rem 2rem;
 }
-.plate:hover{
-    background-color: var(--border);
-    cursor: pointer;
+.plate:hover {
+  background-color: var(--border);
+  cursor: pointer;
 }
-.plate:active{
-    scale: 105%;
+.plate:active {
+  scale: 105%;
 }
 
-.plate-icon{
-    font-size: 40px;
-    display: flex;
+.plate-icon {
+  font-size: 40px;
+  display: flex;
 }
-.plate-title{
-    text-transform: uppercase;
-    font-weight: 800;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.plate-title {
+  text-transform: uppercase;
+  font-weight: 800;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.reshuffle {
+  background-color: var(--tertiary);
 }

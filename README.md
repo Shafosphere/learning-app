@@ -539,3 +539,7 @@ With this system:
 * **Jest** + **Supertest** – API tests (login, word CRUD, ...).
 * Script: `npm test`.
 * `TODO`: describe `tests/` folder structure and show an example test.
+
+## 10. Installation
+
+The full Installation in **installation.md**
