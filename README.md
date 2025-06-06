@@ -126,6 +126,8 @@ TODO wygenerowac gifa z wynikami
 
 ## 5.3 Arena
 
+Competitive online mode – the server assigns words based on the current rating (0 – 3 000 pts). Each answer instantly updates the score, and a chart visualises the trend.
+
 ### Access
 
 * **Logged‑in users only.** Guests are redirected to the login page.
