@@ -204,9 +204,165 @@ Change e‑mail, nickname, password and one of four avatars (used in leaderboard
 
 ![Account Settings Demo](./gifs/accsettings.gif)
 
+# 6. Other Important Components
+
+## 6.1 Popup
+
+### Overview
+
+- **PopupProvider** wraps the app and supplies a `PopupContext` with `setPopup`.
+    
+- **NewPopup** renders the current message in a portal attached to `#portal-root`.
+    
+- **popupManager.js** exposes `showPopup()` so components and utilities can trigger popups without importing the context.
+    
+
+### Usage
+
+1. Import and call `showPopup()` with a message and optional options:
+    
+
+```js
+import { showPopup } from "./utils/popupManager";
+
+showPopup({
+  message: "Saved successfully!",
+  emotion: "positive",   // "positive", "negative", "warning" or "default"
+  duration: 3000          // milliseconds
+});
+```
+
+2. Inside the provider, `NewPopup` automatically hides after the **duration** and calls `onClose` to clear the message. When sounds are enabled in **Settings**, an audio cue matching the emotion plays.
+    
+3. If the message string begins with `ERR_`, React‑Intl looks up the translation key and renders the localized text.
+    
+
+The popup system provides consistent user feedback across the application, including API error handling and form validation.
+
+## 6.2 ProgressBar
+
+The **ProgressBar** component renders a graphical indicator of completion. It accepts three props:
+
+1. **vertical** – boolean (default `false`). When `true`, the bar fills **top‑to‑bottom**; otherwise **left‑to‑right**.
+    
+2. **percent** – number (0 – 100) representing the fill percentage. Together with `vertical`, it controls the gradient direction:
+    
+
+```jsx
+style={{
+  // Use a CSS gradient to fill the bar up to `percent`
+  "--progress-gradient": vertical
+    ? `linear-gradient(to top, var(--highlight) ${percent}%, var(--secondary) ${percent}%)`
+    : `linear-gradient(to right, var(--highlight) ${percent}%, var(--secondary) ${percent}%)`,
+}}
+```
+
+3. **text** – optional label. Rendered next to the bar only when provided and styled per orientation:
+    
+
+```jsx
+<div className={`progress-container ${vertical ? "progress-container-vertical" : ""}`}>
+  {text && (
+    <span className={`progress-text ${vertical ? "progress-text-vertical" : ""}`}>{text}</span>
+  )}
+</div>
+```
+
+## 6.3 Confetti
+
+An overlay emits small confetti pieces to celebrate milestones. It covers the viewport but ignores pointer events.
+
+### Implementation Details
+
+- Located in `frontend/src/components/confetti/confetti.jsx` with styles in `confetti.css`.
+    
+- When `generateConfetti` is `true`, 20 `<div class="confetti">` elements spawn every 300 ms:
+    
+
+```jsx
+const total = 20;
+if (generateConfetti) {
+  interval = setInterval(() => {
+    const newConfetti = Array.from({ length: total }, (_, i) => <div className="confetti" key={i} />);
+    setConfettiElements(prev => [...prev, ...newConfetti]);
+  }, 300);
+}
+```
+
+- Each element animates via `offset-path`, randomising colour and timing:
+    
+
+```css
+.confetti::before {
+  background-color: hsl(var(--color));
+  animation: confetti 2s cubic-bezier(0.5, 0, 0.5, 1) both,
+             confetti-opacity 2s cubic-bezier(0.5, 0, 0.5, 1) both;
+  offset-path: padding-box;
+}
+```
+
+- Generation stops after ≈2 s; the overlay disappears after ≈4 s.
+    
+
+#### Triggers
+
+- Clearing **Box 5** in Flashcards.
+    
+- Completing each 30‑word batch in Vocabulary Test.
+    
+
+## 6.4 ScrambledText
+
+**ScrambledText** is a lightweight component that animates the transition between strings by scrambling characters.
+
+1. `scramble` starts a `setInterval` that runs every `interval` (default **30 ms**) and updates the display.
+    
+2. During the first phase, the visible length interpolates from the previous string to the target:
+    
+
+```jsx
+const currentLength = Math.round(fromLength + (toLength - fromLength) * progress);
+```
+
+3. Positions that are not yet final display random characters from `ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`:
+    
+
+```jsx
+let result = "";
+for (let i = 0; i < currentLength; i++) {
+  if (i < toLength && progress >= (i + 1) / toLength) {
+    result += toText[i];
+  } else {
+    result += i < toLength ? CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)] : "";
+  }
+}
+```
+
+4. After `duration` (default **1500 ms**), the interval stops and the target text is fully rendered.
+    
+
 ---
 
-### TO DO
+### TO DO
 
-admin panel
-small systems: Popup notification system, Centralized API error handling, Persisted user settings, Visual feedback components `NewProgressBar`, `Confetti` , `ScrambledText`, arena chart, system auto zapisu i auto wczytywania, `useSpellchecking`, system autoryzacji, opis bazy danych, system reportów
+- Admin panel
+    
+- Popup notification system - gif
+    
+- Centralized API error handling
+    
+- Persisted user settings
+    
+- Visual feedback components: `NewProgressBar`, `Confetti`, `ScrambledText` - gif
+    
+- Arena chart - gif
+    
+- Auto‑save / auto‑load system
+    
+- `useSpellchecking` hook
+    
+- Authorization system
+    
+- Database schema documentation
+    
+- Reporting system
