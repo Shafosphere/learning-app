@@ -204,6 +204,31 @@ Change e‑mail, nickname, password and one of four avatars (used in leaderboard
 
 ![Account Settings Demo](./gifs/accsettings.gif)
 
+
+## 5.6 Admin Panel
+
+Administrative dashboard available at `/admin` for users with the **admin** role only. The sidebar exposes four main sections and a separate **Reshuffle** action:
+
+1. **Main** – high‑level statistics
+   * **Counters** for total users, reports, languages and words (with B2/C1 breakdown).
+   * **Today’s activity**: number of logins and visits to Flashcards and Vocabulary pages.
+   * **Charts** showing new registrations and overall page views.
+   * The sidebar button **Reshuffle** (PIN protected) lives here and regenerates word patches used in all games.
+2. **Reports** – translation issue management
+   * **Sortable table** listing user‑submitted problems with type, short description and date.
+   * Clicking a row opens **detailed view** where translations can be edited in place.
+   * Reports may be saved with the new wording or removed entirely after confirmation.
+3. **Words** – vocabulary database
+   * **Search bar** with instant results for quick lookup by ID or word.
+   * **Infinite‑scroll table** of all words; selecting a row opens the editable details panel.
+   * Admins can **edit translations and descriptions**, switch between B2 and C1, or **delete** a word.
+   * The “new word” button launches a form to add fresh entries to the system.
+4. **Users** – account management
+   * **Search** by ID, nickname or e‑mail with auto scrolling to the result.
+   * **Inline editing** of username, email, ranking ban and role; each change can be confirmed or undone.
+   * A “Confirm Changes” button sends all edits to the server, while the trash icon removes a user account.
+
+
 # 6. Other Important Components
 
 ## 6.1 Popup
