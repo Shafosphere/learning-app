@@ -78,6 +78,16 @@ export default function VocaTest({ setDisplay, lvl }) {
     }
   }, [wordsAnsweredCount, data]);
 
+  // Persist carousel state between page reloads
+  useEffect(() => {
+    if (carouselItems) {
+      localStorage.setItem(
+        `carouselItems-${lvl}`,
+        JSON.stringify(carouselItems)
+      );
+    }
+  }, [carouselItems, lvl]);
+
   // Calculate overall percentage of finished patches
   const totalpercent = useMemo(() => {
     if (data.length > 0) {
@@ -159,7 +169,7 @@ export default function VocaTest({ setDisplay, lvl }) {
     localStorage.removeItem(`end-${lvl}`);
     localStorage.removeItem(`summary-${lvl}`);
     localStorage.removeItem(`wordsAnsweredCount-${lvl}`);
-  
+
     // Po 2 sekundach odśwież stronę
     setTimeout(() => {
       window.location.reload();
@@ -376,7 +386,11 @@ export default function VocaTest({ setDisplay, lvl }) {
     <>
       <div className="container-words">
         {showSummary ? (
-          <ResultsSummary lvl={lvl} setDisplay={setDisplay} resetProgress={resetProgress}/>
+          <ResultsSummary
+            lvl={lvl}
+            setDisplay={setDisplay}
+            resetProgress={resetProgress}
+          />
         ) : (
           <>
             <div

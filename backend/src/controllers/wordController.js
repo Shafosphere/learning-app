@@ -267,7 +267,8 @@ export const submitAnswer = async (req, res) => {
 
   await updateUserArena(after, newStreak, userId);
   const tierLabel =
-    correct.length > 0 ? (after <= 2000 ? "B2/C1" : "C1") : "B2";
+    correct.length > 0 ? (after <= 2000 ? "B2" : "C1") : "B2";
+  
   await updateUserRankingHistory(
     userId,
     wordId,
