@@ -81,7 +81,7 @@ export default function ReportDetails({ reportID, reloadData }) {
     try {
       const response = await api.delete(`/report/delete/${report.id}`); // Pass ID in path
       setPopup({
-        message: response.data,
+        message: response.data.message,
         emotion: "positive",
       });
       reloadData();

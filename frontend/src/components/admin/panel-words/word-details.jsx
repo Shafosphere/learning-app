@@ -57,7 +57,7 @@ export default function WordDetail({ word, setWord, level, setLevel }) {
 
       const response = await api.delete(`/word/delete/${wordId}`);
       setPopup({
-        message: response.data,
+        message: response.data.message,
         emotion: "positive",
       });
     } catch (error) {

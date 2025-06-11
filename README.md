@@ -241,6 +241,7 @@ Administrative dashboard available at `/admin` for users with the **admin** role
     
 - **popupManager.js** exposes `showPopup()` so components and utilities can trigger popups without importing the context.
     
+  ![Popup](./gifs/popup.gif)
 
 ### Usage
 
@@ -272,6 +273,7 @@ The **ProgressBar** component renders a graphical indicator of completion. It ac
     
 2. **percent** – number (0 – 100) representing the fill percentage. Together with `vertical`, it controls the gradient direction:
     
+![ProgressBar](./gifs/bar.gif)
 
 ```jsx
 style={{
@@ -303,6 +305,7 @@ An overlay emits small confetti pieces to celebrate milestones. It covers the vi
     
 - When `generateConfetti` is `true`, 20 `<div class="confetti">` elements spawn every 300 ms:
     
+  ![Confetti](./gifs/confe.gif)
 
 ```jsx
 const total = 20;
@@ -344,6 +347,7 @@ if (generateConfetti) {
     
 2. During the first phase, the visible length interpolates from the previous string to the target:
     
+![ScrambledText](./gifs/text.gif)
 
 ```jsx
 const currentLength = Math.round(fromLength + (toLength - fromLength) * progress);
@@ -365,22 +369,91 @@ for (let i = 0; i < currentLength; i++) {
 
 4. After `duration` (default **1500 ms**), the interval stops and the target text is fully rendered.
     
+## 6.5 Arena Chart
 
----
+The competitive **Arena** mode features a lightweight chart that visualizes your
+ranking points. The `MyCustomChart` component receives an array of scores and
+renders up to the last ten values on a 400×200 SVG canvas.
+
+- **Location:** `frontend/src/components/arena/chart.jsx` with styling rules in
+  `arena.css`.
+- **Scaling:** points are normalised to the current 500‑point bracket so the
+  graph stays centered on your recent progress.
+- **Colours:** rising segments use the `line-up` class while drops use
+  `line-down`. The final score is marked with a circle coloured to match the last
+  segment (`circle-up`/`circle-down`).
+- **Updates:** the chart lives under the game view and refreshes after each
+  answer you submit.
+
+![ArenaChart](./gifs/chart.gif)
+
+## 6.6 VocaTest Summary
+
+After finishing a vocabulary level, the **ResultsSummary** screen presents a
+detailed breakdown of your answers.
+
+- **Location:** `frontend/src/components/voca/summary/resultssummary.jsx` with
+  auxiliary components in the same folder.
+- **Intro text:** before the results appear, a short message
+  “you have finished all parts! :D” types itself out as an animation.
+- **Progress:** a bar shows the overall percentage of correct translations.
+- **Tables:**
+  - **Good results** – correctly typed words.
+  - **Wrong results** – mistakes to review.
+- **Buttons:** colour‑coded controls switch between tables and reset your
+  progress. They only appear on narrow screens (under 768 px), where one table
+  is displayed at a time.
+
+![VocaTestSummary](./gifs/summary.gif)
+
+
+
+## 6.7 Auto-save / Auto-load
+
+Flashcard progress can be saved to the browser and, for logged-in users, synced
+to the server. The logic lives inside the `useBoxesDB` hook.
+
+- **Hook location:** `frontend/src/hooks/boxes/useBoxesDB.jsx`.
+- **Saving:** when the `autoSave` flag becomes `true`, data is pushed to the
+  `/user/auto-save` endpoint (if logged in) and always mirrored into IndexedDB.
+- **Loading:** on mount, the hook requests `/user/auto-load` and resolves
+  conflicts using timestamps stored in `localStorage`.
+- **Cleanup:** calling `/user/auto-delete` removes the stored progress after a
+  level is completed.
+
+```jsx
+const serverAutosave = useCallback(async () => {
+  const currentPatch = lvl === "B2" ? patchNumberB2 : patchNumberC1;
+  const words = Object.entries(boxes)
+    .flatMap(([boxName, items]) => items.map(({ id }) => ({ id, boxName })));
+
+  await api.post("/user/auto-save", {
+    level: lvl,
+    deviceId,
+    words,
+    patchNumber: currentPatch,
+  });
+}, [boxes, lvl, deviceId, patchNumberB2, patchNumberC1]);
+
+useEffect(() => {
+  const saveData = async () => {
+    if (!autoSave) return;
+    if (isLoggedIn) await serverAutosave();
+    // persist to IndexedDB ...
+    setAutoSave(false);
+  };
+  saveData();
+}, [autoSave, boxes, lvl, isLoggedIn, serverAutosave]);
+```
+
 
 ### TO DO
 
 - Admin panel
     
-- Popup notification system - gif
-    
 - Centralized API error handling
     
 - Persisted user settings
-    
-- Visual feedback components: `NewProgressBar`, `Confetti`, `ScrambledText` - gif
-    
-- Arena chart - gif
     
 - Auto‑save / auto‑load system
     
