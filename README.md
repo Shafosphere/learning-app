@@ -114,16 +114,6 @@ The `API_endpoints.md` file in the repository contains a tabular overview of all
       * **Batch progress** – 30‑word set.
       * **Level progress** – overall completion for the current level (B2 / C1).
 
-### End‑of‑Level Summary
-
-* Two result tables appear:
-
-  * **Left:** incorrectly answered words.
-  * **Right:** correctly answered words.
-* Displays the **percentage of correct translations**.
-
-TODO wygenerowac gifa z wynikami
-
 ## 5.3 Arena
 
 Competitive online mode – the server assigns words based on the current rating (0 – 3 000 pts). Each answer instantly updates the score, and a chart visualises the trend.
@@ -179,6 +169,9 @@ const tiers = [
 ## 5.4 Settings
 
 ### The settings have three tabs:
+All options are stored in the global **SettingsContext** with values persisted to
+localStorage. A change here immediately updates components across the entire
+application.
 
 1. **UI & audio**
 
@@ -188,13 +181,19 @@ const tiers = [
    * Skins – Changes the logo in the sidebar or the default appearance of the boxes in the Flashcards game.
 2. **Gameplay**
 
-   * Ignore diacritics – The checking system ignores diacritical marks (ą, ć, ź, etc.) *Does not work in the arena!*
-   * Typo tolerance – You can make one mistake. *Does not work in the arena!*
-   * Daily goal – You can adjust the daily goal in the Flashcard Game.
+   - **Ignore diacritics** – when on, `useSpellchecking` strips Polish accents
+     before comparison so “lód” and “lod” are equal. Off requires exact accents.
+     The Arena always enforces strict checking.
+   - **Typo tolerance** – allows a one‑character difference using the Levenshtein
+     algorithm (see [6.8](#68-spellchecking)). Disabled in the Arena.
+   - **Daily goal** – determines the target of correct answers per day in
+     Flashcards. Progress tracking and confetti celebrations rely on this value.
 3. **Reset**
 
-   * Restore default settings
-   * Reset Flashcard/Test progress (B2/C1 separately)
+   - **Restore default settings** – reverts all of the above to their initial
+     values.
+   - **Reset Flashcard/Test progress (B2/C1 separately)** – clears stored
+     progress from localStorage and IndexedDB.
 
 ![App Settings Demo](./gifs/appsettings.gif)
 
@@ -218,16 +217,23 @@ Administrative dashboard available at `/admin` for users with the **admin** role
    * **Sortable table** listing user‑submitted problems with type, short description and date.
    * Clicking a row opens **detailed view** where translations can be edited in place.
    * Reports may be saved with the new wording or removed entirely after confirmation.
+
+    ![AdminReport](./gifs/adminreport.gif)
+
 3. **Words** – vocabulary database
    * **Search bar** with instant results for quick lookup by ID or word.
    * **Infinite‑scroll table** of all words; selecting a row opens the editable details panel.
    * Admins can **edit translations and descriptions**, switch between B2 and C1, or **delete** a word.
    * The “new word” button launches a form to add fresh entries to the system.
+
+    ![AdminWords](./gifs/adminwords.gif)
+
 4. **Users** – account management
    * **Search** by ID, nickname or e‑mail with auto scrolling to the result.
    * **Inline editing** of username, email, ranking ban and role; each change can be confirmed or undone.
    * A “Confirm Changes” button sends all edits to the server, while the trash icon removes a user account.
 
+    ![AdminUsers](./gifs/adminuser.gif)
 
 # 6. Other Important Components
 
@@ -273,7 +279,7 @@ The **ProgressBar** component renders a graphical indicator of completion. It ac
     
 2. **percent** – number (0 – 100) representing the fill percentage. Together with `vertical`, it controls the gradient direction:
     
-![ProgressBar](./gifs/bar.gif)
+  ![ProgressBar](./gifs/bar.gif)
 
 ```jsx
 style={{
@@ -347,7 +353,7 @@ if (generateConfetti) {
     
 2. During the first phase, the visible length interpolates from the previous string to the target:
     
-![ScrambledText](./gifs/text.gif)
+  ![ScrambledText](./gifs/text.gif)
 
 ```jsx
 const currentLength = Math.round(fromLength + (toLength - fromLength) * progress);
@@ -385,7 +391,7 @@ renders up to the last ten values on a 400×200 SVG canvas.
 - **Updates:** the chart lives under the game view and refreshes after each
   answer you submit.
 
-![ArenaChart](./gifs/chart.gif)
+  ![ArenaChart](./gifs/chart.gif)
 
 ## 6.6 VocaTest Summary
 
@@ -404,7 +410,7 @@ detailed breakdown of your answers.
   progress. They only appear on narrow screens (under 768 px), where one table
   is displayed at a time.
 
-![VocaTestSummary](./gifs/summary.gif)
+  ![VocaTestSummary](./gifs/summary.gif)
 
 
 
@@ -446,21 +452,217 @@ useEffect(() => {
 }, [autoSave, boxes, lvl, isLoggedIn, serverAutosave]);
 ```
 
+## 6.8 Spellchecking
 
-### TO DO
+### Overview
+The `useSpellchecking` **custom React hook** centralises every rule that decides whether a user’s typed translation counts as correct or not.  
+It supports two optional helpers from **Settings**:
 
-- Admin panel
+- **Location:** `frontend/src/hooks/spellchecking/spellchecking.jsx`.
+
+| Setting field | Effect on checking logic |
+| ------------- | ------------------------ |
+| `diacritical` | Ignore (off) / respect (on) Polish diacritical marks |
+| `spellChecking` | Allow one typo (on) / require an exact match (off) |
+
+Both settings are consumed through React Context, so any toggle in the **Settings** page instantly propagates to Flashcards and VocaTest:
+
+```jsx
+const { diacritical, spellChecking } = useContext(SettingsContext);
+
+function checkSpelling(userWord, correctWord) {
+  const a = diacritical ? userWord : normalizeText(userWord);
+  const b = diacritical ? correctWord : normalizeText(correctWord);
+  return spellChecking
+    ? levenshtein(a, b) <= 1
+    : a === b;
+}
+```
+
+### Levenshtein Distance
+To implement *“allow one typo”* the hook embeds a lightweight **Levenshtein distance** calculator.  
+Distance = minimal number of **insertions, deletions or substitutions** needed to transform *A* into *B*.  
+`spellChecking` enabled ⇒ a distance ≤ 1 passes.
+
+```jsx
+function levenshtein(a, b) {
+  const matrix = [];
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j - 1] + 1
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+```
+## 6.9 API Error System
+
+### Overview
+
+The back‑end uses a centralized error workflow so every failure returns a consistent JSON response. The core pieces live in `backend/src/errors/`:
+
+- `ApiError` class – extends the native `Error` object with `statusCode`, `code`, and optional `details`.
+- `errorCodes.js` – a dictionary mapping short keys to structured error definitions.
+- `throwErr(key, details)` – looks up `key` in that dictionary and throws an `ApiError`.
+- `catchAsync` – wrapper for controllers so thrown errors reach the global handler.
+
+`backend/src/middleware/errorHandler.js` is the single Express middleware that logs the error and sends the HTTP response:
+
+```js
+export default function errorHandler(err, req, res, next) {
+  console.error(err);
+  res.status(err.statusCode || 500).json({
+    code: err.code || "ERR_SERVER",
+    message: err.message || "Unknown error.",
+    errors: err.details || undefined,
+  });
+}
+```
+
+Controllers simply call `throwErr` whenever validation fails:
+
+```js
+import { throwErr } from "../errors/throwErr.js";
+
+export const loginUser = catchAsync(async (req, res) => {
+  const user = await getUserByUsername(req.body.username);
+  if (!user) throwErr("INVALID_CREDENTIALS");
+  // ... rest of logic
+});
+```
+
+Error definitions reside in `errorCodes.js`:
+
+```js
+export const ERRORS = {
+  INVALID_CREDENTIALS: {
+    code: "ERR_INVALID_CREDENTIALS",
+    status: 401,
+    message: "Invalid credentials",
+  },
+  // ...many more
+};
+```
+
+### Front‑end integration
+
+Responses from `errorHandler` bubble up to the Axios interceptor in
+`frontend/src/utils/api.jsx`. That interceptor extracts the `code`, `message`
+and validation `errors`, translates them when possible and finally calls
+`showPopup` so the user sees a friendly notification.
+
+```jsx
+api.interceptors.response.use(
+  (r) => r,
+  (error) => {
+    const { code, message, errors = [] } = error.response?.data || {};
+    showPopup({
+      message: message || code,
+      emotion: error.response?.status >= 500 ? "warning" : "negative",
+    });
+    return Promise.reject(error);
+  }
+);
+```
+
+## 6.10 Reports
+
+### Overview
+Logged-in users can flag translation mistakes or any other issues. The sidebar shows a **Report a bug** option which opens a popup form.
+
+### Report Types
+- `word_issue` – points to a specific word translation.
+- `other` – generic problem description.
+
+### Submitting
+The form sends a POST request to `/report/add` with the chosen type, optional word and a description:
+
+```jsx
+await api.post("/report/add", { reportType, word, description });
+```
+
+  ![Report](./gifs/report.gif)
+
+On success the API replies with `{ success: true, message: "Report received", reportId }` and the frontend displays a popup.
+
+### Admin workflow
+Admins access the **Reports** tab in the Admin Panel. A sortable table lists all submissions; selecting one fetches its details (and translations for `word_issue`). Administrators can update the provided translations or delete the report entirely.
+
+## 6.11 Authorization System
+
+### Overview
+User authentication relies on **JSON Web Tokens (JWT)** issued during login. Each token contains the user ID, username and role and is signed with `TOKEN_KEY`. The cookie is HTTP-only and expires after one hour, so JavaScript cannot read it directly.
+
+```js
+const generateToken = (user) =>
+  jwt.sign({ id: user.id, username: user.username, role: user.role },
+           process.env.TOKEN_KEY, { expiresIn: "1h" });
+```
+
+### Password Hashing
+Passwords are never stored in plain text. During registration the server hashes them with **bcrypt** using 10 salt rounds:
+
+```js
+const hashedPassword = await bcrypt.hash(password, 10);
+```
+
+Login compares the submitted password with the hash. If valid, the token cookie is set:
+
+```js
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  path: "/",
+  maxAge: 3600000,
+});
+```
+
+### Route Protection
+Every protected endpoint first runs `authenticateToken`, which verifies the JWT and attaches `req.user`. Admin routes additionally use `authorizeAdmin` to check the user role:
+
+```js
+router.get("/admin", authenticateToken, authorizeAdmin, catchAsync(adminWelcome));
+```
+
+Requests without a valid token receive `ERR_TOKEN_NOT_FOUND` or `ERR_INVALID_TOKEN`. Non-admin users hitting an admin URL get `ERR_USER_NOT_ADMIN`. Therefore, merely knowing the admin panel URL does not reveal any data.
     
-- Centralized API error handling
-    
-- Persisted user settings
-    
-- Auto‑save / auto‑load system
-    
-- `useSpellchecking` hook
-    
-- Authorization system
-    
+
+## 6.12 Password Reset Emails
+
+### Overview
+When a user requests a password reset, the back end sends an HTML e‑mail with a secure link. The system relies on **NodeMailer** and Gmail credentials defined in environment variables.
+
+### Implementation
+- **Service Location:** `backend/src/services/email.service.js`.
+- `generateResetPasswordEmail(link, lang)` – returns a translated HTML template.
+- `sendEmail({ to, subject, text, html })` – sends the message through the configured transporter.
+
+### Reset Flow
+The controller `sendUserResetLink` composes the e‑mail:
+
+```js
+const token = generateToken(user); // expires in 1 hour
+const resetLink = `http://localhost:3000/reset-password/${token}`;
+const html = generateResetPasswordEmail(resetLink, language);
+await sendEmail({ to: email, subject, html });
+```
+
+The user follows the link to set a new password via `/auth/reset-password`. If the token has expired or is invalid, the API responds with the appropriate error code.
+
+
+TO DO
+
 - Database schema documentation
-    
-- Reporting system
