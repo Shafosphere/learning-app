@@ -507,6 +507,7 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 ```
+
 ## 6.9 API Error System
 
 ### Overview
@@ -662,7 +663,156 @@ await sendEmail({ to: email, subject, html });
 
 The user follows the link to set a new password via `/auth/reset-password`. If the token has expired or is invalid, the API responds with the appropriate error code.
 
+## 6.13 Ranking System
 
-TO DO
+### Tables
 
-- Database schema documentation
+The project keeps player scores in three PostgreSQL tables:
+
+1. **`ranking`** – flashcard leaderboard
+   - `user_id` references a user and is unique.
+   - `flashcard_points` increase after each correct flashcard answer.
+   - `ban` flag hides the account from rankings.
+
+2. **`arena`** – current arena rating
+   - `current_points` start at **1000** and change by ±5 per answer.
+   - `current_streak` counts consecutive correct answers.
+   - `last_answered` and `last_updated` store timestamps for activity checks.
+
+3. **`answer_history`** – detailed arena log
+   - Records the submitted answer, whether it was correct and points before/after.
+   - Includes response time and the difficulty tier used for the word.
+   - Feeds the in-game chart showing the last ten results.
+
+### Awarding Points
+
+- **Flashcards:** when a word is learned, the `learnWord` controller in
+  `backend/src/controllers/userControllers.js` calls
+  `userRankingUpdate` to increment the player's `flashcard_points`.
+- **Arena:** the `submitAnswer` controller in
+  `backend/src/controllers/wordController.js` adjusts
+  `arena.current_points` by ±5 via `updateUserArena` and stores a log entry with
+  `updateUserRankingHistory`.
+
+### Leaderboards
+
+Endpoints `/user/ranking-flashcard` and `/user/ranking-arena` return the top
+scorers (10 by default). The frontend page `RankingTableSelect` fetches this data
+and displays the ranking tables with user avatars and medals.
+
+# 7. Database Schema Documentation
+
+The complete SQL dump is located in `backend/src/db/schema.sql`. Installation steps
+are described in [installation.md](./installation.md). Below is a high-level overview of
+the main tables and their roles. A visual diagram of the schema is also included in the
+repository as **diagram.png**.
+
+## 7.1 Core Tables
+
+- **`users`** – registered accounts
+  - `id` *(PK)* – auto-increment identifier.
+  - `username`, `email`, `password` – login credentials.
+  - `role` – "user" or "admin".
+  - `avatar` – avatar index.
+  - `created_at`, `last_login` – timestamps.
+
+- **`word`** – vocabulary entries
+  - `id` *(PK)*.
+  - `word` – the base word.
+  - `level` – "B2" or "C1" difficulty.
+
+- **`translation`** – translations for each word
+  - `id` *(PK)*.
+  - `word_id` *(FK → word.id)*.
+  - `language` – "pl" or "en".
+  - `translation` – actual text.
+  - `description` – usage notes.
+
+## 7.2 Learning Progress
+
+- **`user_word_progress`** – when a word is mastered
+  - `id` *(PK)*.
+  - `user_id` *(FK → users.id)*.
+  - `word_id` *(FK → word.id)*.
+  - `learned_at` – timestamp.
+
+- **`user_autosave`** – saved game state
+  - `id` *(PK)*.
+  - `user_id` *(FK → users.id)*.
+  - `level` – "B2" or "C1".
+  - `words` – JSON of Leitner boxes.
+  - `device_identifier` – optional device link.
+  - `last_saved` – timestamp.
+  - `version` – increments with each save.
+  - `patch_number_b2`, `patch_number_c1` – track word batches.
+
+## 7.3 Arena & Ranking
+
+- **`ranking`** – flashcard leaderboard
+  - `id` *(PK)*.
+  - `user_id` *(FK → users.id)*.
+  - `username` – stored for display.
+  - `flashcard_points` – total points.
+  - `last_updated` – timestamp.
+  - `ban` – hides the user from leaderboards.
+
+- **`arena`** – active arena status
+  - `user_id` *(PK, FK → users.id)*.
+  - `current_points` – rating starting at 1000.
+  - `current_streak` – consecutive correct answers.
+  - `last_answered`, `last_updated` – timestamps.
+
+- **`answer_history`** – detailed arena log
+  - `id` *(PK)*.
+  - `user_id` *(FK → users.id)*.
+  - `word_id` *(FK → word.id)*.
+  - `given_answer`, `is_correct`.
+  - `points_before`, `points_after`.
+  - `response_time_ms`, `difficulty_tier`, `streak`.
+  - `created_at` – timestamp.
+
+## 7.4 Patches & Reports
+
+- **`word_patches`**, **`b2_patches`**, **`c1_patches`** –
+  store sets of word IDs used when generating word batches.
+  Each row contains a `patch_id` and JSON `word_ids` array.
+
+- **`reports`** – issues submitted by users
+  - `id` *(PK)*.
+  - `user_id` *(FK → users.id)*.
+  - `report_type` – "word_issue" or "other".
+  - `word_id` – optional reference.
+  - `description` – free text.
+  - `created_at` – timestamp.
+
+## 7.5 Statistics
+
+- **`page_visit_stats`** – daily page view counters
+  - `id` *(PK)*.
+  - `page_name`, `stat_date`.
+  - `visit_count` – number of visits.
+
+- **`user_activity_stats`** – aggregated activity totals
+  - `id` *(PK)*.
+  - `activity_date`, `activity_type`.
+  - `activity_count`.
+
+## 7.6 Foreign Keys & Indexes
+
+Foreign key constraints link `users`, `word`, and ranking tables. Notable
+indexes include `idx_translation_word` on `translation.word_id`,
+`idx_user_word_unique` on `(user_id, word_id)`, and `idx_word_level` on
+`word.level`.
+
+The schema targets PostgreSQL 16 and can be recreated by running the SQL dump
+from `backend/src/db/schema.sql`.
+
+## 7.7 Schema Diagram
+
+A graphical overview of all tables and relationships can be found in
+`diagram.png` located in the project root:
+
+![Database Diagram](./diagram.png)
+
+TO DO 
+Testy
