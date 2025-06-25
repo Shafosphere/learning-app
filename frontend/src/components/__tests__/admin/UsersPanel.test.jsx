@@ -114,7 +114,7 @@ describe('UsersPanel Component', () => {
 
     // wpisujemy "char" w wyszukiwarce
     fireEvent.change(
-      screen.getByPlaceholderText('Search by ID / username / email'),
+      screen.getByPlaceholderText('Search by ID, username, or email'),
       { target: { value: 'char' } }
     );
 
@@ -146,13 +146,13 @@ describe('UsersPanel Component', () => {
     await waitFor(() => expect(api.get).toHaveBeenCalled());
 
     // znajdź ikonę usuwania i kliknij
-    const userIcons = container.querySelector('.user-icons');
-    const svgIcons = userIcons.querySelectorAll('svg');
+    const iconsCell = container.querySelector('.actions-cell');
+    const svgIcons = iconsCell.querySelectorAll('svg');
     fireEvent.click(svgIcons[1]);
 
     // potwierdzenie
     expect(
-      screen.getByText('Czy na pewno chcesz usunąć tego użytkownika?')
+      screen.getByText('Are you sure you want to delete this user?')
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /Yes/i }));
@@ -161,7 +161,7 @@ describe('UsersPanel Component', () => {
       expect(api.delete).toHaveBeenCalledWith('/user/delete/5');
       expect(screen.queryByText('dan')).not.toBeInTheDocument();
       expect(mockSetPopup).toHaveBeenCalledWith({
-        message: 'Użytkownik został pomyślnie usunięty.',
+        message: 'User deleted successfully.',
         emotion: 'positive',
       });
     });
