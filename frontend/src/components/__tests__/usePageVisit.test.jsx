@@ -95,7 +95,7 @@ describe("usePageVisit hook", () => {
     await vi.runAllTimersAsync();
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      "Error updating visit statistics:",
+     "Error updating visit analytics:",
       expect.any(Error)
     );
     expect(localStorage.getItem("lastVisit_error-page")).toBeNull();

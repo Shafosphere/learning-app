@@ -5,7 +5,7 @@ import MyCustomChart from "../arena/chart";
 describe("MyCustomChart Component", () => {
   it("should display loading message when no data is provided", () => {
     render(<MyCustomChart ranks={[]} />);
-    expect(screen.getByText("Ładowanie danych...")).toBeInTheDocument();
+    expect(screen.getByText("Loading data...")).toBeInTheDocument();
   });
 
   it("should render the chart with the correct number of elements", () => {

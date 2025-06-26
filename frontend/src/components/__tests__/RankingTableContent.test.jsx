@@ -70,7 +70,7 @@ describe("RankingTableContent Component", () => {
     render(<Wrapper />);
 
     await waitFor(() => {
-      const avatars = screen.getAllByAltText("ranking.user.avatar");
+      const avatars = screen.getAllByAltText("User avatar");
       expect(avatars[0].src).toContain("man.png");
       expect(avatars[1].src).toContain("man_1.png");
       expect(avatars[2].src).toContain("woman.png");
@@ -98,9 +98,10 @@ describe("RankingTableContent Component", () => {
     render(<Wrapper />);
 
     await waitFor(() => {
-      expect(screen.getByText("ranking.position")).toBeInTheDocument();
-      expect(screen.getByText("ranking.nickname")).toBeInTheDocument();
-      expect(screen.getByText("ranking.points")).toBeInTheDocument();
+      expect(screen.getByText("Position")).toBeInTheDocument();
+      expect(screen.getByText("Nickname")).toBeInTheDocument();
+      expect(screen.getByText("Points")).toBeInTheDocument();
+
     });
   });
 
@@ -111,7 +112,7 @@ describe("RankingTableContent Component", () => {
 
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith(
-        "ranking.error",
+        "Error loading ranking",
         expect.any(Error)
       );
     });

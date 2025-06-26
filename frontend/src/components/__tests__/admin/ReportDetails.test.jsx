@@ -131,13 +131,13 @@ describe("ReportDetails Component", () => {
       wrapper: Wrapper,
     });
 
-    await waitFor(() => screen.getByText("update changes"));
+    await waitFor(() => screen.getByText(/update changes/i));
 
     // click the update button
     fireEvent.click(screen.getByText(/update changes/i));
     // confirm dialog appears
     expect(
-      screen.getByText(/Are you sure you want to update your data\?/i)
+      screen.getByText(/Are you sure you want to apply these changes\?/i)
     ).toBeInTheDocument();
 
     // confirm
@@ -163,7 +163,7 @@ describe("ReportDetails Component", () => {
       wrapper: Wrapper,
     });
 
-    await waitFor(() => screen.getByText("update changes"));
+    await waitFor(() => screen.getByText(/update changes/i));
 
     fireEvent.click(screen.getByText(/update changes/i));
     fireEvent.click(screen.getByRole("button", { name: /Yes/i }));
@@ -178,17 +178,17 @@ describe("ReportDetails Component", () => {
 
   it("confirms and runs deleteData -> api.delete + positive popup + reloadData", async () => {
     api.post.mockResolvedValue({ data: fakeReport });
-    api.delete.mockResolvedValue({ data: "Deleted" });
+    api.delete.mockResolvedValue({ data: { message: "Deleted" } });
 
     render(<ReportDetails reportID={123} reloadData={reloadData} />, {
       wrapper: Wrapper,
     });
 
-    await waitFor(() => screen.getByText("delete report"));
+    await waitFor(() => screen.getByText(/delete report/i));
 
     fireEvent.click(screen.getByText(/delete report/i));
     expect(
-      screen.getByText(/Do you really want to delete these report\?/i)
+      screen.getByText(/Do you really want to delete this report\?/i)
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /Yes/i }));
@@ -211,7 +211,7 @@ describe("ReportDetails Component", () => {
       wrapper: Wrapper,
     });
 
-    await waitFor(() => screen.getByText("delete report"));
+    await waitFor(() => screen.getByText(/delete report/i));
 
     fireEvent.click(screen.getByText(/delete report/i));
     fireEvent.click(screen.getByRole("button", { name: /Yes/i }));

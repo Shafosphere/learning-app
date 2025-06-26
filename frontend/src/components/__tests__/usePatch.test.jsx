@@ -87,7 +87,7 @@ describe("usePatch hook", () => {
     });
 
     expect(mockDependencies.setPopup).toHaveBeenCalledWith({
-      message: "You have fetched all words for this level!",
+      message: "You've fetched all words for this level!",
       emotion: "positive",
     });
     expect(api.post).not.toHaveBeenCalled();

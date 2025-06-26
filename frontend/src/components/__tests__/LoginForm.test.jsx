@@ -117,7 +117,7 @@ describe("LoginForm component", () => {
 
   it("logs an error and does not update state when API returns an error", async () => {
     api.post.mockRejectedValueOnce(new Error("Login error"));
-    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     renderComponent();
 

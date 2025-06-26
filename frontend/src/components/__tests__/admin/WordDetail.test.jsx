@@ -114,8 +114,7 @@ describe('WordDetail Component', () => {
   });
 
   it('powinien wywołać API delete po potwierdzeniu', async () => {
-    api.delete.mockResolvedValue({ data: 'Deleted successfully' });
-    renderComponent();
+    api.delete.mockResolvedValue({ data: { message: 'Deleted successfully' } });    renderComponent();
 
     fireEvent.click(screen.getByRole('button', { name: /delete word/i }));
     fireEvent.click(screen.getByRole('button', { name: /Yes/i }));

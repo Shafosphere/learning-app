@@ -157,7 +157,7 @@ describe("useMoveWord hook", () => {
       activeBox: "boxFive",
       boxes: {
         ...mockDependencies.boxes,
-        boxFive: customDeps.boxes.boxOne,
+        boxFive: mockDependencies.boxes.boxOne,
       },
     };
 
@@ -186,7 +186,7 @@ describe("useMoveWord hook", () => {
       activeBox: "boxFive",
       boxes: {
         ...mockDependencies.boxes,
-        boxFive: customDeps.boxes.boxOne,
+        boxFive: mockDependencies.boxes.boxOne,
       },
     };
 

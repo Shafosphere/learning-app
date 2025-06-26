@@ -51,7 +51,7 @@ describe("useSpellchecking hook", () => {
 
       expect(result.current("", "test")).toBe(false);
       expect(mockPopup.setPopup).toHaveBeenCalledWith({
-        message: "You didn't type anything?",
+        message: "You didn't enter anything.",
         emotion: "warning",
       });
     });
@@ -61,7 +61,7 @@ describe("useSpellchecking hook", () => {
 
       expect(result.current("test", "")).toBe(false);
       expect(mockPopup.setPopup).toHaveBeenCalledWith({
-        message: "Incorrectly loaded word",
+        message: "Failed to load the correct word.",
         emotion: "warning",
       });
     });

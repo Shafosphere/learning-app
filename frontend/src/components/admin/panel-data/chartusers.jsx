@@ -64,6 +64,6 @@ export default function UserChart() {
       <Bar data={chartData} options={options} />
     </div>
   ) : (
-    <p>Ładowanie danych...</p>
+    <p>Loading data...</p>
   );
 }
