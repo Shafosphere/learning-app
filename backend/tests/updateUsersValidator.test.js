@@ -37,10 +37,14 @@ describe("updateUsersValidator", () => {
     next = jest.fn();
   });
 
-  // uruchamia każdy validator, a na końcu errorHandler
+  // Helper to execute validators sequentially and then call error handler
   async function runAll() {
     for (const v of runValidators) {
-      await v.run(req);
+      if (typeof v === "function" && !v.run) {
+        await v(req, res, () => {});
+      } else {
+        await v.run(req);
+      }
     }
     errorHandler(req, res, next);
   }
@@ -55,183 +59,195 @@ describe("updateUsersValidator", () => {
   };
 
   it("400 kiedy editedRows jest brakujące", async () => {
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({ msg: "editedRows is required." }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_EDITED_ROWS_REQUIRED" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy editedRows jest pustym obiektem", async () => {
     req.body.editedRows = {};
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({ msg: "editedRows cannot be empty." }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_EDITED_ROWS_EMPTY" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy user ID jest brakujące", async () => {
     req.body.editedRows = { 1: { ...baseRow, id: undefined } };
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({ msg: "User ID is required." }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_USER_ID_INVALID" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy user ID nie jest dodatnią liczbą", async () => {
     req.body.editedRows = { 1: { ...baseRow, id: 0 } };
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({
-            msg: "User ID must be a positive integer.",
-          }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_USER_ID_INVALID" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy nazwa użytkownika jest za krótka", async () => {
     req.body.editedRows = { 1: { ...baseRow, username: "abc" } };
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({
-            msg: `Username must be between 4 and 20 characters.`,
-          }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_USERNAME_LENGTH" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy nazwa użytkownika zawiera niedozwolone znaki", async () => {
     req.body.editedRows = { 1: { ...baseRow, username: "bad*name" } };
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({
-            msg: "Username can only contain letters, numbers, and underscores.",
-          }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_USERNAME_INVALID_CHARS" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy email jest niepoprawny", async () => {
     req.body.editedRows = { 1: { ...baseRow, email: "not-an-email" } };
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({ msg: "Invalid email format." }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_INVALID_EMAIL_FORMAT" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy rola jest niepoprawna", async () => {
     req.body.editedRows = { 1: { ...baseRow, role: "superuser" } };
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({
-            msg: "Role must be 'admin', 'user' or 'moderator'.",
-          }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_ROLE_INVALID" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy ban jest nieobecny", async () => {
     const { ban, ...noBan } = baseRow;
     req.body.editedRows = { 1: noBan };
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({ msg: "Ban status is required." }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_BAN_REQUIRED" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy ban nie jest booleanem", async () => {
     req.body.editedRows = { 1: { ...baseRow, ban: "yes" } };
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({ msg: "Ban must be true or false." }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_BAN_INVALID" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy podane hasło jest za krótkie", async () => {
     req.body.editedRows = { 1: { ...baseRow, password: "Short1!" } };
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({
-            msg: `Password must be between 8 and 50 characters.`,
-          }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_PASSWORD_LENGTH" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("400 kiedy hasło nie ma wielkiej litery", async () => {
     req.body.editedRows = { 1: { ...baseRow, password: "lowercase1!" } };
-    await runAll();
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
+    await expect(runAll()).rejects.toEqual(
       expect.objectContaining({
-        errors: expect.arrayContaining([
-          expect.objectContaining({
-            msg: "Password must contain at least one uppercase letter.",
-          }),
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_PASSWORD_UPPERCASE" }),
         ]),
       })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("wywołuje next() gdy wszystkie pola są poprawne", async () => {
@@ -246,7 +262,8 @@ describe("updateUsersValidator", () => {
       },
     };
     await runAll();
-    expect(next).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith();
     expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 });

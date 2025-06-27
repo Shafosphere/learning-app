@@ -89,9 +89,10 @@ describe("userController", () => {
       const req = { query: {} };
       const res = mockRes();
 
-      await getUsersList(req, res);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.send).toHaveBeenCalledWith("Server Error");
+      await expect(getUsersList(req, res)).rejects.toThrow("db");
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.send).not.toHaveBeenCalled();
     });
   });
 
@@ -116,12 +117,10 @@ describe("userController", () => {
       const req = { body: { editedRows: { 1: { id: 1 } } } };
       const res = mockRes();
 
-      await updateUsers(req, res);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        message: "An error occurred while processing user update.",
-      });
+      await expect(updateUsers(req, res)).rejects.toThrow("fail");
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
   });
 
@@ -164,9 +163,12 @@ describe("userController", () => {
       const req = { query: { query: "none" } };
       const res = mockRes();
 
-      await searchUsers(req, res);
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ message: "No records found" });
+      await expect(searchUsers(req, res)).rejects.toEqual(
+        expect.objectContaining({ statusCode: 404, code: "ERR_NO_RECORDS" })
+      );
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
 
     it("handles error", async () => {
@@ -174,9 +176,10 @@ describe("userController", () => {
       const req = { query: { query: "x" } };
       const res = mockRes();
 
-      await searchUsers(req, res);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.send).toHaveBeenCalledWith("Server Error");
+      await expect(searchUsers(req, res)).rejects.toThrow("err");
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.send).not.toHaveBeenCalled();
     });
   });
 
@@ -200,12 +203,10 @@ describe("userController", () => {
       const req = { params: { id: "5" } };
       const res = mockRes();
 
-      await deleteUser(req, res);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        message: "An error occurred while deleting user.",
-      });
+      await expect(deleteUser(req, res)).rejects.toThrow("fail");
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
   });
 
@@ -220,12 +221,16 @@ describe("userController", () => {
       const req = { user: { id: 1, username: "u" }, body: { wordId: 10 } };
       const res = mockRes();
 
-      await learnWord(req, res);
+      await expect(learnWord(req, res)).rejects.toEqual(
+        expect.objectContaining({
+          statusCode: 400,
+          code: "ERR_ALREADY_LEARNED",
+        })
+      );
+
       expect(mockClient.query).toHaveBeenCalledWith("ROLLBACK");
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "You have already learned this word.",
-      });
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
       expect(mockClient.release).toHaveBeenCalled();
     });
 
@@ -260,10 +265,10 @@ describe("userController", () => {
       const req = { user: { id: 3, username: "u3" }, body: { wordId: 30 } };
       const res = mockRes();
 
-      await learnWord(req, res);
+      await expect(learnWord(req, res)).rejects.toThrow("oops");
       expect(mockClient.query).toHaveBeenCalledWith("ROLLBACK");
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ message: "Server error." });
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
       expect(mockClient.release).toHaveBeenCalled();
     });
   });
@@ -284,11 +289,10 @@ describe("userController", () => {
       getTopRankingUsersFlashcard.mockRejectedValue(new Error());
       const res = mockRes();
 
-      await getRankingFlashcard({}, res);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Błąd serwera podczas pobierania rankingu.",
-      });
+      await expect(getRankingFlashcard({}, res)).rejects.toThrow();
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
   });
 
@@ -308,11 +312,10 @@ describe("userController", () => {
       getTopArenaUsers.mockRejectedValue(new Error());
       const res = mockRes();
 
-      await getArena({}, res);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Błąd serwera podczas pobierania rankingu.",
-      });
+      await expect(getArena({}, res)).rejects.toThrow();
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
   });
 
@@ -349,11 +352,10 @@ describe("userController", () => {
       const req = { user: { id: 1, username: "u" }, body: {} };
       const res = mockRes();
 
-      await autoSave(req, res);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Błąd serwera podczas autozapisu.",
-      });
+      await expect(autoSave(req, res)).rejects.toThrow("conn");
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
   });
 
@@ -371,11 +373,12 @@ describe("userController", () => {
       };
       const res = mockRes();
 
-      await autoLoad(req, res);
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Brak zapisanych danych",
-      });
+      await expect(autoLoad(req, res)).rejects.toEqual(
+        expect.objectContaining({ statusCode: 404, code: "ERR_NO_AUTOSAVE" })
+      );
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
       expect(mockClient.release).toHaveBeenCalled();
     });
 
@@ -432,12 +435,10 @@ describe("userController", () => {
       };
       const res = mockRes();
 
-      await autoLoad(req, res);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Błąd serwera",
-        error: expect.any(String),
-      });
+      await expect(autoLoad(req, res)).rejects.toThrow("fail");
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
   });
 
@@ -474,11 +475,10 @@ describe("userController", () => {
       const req = { user: { id: 7 }, body: { level: "C1" } };
       const res = mockRes();
 
-      await autoDelete(req, res);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Błąd serwera podczas resetowania",
-      });
+      await expect(autoDelete(req, res)).rejects.toThrow("err");
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
   });
 });

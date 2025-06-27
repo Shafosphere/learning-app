@@ -32,25 +32,64 @@ describe("updateReportValidator", () => {
   }
 
   it("returns 400 when report object is missing", async () => {
-    await runValidation();
-    expect(res.status).toHaveBeenCalledWith(400);
+    await expect(runValidation()).rejects.toEqual(
+      expect.objectContaining({
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_REPORT_OBJECT_REQUIRED" }),
+        ]),
+      })
+    );
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("returns 400 when report is not an object", async () => {
     req.body.report = "not-an-object";
-    await runValidation();
-    expect(res.status).toHaveBeenCalledWith(400);
+    await expect(runValidation()).rejects.toEqual(
+      expect.objectContaining({
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_REPORT_OBJECT_NOT_OBJECT" }),
+        ]),
+      })
+    );
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("returns 400 when translations array is missing or empty", async () => {
     req.body.report = {};
-    await runValidation();
-    expect(res.status).toHaveBeenCalledWith(400);
+
+    await expect(runValidation()).rejects.toEqual(
+      expect.objectContaining({
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_TRANSLATIONS_REQUIRED" }),
+        ]),
+      })
+    );
 
     jest.clearAllMocks();
     req.body.report = { translations: [] };
-    await runValidation();
-    expect(res.status).toHaveBeenCalledWith(400);
+
+    await expect(runValidation()).rejects.toEqual(
+      expect.objectContaining({
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_TRANSLATIONS_NOT_ARRAY" }),
+        ]),
+      })
+    );
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("returns 400 for invalid translation items", async () => {
@@ -64,18 +103,25 @@ describe("updateReportValidator", () => {
         },
       ],
     };
-    await runValidation();
-    const errors = res.json.mock.calls[0][0].errors;
-    expect(errors).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ msg: "Translation must be a string." }),
-        expect.objectContaining({ msg: "Description must be a string." }),
-        expect.objectContaining({ msg: "word_id must be a positive integer." }),
-        expect.objectContaining({ msg: "Language must be 'pl' or 'en'." }),
-        expect.objectContaining({ msg: "word_id not found in database." }),
-      ])
+
+    await expect(runValidation()).rejects.toEqual(
+      expect.objectContaining({
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({
+            message: "ERR_TRANSLATION_TEXT_NOT_STRING",
+          }),
+          expect.objectContaining({ message: "ERR_DESCRIPTION_NOT_STRING" }),
+          expect.objectContaining({ message: "ERR_WORD_ID_INVALID" }),
+          expect.objectContaining({ message: "ERR_LANGUAGE_INVALID" }),
+          expect.objectContaining({ message: "ERR_WORD_ID_NOT_FOUND" }),
+        ]),
+      })
     );
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("returns 400 when word_id not found in database", async () => {
@@ -85,8 +131,18 @@ describe("updateReportValidator", () => {
       ],
     };
     searchWordById.mockResolvedValue(null);
-    await runValidation();
-    expect(res.status).toHaveBeenCalledWith(400);
+    await expect(runValidation()).rejects.toEqual(
+      expect.objectContaining({
+        statusCode: 400,
+        code: "ERR_VALIDATION",
+        details: expect.arrayContaining([
+          expect.objectContaining({ message: "ERR_WORD_ID_NOT_FOUND" }),
+        ]),
+      })
+    );
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it("calls next() when all fields are valid", async () => {
@@ -102,7 +158,8 @@ describe("updateReportValidator", () => {
     };
     searchWordById.mockResolvedValue({ id: 7, text: "hello" });
     await runValidation();
-    expect(next).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith();
     expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 });

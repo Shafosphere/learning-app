@@ -87,12 +87,15 @@ describe("wordController", () => {
       const req = { body: { patchNumber: 5, level: "B2" } };
       const res = mockRes();
 
-      await getWordsByPatchAndLevel(req, res);
+      await expect(getWordsByPatchAndLevel(req, res)).rejects.toEqual(
+        expect.objectContaining({
+          statusCode: 404,
+          code: "ERR_PATCH_NOT_FOUND",
+        })
+      );
 
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Patch nie znaleziony",
-      });
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
 
     it("gdy patch istnieje → sformatowane dane", async () => {
@@ -158,12 +161,10 @@ describe("wordController", () => {
       const req = { body: { patchNumber: 1, level: "B2" } };
       const res = mockRes();
 
-      await getWordsByPatchAndLevel(req, res);
+      await expect(getWordsByPatchAndLevel(req, res)).rejects.toThrow("oops");
 
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({ message: "Error fetching data" })
-      );
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
   });
 
@@ -173,12 +174,15 @@ describe("wordController", () => {
       const req = { body: { patchNumber: 2 } };
       const res = mockRes();
 
-      await getWordData(req, res);
+      await expect(getWordData(req, res)).rejects.toEqual(
+        expect.objectContaining({
+          statusCode: 404,
+          code: "ERR_PATCH_NOT_FOUND",
+        })
+      );
 
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Patch nie znaleziony",
-      });
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
 
     it("patchNumber>0 → zwraca data, isThisLastOne i totalPatches", async () => {
@@ -238,12 +242,10 @@ describe("wordController", () => {
       const req = { body: { patchNumber: 1 } };
       const res = mockRes();
 
-      await getWordData(req, res);
+      await expect(getWordData(req, res)).rejects.toThrow("fail");
 
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({ message: "Error fetching data" })
-      );
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
   });
 
@@ -267,10 +269,10 @@ describe("wordController", () => {
       const req = { query: {} };
       const res = mockRes();
 
-      await getWordsList(req, res);
+      await expect(getWordsList(req, res)).rejects.toThrow("db");
 
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.send).toHaveBeenCalledWith("Server Error");
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.send).not.toHaveBeenCalled();
     });
   });
 });
